@@ -1,0 +1,19 @@
+@use '../.././../commonStyles/variables'
+
+.person-info-link-panel
+    display: flex
+    flex-direction: row
+    top: 38px
+    position: absolute
+    right: 0
+    & > a
+        margin-left: 16px
+    .filled
+        cursor: pointer
+        svg
+            path
+                transition: all .4s ease-in-out
+        &:hover
+            svg
+                path
+                    fill: variables.$blue-color

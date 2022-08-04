@@ -1,0 +1,24 @@
+@use '../../commonStyles/variables'
+
+.blue-button
+    display: flex
+    justify-content: center
+    align-items: center
+
+    width: fit-content
+
+    background: variables.$blue-color
+    color: variables.$white-color
+    
+    font-family: variables.$jakarta-font
+    font-style: normal
+    font-weight: 600
+    line-height: 30px
+
+    border-radius: 10px
+    cursor: pointer
+    transition: all .4s ease
+    &:hover
+        -webkit-box-shadow: 0px 0px 4px 2px variables.$blue-color
+        box-shadow: 0px 0px 4px 2px variables.$blue-color
+         

@@ -1,0 +1,62 @@
+@use '../../../commonStyles/variables'
+    
+.supporters-main-table
+    display: flex
+    flex-direction: column
+    width: 100%
+    margin-top: 48px
+    max-width: 1170px
+    &__header
+        width: 100%
+        background: variables.$grey-background-color
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: space-between
+        box-sizing: border-box
+        padding: 14px 28px
+        & > div
+            width: 25%
+            box-sizing: border-box
+            padding: 0 4px
+            display: flex
+            justify-content: center
+            align-items: center
+            text-align: center
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 700
+            font-size: 16px
+            line-height: 19px
+            color: variables.$grey-color
+    &__main
+        display: flex
+        flex-direction: column
+        width: 100%
+
+        &__row
+            width: 100%
+            display: flex
+            flex-direction: row
+            align-items: center
+            justify-content: space-between
+            box-sizing: border-box
+            padding: 14px 28px 
+            span 
+                width: 25%
+                display: flex
+                flex-direction: row
+                align-items: center
+                justify-content: center
+                text-align: center
+                box-sizing: border-box
+                padding: 0 4px
+                font-family: variables.$inter-font
+                font-style: normal
+                font-weight: 700
+                font-size: 16px
+                line-height: 19px
+                color: variables.$white-color
+                svg
+                    margin-left: 2px
+

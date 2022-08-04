@@ -1,0 +1,105 @@
+@use '../../commonStyles/variables'
+    
+.creators-list-container
+    max-width: 1170px
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    margin: 0 24px 
+    @media (max-width: 640px)
+        width: 90%
+        margin: 0 auto
+    &__search
+
+        width: 50%
+        display: flex
+        flex-direction: row
+        align-items: center
+        
+        background: variables.$grey-background-color
+        border-radius: 15px
+        box-sizing: border-box
+        padding: 8px
+
+        transition: all 1.2s ease
+        svg
+            margin-right: 9px
+        input
+            border: none
+            outline: none
+            background: variables.$grey-background-color
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 700
+            font-size: 21px
+            line-height: 24px
+            color:  variables.$white-color
+            &::placeholder
+                color: variables.$grey-color
+    &__list
+        display: flex
+        flex-direction: row
+        flex-wrap: wrap
+        width: 100%
+        margin-top: 32px
+        &__not-found
+            text-align: center
+            align-items: center
+            margin: 0 auto
+
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 700
+            font-size: 30px
+            line-height: 38px
+            color: variables.$grey-color
+        &__panel
+            width: calc(50% - 45px)
+            height: 145px
+            background: #19191F
+            border-radius: 10px
+            margin-bottom: 48px
+            box-sizing: border-box
+            padding: 24px 26px
+            display: flex
+            flex-direction: row
+            align-items: center
+            cursor: pointer
+            &__image
+                width: 98px
+                height: 98px
+                border-radius: 10px
+                overflow: hidden
+                margin-right: 30px
+                img
+                    width: 100%
+                    height: 100%
+                    object-fit: cover
+
+            &__info
+                display: flex
+                flex-direction: column
+                align-items: flex-start
+                max-width: 100%
+                .username
+                    height: 40px
+                    font-family: variables.$jakarta-font
+                    font-style: normal
+                    font-weight: 700
+                    font-size: 20px
+                    line-height: 30px
+                    color: variables.$white-color
+                .desc
+                    width: 300px
+                    overflow: hidden
+                    text-overflow: ellipsis
+                    height: 40px
+                    font-family: variables.$jakarta-font
+                    font-style: normal
+                    font-weight: 700
+                    font-size: 15px
+                    line-height: 19px
+                    color: variables.$white-color
+                    
+                
