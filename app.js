@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
 const fileupload = require("express-fileupload")
-path = require('path')
+const path = require('path')
+const fs = require('fs')
 
+const sockPath = `${path.resolve(__dirname, './sock')}/server.sock`
 const userRouter = require('./routes/user.routes')
 const badgeRouter = require('./routes/badge.routes')
 const donationRouter = require('./routes/donation.routes')
@@ -13,8 +15,8 @@ const cors = require('cors')
 app.use(cors())
 app.use(fileupload())
 app.use(express.json())
-app.use(express.static(__dirname + '/images'))
-app.use(express.static(path.resolve(__dirname, '../client/build')))
+//app.use(express.static(__dirname + '/images'))
+//app.use(express.static(path.resolve(__dirname, '../client/build')))
 app.use('/api/user/', userRouter)
 app.use('/api/badge/', badgeRouter)
 app.use('/api/donation/', donationRouter)
@@ -22,7 +24,10 @@ app.use('/api/nft/', nftRouter)
 
 async function start() {
 	try {
-		app.listen(8080, () => console.log(`App has been started on port ${8080}...`))
+		//app.listen(8080, () => console.log(`App has been started on port ${8080}...`))
+		//console.log(sockPath);
+		fs.existsSync(sockPath) && fs.rmSync(sockPath)
+		app.listen(sockPath, () => fs.chmod(sockPath, 0o666, () => {console.log(`App has been started on ${sockPath}`)}))
 	} catch(e) {
 		console.log('Server error', e.message)
 		process.exit(1)
