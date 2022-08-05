@@ -50,7 +50,7 @@ const FollowsContainer = () => {
   const getData = async () => {
     if (user && user.username && user.username.length > 0) {
       const res = await fetch(
-        "http://localhost:8080" + "/api/user/get-follows/" + user.username
+          "/api/user/get-follows/" + user.username
       );
       if (res.status === 200) {
         const result = await res.json();

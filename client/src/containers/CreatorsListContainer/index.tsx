@@ -14,7 +14,7 @@ const CreatorsListContainer = () => {
   const [usersList, setUsersList] = useState<any[]>([]);
 
   const getUsers = async (name: string) => {
-    const res = await fetch('http://localhost:8080' + `/api/user/users/${name}`);
+    const res = await fetch(  `/api/user/users/${name}`);
     const result = await res.json();
     setUsersList(result);
   };

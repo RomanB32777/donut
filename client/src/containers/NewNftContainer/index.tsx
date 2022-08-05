@@ -46,7 +46,7 @@ const NewNftContainer = () => {
 
     const createNft = async () => {
         const res: any = await fetch(
-            'http://localhost:8080' +  "/api/nft/create", {
+               "/api/nft/create", {
                 method: 'POST', // *GET, POST, PUT, DELETE, etc.
                 mode: 'cors', // no-cors, *cors, same-origin
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

@@ -2,7 +2,7 @@ async function postData(url = '', data = {}) {
     // Default options are marked with *
     console.log(url);
     
-    const response = await fetch('http://localhost:8080' + url, { // 'http://localhost:8080' + 
+    const response = await fetch(  url, { //   
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors', // no-cors, *cors, same-origin
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

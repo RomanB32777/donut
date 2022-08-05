@@ -3,7 +3,7 @@ import { setLoading } from "../../store/types/Loading";
 import { setUser, TRY_TO_GET_USER } from "../../store/types/User";
 
 const asyncGetUser = async (tron_token: string) => {
-    const response = await fetch('http://localhost:8080' + '/api/user/'+tron_token)
+    const response = await fetch(  '/api/user/'+tron_token)
     if (response.status === 200) {
         const result = await response.json()
         console.log(result);

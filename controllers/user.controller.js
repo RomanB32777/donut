@@ -17,7 +17,7 @@ const getSubscriptions = async (username) => {
     const follows = await db.query('SELECT * FROM follows WHERE backer_username = $1', [username])
     let data = []
     let names = []
-    if (follows.rows.length > 0) {
+    if (follows && follows.rows.length > 0) {
         names = follows.rows.map((follow) => (follow.creator_username))
         const creators = await db.query('SELECT * FROM creators WHERE username = ANY ($1)', [[names]])
         follows.rows.forEach((follow) => {
@@ -76,6 +76,16 @@ class UserController {
                 await db.query(`INSERT INTO backers (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
                 res.status(200).json({ message: 'Backer created!' })
             }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async deleteUser(req, res) {
+        try {
+            const { user_id } = req.body
+            const deletedUser = await db.query(`DELETE FROM users WHERE id = $1 RETURNING *;`, [user_id])
+            res.status(200).json({ deletedUser: deletedUser.rows[0] })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }

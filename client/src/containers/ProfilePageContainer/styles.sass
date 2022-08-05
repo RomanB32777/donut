@@ -144,6 +144,9 @@
                         color: variables.$white-color
                         box-sizing: border-box
                         padding: 2px 6px
+    &__buttons
+        display: flex
+        width: 550px
     &__save-button
         margin-top: 32px
         transition: opacity .6s ease-in-out
@@ -153,8 +156,15 @@
         & > div
             wid
             margin-left: auto
-
-
+    &__delete-button
+        margin-top: 32px
+        transition: opacity .6s ease-in-out
+        max-width: 550px
+        margin-bottom: 100px
+        width: 100%
+        & > div
+            wid
+            margin-left: auto
 .copy-message
     position: fixed
     bottom: 40px

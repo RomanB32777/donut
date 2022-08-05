@@ -19,7 +19,7 @@ const NftContainer = () => {
 
     const deleteNft = async (id: any) => {
         const res = await fetch(
-            'http://localhost:8080' + '/api/nft/delete',
+              '/api/nft/delete',
             {
                 method: 'POST', 
                 mode: 'cors', 
@@ -44,7 +44,7 @@ const NftContainer = () => {
     }
 
     const getNft = async (username: string) => {
-        const res = await fetch('http://localhost:8080' + '/api/nft/list/'+username)
+        const res = await fetch(  '/api/nft/list/'+username)
         if (res.status === 200) {
             const result = await res.json()
             setNftList(result.data.reverse())

@@ -4,7 +4,7 @@ import { GET_PERSON_INFO_PAGE, setPersonInfoPageData } from "../../store/types/P
 
 const getPersonInfoPage = async (data: {page: string, username: string}) => {
     const res = await fetch(
-        'http://localhost:8080' + `/api/user/get-person-info-${data.page}/${data.username}/`
+          `/api/user/get-person-info-${data.page}/${data.username}/`
     )
     if (res.status === 200) {
         const result = await res.json()

@@ -4,7 +4,12 @@ class DonationController {
     async createDonation(req, res) {
         try {
             const { creator_tron_token, backer_tron_token, sum } = req.body
-            const date = (new Date()).toISOString()
+            const initDate = new Date()
+            // initDate.setDate(initDate.getDate() - 4);
+            const formatedDate = initDate.getTime()
+            const userOffset = -initDate.getTimezoneOffset() * 60 * 1000
+            const date = new Date(formatedDate + userOffset).toISOString()
+
             if (backer_tron_token && creator_tron_token) {
                 const creator = await db.query('SELECT * FROM users WHERE tron_token = $1', [creator_tron_token])
                 const backer = await db.query('SELECT * FROM users WHERE tron_token = $1', [backer_tron_token])

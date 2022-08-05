@@ -45,7 +45,7 @@ const NewBadgeContainer = () => {
 
   const createBadge = async () => {
     const res: any = await fetch(
-      "http://localhost:8080" + "/api/badge/create-badge",
+        "/api/badge/create-badge",
       {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin

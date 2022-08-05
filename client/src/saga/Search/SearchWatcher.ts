@@ -6,7 +6,7 @@ import { setSearchCreators, TRY_TO_GET_PERSON_BY_NAME } from "../../store/types/
 const asyncSearch = async (name: string) => {
     const data = await asyncQuery(
         'GET',
-        // 'http://localhost:8080' + 
+        //   
         '/api/user/users/'+ name
     )
     if (data) {

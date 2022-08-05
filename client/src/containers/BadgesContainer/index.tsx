@@ -28,7 +28,7 @@ const BadgesContainer = () => {
     const [showedPopupId, setShowedPopupId] = useState<number | null>(null)
 
     const getBadges = async (id: string) => {
-        const res = await fetch('http://localhost:8080' +  `/api/badge/get-badges-by-${user.roleplay === 'creators' ? 'creator/'+user.id : 'backer/'+user.username}`)
+        const res = await fetch(   `/api/badge/get-badges-by-${user.roleplay === 'creators' ? 'creator/'+user.id : 'backer/'+user.username}`)
         if (res.status === 200) {
             const result = await res.json()
             setBadgesList(result.badges)

@@ -24,7 +24,7 @@ const BackersContainer = () => {
 
   const getBackers = async () => {
     const res = await fetch(
-      "http://localhost:8080" + "/api/donation/backers-info/"
+        "/api/donation/backers-info/"
     );
     if (res.status === 200) {
       const result = await res.json();

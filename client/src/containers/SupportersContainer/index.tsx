@@ -1,5 +1,5 @@
 import axiosClient from "../../axiosClient";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import PageTitle from "../../commonComponents/PageTitle";
 import {
@@ -13,6 +13,7 @@ import CanvasJSReact from "../../assets/canvasjs.react";
 import { FormattedMessage } from "react-intl";
 import { url } from "../../consts";
 import Calendar from "../../components/Calendar";
+import { addSuccessNotification } from "../../utils";
 //var CanvasJSReact = require('./canvasjs.react');
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -112,27 +113,37 @@ const Table = (prop: { supporters: any; badges: any }) => {
 
   const assignBadge = async (badge: any, supporter: any) => {
     console.log(supporter);
-    const res = await fetch("/api/badge/assign-badge", {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-      },
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-
-      body: JSON.stringify({
-        badge_id: badge.id,
-        ...badge,
-        contributor_id: supporter.backer_id,
-      }),
+    const res = await axiosClient.post("/api/badge/assign-badge", {
+      badge_id: badge.id,
+      ...badge,
+      contributor_id: supporter.backer_id,
     });
+
+    // {
+    //   method: "POST", // *GET, POST, PUT, DELETE, etc.
+    //   mode: "cors", // no-cors, *cors, same-origin
+    //   cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    //   credentials: "same-origin", // include, *same-origin, omit
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   redirect: "follow", // manual, *follow, error
+    //   referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+
+    //   body: JSON.stringify({
+    //     badge_id: badge.id,
+    //     ...badge,
+    //     contributor_id: supporter.backer_id,
+    //   }),
+    // }
+
     if (res.status === 200) {
       setIdBadgePopup(null);
+      addSuccessNotification(
+        `Badge added successfully to ${supporter.username}`
+      );
     }
-    const result = await res.json();
+    // const result = res.data;
   };
 
   const getPrice = async () => {
@@ -200,7 +211,7 @@ const Table = (prop: { supporters: any; badges: any }) => {
                 {"$ " +
                   Math.round(parseFloat(row.sum_donations) * tronUsdtKoef)}
               </span>
-              <span>{row.amount_donations}</span>
+              <span>{row.amount_donations || ""}</span>
 
               {rowIndex === idBadgePopup && (
                 <div
@@ -276,14 +287,17 @@ const SupportersContainer = () => {
     start: "",
     end: "",
     month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
     //  parseInt(new Date().toISOString().slice(5,7))-1
   });
 
-  console.log(date);
+  useEffect(() => {
+    console.log(supporters);
+  }, [supporters]);
 
   const getBadges = async (id: string) => {
     const res = await fetch(
-      "http://localhost:8080" + "/api/badge/get-badges-by-creator/" + id
+        "/api/badge/get-badges-by-creator/" + id
     );
     if (res.status === 200) {
       const result = await res.json();
@@ -293,23 +307,33 @@ const SupportersContainer = () => {
 
   const getData = async (id: any) => {
     const res = await fetch(
-      "http://localhost:8080" + "/api/donation/supporters/" + id
+        "/api/donation/supporters/" + id
     );
     if (res.status === 200) {
       const result = await res.json();
-      setSupporters(result.supporters);
+      // setSupporters(result.supporters);
       setDonations(result.donations);
     }
   };
 
   const [dailyDonations, setDailyDonations] = useState<any>([]);
+  const [timesDonations, setTimesDonations] = useState<any>([]);
+
+  console.log(dailyDonations, timesDonations);
 
   const getDailyDonations = (date: any) => {
-    console.log("DATEEE", date, donations);
-
     let dates: { [key: string]: number } = {};
-    donations.forEach((donation, index) => {
-      if (donation.donation_date.slice(5, 7) !== date.month.toString()) {
+    let times: { [key: string]: number } = {};
+    let tableData: {
+      [key: string]: { donations_sum: number; count: number; id: number };
+    } = {};
+    let oneDay: number;
+
+    donations.forEach((donation) => {
+      const username = donation.username;
+      const donation_month = donation.donation_date.slice(5, 7) 
+      
+      if (donation_month !== date.month.toString()) {
         if (
           date.end.length !== 0 && date.start.length !== 0
             ? parseInt(donation.donation_date.slice(8, 10)) <=
@@ -321,7 +345,20 @@ const SupportersContainer = () => {
           const day: string =
             donation.donation_date.slice(8, 10) +
             "." +
-            donation.donation_date.slice(5, 7);
+            donation_month;
+
+          tableData = {
+            ...tableData,
+            [username]: {
+              id: donation.backer_id,
+              donations_sum:
+                ((tableData[username] && tableData[username].donations_sum) ||
+                  0) + parseFloat(donation.sum_donation),
+              count:
+                ((tableData[username] && tableData[username].count) || 0) + 1,
+            },
+          };
+
           dates = {
             ...dates,
             [day]: (dates[day] || 0) + parseFloat(donation.sum_donation),
@@ -329,16 +366,81 @@ const SupportersContainer = () => {
         }
       }
     });
-    setDailyDonations(
-      Object.keys(dates).map((elem) => ({
-        x: new Date(
-          2022,
-          date.month,
-          parseInt(elem.slice(0, elem.indexOf(".")))
-        ),
-        y: dates[elem],
-      }))
-    );
+
+    const datesArr = Object.keys(dates);
+    if (datesArr.length > 1) {
+      setDailyDonations(
+        datesArr.map((elem) => ({
+          x: new Date(
+            date.year,
+            date.month - 1,
+            parseInt(elem.slice(0, elem.indexOf(".")))
+          ),
+          y: dates[elem],
+        }))
+      );
+    }
+    if (datesArr.length === 1) {
+      tableData = {};
+      donations.forEach((donation) => {
+        // иначе действия на вывод по часовой выдачи донатов за день
+        const username = donation.username;
+        if (
+          date.end.length !== 0 && date.start.length !== 0
+            ? parseInt(donation.donation_date.slice(8, 10)) <=
+                parseInt(date.end) &&
+              parseInt(donation.donation_date.slice(8, 10)) >=
+                parseInt(date.start)
+            : true
+        ) {
+          const formatDate = new Date(donation.donation_date);
+          const dateWithOffset = new Date(
+            formatDate.getTime() + formatDate.getTimezoneOffset() * 60 * 1000
+          );
+          oneDay = dateWithOffset.getDay();
+          const time = `${dateWithOffset.getHours()}:${dateWithOffset.getMinutes()}`;
+
+          tableData = {
+            ...tableData,
+            [username]: {
+              id: donation.backer_id,
+              donations_sum:
+                ((tableData[username] && tableData[username].donations_sum) ||
+                  0) + parseFloat(donation.sum_donation),
+              count:
+                ((tableData[username] && tableData[username].count) || 0) + 1,
+            },
+          };
+
+          times = {
+            ...times,
+            [time]: (times[time] || 0) + parseFloat(donation.sum_donation),
+          };
+        }
+      });
+      const timesArr = Object.keys(times);
+      setTimesDonations(
+        timesArr.map((elem) => ({
+          x: new Date(
+            date.year,
+            date.month - 1,
+            oneDay,
+            parseInt(elem.slice(0, elem.indexOf(":"))),
+            parseInt(elem.slice(elem.indexOf(":") + 1))
+          ),
+          y: times[elem],
+          label: elem,
+        }))
+      );
+    }
+    // console.log(tableData);
+    const formatTableData = Object.keys(tableData).map((username) => ({
+      username,
+      backer_id: tableData[username].id,
+      sum_donations: tableData[username].donations_sum,
+      amount_donations: tableData[username].count,
+    }));
+    setSupporters(formatTableData);
   };
 
   const handleClick = (event: any) => {
@@ -365,6 +467,11 @@ const SupportersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isDailyDonations = useMemo(
+    () => dailyDonations.length > 1,
+    [dailyDonations]
+  );
+
   return (
     <div className="supporters-container">
       <PageTitle formatId="supporters_page_title" />
@@ -380,12 +487,15 @@ const SupportersContainer = () => {
           axisX: {
             gridThickness: 0,
             title: months[date.month - 1],
+            valueFormatString: isDailyDonations && "DD, MMM",
+            intervalType: isDailyDonations ? "day" : "hour",
+            interval: 1,
           },
           data: [
             {
               type: "spline",
               color: "#1D14FF",
-              dataPoints: dailyDonations,
+              dataPoints: isDailyDonations ? dailyDonations : timesDonations,
             },
           ],
         }}
@@ -417,6 +527,7 @@ const SupportersContainer = () => {
               setCurrentDate={(type: string, day: any) => {
                 setDate({ ...date, [type]: day });
                 if (type === "end") {
+                  console.log(date);
                   getDailyDonations({ ...date, [type]: day });
                 }
               }}
@@ -426,6 +537,7 @@ const SupportersContainer = () => {
               setStartDate={(day: any) =>
                 setDate({ ...date, start: day, end: "" })
               }
+              currentDate={date}
             />
           </div>
         )}

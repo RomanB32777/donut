@@ -18,6 +18,7 @@ import getTronWallet from "../../functions/getTronWallet";
 import axiosClient from "../../axiosClient";
 import { PencilIcon, UploadIcon } from "../../icons/icons";
 import { tryToGetUser } from "../../store/types/User";
+import { addAuthNotification } from "../../utils";
 
 const PersonInfoContainer = () => {
   const dispatch = useDispatch();
@@ -68,44 +69,48 @@ const PersonInfoContainer = () => {
   }, [backer, data]);
 
   const followClick = async () => {
-    try {
-      if (!isFollowing) {
-        axiosClient
-          .post("/api/user/follow", {
-            backer_id: backer.id,
-            backer_username: backer.username,
-            creator_id: data.user_id,
-            creator_username: data.username,
-          })
-          .then((res) => {
-            if (res.status === 200) {
-              dispatch(
-                tryToGetPersonInfo({
-                  id: data.user_id,
-                  username: pathname.slice(pathname.indexOf("@")),
-                })
-              );
-              dispatch(tryToGetUser(getTronWallet()));
-            }
-          });
-      } else if (isFollowing) {
-        const follow =
-          backer.subscriptions &&
-          backer.subscriptions.find(
-            (person: any) => person.user_id === data.user_id
-          );
-        if (follow && follow.id) {
+    if (tron_token) {
+      try {
+        if (!isFollowing) {
           axiosClient
-            .post("/api/user/unfollow", { id: follow.id })
+            .post("/api/user/follow", {
+              backer_id: backer.id,
+              backer_username: backer.username,
+              creator_id: data.user_id,
+              creator_username: data.username,
+            })
             .then((res) => {
               if (res.status === 200) {
-                dispatch(tryToGetUser(getTronWallet()));
+                dispatch(
+                  tryToGetPersonInfo({
+                    id: data.user_id,
+                    username: pathname.slice(pathname.indexOf("@")),
+                  })
+                );
+                dispatch(tryToGetUser(tron_token));
               }
             });
+        } else if (isFollowing) {
+          const follow =
+            backer.subscriptions &&
+            backer.subscriptions.find(
+              (person: any) => person.user_id === data.user_id
+            );
+          if (follow && follow.id) {
+            axiosClient
+              .post("/api/user/unfollow", { id: follow.id })
+              .then((res) => {
+                if (res.status === 200) {
+                  dispatch(tryToGetUser(tron_token));
+                }
+              });
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      addAuthNotification();
     }
   };
 
@@ -274,7 +279,11 @@ const PersonInfoContainer = () => {
                   formatId="profile_info_support_button"
                   fontSize="18px"
                   padding="6px 30px"
-                  onClick={() => dispatch(openSupportModal())}
+                  onClick={() => {
+                    tron_token
+                      ? dispatch(openSupportModal())
+                      : addAuthNotification();
+                  }}
                 />
               </>
             )}
