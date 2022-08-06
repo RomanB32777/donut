@@ -205,6 +205,7 @@ class UserController {
         try {
             const username = req.params.username
             const user = await db.query(`SELECT * FROM users WHERE username = $1`, [username])
+            // const creator = await db.query(`SELECT * FROM creators WHERE username = $1`, [username])
             // const supporters = await db.query(`SELECT * FROM supporters WHERE creator_id = $1 ORDER BY sum_donations DESC`, [user.rows[0].id])
             const supporters = await db.query(`
                 SELECT username, SUM(sum_donation::integer) AS sum_donations
@@ -219,7 +220,8 @@ class UserController {
             res.json({
                 data: {
                     supporters: supporters.rows.slice(0, 5),
-                    donations: lastdonations.rows.reverse()
+                    donations: lastdonations.rows.reverse(),
+                    // creator: {...user.rows[0], ...creator.rows[0]}
                 }
             })
         } catch (error) {

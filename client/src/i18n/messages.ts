@@ -13,7 +13,7 @@ const messages = {
             registration_modal_input_username_error: 'Unfortunately, this username is already busy. Enter another one',
         // mainpage
             mainpage_main_title: 'Grab your Donutz!',
-            mainpage_main_button: 'Sign up with Tron link',
+            mainpage_main_button: 'Sign up with TronLink',
             mainpage_main_button_logged: 'Go to profile',
 
             mainpage_crypto_steps_title: 'Crypto donations in 3 steps',
