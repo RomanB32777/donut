@@ -33,8 +33,6 @@ const PersonInfoContainer = () => {
 
   useEffect(() => {
     if (backer && backer.id) {
-      console.log("JJK");
-
       dispatch(
         tryToGetPersonInfo({
           username: pathname.slice(pathname.indexOf("@")),
@@ -114,10 +112,6 @@ const PersonInfoContainer = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("LOADING", isLoading);
-  }, [isLoading]);
-
   const sendFile = () => {
     const formData = new FormData();
     formData.append("file", file);
@@ -126,7 +120,9 @@ const PersonInfoContainer = () => {
     setFileName("");
     setFile("");
     setImagebase84("");
-    dispatch(tryToGetPersonInfo(pathname.slice(pathname.indexOf("@"))));
+    dispatch(
+      tryToGetPersonInfo({ username: pathname.slice(pathname.indexOf("@")) })
+    );
   };
 
   const fileToBase64 = (file: any) => {
@@ -153,7 +149,11 @@ const PersonInfoContainer = () => {
       .then((res) => {
         if (res) {
           setDescriptionChanged(false);
-          dispatch(tryToGetPersonInfo(pathname.slice(pathname.indexOf("@"))));
+          dispatch(
+            tryToGetPersonInfo({
+              username: pathname.slice(pathname.indexOf("@")),
+            })
+          );
         }
       });
   };

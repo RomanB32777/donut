@@ -25,10 +25,8 @@ function* MainDataWorker(username: any, id: any):any {
 
 
 function* PersonInfoWorker(action: {type: string; payload: any}):any {
-    console.log(action);
-    
     let { id, username} = action.payload
-    if (id) {
+    if (id || username) {
         yield fork(MainDataWorker, username, id)
     }
 }
