@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - DB_USER=postgres
+      - DB_PASSWORD=NenadoTak1987
+      - DB_NAME=donut
+    depends_on:
+      - db
+      
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=NenadoTak1987
+      - POSTGRES_DB=donut
+
+  react:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_PORT=5000  
+    depends_on:
+      - backend
+      - nginx
+    ports:
+      - "80:80"
+
+
