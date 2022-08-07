@@ -124,6 +124,7 @@ const BadgesContainer = () => {
                                         row.quantity
                                     }
                                 </span>
+                                
                                 <span
                                     className='badges-container__table__main__row__info-icon'
                                     onMouseEnter={() => {console.log(rowIndex); setShowedPopupId(rowIndex)}}
