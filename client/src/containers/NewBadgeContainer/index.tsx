@@ -1,4 +1,4 @@
-import axiosClient from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
@@ -45,7 +45,7 @@ const NewBadgeContainer = () => {
 
   const createBadge = async () => {
     const res: any = await fetch(
-        "/api/badge/create-badge",
+      baseURL + "/api/badge/create-badge",
       {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin

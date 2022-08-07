@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+export const baseURL = `http://${window.location.hostname}:${process.env.REACT_APP_BACKEND_PORT || 5000}`
+
 const axiosClient = axios.create({
-    baseURL: `http://${window.location.hostname}:${process.env.REACT_APP_BACKEND_PORT || 5000}/` // http://localhost:8080/
+    baseURL: baseURL + '/'  // http://localhost:8080/
     
 });
 

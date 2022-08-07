@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl'
 
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { baseURL } from '../../axiosClient'
 import BlueButton from '../../commonComponents/BlueButton'
 import PageTitle from '../../commonComponents/PageTitle'
 import { url } from '../../consts'
@@ -28,7 +29,7 @@ const BadgesContainer = () => {
     const [showedPopupId, setShowedPopupId] = useState<number | null>(null)
 
     const getBadges = async (id: string) => {
-        const res = await fetch(   `/api/badge/get-badges-by-${user.roleplay === 'creators' ? 'creator/'+user.id : 'backer/'+user.username}`)
+        const res = await fetch( baseURL +  `/api/badge/get-badges-by-${user.roleplay === 'creators' ? 'creator/'+user.id : 'backer/'+user.username}`)
         if (res.status === 200) {
             const result = await res.json()
             setBadgesList(result.badges)

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { FormattedMessage } from "react-intl"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router"
+import { baseURL } from "../../axiosClient"
 import BlueButton from "../../commonComponents/BlueButton"
 import PageTitle from "../../commonComponents/PageTitle"
 import routes from "../../routes"
@@ -49,7 +50,7 @@ const FollowersContainer = () => {
 
     const getData = async () => {
         if (user && user.username && user.username.length>0) {
-            const res = await fetch(   '/api/user/get-followers/'+user.username)
+            const res = await fetch( baseURL +  '/api/user/get-followers/'+user.username)
             if (res.status === 200) {
                 const result = await res.json()
                 setData(result)

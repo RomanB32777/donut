@@ -1,4 +1,4 @@
-import axiosClient from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
@@ -79,7 +79,7 @@ const ProfilePageContainer = () => {
   };
 
   const getUser = async (tron_token: string) => {
-    const data = await asyncQuery("GET", "/api/user/" + tron_wallet);
+    const {data} = await axiosClient.get("/api/user/" + tron_wallet);
     if (data.person_name && data.person_name.length > 0) {
       setIsNameExist(true);
     }

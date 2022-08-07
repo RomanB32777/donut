@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { baseURL } from '../../axiosClient'
 import BlueButton from '../../commonComponents/BlueButton'
 import NftPanel from '../../components/NftPanel'
 import routes from '../../routes'
@@ -19,7 +20,7 @@ const NftContainer = () => {
 
     const deleteNft = async (id: any) => {
         const res = await fetch(
-              '/api/nft/delete',
+            baseURL + '/api/nft/delete',
             {
                 method: 'POST', 
                 mode: 'cors', 
@@ -44,7 +45,7 @@ const NftContainer = () => {
     }
 
     const getNft = async (username: string) => {
-        const res = await fetch(  '/api/nft/list/'+username)
+        const res = await fetch( baseURL + '/api/nft/list/'+username)
         if (res.status === 200) {
             const result = await res.json()
             setNftList(result.data.reverse())

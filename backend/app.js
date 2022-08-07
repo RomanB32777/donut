@@ -15,8 +15,8 @@ const cors = require('cors')
 app.use(cors())
 app.use(fileupload())
 app.use(express.json())
-//app.use(express.static(__dirname + '/images'))
-//app.use(express.static(path.resolve(__dirname, '../client/build')))
+app.use('/images', express.static(__dirname + '/images'))
+// app.use(express.static(path.resolve(__dirname, '../client/build')))
 app.use('/api/user/', userRouter)
 app.use('/api/badge/', badgeRouter)
 app.use('/api/donation/', donationRouter)
@@ -24,7 +24,7 @@ app.use('/api/nft/', nftRouter)
 
 async function start() {
 	try {
-		const port = process.env.PORT || 8080
+		const port = process.env.PORT || 5000
 		app.listen(port, () => console.log(`App has been started on port ${port}...`))
 		//console.log(sockPath);
 		// fs.existsSync(sockPath) && fs.rmSync(sockPath)

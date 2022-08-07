@@ -15,6 +15,7 @@ services:
     environment:
       - PORT=5000
       - NODE_ENV=production
+      - DB_HOST=db
       - DB_USER=postgres
       - DB_PASSWORD=NenadoTak1987
       - DB_NAME=donut
@@ -24,7 +25,7 @@ services:
   db:
     image: postgres:13-alpine
     volumes:
-      - .:/docker-entrypoint-initdb.d
+      - ./database.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     expose:
       - 5432
     environment:

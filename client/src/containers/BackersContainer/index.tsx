@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
+import { baseURL } from "../../axiosClient";
 import { url } from "../../consts";
 import { DonutIcon, FlagIcon, ShieldIcon, TronIcon } from "../../icons/icons";
 import "./styles.sass";
@@ -24,7 +25,7 @@ const BackersContainer = () => {
 
   const getBackers = async () => {
     const res = await fetch(
-        "/api/donation/backers-info/"
+      baseURL +"/api/donation/backers-info/"
     );
     if (res.status === 200) {
       const result = await res.json();

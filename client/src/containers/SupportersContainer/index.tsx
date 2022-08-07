@@ -1,4 +1,4 @@
-import axiosClient from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import PageTitle from "../../commonComponents/PageTitle";
@@ -297,7 +297,7 @@ const SupportersContainer = () => {
 
   const getBadges = async (id: string) => {
     const res = await fetch(
-        "/api/badge/get-badges-by-creator/" + id
+      baseURL + "/api/badge/get-badges-by-creator/" + id
     );
     if (res.status === 200) {
       const result = await res.json();
@@ -307,7 +307,7 @@ const SupportersContainer = () => {
 
   const getData = async (id: any) => {
     const res = await fetch(
-        "/api/donation/supporters/" + id
+      baseURL + "/api/donation/supporters/" + id
     );
     if (res.status === 200) {
       const result = await res.json();

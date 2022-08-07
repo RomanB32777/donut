@@ -1,4 +1,4 @@
-import axiosClient from '../../axiosClient'
+import axiosClient, { baseURL } from '../../axiosClient'
 import { useEffect, useState } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { useSelector } from 'react-redux'
@@ -38,7 +38,7 @@ const TransactionsContainer = () => {
 
     const getData = async () => {
         if (user && user.username && user.username.length>0) {
-            const res = await fetch(  '/api/user/get-transactions/'+user.username)
+            const res = await fetch( baseURL + '/api/user/get-transactions/'+user.username)
             if (res.status === 200) {
                 const result = await res.json()
                 setData(result)

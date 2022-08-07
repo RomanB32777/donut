@@ -10,6 +10,7 @@ import routes from '../../routes'
 import './styles.sass'
 
 import { BlueDonut } from '../../assets/blueDonut'
+import { baseURL } from '../../axiosClient'
 
 const cryptoSteps = [
     {

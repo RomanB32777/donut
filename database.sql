@@ -51,7 +51,7 @@ create TABLE donations(
     username VARCHAR(255) DEFAULT '',
     donation_date VARCHAR(63) DEFAULT '',
     backer_id INTEGER,
-    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
     sum_donation VARCHAR(63) DEFAULT '',
     creator_username VARCHAR(63) DEFAULT '',
     creator_id INTEGER,

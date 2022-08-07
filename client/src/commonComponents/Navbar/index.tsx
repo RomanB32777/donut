@@ -14,6 +14,7 @@ import { url } from '../../consts'
 import { setUser } from '../../store/types/User'
 import { openAuthTronModal, openRegistrationModal } from '../../store/types/Modal'
 import postData from '../../functions/postData'
+import { baseURL } from '../../axiosClient'
 
 const Navbar = () => {
     
