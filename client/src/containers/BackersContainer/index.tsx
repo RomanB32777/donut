@@ -24,9 +24,7 @@ const BackersContainer = () => {
   });
 
   const getBackers = async () => {
-    const res = await fetch(
-      baseURL +"/api/donation/backers-info/"
-    );
+    const res = await fetch(baseURL + "/api/donation/backers-info/");
     if (res.status === 200) {
       const result = await res.json();
       setBackers(result);
@@ -38,7 +36,7 @@ const BackersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // console.log(backers.supporters);
+  console.log(backers.supporters);
 
   return (
     <div className="backers-container">
@@ -116,23 +114,32 @@ const BackersContainer = () => {
                     >
                       <span className="title">Latest donations</span>
                       <div className="list">
-                        {supporter.donations.slice(0, 3).map((dns: any) => (
-                          <div
-                            key={"dns" + dns.reator_username + dns.sum_donation}
-                          >
-                            <span
-                              style={{
-                                width: "48%",
-                              }}
+                        {supporter.donations
+                          .sort(
+                            (a: any, b: any) =>
+                              new Date(b.donation_date).getTime() -
+                              new Date(a.donation_date).getTime()
+                          )
+                          .slice(0, 3)
+                          .map((dns: any) => (
+                            <div
+                              key={
+                                "dns" + dns.reator_username + dns.sum_donation
+                              }
                             >
-                              {dns.creator_username}
-                            </span>
-                            <span>
-                              {dns.sum_donation}
-                              <TronIcon />
-                            </span>
-                          </div>
-                        ))}
+                              <span
+                                style={{
+                                  paddingLeft: "1.5rem",
+                                }}
+                              >
+                                {dns.creator_username}
+                              </span>
+                              <span>
+                                {dns.sum_donation}
+                                <TronIcon />
+                              </span>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )) ||
@@ -160,7 +167,7 @@ const BackersContainer = () => {
                               <span
                                 style={{
                                   justifyContent:
-                                    bgs.badge_name.length > 10
+                                    bgs.badge_name && bgs.badge_name.length > 10
                                       ? "flex-start"
                                       : "center",
                                 }}
@@ -170,6 +177,7 @@ const BackersContainer = () => {
                               <span
                                 style={{
                                   justifyContent:
+                                    bgs.owner_username &&
                                     bgs.owner_username.length > 10
                                       ? "flex-start"
                                       : "center",

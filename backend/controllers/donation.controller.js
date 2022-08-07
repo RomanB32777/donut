@@ -113,7 +113,7 @@ class DonationController {
                 if (supportersSums.includes(parseFloat(supporter.sum_donations))) {
                     let bgs = []
                     badges.rows.forEach((badge) => {
-                        if (badge.contributor_user_id_list.includes(' ' + supporter.backer_id + ' ')) {
+                        if (badge.contributor_user_id_list.includes(supporter.backer_id)) {
                             bgs.push(badge)
                         }
                     })

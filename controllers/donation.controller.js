@@ -78,7 +78,6 @@ class DonationController {
             let sum = 0
             sumRows.rows.forEach((summ) => sum += parseFloat(summ.sum_donation))
 
-
             const allDonations = await db.query(`SELECT * FROM donations`)
             const sums = allDonations.rows.map((sum) => (parseFloat(sum.sum_donation))).sort(function (a, b) {
                 return a - b;
@@ -113,7 +112,7 @@ class DonationController {
                 if (supportersSums.includes(parseFloat(supporter.sum_donations))) {
                     let bgs = []
                     badges.rows.forEach((badge) => {
-                        if (badge.contributor_user_id_list.includes(' ' + supporter.backer_id + ' ')) {
+                        if (badge.contributor_user_id_list.includes(supporter.backer_id)) {
                             bgs.push(badge)
                         }
                     })
