@@ -23,6 +23,7 @@ RUN curl -L https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-`u
     chmod +x envsubst && \
     mv envsubst /usr/local/bin
 
+COPY /ssl/cryptodonutz.xyz /etc/ssl/cryptodonutz.xyz
 COPY ./nginx.config /etc/nginx/nginx.template
 
 CMD ["/bin/sh", "-c", "envsubst < /etc/nginx/nginx.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
