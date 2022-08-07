@@ -3,7 +3,6 @@ import { CLOSE_MODAL, OPEN_AUTH_TRON_MODAL, OPEN_REGISTRATION_MODAL, OPEN_SUPPOR
 const initialState: string = ''
 
 const ModalReducer = (state = initialState, action: any) => {
-
     switch (action.type) {
 
         case OPEN_AUTH_TRON_MODAL:
