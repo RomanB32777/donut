@@ -38,7 +38,7 @@ const BackersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // console.log(backers.supporters);
+  console.log(backers.supporters);
 
   return (
     <div className="backers-container">
@@ -116,23 +116,32 @@ const BackersContainer = () => {
                     >
                       <span className="title">Latest donations</span>
                       <div className="list">
-                        {supporter.donations.slice(0, 3).map((dns: any) => (
-                          <div
-                            key={"dns" + dns.reator_username + dns.sum_donation}
-                          >
-                            <span
-                              style={{
-                                width: "48%",
-                              }}
+                        {supporter.donations
+                          .sort(
+                            (a: any, b: any) =>
+                              new Date(b.donation_date).getTime() -
+                              new Date(a.donation_date).getTime()
+                          )
+                          .slice(0, 3)
+                          .map((dns: any) => (
+                            <div
+                              key={
+                                "dns" + dns.reator_username + dns.sum_donation
+                              }
                             >
-                              {dns.creator_username}
-                            </span>
-                            <span>
-                              {dns.sum_donation}
-                              <TronIcon />
-                            </span>
-                          </div>
-                        ))}
+                              <span
+                                style={{
+                                  width: "48%",
+                                }}
+                              >
+                                {dns.creator_username}
+                              </span>
+                              <span>
+                                {dns.sum_donation}
+                                <TronIcon />
+                              </span>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )) ||
