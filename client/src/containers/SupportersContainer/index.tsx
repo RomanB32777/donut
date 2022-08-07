@@ -35,7 +35,7 @@ const months = [
 
 const titles = ["NAME", "DONATIONS SUM", "USD", "TRANSACTIONS"];
 
-const Table = (prop: { supporters: any; badges: any }) => {
+const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
   const [idBadgePopup, setIdBadgePopup] = useState<number | null>(null);
   const [tronUsdtKoef, setTronUsdtKoef] = useState<number>(0);
 
@@ -45,6 +45,8 @@ const Table = (prop: { supporters: any; badges: any }) => {
     type: "",
     sort: "UP",
   });
+
+  const user = useSelector((state: any) => state.user);
 
   const sort = (type: string) => {
     if (type === "sum") {
@@ -142,6 +144,7 @@ const Table = (prop: { supporters: any; badges: any }) => {
       addSuccessNotification(
         `Badge added successfully to ${supporter.username}`
       );
+      user.id && prop.getBadges(user.id);
     }
     // const result = res.data;
   };
@@ -296,9 +299,7 @@ const SupportersContainer = () => {
   }, [supporters]);
 
   const getBadges = async (id: string) => {
-    const res = await fetch(
-      baseURL + "/api/badge/get-badges-by-creator/" + id
-    );
+    const res = await fetch(baseURL + "/api/badge/get-badges-by-creator/" + id);
     if (res.status === 200) {
       const result = await res.json();
       setBadgesList(result.badges);
@@ -306,9 +307,7 @@ const SupportersContainer = () => {
   };
 
   const getData = async (id: any) => {
-    const res = await fetch(
-      baseURL + "/api/donation/supporters/" + id
-    );
+    const res = await fetch(baseURL + "/api/donation/supporters/" + id);
     if (res.status === 200) {
       const result = await res.json();
       // setSupporters(result.supporters);
@@ -331,8 +330,8 @@ const SupportersContainer = () => {
 
     donations.forEach((donation) => {
       const username = donation.username;
-      const donation_month = donation.donation_date.slice(5, 7) 
-      
+      const donation_month = donation.donation_date.slice(5, 7);
+
       if (donation_month !== date.month.toString()) {
         if (
           date.end.length !== 0 && date.start.length !== 0
@@ -343,9 +342,7 @@ const SupportersContainer = () => {
             : true
         ) {
           const day: string =
-            donation.donation_date.slice(8, 10) +
-            "." +
-            donation_month;
+            donation.donation_date.slice(8, 10) + "." + donation_month;
 
           tableData = {
             ...tableData,
@@ -398,7 +395,9 @@ const SupportersContainer = () => {
             formatDate.getTime() + formatDate.getTimezoneOffset() * 60 * 1000
           );
           oneDay = dateWithOffset.getDay();
-          const time = `${dateWithOffset.getHours()}:${dateWithOffset.getMinutes()}`;
+          const time = `${dateWithOffset.getHours()}:${String(
+            dateWithOffset.getMinutes()
+          ).padStart(2, "0")}`;
 
           tableData = {
             ...tableData,
@@ -489,7 +488,12 @@ const SupportersContainer = () => {
             title: months[date.month - 1],
             valueFormatString: isDailyDonations && "DD, MMM",
             intervalType: isDailyDonations ? "day" : "hour",
-            interval: 1,
+            interval:
+              dailyDonations.lenght > 2 || timesDonations.length > 2 ? 1 : 0,
+            // labelFontSize: 30,
+          },
+          toolTip: {
+            fontSize: 20,
           },
           data: [
             {
@@ -569,7 +573,11 @@ const SupportersContainer = () => {
         </div>
       </div>
 
-      <Table supporters={supporters} badges={badgesList} />
+      <Table
+        supporters={supporters}
+        badges={badgesList}
+        getBadges={getBadges}
+      />
     </div>
   );
 };

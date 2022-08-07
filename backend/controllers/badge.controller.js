@@ -39,7 +39,10 @@ class BadgeController {
 
     async assignBadge(req, res) {
         try {
-            const { badge_id, quantity, owners_quantity, contributor_user_id_list, contributor_id } = req.body
+            const { badge_id, quantity, contributor_id } = req.body
+            const existingBadge = await db.query('SELECT contributor_user_id_list, owners_quantity FROM badges WHERE id = $1', [badge_id])
+            const contributor_user_id_list = existingBadge.rows[0].contributor_user_id_list
+            const owners_quantity = existingBadge.rows[0].owners_quantity
             if (owners_quantity < quantity) {
                 const assignedBadge = await db.query('UPDATE badges SET owners_quantity = $1, contributor_user_id_list = $2 WHERE id = $3', [owners_quantity + 1, contributor_user_id_list + contributor_id + ' ', badge_id])
                 res.json(assignedBadge)

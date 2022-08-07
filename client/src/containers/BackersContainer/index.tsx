@@ -24,9 +24,7 @@ const BackersContainer = () => {
   });
 
   const getBackers = async () => {
-    const res = await fetch(
-      baseURL +"/api/donation/backers-info/"
-    );
+    const res = await fetch(baseURL + "/api/donation/backers-info/");
     if (res.status === 200) {
       const result = await res.json();
       setBackers(result);
@@ -131,7 +129,7 @@ const BackersContainer = () => {
                             >
                               <span
                                 style={{
-                                  width: "48%",
+                                  paddingLeft: "1.5rem",
                                 }}
                               >
                                 {dns.creator_username}
@@ -169,7 +167,7 @@ const BackersContainer = () => {
                               <span
                                 style={{
                                   justifyContent:
-                                    bgs.badge_name.length > 10
+                                    bgs.badge_name && bgs.badge_name.length > 10
                                       ? "flex-start"
                                       : "center",
                                 }}
@@ -179,6 +177,7 @@ const BackersContainer = () => {
                               <span
                                 style={{
                                   justifyContent:
+                                    bgs.owner_username &&
                                     bgs.owner_username.length > 10
                                       ? "flex-start"
                                       : "center",
