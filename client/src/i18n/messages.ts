@@ -76,6 +76,8 @@ const messages = {
             badges_page_table_header_badge: 'Badge Name',
             badges_page_table_header_qnt: 'QNT',
             badges_page_table_header_info: 'Info',
+            badges_page_table_header_delete: 'Delete',
+            badges_page_delete_button: 'Delete badge',
 
         // profile form 
             //titles

@@ -90,7 +90,16 @@
                         overflow: hidden
                 &__info-icon
                     cursor: pointer
-                
+
+                &__delete-btn
+                    & > div
+                        background-color: variables.$red-color
+                        width: auto
+                        margin-left: 10px
+
+                        &:hover
+                            box-shadow: 0 0 4px 2px variables.$red-color
+                                            
                 &__popup
                     z-index: 100
                     position: absolute

@@ -24,6 +24,16 @@ class BadgeController {
         }
     }
 
+    async deleteBadge(req, res) {
+        try {
+            const { badge_id } = req.body
+            const deletedBadge = await db.query(`DELETE FROM badges WHERE id = $1 RETURNING *;`, [badge_id])
+            res.status(200).json({ deletedBadge: deletedBadge.rows[0] })
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
     async createBadgeImage(req, res) {
         try {
             const badge_id = req.params.badge_id
