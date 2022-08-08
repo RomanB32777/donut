@@ -61,6 +61,7 @@ create TABLE donations(
 create TABLE badges(
     id SERIAL PRIMARY KEY,
     owner_user_id INTEGER,
+    FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE,
     contributor_user_id_list VARCHAR(2047) DEFAULT '',
     badge_name VARCHAR(255) DEFAULT '',
     badge_desc VARCHAR(1023) DEFAULT '',
