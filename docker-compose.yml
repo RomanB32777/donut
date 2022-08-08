@@ -21,11 +21,15 @@ services:
       - DB_NAME=donut
     depends_on:
       - db
-      
+    volumes:
+      - ./backend/images:/backend/images
+
   db:
     image: postgres:13-alpine
     volumes:
-      - ./database.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      # - ./database.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      # - ./dump.sql:/docker-entrypoint-initdb.d/dummy_dump.sql
+      - pg_data:/var/lib/postgresql/data/
     expose:
       - 5432
     environment:
@@ -46,4 +50,5 @@ services:
       - "80:80"
       - "443:443"
 
-
+volumes:
+  pg_data:

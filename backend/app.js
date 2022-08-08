@@ -1,8 +1,6 @@
 const express = require('express')
 const app = express()
 const fileupload = require("express-fileupload")
-const path = require('path')
-const fs = require('fs')
 
 // const sockPath = `${path.resolve(__dirname, './sock')}/server.sock`
 const userRouter = require('./routes/user.routes')
@@ -26,7 +24,6 @@ async function start() {
 	try {
 		const port = process.env.PORT || 5000
 		app.listen(port, () => console.log(`App has been started on port ${port}...`))
-		//console.log(sockPath);
 		// fs.existsSync(sockPath) && fs.rmSync(sockPath)
 		// app.listen(sockPath, () => fs.chmod(sockPath, 0o666, () => {console.log(`App has been started on ${sockPath}`)}))
 	} catch(e) {

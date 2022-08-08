@@ -134,12 +134,9 @@ const ProfilePageContainer = () => {
   };
 
   const deleteProfile = async () => {
-    console.log("DELETE", user);
     const res = await axiosClient.post("/api/user/delete/", {
       user_id: user.id,
     });
-    console.log(res);
-    
     dispatch(setUser(''))
   };
 

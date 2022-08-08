@@ -130,11 +130,8 @@ class UserController {
             const creator = await db.query(`SELECT * FROM creators WHERE username = $1`, [username.toLowerCase()])
             let following = false
             if (id && creator.rows[0]) {
-                console.log(creator.rows[0].id + '    ' + id)
                 const follow = await db.query(`SELECT * FROM follows WHERE creator_id = $1 AND backer_id = $2`, [creator.rows[0].id, id])
-                console.log(follow.rows)
                 following = (follow.rows && follow.rows[0] && (follow.rows[0].backer_id === id)) ? true : false
-                console.log(following)
             }
 
             res.status(200).json({
@@ -151,7 +148,6 @@ class UserController {
         try {
             const { tron_token, person_name, twitter, google, facebook, discord } = req.body
             const user = await db.query(`SELECT * FROM users WHERE tron_token = $1`, [tron_token])
-            console.log(person_name)
             let table = 'backers'
             if (user.rows[0].roleplay === 'creators') {
                 table = 'creators'
@@ -175,6 +171,7 @@ class UserController {
                 table = 'creators'
             }
             await db.query(`UPDATE ${table} SET avatarlink = $1 WHERE user_id = $2`, [filename + file.name.slice(file.name.lastIndexOf('.')), user.rows[0].id])
+            res.status(200).json({ message: 'success' })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
@@ -191,8 +188,8 @@ class UserController {
             if (user.rows[0].roleplay === 'creators') {
                 table = 'creators'
             }
-            console.log(file.name.slice(file.name.lastIndexOf('.')))
             await db.query(`UPDATE ${table} SET backgroundlink = $1 WHERE user_id = $2`, [filename + file.name.slice(file.name.lastIndexOf('.')), user.rows[0].id])
+            res.status(200).json({ message: 'success' })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
@@ -223,7 +220,6 @@ class UserController {
                 WHERE creator_id = $1
                 GROUP BY username
                 ORDER BY sum_donations DESC`, [user.rows[0].id])
-            console.log(supporters.rows);
 
             const lastdonations = await db.query(`SELECT * FROM donations WHERE creator_id = $1`, [user.rows[0].id])
 

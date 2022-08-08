@@ -7,8 +7,6 @@ const asyncGetUser = async (tron_token: string) => {
     const response = await fetch( baseURL + '/api/user/'+tron_token)
     if (response.status === 200) {
         const result = await response.json()
-        console.log(result);
-        
         return result
     }
 }

@@ -36,7 +36,6 @@ const PlugContainer = () => {
                 // Получаем время зависимую от разницы
                 let res = new Date(ms_left);
                 // Делаем строку для вывода
-                console.log(res)
                 let str_timer = `${res.getUTCDate() - 1} days,  ${res.getUTCHours()}:${res.getUTCMinutes()}:${res.getUTCSeconds()}`;
                 // Выводим время
                 setTime(str_timer)

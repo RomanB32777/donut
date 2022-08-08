@@ -79,7 +79,6 @@ const FollowersContainer = () => {
                     data.length>0)
                     ?
                     data.map( (follower: any, followerIndex: number) => {
-                        console.log(follower)
                         return (
                         <div
                             key={"followers-container__list__panel"+followerIndex}

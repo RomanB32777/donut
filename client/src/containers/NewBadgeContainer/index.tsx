@@ -79,11 +79,6 @@ const NewBadgeContainer = () => {
     setFile(null);
   };
 
-  useEffect(() => {
-    console.log(form);
-    
-  }, [form])
-
   return (
     <div className="new-badge-container">
       <PageTitle formatId="create_badge_title" />

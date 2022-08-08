@@ -50,7 +50,6 @@ class DonationController {
     async getSupporters(req, res) {
         try {
             const user_id = req.params.user_id
-            console.log(user_id)
             const supporters = await db.query('SELECT * FROM supporters WHERE creator_id = $1', [user_id])
             const donations = await db.query('SELECT * FROM donations WHERE creator_id = $1', [user_id])
 
@@ -61,8 +60,6 @@ class DonationController {
             //     GROUP BY username
             //     ORDER BY sum_donations DESC`, [user.rows[0].id])
 
-            console.log(supporters.rows)
-            console.log(donations.rows)
             res.status(200).json({
                 supporters: supporters.rows,
                 donations: donations.rows

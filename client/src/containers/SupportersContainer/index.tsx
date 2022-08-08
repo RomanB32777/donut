@@ -91,7 +91,6 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
       });
       prop.supporters.forEach((sup: any) => {
         let safd = sup.amount_donations;
-        console.log(typeof safd);
         if (sortedTrans[safd] && sortedTrans[safd].length > 0) {
           sortedTrans[safd] = [...sortedTrans[safd], sup];
         } else {
@@ -114,7 +113,6 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
   };
 
   const assignBadge = async (badge: any, supporter: any) => {
-    console.log(supporter);
     const res = await axiosClient.post("/api/badge/assign-badge", {
       badge_id: badge.id,
       ...badge,
@@ -294,10 +292,6 @@ const SupportersContainer = () => {
     //  parseInt(new Date().toISOString().slice(5,7))-1
   });
 
-  useEffect(() => {
-    console.log(supporters);
-  }, [supporters]);
-
   const getBadges = async (id: string) => {
     const res = await fetch(baseURL + "/api/badge/get-badges-by-creator/" + id);
     if (res.status === 200) {
@@ -317,8 +311,6 @@ const SupportersContainer = () => {
 
   const [dailyDonations, setDailyDonations] = useState<any>([]);
   const [timesDonations, setTimesDonations] = useState<any>([]);
-
-  console.log(dailyDonations, timesDonations);
 
   const getDailyDonations = (date: any) => {
     let dates: { [key: string]: number } = {};
@@ -432,7 +424,6 @@ const SupportersContainer = () => {
         }))
       );
     }
-    // console.log(tableData);
     const formatTableData = Object.keys(tableData).map((username) => ({
       username,
       backer_id: tableData[username].id,
@@ -535,7 +526,6 @@ const SupportersContainer = () => {
               setCurrentDate={(type: string, day: any) => {
                 setDate({ ...date, [type]: day });
                 if (type === "end") {
-                  console.log(date);
                   getDailyDonations({ ...date, [type]: day });
                 }
               }}

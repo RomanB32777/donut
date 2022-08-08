@@ -17,8 +17,6 @@ const Search = () => {
     const creators = useSelector( (state: any) => (state.search))
     
     const handleClick = (event: any) => {
-        console.log(event.target.className);
-        
         if (!event.target.className.includes('search-wrapper')) {
             dispatch( closeCreatorsToggleList() )
         }

@@ -80,7 +80,6 @@ const SupportModal = () => {
               username: pathname.slice(pathname.indexOf("@")),
             })
           );
-          console.log(pathname.slice(pathname.indexOf("@")));
 
           setSuccess(true);
           setTimeout(() => {
@@ -130,7 +129,6 @@ const SupportModal = () => {
       if (res) {
         sendDonation();
       }
-      console.log(res);
     } catch (error) {
       console.log(error);
     }

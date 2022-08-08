@@ -11,8 +11,6 @@ const asyncGetMainData = async (username: any, id: any) => {
         baseURL + '/api/user/creators/'+username+'/' + ( id ? id : 0)
     )
     const result = await res.json()
-    console.log("RESULt", result);
-    
     return result
 }
 

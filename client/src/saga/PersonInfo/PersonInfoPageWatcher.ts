@@ -9,8 +9,6 @@ const getPersonInfoPage = async (data: {page: string, username: string}) => {
     )
     if (res.status === 200) {
         const result = await res.json()
-        console.log(result);
-        
         return result
     } else {
         return null
