@@ -46,6 +46,17 @@ class NftController {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
     }
+
+
+    async deleteNft(req, res) {
+        try {
+            const { nft_id } = req.body
+            await db.query('DELETE FROM nft WHERE id = $1', [nft_id])
+            res.status(200).json({ message: 'success' })
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
 }
 
 module.exports = new NftController()
