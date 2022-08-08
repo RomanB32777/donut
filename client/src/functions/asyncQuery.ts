@@ -35,13 +35,12 @@ const asyncQuery = async (
         }
 
     const response = await fetch(
-        'http://localhost:8080' + url,
+          url,
         options
     )
 
     if (response.status === 200) {
         const result = await response.json()
-        console.log(result)
         return result
     } else if (response.status === 401) {
         return false

@@ -28,7 +28,7 @@ const Calendar = (props: {
   const [date, setDate] = useState({
     start: "",
     end: "",
-    month: new Date().getMonth() + 1,
+    month: new Date().getMonth() + 1, // счет с 0
   });
 
   const [data, setData] = useState<any>("");
@@ -40,16 +40,13 @@ const Calendar = (props: {
       )
     ) {
       if (date.start === "") {
-        console.log(1);
         props.setCurrentDate("start", event.target.innerText);
         setDate({ ...date, start: event.target.innerText });
       } else if (date.start.length > 0 && date.end === "") {
-        console.log(2);
         props.setCurrentDate("end", event.target.innerText);
         setDate({ ...date, end: event.target.innerText });
       } else if (date.start.length > 0 && date.end.length > 0) {
         //props.setCurrentDate('end', '')
-        console.log(3);
         setDate({ ...date, start: event.target.innerText, end: "" });
         props.setStartDate(event.target.innerText);
         //props.setCurrentDate('start', event.target.innerText)
@@ -70,10 +67,8 @@ const Calendar = (props: {
   });
 
   function createCalendar(year: any, month: any): any {
-    let mon = month; // месяцы в JS идут от 0 до 11, а не от 1 до 12
+    let mon = month - 1; // месяцы в JS идут от 0 до 11, а не от 1 до 12
     let d = new Date(year, mon);
-    console.log("createCalendar", d.getMonth(), mon);
-    
     // let prevD = new Date(year, mon - 1);
     // let nextD = new Date(year, mon + 1);
 
@@ -136,10 +131,9 @@ const Calendar = (props: {
   }
 
   useEffect(() => {
-    console.log("no");
-    setData(createCalendar(new Date().getMonth(), date.month));
+    setData(createCalendar(new Date().getFullYear(), props.currentDate.month));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date]);
+  }, [props.currentDate]);
 
   function getDay(date: any) {
     // получить номер дня недели, от 0 (пн) до 6 (вс)
@@ -153,25 +147,17 @@ const Calendar = (props: {
       <div className="calendar-wrapper__header">
         <div
           onClick={() => {
-            console.log(date);
-
-            if (date.month === 0) {
-              props.setCurrentMonth(0);
-            } else {
-              props.setCurrentMonth(date.month - 1);
-            }
+            props.currentDate.month !== 1 &&
+              props.setCurrentMonth(props.currentDate.month - 1);
           }}
         >
           <LeftArrowIcon />
         </div>
-        <span>{months[date.month - 1]}</span>
+        <span>{months[props.currentDate?.month - 1]}</span>
         <div
           onClick={() => {
-            if (date.month === 11) {
-              props.setCurrentMonth(0);
-            } else {
-              props.setCurrentMonth(date.month + 1);
-            }
+            props.currentDate.month !== 12 &&
+              props.setCurrentMonth(props.currentDate.month + 1);
           }}
         >
           <RightArrowIcon />

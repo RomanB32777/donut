@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
+import { baseURL } from "../../axiosClient";
 import { url } from "../../consts";
 import { DonutIcon, FlagIcon, ShieldIcon, TronIcon } from "../../icons/icons";
 import "./styles.sass";
@@ -23,9 +24,7 @@ const BackersContainer = () => {
   });
 
   const getBackers = async () => {
-    const res = await fetch(
-      "http://localhost:8080" + "/api/donation/backers-info/"
-    );
+    const res = await fetch(baseURL + "/api/donation/backers-info/");
     if (res.status === 200) {
       const result = await res.json();
       setBackers(result);
@@ -102,7 +101,8 @@ const BackersContainer = () => {
                 </div>
               </div>
 
-              {supporterIndex === onMouseOverIdType.index &&
+              {
+              supporterIndex === onMouseOverIdType.index &&
                 ((onMouseOverIdType.type === "dns" &&
                   supporter.donations &&
                   supporter.donations.length > 0 && (
@@ -130,7 +130,7 @@ const BackersContainer = () => {
                             >
                               <span
                                 style={{
-                                  width: "48%",
+                                  paddingLeft: "1.5rem",
                                 }}
                               >
                                 {dns.creator_username}
@@ -144,7 +144,8 @@ const BackersContainer = () => {
                       </div>
                     </div>
                   )) ||
-                  (onMouseOverIdType.type === "bgs" &&
+                  (
+                    onMouseOverIdType.type === "bgs" &&
                     supporter.badges &&
                     supporter.badges.length > 0 && (
                       <div
@@ -168,9 +169,13 @@ const BackersContainer = () => {
                               <span
                                 style={{
                                   justifyContent:
-                                    bgs.badge_name.length > 10
+                                    bgs.badge_name && bgs.badge_name.length > 10
                                       ? "flex-start"
                                       : "center",
+                                  marginLeft:
+                                    bgs.badge_name && bgs.badge_name.length > 20
+                                      ? "20px"
+                                      : "0",
                                 }}
                               >
                                 {bgs.badge_name}
@@ -178,6 +183,7 @@ const BackersContainer = () => {
                               <span
                                 style={{
                                   justifyContent:
+                                    bgs.owner_username &&
                                     bgs.owner_username.length > 10
                                       ? "flex-start"
                                       : "center",

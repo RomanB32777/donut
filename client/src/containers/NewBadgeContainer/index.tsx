@@ -1,5 +1,5 @@
-import axiosClient from "../../axiosClient";
-import { useState } from "react";
+import axiosClient, { baseURL } from "../../axiosClient";
+import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
 import BlueButton from "../../commonComponents/BlueButton";
@@ -44,22 +44,19 @@ const NewBadgeContainer = () => {
   };
 
   const createBadge = async () => {
-    const res: any = await fetch(
-      "http://localhost:8080" + "/api/badge/create-badge",
-      {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify({ ...form, tron_token: tron_wallet }),
-      }
-    );
+    const res: any = await fetch(baseURL + "/api/badge/create-badge", {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify({ ...form, tron_token: tron_wallet }),
+    });
     const result = await res.json();
     if (result) {
       const formData = new FormData();
@@ -110,6 +107,7 @@ const NewBadgeContainer = () => {
           onChange={(event) =>
             setForm({ ...form, badge_name: event.target.value })
           }
+          maxlength={80}
           isRedDot={true}
         />
         <LargeInput
@@ -118,6 +116,7 @@ const NewBadgeContainer = () => {
           onChange={(event) =>
             setForm({ ...form, badge_desc: event.target.value })
           }
+          maxlength={120}
           isRedDot={true}
           isTextarea={true}
         />
@@ -135,6 +134,7 @@ const NewBadgeContainer = () => {
               setForm({ ...form, quantity: event.target.value });
             }
           }}
+          type="number"
           isRedDot={true}
         />
 

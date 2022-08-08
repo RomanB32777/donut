@@ -51,7 +51,9 @@ create TABLE donations(
     username VARCHAR(255) DEFAULT '',
     donation_date VARCHAR(63) DEFAULT '',
     backer_id INTEGER,
+    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
     sum_donation VARCHAR(63) DEFAULT '',
+    creator_username VARCHAR(63) DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -59,6 +61,7 @@ create TABLE donations(
 create TABLE badges(
     id SERIAL PRIMARY KEY,
     owner_user_id INTEGER,
+    FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE,
     contributor_user_id_list VARCHAR(2047) DEFAULT '',
     badge_name VARCHAR(255) DEFAULT '',
     badge_desc VARCHAR(1023) DEFAULT '',
@@ -73,6 +76,16 @@ create TABLE collections(
     collection_name VARCHAR(255),
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+create TABLE follows(
+    id SERIAL PRIMARY KEY,
+    creator_username VARCHAR(255) DEFAULT '',
+    backer_username VARCHAR(255) DEFAULT '',
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    backer_id INTEGER,
+    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 create TABLE nft(

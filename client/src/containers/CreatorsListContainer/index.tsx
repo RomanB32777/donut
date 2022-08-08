@@ -1,4 +1,4 @@
-import axiosClient from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import PageTitle from "../../commonComponents/PageTitle";
@@ -14,7 +14,7 @@ const CreatorsListContainer = () => {
   const [usersList, setUsersList] = useState<any[]>([]);
 
   const getUsers = async (name: string) => {
-    const res = await fetch('http://localhost:8080' + `/api/user/users/${name}`);
+    const res = await fetch(baseURL +  `/api/user/users/${name}`);
     const result = await res.json();
     setUsersList(result);
   };

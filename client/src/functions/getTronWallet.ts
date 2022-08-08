@@ -6,4 +6,6 @@ const getTronWallet = () => {
     } 
 }
 
+export const tronWalletIsIntall = () => (window as any).hasOwnProperty('tronWeb')
+
 export default getTronWallet

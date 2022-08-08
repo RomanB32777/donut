@@ -90,14 +90,23 @@
                         overflow: hidden
                 &__info-icon
                     cursor: pointer
-                
+
+                &__delete-btn
+                    & > div
+                        background-color: variables.$red-color
+                        width: auto
+                        margin-left: 10px
+
+                        &:hover
+                            box-shadow: 0 0 4px 2px variables.$red-color
+                                            
                 &__popup
                     z-index: 100
                     position: absolute
                     right: 16px
                     top: 52px
                     width: 360px
-                    height: 116px
+                    height: 136px
                     box-sizing: border-box
                     padding: 12px 24px
                     border-radius: 10px
@@ -113,12 +122,12 @@
                         font-size: 17px
                         line-height: 19px
                         color: variables.$white-color
-                        width: 192px
-                        min-width: 192px
+                        width: 100%
                         text-overflow: ellipsis
                         overflow: hidden
                         //flex-wrap: nowrap
                         text-align: start
+                        padding-left: 0
                     .desc
                         font-family: variables.$jakarta-font
                         font-style: normal
@@ -135,3 +144,5 @@
                         text-overflow: ellipsis
                         flex-wrap: nowrap
                         //word-wrap: 
+                        width: 100%
+                        overflow-wrap: anywhere

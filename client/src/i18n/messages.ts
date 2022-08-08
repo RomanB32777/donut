@@ -76,6 +76,8 @@ const messages = {
             badges_page_table_header_badge: 'Badge Name',
             badges_page_table_header_qnt: 'QNT',
             badges_page_table_header_info: 'Info',
+            badges_page_table_header_delete: 'Delete',
+            badges_page_delete_button: 'Delete badge',
 
         // profile form 
             //titles
@@ -84,6 +86,7 @@ const messages = {
                 profile_form_title_wallet: 'Wallet',
                 profile_form_title_socials: 'Socials',
             profile_form_save_button: 'Save',
+            profile_form_delete_button: 'Delete account',
             profile_form_file_title: 'Load avatar image',
             profile_form_file_subtitle: 'Please use 600x600px image',
         

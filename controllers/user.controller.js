@@ -17,7 +17,7 @@ const getSubscriptions = async (username) => {
     const follows = await db.query('SELECT * FROM follows WHERE backer_username = $1', [username])
     let data = []
     let names = []
-    if (follows.rows.length > 0) {
+    if (follows && follows.rows.length > 0) {
         names = follows.rows.map((follow) => (follow.creator_username))
         const creators = await db.query('SELECT * FROM creators WHERE username = ANY ($1)', [[names]])
         follows.rows.forEach((follow) => {
@@ -81,6 +81,16 @@ class UserController {
         }
     }
 
+    async deleteUser(req, res) {
+        try {
+            const { user_id } = req.body
+            const deletedUser = await db.query(`DELETE FROM users WHERE id = $1 RETURNING *;`, [user_id])
+            res.status(200).json({ deletedUser: deletedUser.rows[0] })
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
     async getUser(req, res) {
         try {
             const tron_token = req.params.tron_token
@@ -120,11 +130,8 @@ class UserController {
             const creator = await db.query(`SELECT * FROM creators WHERE username = $1`, [username.toLowerCase()])
             let following = false
             if (id && creator.rows[0]) {
-                console.log(creator.rows[0].id + '    ' + id)
                 const follow = await db.query(`SELECT * FROM follows WHERE creator_id = $1 AND backer_id = $2`, [creator.rows[0].id, id])
-                console.log(follow.rows)
                 following = (follow.rows && follow.rows[0] && (follow.rows[0].backer_id === id)) ? true : false
-                console.log(following)
             }
 
             res.status(200).json({
@@ -141,7 +148,6 @@ class UserController {
         try {
             const { tron_token, person_name, twitter, google, facebook, discord } = req.body
             const user = await db.query(`SELECT * FROM users WHERE tron_token = $1`, [tron_token])
-            console.log(person_name)
             let table = 'backers'
             if (user.rows[0].roleplay === 'creators') {
                 table = 'creators'

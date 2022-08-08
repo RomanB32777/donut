@@ -4,7 +4,12 @@ class DonationController {
     async createDonation(req, res) {
         try {
             const { creator_tron_token, backer_tron_token, sum } = req.body
-            const date = (new Date()).toISOString()
+            const initDate = new Date()
+            // initDate.setDate(initDate.getDate() - 4);
+            const formatedDate = initDate.getTime()
+            const userOffset = -initDate.getTimezoneOffset() * 60 * 1000
+            const date = new Date(formatedDate + userOffset).toISOString()
+
             if (backer_tron_token && creator_tron_token) {
                 const creator = await db.query('SELECT * FROM users WHERE tron_token = $1', [creator_tron_token])
                 const backer = await db.query('SELECT * FROM users WHERE tron_token = $1', [backer_tron_token])
@@ -73,7 +78,6 @@ class DonationController {
             let sum = 0
             sumRows.rows.forEach((summ) => sum += parseFloat(summ.sum_donation))
 
-
             const allDonations = await db.query(`SELECT * FROM donations`)
             const sums = allDonations.rows.map((sum) => (parseFloat(sum.sum_donation))).sort(function (a, b) {
                 return a - b;
@@ -108,7 +112,7 @@ class DonationController {
                 if (supportersSums.includes(parseFloat(supporter.sum_donations))) {
                     let bgs = []
                     badges.rows.forEach((badge) => {
-                        if (badge.contributor_user_id_list.includes(' ' + supporter.backer_id + ' ')) {
+                        if (badge.contributor_user_id_list.includes(supporter.backer_id)) {
                             bgs.push(badge)
                         }
                     })

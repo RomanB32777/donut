@@ -13,8 +13,9 @@ import getTronWallet from "../../functions/getTronWallet";
 import axiosClient from "../../axiosClient";
 import { contractAddress } from "../../consts";
 import { send } from "process";
+import { getPersonInfoPage } from "../../store/types/PersonInfo";
+import { addAuthNotification } from "../../utils";
 // const TronWeb = require('tronweb')
-
 // const tronWeb = new TronWeb()
 
 const SupportModal = () => {
@@ -61,12 +62,41 @@ const SupportModal = () => {
   }, []);
 
   const sendDonation = async () => {
-    const res = await axiosClient.post("/api/donation/create/", {
-      creator_tron_token: data.tron_token,
-      backer_tron_token: tron_token,
-      sum: tron.toString(),
-    });
-    // const res = await fetch("http://localhost:8080" + "/api/donation/create/", {
+    if (tron_token) {
+      const res = await axiosClient.post("/api/donation/create/", {
+        creator_tron_token: data.tron_token,
+        backer_tron_token: tron_token,
+        sum: tron.toString(),
+      });
+      if (res.status === 200) {
+        setSent(true);
+        //   const msg = await res.json();
+        const msg = res.data;
+
+        if (msg.message === "success") {
+          dispatch(
+            getPersonInfoPage({
+              page: "supporters",
+              username: pathname.slice(pathname.indexOf("@")),
+            })
+          );
+
+          setSuccess(true);
+          setTimeout(() => {
+            dispatch(closeModal());
+            setTron("0");
+          }, 5000);
+        } else {
+          setTimeout(() => {
+            setSent(false);
+            setTron("0");
+          }, 3500);
+        }
+      }
+    } else {
+      addAuthNotification();
+    }
+    // const res = await fetch(  "/api/donation/create/", {
     //   method: "POST",
     //   headers: {
     //     "Content-Type": "application/json;charset=utf-8",
@@ -83,41 +113,22 @@ const SupportModal = () => {
     //     sum: tron.toString(),
     //   }),
     // });
-    if (res.status === 200) {
-      setSent(true);
-      //   const msg = await res.json();
-      const msg = res.data;
-
-      if (msg.message === "success") {
-        setSuccess(true);
-        setTimeout(() => {
-          dispatch(closeModal());
-          setTron("0");
-        }, 5000);
-      } else {
-        setTimeout(() => {
-          setSent(false);
-          setTron("0");
-        }, 3500);
-      }
-    }
   };
 
   async function triggerContract() {
     try {
-    //   let instance = await (window as any).tronWeb
-    //     .contract()
-    //     .at(contractAddress);
-    //   const res = await instance.transferMoney(data.tron_token).send({
-    //     feeLimit: 100_000_000,
-    //     callValue: 1000000 * parseFloat(tron), // это 100 trx
-    //     shouldPollResponse: false,
-    //   });
-      
-    //   if (res) {
+      let instance = await (window as any).tronWeb
+        .contract()
+        .at(contractAddress);
+      const res = await instance.transferMoney(data.tron_token).send({
+        feeLimit: 100_000_000,
+        callValue: 1000000 * parseFloat(tron), // это 100 trx
+        shouldPollResponse: false,
+      });
+
+      if (res) {
         sendDonation();
-    //   }
-    //   console.log(res);
+      }
     } catch (error) {
       console.log(error);
     }
