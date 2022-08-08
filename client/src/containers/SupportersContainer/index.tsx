@@ -394,7 +394,7 @@ const SupportersContainer = () => {
           const dateWithOffset = new Date(
             formatDate.getTime() + formatDate.getTimezoneOffset() * 60 * 1000
           );
-          oneDay = dateWithOffset.getDay();
+          oneDay = dateWithOffset.getDate();
           const time = `${dateWithOffset.getHours()}:${String(
             dateWithOffset.getMinutes()
           ).padStart(2, "0")}`;
@@ -485,11 +485,15 @@ const SupportersContainer = () => {
           },
           axisX: {
             gridThickness: 0,
-            title: months[date.month - 1],
-            valueFormatString: isDailyDonations && "DD, MMM",
+            title:
+              !isDailyDonations && Boolean(timesDonations.length)
+                ? String(timesDonations[0].x.getDate()).padStart(2, "0") +
+                  ` ${months[date.month - 1]}`
+                : months[date.month - 1],
+            valueFormatString: isDailyDonations ? "DD, MMM" : "HH:mm",
             intervalType: isDailyDonations ? "day" : "hour",
             interval:
-              dailyDonations.lenght > 2 || timesDonations.length > 2 ? 1 : 0,
+              dailyDonations.length > 2 || timesDonations.length > 2 ? 1 : 0,
             // labelFontSize: 30,
           },
           toolTip: {

@@ -36,7 +36,7 @@ const BackersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(backers.supporters);
+  // console.log(backers.supporters);
 
   return (
     <div className="backers-container">
@@ -101,7 +101,8 @@ const BackersContainer = () => {
                 </div>
               </div>
 
-              {supporterIndex === onMouseOverIdType.index &&
+              {
+              supporterIndex === onMouseOverIdType.index &&
                 ((onMouseOverIdType.type === "dns" &&
                   supporter.donations &&
                   supporter.donations.length > 0 && (
@@ -143,7 +144,8 @@ const BackersContainer = () => {
                       </div>
                     </div>
                   )) ||
-                  (onMouseOverIdType.type === "bgs" &&
+                  (
+                    onMouseOverIdType.type === "bgs" &&
                     supporter.badges &&
                     supporter.badges.length > 0 && (
                       <div
@@ -170,6 +172,10 @@ const BackersContainer = () => {
                                     bgs.badge_name && bgs.badge_name.length > 10
                                       ? "flex-start"
                                       : "center",
+                                  marginLeft:
+                                    bgs.badge_name && bgs.badge_name.length > 20
+                                      ? "20px"
+                                      : "0",
                                 }}
                               >
                                 {bgs.badge_name}

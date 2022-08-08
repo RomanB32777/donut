@@ -66,10 +66,9 @@ class BadgeController {
 
     async getBadgesByBacker(req, res) {
         try {
-            const { tron_token } = req.params.tron_token
-            const user = await db.query('SELECT * FROM users WHERE tron_token = $1', [tron_token])
-            const badges = await db.query(`SELECT * FROM badges WHERE contributor_user_id_list LIKE ' %${user.rows[0]}% '`)
-            res.json(badges)
+            const user_id = req.params.user_id
+            const badges = await db.query(`SELECT * FROM badges WHERE contributor_user_id_list LIKE '%${user_id}%'`)
+            res.status(200).json({badges: badges.rows})
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
@@ -80,7 +79,6 @@ class BadgeController {
             const user_id = req.params.user_id
 
             const badges = await db.query('SELECT * FROM badges WHERE owner_user_id = $1', [parseInt(user_id)])
-            //console.log(badges)
             res.status(200).json({ badges: badges.rows })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })

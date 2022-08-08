@@ -27,7 +27,7 @@ const BadgesContainer = () => {
         `/api/badge/get-badges-by-${
           user.roleplay === "creators"
             ? "creator/" + user.id
-            : "backer/" + user.username
+            : "backer/" + user.id
         }`
     );
     if (res.status === 200) {
@@ -48,7 +48,7 @@ const BadgesContainer = () => {
     const res = await axiosClient.post("/api/badge/delete-badge/", {
       badge_id: id,
     });
-    (res.status === 200) && user.id && getBadges(user.id);
+    res.status === 200 && user.id && getBadges(user.id);
   };
 
   return (
@@ -71,11 +71,14 @@ const BadgesContainer = () => {
 
       <div className="badges-container__table">
         <div className="badges-container__table__header">
-          {tableHeaderTitles.map((title, titleIndex) => (
-            <div key={"badges_page_table_header_" + title}>
-              <FormattedMessage id={"badges_page_table_header_" + title} />
-            </div>
-          ))}
+          {tableHeaderTitles.map((title) => {
+            if (title === "delete" && user.roleplay === "backers") return null;
+            return (
+              <div key={"badges_page_table_header_" + title}>
+                <FormattedMessage id={"badges_page_table_header_" + title} />
+              </div>
+            );
+          })}
         </div>
 
         <div className="badges-container__table__main">
@@ -102,27 +105,26 @@ const BadgesContainer = () => {
 
                 <span
                   className="badges-container__table__main__row__info-icon"
-                  onMouseEnter={() => {
-                    console.log(rowIndex);
-                    setShowedPopupId(rowIndex);
-                  }}
+                  onMouseEnter={() => setShowedPopupId(rowIndex)}
                   onMouseLeave={() => setShowedPopupId(null)}
                 >
                   <InfoIcon />
                 </span>
 
-                <span className="badges-container__table__main__row__delete-btn">
-                  <BlueButton
-                    formatId="badges_page_delete_button"
-                    padding="6px 30px"
-                    onClick={() => deleteBadge(row.id)}
-                    fontSize="18px"
-                  />
-                </span>
+                {row.owner_user_id === user.id && (
+                  <span className="badges-container__table__main__row__delete-btn">
+                    <BlueButton
+                      formatId="badges_page_delete_button"
+                      padding="6px 30px"
+                      onClick={() => deleteBadge(row.id)}
+                      fontSize="18px"
+                    />
+                  </span>
+                )}
 
                 {showedPopupId === rowIndex ? (
                   <div className="badges-container__table__main__row__popup">
-                    <span className="title">{row.badge_name}</span>
+                    <div className="title">{row.badge_name}</div>
                     <div className="desc">{row.badge_desc}</div>
                   </div>
                 ) : (
