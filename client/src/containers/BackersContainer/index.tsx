@@ -36,7 +36,7 @@ const BackersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // console.log(backers.supporters);
+  console.log(backers.supporters);
 
   return (
     <div className="backers-container">
