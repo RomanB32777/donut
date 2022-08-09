@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-export const baseURL = `https://${window.location.hostname}` + (
-    process.env.REACT_APP_NODE_ENV !== 'production' && `:${process.env.REACT_APP_BACKEND_PORT || 5000}`
+export const isProduction = process.env.REACT_APP_NODE_ENV && process.env.REACT_APP_NODE_ENV === 'production'
+
+export const baseURL = `${isProduction ? 'https' : 'http'}://${window.location.hostname}` + (
+   !isProduction  && `:${process.env.REACT_APP_BACKEND_PORT || 5000}`
 ) 
 
 const axiosClient = axios.create({
