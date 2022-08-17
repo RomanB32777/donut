@@ -78,7 +78,7 @@ const titles = [
     }) => (
       // <span>{form.user_description}</span>
       <textarea
-        value={form["user_description"]}
+        value={form.user_description}
         placeholder="Tell us more about yourself"
         onChange={(event) => {
           setIsChanged(true);
@@ -236,14 +236,17 @@ const ProfilePageContainer = () => {
   };
 
   const getUser = async (tron_token: string) => {
-    const { data } = await axiosClient.get("/api/user/" + tron_wallet);
+    const { data } = await axiosClient.get("/api/user/" + tron_token);
+
     if (data.person_name && data.person_name.length > 0) {
       setIsNameExist(true);
     }
     setForm({
       ...data,
+      user_description: data.user_description,
       person_name: data.person_name,
       avatarlink: data.avatarlink,
+      backgroundlink: data.backgroundlink,
     });
   };
 
@@ -283,8 +286,8 @@ const ProfilePageContainer = () => {
     });
     if (imagebase64.length > 0) {
       sendAvatarFile();
-      setSendBannerFile(true);
     }
+    setSendBannerFile(true);
     setFileName("");
     setFile(null);
     setIsChanged(false);
@@ -459,6 +462,8 @@ const ProfilePageContainer = () => {
                 saveBtn={false}
                 isEditMode
                 sendBannerFile={sendBannerFile}
+                imgLink={form.avatarlink}
+                setIsChanged={setIsChanged}
               />
             </div>
           )}

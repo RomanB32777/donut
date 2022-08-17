@@ -25,13 +25,19 @@ const ProfileBanner = ({
   saveBtn,
   isEditMode,
   sendBannerFile,
+  imgLink,
+  setIsChanged,
 }: {
   saveBtn: boolean;
   isEditMode: boolean;
   sendBannerFile: boolean;
+  imgLink?: string;
+  setIsChanged?: any;
 }) => {
   const data = useSelector((state: any) => state.personInfo).main_info;
-  const tron_token = getTronWallet();
+  const user = useSelector((state: any) => state.user);
+
+  // const tron_token = getTronWallet();
 
   const [file, setFile] = useState<any>();
   const [fileName, setFileName] = useState("");
@@ -50,13 +56,12 @@ const ProfileBanner = ({
     if (file && fileName) {
       formData.append("file", file);
       formData.append("fileName", fileName);
-      axiosClient.post(
-        "/api/user/user/edit-background/" + tron_token,
-        formData
-      );
-      setFileName("");
-      setFile("");
-      setImagebase84("");
+      if (user && user.id) {
+        axiosClient.post("/api/user/user/edit-background/" + user.id, formData);
+        setFileName("");
+        setFile("");
+        setImagebase84("");
+      }
       // dispatch(
       //   tryToGetPersonInfo({ username: pathname.slice(pathname.indexOf("@")) })
       // );
@@ -76,10 +81,11 @@ const ProfileBanner = ({
     setFile(ev.target.files[0]);
     fileToBase64(ev.target.files[0]);
     setFileName(ev.target.files[0].name);
+    setIsChanged && setIsChanged(true);
   };
 
   useEffect(() => {
-    sendBannerFile && sendFile();
+    sendBannerFile && isEditMode && sendFile();
   }, [sendBannerFile]);
 
   return (
@@ -89,8 +95,14 @@ const ProfileBanner = ({
       onMouseLeave={() => setIsMouseOnBackground(false)}
     >
       {(fileName.length > 0 ||
-        (data.backgroundlink && data.backgroundlink.length > 0)) && (
-        <img src={imagebase64 || `${url + data.backgroundlink}`} alt="banner" />
+        (data.backgroundlink && data.backgroundlink.length > 0) ||
+        imgLink) && (
+        <img
+          src={
+            imagebase64 || `${url + data.backgroundlink}` || `${url + imgLink}`
+          }
+          alt="banner"
+        />
       )}
       {isEditMode && <input type="file" onChange={saveFile} />}
 

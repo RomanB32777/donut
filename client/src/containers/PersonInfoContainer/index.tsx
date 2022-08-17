@@ -126,7 +126,7 @@ const PersonInfoContainer = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", fileName);
-    axiosClient.post("/api/user/user/edit-background/" + tron_token, formData);
+    axiosClient.post("/api/user/user/edit-background/" + data.user_id, formData);
     setFileName("");
     setFile("");
     setImagebase84("");
