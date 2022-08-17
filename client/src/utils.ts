@@ -3,7 +3,7 @@ import moment from 'moment';
 interface INotification {
     type: NOTIFICATION_TYPE
     title: string
-    message: string
+    message?: string
 }
 
 export const addNotification = ({type, title, message}: INotification) => {

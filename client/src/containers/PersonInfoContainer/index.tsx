@@ -153,7 +153,7 @@ const PersonInfoContainer = () => {
   const submitDescription = () => {
     axiosClient
       .post("/api/user/user/edit-description/", {
-        tron_token: tron_token,
+        user_id: backer.id,
         description: description,
       })
       .then((res) => {

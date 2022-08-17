@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
 import { url } from "../../consts";
@@ -21,7 +21,15 @@ import getTronWallet from "../../functions/getTronWallet";
 //   desc?: string;
 // }
 // prop: { data: IContentCard; onClick?: () => void }
-const ProfileBanner = ({ saveBtn, isEditMode }: { saveBtn: boolean, isEditMode: boolean }) => {
+const ProfileBanner = ({
+  saveBtn,
+  isEditMode,
+  sendBannerFile,
+}: {
+  saveBtn: boolean;
+  isEditMode: boolean;
+  sendBannerFile: boolean;
+}) => {
   const data = useSelector((state: any) => state.personInfo).main_info;
   const tron_token = getTronWallet();
 
@@ -39,15 +47,20 @@ const ProfileBanner = ({ saveBtn, isEditMode }: { saveBtn: boolean, isEditMode: 
 
   const sendFile = () => {
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("fileName", fileName);
-    axiosClient.post("/api/user/user/edit-background/" + tron_token, formData);
-    setFileName("");
-    setFile("");
-    setImagebase84("");
-    // dispatch(
-    //   tryToGetPersonInfo({ username: pathname.slice(pathname.indexOf("@")) })
-    // );
+    if (file && fileName) {
+      formData.append("file", file);
+      formData.append("fileName", fileName);
+      axiosClient.post(
+        "/api/user/user/edit-background/" + tron_token,
+        formData
+      );
+      setFileName("");
+      setFile("");
+      setImagebase84("");
+      // dispatch(
+      //   tryToGetPersonInfo({ username: pathname.slice(pathname.indexOf("@")) })
+      // );
+    }
   };
 
   const fileToBase64 = (file: any) => {
@@ -65,22 +78,20 @@ const ProfileBanner = ({ saveBtn, isEditMode }: { saveBtn: boolean, isEditMode: 
     setFileName(ev.target.files[0].name);
   };
 
+  useEffect(() => {
+    sendBannerFile && sendFile();
+  }, [sendBannerFile]);
+
   return (
     <div
       className="person-info-container__background"
       onMouseEnter={() => setIsMouseOnBackground(true)}
       onMouseLeave={() => setIsMouseOnBackground(false)}
     >
-      <img
-        src={
-          fileName.length > 0
-            ? imagebase64 || ""
-            : data.backgroundlink && data.backgroundlink.length > 0
-            ? `${url + data.backgroundlink}`
-            : Space
-        }
-        alt="banner"
-      />
+      {(fileName.length > 0 ||
+        (data.backgroundlink && data.backgroundlink.length > 0)) && (
+        <img src={imagebase64 || `${url + data.backgroundlink}`} alt="banner" />
+      )}
       {isEditMode && <input type="file" onChange={saveFile} />}
 
       {saveBtn && (

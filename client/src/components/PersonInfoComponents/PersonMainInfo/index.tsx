@@ -28,6 +28,8 @@ const PersonMainInfo = () => {
   const tron_token = getTronWallet();
   const data = useSelector((state: any) => state.personInfo).main_info;
 
+  const user = useSelector((state: any) => state.user);
+
   const { pathname } = useLocation();
 
   const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false);
@@ -42,12 +44,14 @@ const PersonMainInfo = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", fileName);
-    axiosClient.post("/api/user/user/edit-image/" + tron_token, formData);
-    dispatch(
-      tryToGetPersonInfo({
-        username: pathname.slice(pathname.indexOf("@")),
-      })
-    );
+    if (user && user.id) {
+      axiosClient.post("/api/user/user/edit-image/" + user.id, formData);
+      dispatch(
+        tryToGetPersonInfo({
+          username: pathname.slice(pathname.indexOf("@")),
+        })
+      );
+    }
   };
 
   const fileToBase64 = (file: any) => {

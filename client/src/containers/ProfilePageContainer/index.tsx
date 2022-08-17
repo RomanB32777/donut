@@ -9,6 +9,8 @@ import { url } from "../../consts";
 import asyncQuery from "../../functions/asyncQuery";
 import getTronWallet, {
   getMetamaskWallet,
+  metamaskWalletIsIntall,
+  tronWalletIsIntall,
 } from "../../functions/getTronWallet";
 import {
   DiscordIcon,
@@ -19,8 +21,10 @@ import {
   UploadIcon,
   YoutubeIcon,
 } from "../../icons/icons";
+import MetaMaskFox from "../../assets/MetaMask_Fox.png";
 import routes from "../../routes";
 import { setUser, tryToGetUser } from "../../store/types/User";
+import { addNotification } from "../../utils";
 
 import "./styles.sass";
 import ProfileBanner from "../../components/ProfileBanner";
@@ -62,13 +66,22 @@ const titles = [
   },
   {
     title: "profile_form_title_description",
-    Component: ({ form, setForm }: { form?: any; setForm?: any }) => (
+    onlyCreator: true,
+    Component: ({
+      form,
+      setForm,
+      setIsChanged,
+    }: {
+      form?: any;
+      setForm?: any;
+      setIsChanged?: any;
+    }) => (
       // <span>{form.user_description}</span>
       <textarea
         value={form["user_description"]}
         placeholder="Tell us more about yourself"
         onChange={(event) => {
-          // setIsChanged(true);
+          setIsChanged(true);
           setForm({ ...form, user_description: event.target.value });
         }}
       />
@@ -76,6 +89,7 @@ const titles = [
   },
   {
     title: "profile_form_title_socials",
+    onlyCreator: true,
     Component: ({
       socials,
       form,
@@ -109,16 +123,20 @@ const titles = [
   },
   {
     title: "profile_form_title_wallet",
-    Component: ({ copyTron }: { copyTron?: (token: string) => void }) => {
+    Component: ({ copyToken }: { copyToken?: (token: string) => void }) => {
       const [metaMaskWallet, setMetaMaskWallet] = useState<null | string>(null);
       const [tronWallet, setTronWallet] = useState<null | string>(null);
 
       const getMetaWallet = async () => {
-        const walletMeta = await getMetamaskWallet();
-        walletMeta && setMetaMaskWallet(walletMeta);
+        if (metamaskWalletIsIntall()) {
+          const walletMeta = await getMetamaskWallet();
+          walletMeta && setMetaMaskWallet(walletMeta);
+        }
 
-        const walletTron = getTronWallet();
-        walletTron && setTronWallet(walletTron);
+        if (tronWalletIsIntall()) {
+          const walletTron = getTronWallet();
+          walletTron && setTronWallet(walletTron);
+        }
       };
 
       useEffect(() => {
@@ -127,34 +145,40 @@ const titles = [
 
       return (
         <div>
-          <span onClick={() => copyTron && tronWallet && copyTron(tronWallet)}>
-            <div className="wallet_row">
-              <TronIcon />
-              <span>
-                {tronWallet && tronWallet.length > 20
-                  ? tronWallet.slice(0, 6) +
-                    "..." +
-                    tronWallet.slice(tronWallet.length - 24)
-                  : "mytoken"}
-              </span>
-            </div>
-          </span>
-          <span
-            onClick={() =>
-              copyTron && metaMaskWallet && copyTron(metaMaskWallet)
-            }
-          >
-            <div className="wallet_row">
-              <TronIcon />
-              <span>
-                {metaMaskWallet && metaMaskWallet.length > 30
-                  ? metaMaskWallet.slice(0, 6) +
-                    "..." +
-                    metaMaskWallet.slice(metaMaskWallet.length - 26)
-                  : "mytoken"}
-              </span>
-            </div>
-          </span>
+          {tronWalletIsIntall() && (
+            <span
+              onClick={() => copyToken && tronWallet && copyToken(tronWallet)}
+            >
+              <div className="wallet_row">
+                <TronIcon />
+                <span>
+                  {tronWallet && tronWallet.length > 20
+                    ? tronWallet.slice(0, 6) +
+                      "..." +
+                      tronWallet.slice(tronWallet.length - 24)
+                    : "mytoken"}
+                </span>
+              </div>
+            </span>
+          )}
+          {metamaskWalletIsIntall() && (
+            <span
+              onClick={() =>
+                copyToken && metaMaskWallet && copyToken(metaMaskWallet)
+              }
+            >
+              <div className="wallet_row">
+                <img src={MetaMaskFox} alt="MetaMaskFox" />
+                <span>
+                  {metaMaskWallet && metaMaskWallet.length > 30
+                    ? metaMaskWallet.slice(0, 6) +
+                      "..." +
+                      metaMaskWallet.slice(metaMaskWallet.length - 26)
+                    : "mytoken"}
+                </span>
+              </div>
+            </span>
+          )}
         </div>
       );
     },
@@ -206,14 +230,9 @@ const ProfilePageContainer = () => {
   const [isNameExist, setIsNameExist] = useState<boolean>(false);
   const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false);
 
-  const [isSaved, setIsSaved] = useState<boolean>(false);
-
-  const [isTronCopied, setIsTronCopied] = useState<boolean>(false);
-
-  const copyTron = (wallet: string) => {
+  const copyToken = (wallet: string) => {
     navigator.clipboard.writeText(wallet);
-    setIsTronCopied(true);
-    setTimeout(() => setIsTronCopied(false), 3000);
+    addNotification({ type: "success", title: "Token successfully copied" });
   };
 
   const getUser = async (tron_token: string) => {
@@ -239,17 +258,20 @@ const ProfilePageContainer = () => {
   const [file, setFile] = useState<any>();
   const [fileName, setFileName] = useState("");
   const [imagebase64, setImagebase84] = useState<any>("");
+  const [sendBannerFile, setSendBannerFile] = useState<any>(false);
 
-  const sendFile = async () => {
+  const sendAvatarFile = async () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", fileName);
-    const res = await axiosClient.post(
-      "/api/user/user/edit-image/" + tron_wallet,
-      formData
-    );
-    if (res.status === 200) {
-      return res;
+    if (user && user.id) {
+      const res = await axiosClient.post(
+        "/api/user/user/edit-image/" + user.id,
+        formData
+      );
+      if (res.status === 200) {
+        return res;
+      }
     }
     //dispatch(tryToGetPersonInfo(pathname.slice(pathname.indexOf('@'))))
   };
@@ -257,16 +279,15 @@ const ProfilePageContainer = () => {
   const saveProfile = async () => {
     await axiosClient.post("/api/user/user/edit/", {
       ...form,
-      tron_token: tron_wallet,
+      user_id: user.id,
     });
     if (imagebase64.length > 0) {
-      sendFile();
+      sendAvatarFile();
+      setSendBannerFile(true);
     }
     setFileName("");
     setFile(null);
     setIsChanged(false);
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
     getUser(getTronWallet());
     dispatch(tryToGetUser(getTronWallet()));
   };
@@ -302,48 +323,55 @@ const ProfilePageContainer = () => {
       <div className="profile-page__main">
         <div className="profile-page__form">
           <div className="profile-page__form__items">
-            {titles.map(({ title, Component }) => {
-              let props = {};
-              if (title.includes("socials"))
-                props = {
-                  socials,
-                  form,
-                  setIsChanged,
-                  setForm,
-                };
-              if (title.includes("wallet"))
-                props = {
-                  copyTron,
-                };
-              if (title.includes("name"))
-                props = {
-                  isNameExist,
-                  form,
-                  setIsChanged,
-                  setForm,
-                };
-              if (title.includes("username"))
-                props = {
-                  form,
-                };
-              if (title.includes("description"))
-                props = {
-                  form,
-                  setForm,
-                };
-              return (
-                <div className="profile-page__form__item">
-                  <span key={title}>
-                    <FormattedMessage id={title} />
-                  </span>
-                  {Boolean(Object.keys(props).length) ? (
-                    <Component {...props} />
-                  ) : (
-                    <Component />
-                  )}
-                </div>
-              );
-            })}
+            {titles
+              .filter(
+                (t) =>
+                  (t.onlyCreator && user.roleplay === "creators") ||
+                  !t.onlyCreator
+              )
+              .map(({ title, Component }) => {
+                let props = {};
+                if (title.includes("socials"))
+                  props = {
+                    socials,
+                    form,
+                    setIsChanged,
+                    setForm,
+                  };
+                if (title.includes("wallet"))
+                  props = {
+                    copyToken,
+                  };
+                if (title.includes("name"))
+                  props = {
+                    isNameExist,
+                    form,
+                    setIsChanged,
+                    setForm,
+                  };
+                if (title.includes("username"))
+                  props = {
+                    form,
+                  };
+                if (title.includes("description"))
+                  props = {
+                    form,
+                    setForm,
+                    setIsChanged,
+                  };
+                return (
+                  <div className="profile-page__form__item">
+                    <span key={title}>
+                      <FormattedMessage id={title} />
+                    </span>
+                    {Boolean(Object.keys(props).length) ? (
+                      <Component {...props} />
+                    ) : (
+                      <Component />
+                    )}
+                  </div>
+                );
+              })}
           </div>
           {/* <div
             className="profile-page__form__info"
@@ -387,21 +415,19 @@ const ProfilePageContainer = () => {
               onMouseLeave={() => setIsMouseOnAvatar(false)}
             >
               <div className="profile-page__file-input__row__image">
-                {(imagebase64 && imagebase64.length > 0) ||
-                (form.avatarlink && form.avatarlink.length > 0) ? (
-                  <img
-                    src={
-                      imagebase64 &&
-                      imagebase64.length &&
-                      imagebase64.length > 0
-                        ? imagebase64
-                        : form.avatarlink.length > 0 && url + form.avatarlink
-                    }
-                    alt="avatar"
-                  />
-                ) : (
-                  <LargeImageIcon />
-                )}
+                {
+                  ((imagebase64 && imagebase64.length > 0) ||
+                    (form.avatarlink && form.avatarlink.length > 0)) && (
+                    <img
+                      src={imagebase64 || url + form.avatarlink}
+                      alt="avatar"
+                    />
+                  )
+                  // : (
+                  //   <LargeImageIcon />
+                  // )
+                }
+                {/* {(imagebase64 && imagebase64.length > 0) || (form.avatarlink && form.avatarlink.length > 0)} */}
               </div>
               <div className="profile-page__file-input__row__button">
                 <input
@@ -421,15 +447,21 @@ const ProfilePageContainer = () => {
               </div>
             </div>
           </div>
-          <div className="profile-page__file-banner">
-            <span className="profile-page__file-input__title">
-              <FormattedMessage id="profile_form_banner_title" />
-            </span>
-            <span className="profile-page__file-input__subtitle">
-              <FormattedMessage id="profile_info_background_title" />
-            </span>
-            <ProfileBanner saveBtn={false} isEditMode />
-          </div>
+          {user.roleplay === "creators" && (
+            <div className="profile-page__file-banner">
+              <span className="profile-page__file-input__title">
+                <FormattedMessage id="profile_form_banner_title" />
+              </span>
+              <span className="profile-page__file-input__subtitle">
+                <FormattedMessage id="profile_info_background_title" />
+              </span>
+              <ProfileBanner
+                saveBtn={false}
+                isEditMode
+                sendBannerFile={sendBannerFile}
+              />
+            </div>
+          )}
         </div>
       </div>
 
