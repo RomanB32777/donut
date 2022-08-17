@@ -1,4 +1,5 @@
 import {all} from "redux-saga/effects"
+import { NotificationsWatcher } from "./Notifications/NotificationsWatcher"
 import { PersonInfoPageWatcher } from "./PersonInfo/PersonInfoPageWatcher"
 import { PersonInfoWatcher } from "./PersonInfo/PersonInfoWatcher"
 import { SearchWatcher } from "./Search/SearchWatcher"
@@ -10,5 +11,6 @@ export function* rootWatcher() {
         SearchWatcher(),
         PersonInfoWatcher(),
         PersonInfoPageWatcher(),
+        NotificationsWatcher(),
     ])
 }

@@ -24,7 +24,7 @@ class DonationController {
 
                 const supporter = await db.query(`SELECT * FROM supporters WHERE backer_id = $1`, [backer.rows[0].id])
                 if (donation.rows[0]) {
-                    res.status(200).json({ message: 'success' })
+                    res.status(200).json({ message: 'success', donation: donation.rows[0] });
                 }
                 if (supporter.rows && supporter.rows.length > 0) {
                     await db.query('UPDATE supporters SET sum_donations = $1, amount_donations = $2 WHERE backer_id = $3', [

@@ -4,6 +4,7 @@ const routes = {
     profile: '/profile',
     createNewBadge: '/create-new-badge',
     badges: '/badges',
+    notifications: '/notifications',
     supporters: '/supporters/',
     nft: '/nft',
     createNft: '/create-nft',

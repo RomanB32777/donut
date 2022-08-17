@@ -68,6 +68,157 @@
                         animation: smallRotating 5s linear infinite
                 &:active
                     opacity: 0.8
+
+.wallet-popup-wrapper
+    display: flex
+    flex-direction: column
+    width: 24%
+    background: #19191F
+    height: -moz-available      
+    height: -webkit-fill-available
+    height: fill-available
+    position: absolute
+    right: 0px
+    top: 92px
+    z-index: 100
+.wallet-popup
+    display: flex
+    flex-direction: column
+    width: 256px
+    background: #19191F
+
+    position: absolute
+    right: 0px
+    top: 72px
+    z-index: 100
+
+    &__header
+        position: relative
+        height: 72px
+        width: 100%
+        border-bottom: 1px solid #000000
+        box-sizing: border-box
+        padding: 16px 18px 16px 18px
+        display: flex
+        flex-direction: row
+        align-items: center
+        &__image
+            margin-right: 11px
+            background: #1D14FF
+            width: 36px
+            height: 36px
+            border-radius: 50%
+            display: flex
+            justify-content: center
+            align-items: center
+            overflow: hidden
+            //border: 1px solid red
+            img
+                object-fit: cover
+                width: 100%
+                height: 100%
+        &__info
+            display: flex
+            flex-direction: row
+            align-items: flex-start
+            width: 180px
+            cursor: pointer
+            //border: 1px solid red
+            &__name
+                font-family: variables.$inter-font
+                font-style: normal
+                font-weight: 700
+                font-size: 21px
+                line-height: 24px
+                color: variables.$white-color
+                height: 24px
+                overflow: hidden
+                text-overflow: ellipsis
+                margin-bottom: 4px
+    &__content
+        box-sizing: border-box
+        padding: 16px 18px 16px 18px
+        display: flex
+        flex-direction: column
+        font-family: variables.$jakarta-font
+        font-style: normal
+        line-height: 24px
+        color: variables.$white-color
+
+        &-balance
+            display: flex
+            justify-content: space-between
+            font-size: 18px
+            font-weight: 700
+
+    &__select_wallet
+        display: flex
+        flex-direction: column
+        width: 205px
+        background: variables.$black-color
+        border-radius: variables.$border-radius
+        position: absolute
+        left: 20px
+        top: 72px
+        z-index: 100
+        padding: 20px 0
+        &-item
+            display: flex
+            justify-content: space-between
+            align-items: center
+            padding: 9px 20px
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 700
+            font-size: 14px
+            line-height: 24px
+            color: variables.$white-color
+
+            &__content
+                display: flex
+                span
+                    margin-left: 10px
+
+            &:not(:last-child)
+                border-bottom: 1px solid #19191F
+
+            &:first-child
+                padding: 0px 20px 9px 20px
+
+            &:last-child
+                padding: 9px 20px 0 20px
+
+
+.notifications-popup-wrapper
+    display: flex
+    flex-direction: column
+    width: 300px
+    background: #19191F
+    border-radius: variables.$border-radius
+    position: absolute
+    right: 0px
+    top: 72px
+    z-index: 100
+    padding: 20px
+.notifications-popup
+    &__content
+        width: 100%
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 500
+        font-size: 18px
+        line-height: 24px
+        color: variables.$white-color
+        overflow: hidden
+        text-overflow: ellipsis
+        &-item
+            margin-bottom: 5px 
+        &-link
+            margin-top: 15px
+            text-align: center
+            color: variables.$grey-color
+            cursor: pointer
+
 .profile-popup-wrapper
     display: flex
     flex-direction: column
@@ -164,6 +315,10 @@
             &:hover
                 color: variables.$white-color
     
+
+.rotated
+    svg
+        transform: rotate(180deg)
 
 @keyframes smallRotating
     0%

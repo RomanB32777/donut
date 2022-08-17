@@ -6,10 +6,13 @@ import { useNavigate } from "react-router";
 import axiosClient, { baseURL } from "../../axiosClient";
 import BlueButton from "../../commonComponents/BlueButton";
 import PageTitle from "../../commonComponents/PageTitle";
+import ContentCard from "../../components/ContentCard";
 import { url } from "../../consts";
-import { InfoIcon } from "../../icons/icons";
+import { InfoIcon, LargeImageIcon } from "../../icons/icons";
 import routes from "../../routes";
 import "./styles.sass";
+
+import testIMG from "../../assets/person.png";
 
 const tableHeaderTitles = ["icon", "badge", "qnt", "info", "delete"];
 
@@ -51,6 +54,8 @@ const BadgesContainer = () => {
     res.status === 200 && user.id && getBadges(user.id);
   };
 
+  console.log(badgesList);
+
   return (
     <div className="badges-container">
       <PageTitle formatId="page_title_badges" />
@@ -69,7 +74,67 @@ const BadgesContainer = () => {
         </div>
       )}
 
-      <div className="badges-container__table">
+      <div className="badges-container__list">
+        {badgesList &&
+          badgesList.length > 0 &&
+          badgesList.map(
+            (
+              { id, badge_name, badge_desc, badge_image, owner_user_id, link },
+              rowIndex
+            ) => (
+              <div
+                key={"badge-panel" + rowIndex}
+                style={{
+                  marginRight:
+                    rowIndex % 4 !== 3 ? (1170 - 220 * 4) / 3 + "px" : "0px",
+                  position: "relative",
+                }}
+                onMouseEnter={() => setShowedPopupId(rowIndex)}
+                onMouseLeave={() => setShowedPopupId(null)}
+              >
+                <ContentCard
+                  data={{
+                    name: badge_name,
+                    image: badge_image,
+                    creator_id: owner_user_id,
+                  }}
+                  onClick={() => deleteBadge(id)}
+                />
+
+                {showedPopupId === rowIndex ? (
+                  <div className="badges-container__table__main__row__popup">
+                    <div className="row-popup__image">
+                      {badge_image ? (
+                        <img
+                          src={
+                            testIMG
+                            // url + badge_image
+                          }
+                          alt={badge_name}
+                        />
+                      ) : (
+                        <LargeImageIcon />
+                      )}
+                    </div>
+                    <div className="row-popup__text">
+                      <div className="title">{badge_name}</div>
+                      <div className="desc">{badge_desc}</div>
+                      {link && (
+                        <a className="link" href={link}>
+                          {link}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            )
+          )}
+      </div>
+
+      {/* <div className="badges-container__table">
         <div className="badges-container__table__header">
           {tableHeaderTitles.map((title) => {
             if (title === "delete" && user.roleplay === "backers") return null;
@@ -133,7 +198,7 @@ const BadgesContainer = () => {
               </div>
             ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

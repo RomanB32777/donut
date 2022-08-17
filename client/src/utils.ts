@@ -1,5 +1,5 @@
 import { NOTIFICATION_TYPE, Store } from 'react-notifications-component';
-
+import moment from 'moment';
 interface INotification {
     type: NOTIFICATION_TYPE
     title: string
@@ -35,3 +35,31 @@ addNotification({
     message,
     type: "success",
 });
+
+declare type typeNotification = 'donat_creater' | 'donat_supporter' | 'following_creater' | 'following_backer';
+
+export const getNotificationMessage = (type: typeNotification, user: any, data?: any) => {
+  switch (type) {
+    case 'donat_creater':
+      return `${user} sent you ${data} TRX!`
+
+      case 'donat_supporter':
+        return `You sent ${data} TRX to ${user}!`
+  
+    case 'following_creater':
+      return `${user} started following you`
+      
+    case 'following_backer':
+      return `You started following ${user}`
+      
+    default:
+      return `notification`
+  }
+}
+
+
+export const DateFormatter = (date:string, toFormat: string = "DD/MM/YYYY HH:mm") => {
+    let dateFormat = moment(date).format(toFormat)
+    if (dateFormat === 'Invalid Date') dateFormat = ''
+    return dateFormat
+}

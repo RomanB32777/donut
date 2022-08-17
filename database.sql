@@ -1,6 +1,7 @@
 create TABLE users(
     id SERIAL PRIMARY KEY,
     tron_token VARCHAR(255) DEFAULT '',
+    matamask_token VARCHAR(255) DEFAULT '',
     username VARCHAR(255) DEFAULT '',
     roleplay VARCHAR(15) DEFAULT ''
 );
@@ -54,6 +55,7 @@ create TABLE donations(
     FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
     sum_donation VARCHAR(63) DEFAULT '',
     creator_username VARCHAR(63) DEFAULT '',
+    donation_message VARCHAR(255) DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -98,4 +100,18 @@ create TABLE nft(
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+create TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    sender INTEGER,
+    FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
+    recipient INTEGER,
+    FOREIGN KEY (recipient) REFERENCES users(id) ON DELETE CASCADE,
+	donation INTEGER,
+	FOREIGN KEY (donation) REFERENCES donations(id) ON DELETE CASCADE,
+    follow INTEGER,
+	FOREIGN KEY (follow) REFERENCES follows(id) ON DELETE CASCADE,
+    badge INTEGER,
+	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE
+);
 

@@ -37,6 +37,9 @@ import Footer from "./commonComponents/Footer";
 import { ReactNotifications } from "react-notifications-component";
 
 import "react-notifications-component/dist/theme.css";
+import { WebSocketProvider } from "./components/Websocket/WebSocket";
+import NotificationsPage from "./pages/NotificationsPage";
+import { setMainWallet } from "./store/types/Wallet";
 
 function App() {
   const dispatch = useDispatch();
@@ -52,6 +55,9 @@ function App() {
     if (tron_token) {
       dispatch(tryToGetUser(tron_token));
     }
+    const walletData = localStorage.getItem("main_wallet");
+    if (walletData) dispatch(setMainWallet(JSON.parse(walletData)));
+
     var refreshId = setInterval(function () {
       var tron = getTronWallet();
       if (tron) {
@@ -70,41 +76,53 @@ function App() {
       messages={messages[locale]}
     >
       <BrowserRouter>
-        <ReactNotifications />
-        <div className="container">
-          <Navbar />
-          <Routes>
-            {user && user.id && (
-              <>
-                <Route path={routes.profile} element={<ProfilePage />} />
-                <Route
-                  path={routes.createNewBadge}
-                  element={<NewBadgePage />}
-                />
-                <Route path={routes.badges} element={<BadgesPage />} />
-                <Route path={routes.supporters} element={<SupportersPage />} />
-                <Route path={routes.nft} element={<NftPage />} />
-                <Route path={routes.createNft} element={<NewNftPage />} />
-                <Route path={routes.creator} element={<PersonInfoPage />} />
-                <Route path={routes.followers} element={<FollowersPage />} />
-                <Route path={routes.following} element={<FollowsPage />} />
-              </>
+        <WebSocketProvider>
+          <ReactNotifications />
+          <div className="container">
+            <Navbar />
+            <Routes>
+              {user && user.id && (
+                <>
+                  <Route path={routes.profile} element={<ProfilePage />} />
+                  <Route
+                    path={routes.createNewBadge}
+                    element={<NewBadgePage />}
+                  />
+                  <Route path={routes.badges} element={<BadgesPage />} />
+                  <Route
+                    path={routes.notifications}
+                    element={<NotificationsPage />}
+                  />
+                  <Route
+                    path={routes.supporters}
+                    element={<SupportersPage />}
+                  />
+                  <Route path={routes.nft} element={<NftPage />} />
+                  <Route path={routes.createNft} element={<NewNftPage />} />
+                  <Route path={routes.creator} element={<PersonInfoPage />} />
+                  <Route path={routes.followers} element={<FollowersPage />} />
+                  <Route path={routes.following} element={<FollowsPage />} />
+                </>
+              )}
+              <Route
+                path={routes.transactions}
+                element={<TransactionsPage />}
+              />
+              <Route path={routes.main} element={<MainPage />} />
+              <Route path={routes.creator} element={<PersonInfoPage />} />
+              <Route path={routes.creators} element={<CreatorsListPage />} />
+              <Route path={routes.backers} element={<BackersPage />} />
+            </Routes>
+            <Footer />
+            {modal && modal.length > 0 && (
+              <div className="modal-wrapper">
+                {modal === OPEN_AUTH_TRON_MODAL && <AuthModal />}
+                {modal === OPEN_REGISTRATION_MODAL && <RegistrationModal />}
+                {modal === OPEN_SUPPORT_MODAL && <SupportModal />}
+              </div>
             )}
-            <Route path={routes.transactions} element={<TransactionsPage />} />
-            <Route path={routes.main} element={<MainPage />} />
-            <Route path={routes.creator} element={<PersonInfoPage />} />
-            <Route path={routes.creators} element={<CreatorsListPage />} />
-            <Route path={routes.backers} element={<BackersPage />} />
-          </Routes>
-          <Footer />
-          {modal && modal.length > 0 && (
-            <div className="modal-wrapper">
-              {modal === OPEN_AUTH_TRON_MODAL && <AuthModal />}
-              {modal === OPEN_REGISTRATION_MODAL && <RegistrationModal />}
-              {modal === OPEN_SUPPORT_MODAL && <SupportModal />}
-            </div>
-          )}
-        </div>
+          </div>
+        </WebSocketProvider>
       </BrowserRouter>
     </IntlProvider>
   );

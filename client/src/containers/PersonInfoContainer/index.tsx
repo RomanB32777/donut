@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
@@ -19,9 +19,11 @@ import axiosClient from "../../axiosClient";
 import { PencilIcon, UploadIcon } from "../../icons/icons";
 import { tryToGetUser } from "../../store/types/User";
 import { addAuthNotification } from "../../utils";
+import { WebSocketContext } from "../../components/Websocket/WebSocket";
 
 const PersonInfoContainer = () => {
   const dispatch = useDispatch();
+  const socket = useContext(WebSocketContext);
 
   const data = useSelector((state: any) => state.personInfo).main_info;
   const backer = useSelector((state: any) => state.user);
@@ -79,6 +81,14 @@ const PersonInfoContainer = () => {
             })
             .then((res) => {
               if (res.status === 200) {
+                socket &&
+                  backer &&
+                  data &&
+                  socket.emit("new_following", {
+                    follower: { username: backer.username, id: backer.user_id },
+                    creator_id: data.user_id,
+                    followID: res.data.follow.id,
+                  });
                 dispatch(
                   tryToGetPersonInfo({
                     id: data.user_id,
@@ -173,6 +183,7 @@ const PersonInfoContainer = () => {
               ? `${url + data.backgroundlink}`
               : Space
           }
+          alt="banner"
         />
         {isEditMode && <input type="file" onChange={saveFile} />}
 

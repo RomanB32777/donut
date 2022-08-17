@@ -72,7 +72,6 @@ const NftContainer = () => {
             >
               <NftPanel
                 data={nft}
-                ableToDelete={true}
                 onClick={() => deleteNft(nft.id)}
               />
             </div>

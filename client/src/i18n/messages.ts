@@ -62,6 +62,7 @@ const messages = {
         // page titles
             page_title_my_profile: 'MY PROFILE',
             page_title_badges: 'BADGES',
+            page_title_notifications: 'NOTIFICATIONS',
             page_title_creators: 'CREATORS',
             page_title_followers: 'FOLLOWERS',
             page_title_following: 'FOLLOWING',
@@ -79,16 +80,25 @@ const messages = {
             badges_page_table_header_delete: 'Delete',
             badges_page_delete_button: 'Delete badge',
 
+        // notifications page
+            notifications_page_table_header_username: 'Username',
+            notifications_page_table_header_usd: 'USD',
+            notifications_page_table_header_message: 'Message',
+            notifications_page_table_header_date: 'Date / Time',
+
         // profile form 
             //titles
                 profile_form_title_name: 'Name',
                 profile_form_title_username: 'Username',
-                profile_form_title_wallet: 'Wallet',
+                profile_form_title_description: 'Bio',
+                profile_form_title_wallet: 'Wallets',
                 profile_form_title_socials: 'Socials',
             profile_form_save_button: 'Save',
             profile_form_delete_button: 'Delete account',
             profile_form_file_title: 'Load avatar image',
             profile_form_file_subtitle: 'Please use 600x600px image',
+            profile_form_banner_title: 'Profile Banner',
+
         
         // profile info
             profile_info_support_button: 'Support',

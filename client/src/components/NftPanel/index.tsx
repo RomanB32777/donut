@@ -5,8 +5,8 @@ import "./styles.sass";
 
 const NftPanel = (prop: {
   data: any;
-  ableToDelete?: boolean;
   onClick?: () => void;
+  // ableToDelete?: boolean;
 }) => {
   const user = useSelector((state: any) => state.user);
 

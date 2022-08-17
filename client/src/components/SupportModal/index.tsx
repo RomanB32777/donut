@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { closeModal, OPEN_SUPPORT_MODAL } from "../../store/types/Modal";
@@ -15,6 +15,7 @@ import { contractAddress } from "../../consts";
 import { send } from "process";
 import { getPersonInfoPage } from "../../store/types/PersonInfo";
 import { addAuthNotification } from "../../utils";
+import { WebSocketContext } from "../Websocket/WebSocket";
 // const TronWeb = require('tronweb')
 // const tronWeb = new TronWeb()
 
@@ -24,6 +25,9 @@ const SupportModal = () => {
   const dispatch = useDispatch();
 
   const data = useSelector((state: any) => state.personInfo).main_info;
+  const user = useSelector((state: any) => state.user);
+
+  const socket = useContext(WebSocketContext);
 
   const tron_token = getTronWallet();
 
@@ -71,9 +75,18 @@ const SupportModal = () => {
       if (res.status === 200) {
         setSent(true);
         //   const msg = await res.json();
-        const msg = res.data;
+        const resData = res.data;
 
-        if (msg.message === "success") {
+        if (resData.message === "success") {
+          socket &&
+            user &&
+            resData.donation &&
+            socket.emit("new_donat", {
+              supporter: { username: user.username, id: user.user_id },
+              creator_id: data.user_id,
+              sum: tron.toString(),
+              donationID: resData.donation.id,
+            });
           dispatch(
             getPersonInfoPage({
               page: "supporters",
@@ -120,15 +133,15 @@ const SupportModal = () => {
       let instance = await (window as any).tronWeb
         .contract()
         .at(contractAddress);
-      const res = await instance.transferMoney(data.tron_token).send({
-        feeLimit: 100_000_000,
-        callValue: 1000000 * parseFloat(tron), // это 100 trx
-        shouldPollResponse: false,
-      });
+      // const res = await instance.transferMoney(data.tron_token).send({
+      //   feeLimit: 100_000_000,
+      //   callValue: 1000000 * parseFloat(tron), // это 100 trx
+      //   shouldPollResponse: false,
+      // });
 
-      if (res) {
-        sendDonation();
-      }
+      // if (res) {
+      // }
+      sendDonation();
     } catch (error) {
       console.log(error);
     }

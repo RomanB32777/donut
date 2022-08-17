@@ -5,6 +5,8 @@ import PersonInfoReducer from "./PersonInfo/PersonInfoReducer"
 import SearchReducer from "./Search/SearchReducer"
 import UserReducer from "./User/UserReducer"
 import LoadingReducer from "./Loading/LoadingReducer"
+import NotificationsReducer from "./Notifications/NotificationsReducer"
+import WalletReducer from "./Wallet/WalletReducer"
 
 const rootReducer = combineReducers({
     user: UserReducer,
@@ -12,7 +14,9 @@ const rootReducer = combineReducers({
     modal: ModalReducer,
     personInfo: PersonInfoReducer,
     personInfoPage: PersonInfoPageReducer,
-    loading: LoadingReducer
+    loading: LoadingReducer,
+    notifications: NotificationsReducer,
+    wallet: WalletReducer
 })
 
 export { rootReducer }

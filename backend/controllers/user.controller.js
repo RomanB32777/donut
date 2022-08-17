@@ -122,6 +122,36 @@ class UserController {
         }
     }
 
+    async getUserNotifications(req, res) {
+        try {
+            let notificationsAll = []
+            const userID = req.params.id
+            const notifications = await db.query(`SELECT * FROM notifications WHERE sender = $1 OR recipient = $1 ORDER BY creation_date DESC`, [userID])
+            if (notifications && notifications.rows.length) {
+                notificationsAll = await Promise.all(notifications.rows.map(async n => {
+                    if (n.donation) {
+                        const donation = await db.query(`SELECT * FROM donations WHERE id = $1`, [n.donation])
+                        if (donation.rows[0]) return { ...n, donation: donation.rows[0] }
+                        return n;
+                    }
+                    if (n.follow) {
+                        const follow = await db.query(`SELECT * FROM follows WHERE id = $1`, [n.follow])
+                        if (follow.rows[0]) return { ...n, follow: follow.rows[0] }
+                        return n;
+                    }
+                    if (n.badge) {
+                        const badge = await db.query(`SELECT * FROM badges WHERE id = $1`, [n.badge])
+                        if (badge.rows[0]) return { ...n, badge: badge.rows[0] }
+                        return n;
+                    }
+                }))
+                res.status(200).json({ notifications: notificationsAll })
+            }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
     async getCreatorByName(req, res) {
         try {
             const username = req.params.username
@@ -250,7 +280,7 @@ class UserController {
         try {
             const { creator_id, creator_username, backer_id, backer_username } = req.body
             const follow = await db.query('INSERT INTO follows (creator_id, creator_username, backer_id, backer_username) values ($1, $2, $3, $4) RETURNING *', [creator_id, creator_username, backer_id, backer_username])
-            res.status(200).json(follow)
+            res.status(200).json({ follow: follow.rows[0] })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
