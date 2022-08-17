@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { io, Socket } from "socket.io-client";
+import { baseURL } from "../../axiosClient";
 import { getNotifications } from "../../store/types/Notifications";
 import { addNotification, getNotificationMessage } from "../../utils";
 
@@ -16,7 +17,8 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (user && user.user_id) {
-      const socket = io("http://localhost:5000/", {
+      const socket = io(baseURL, {
+        path: '/sockt/',
         query: {
           userId: user.user_id,
         },
