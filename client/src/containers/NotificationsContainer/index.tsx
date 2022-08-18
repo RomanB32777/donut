@@ -27,6 +27,8 @@ const NotificationsContainer = () => {
     sort: "UP",
   });
 
+  const [permissionsNotif, setPermissionsNotif] = useState(false);
+
   useEffect(() => {
     if (user.id) {
       dispatch(getNotifications(user.id));
@@ -52,10 +54,57 @@ const NotificationsContainer = () => {
     console.log(type);
   };
 
+  const browserNotify = () => {
+    // Проверка поддержки браузером уведомлений
+    if (!("Notification" in window)) {
+      console.log("This browser does not support desktop notification");
+      return;
+    }
+
+    permissionsNotif
+      ? setPermissionsNotif(!permissionsNotif)
+      : Notification.requestPermission((permission) => {
+          // Если пользователь разрешил, то создаём уведомление
+          if (permission === "granted") {
+            new Notification("Уведомления разрешены!");
+            setPermissionsNotif(true);
+          } else {
+            setPermissionsNotif(false);
+          }
+        });
+    // }
+  };
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      const storagePermission = localStorage.getItem("permissionsNotif");
+      if (storagePermission) {
+        storagePermission === "true"
+          ? setPermissionsNotif(true)
+          : setPermissionsNotif(false);
+      } else
+        Notification.permission === "granted"
+          ? setPermissionsNotif(true)
+          : setPermissionsNotif(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("permissionsNotif", String(permissionsNotif));
+  }, [permissionsNotif]);
+
   return (
     <div className="notifications-container">
       <PageTitle formatId="page_title_notifications" />
-
+      <div className="notifications-container__permissions">
+        <span>Donation alerts</span>
+        <button
+          onClick={browserNotify}
+          className={permissionsNotif ? "on" : "off"}
+        >
+          {permissionsNotif ? "On" : "Off"}
+        </button>
+      </div>
       <div className="notifications-container__table">
         <div className="notifications-container__table__header">
           {tableHeaderTitles.map(({ title, sorting }) => (

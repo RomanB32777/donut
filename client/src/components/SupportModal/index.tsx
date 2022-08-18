@@ -169,7 +169,7 @@ const SupportModal = ({
 
   async function triggerContract() {
     try {
-      if (wallet === 'TronLink') {
+      if (wallet === 'tron') {
         let instance = await (window as any).tronWeb
           .contract()
           .at(contractAddress);
@@ -183,7 +183,7 @@ const SupportModal = ({
           sendDonation();
         }
       }
-      if (wallet === 'MetaMask') {
+      if (wallet === 'metamask') {
         // ethereum
         // .request({
         //   method: 'eth_sendTransaction',

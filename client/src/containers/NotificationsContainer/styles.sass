@@ -37,6 +37,38 @@
         align-items: center
         flex-wrap: wrap
 
+    &__permissions
+        display: flex
+        justify-content: space-between
+        align-items: center
+        width: 100%
+
+        span
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 700
+            font-size: 20px
+            line-height: 20px
+            color: variables.$white-color
+
+        button
+            box-sizing: border-box
+            padding: 6px 30px
+            border-radius: 10px
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 600
+            font-size: 18px
+            line-height: 30px
+            color: variables.$white-color
+            cursor: pointer
+            
+            &.on
+                background: variables.$blue-color
+
+            &.off
+                background: variables.$red-color
+
     &__table
         display: flex
         flex-direction: column

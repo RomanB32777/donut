@@ -110,6 +110,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
 const wallets = [
   {
     name: "TronLink",
+    type: "tron",
     img: TronLinkIcon,
     isInstall: tronWalletIsIntall,
     getWallet: getTronWallet,
@@ -117,6 +118,7 @@ const wallets = [
   },
   {
     name: "MetaMask",
+    type: "metamask",
     img: MetaMaskIcon,
     isInstall: metamaskWalletIsIntall,
     getWallet: getMetamaskWallet,
@@ -144,21 +146,30 @@ const WalletPopup = ({
     return res.data.price;
   };
 
+  useEffect(() => {
+    const walletData = localStorage.getItem("main_wallet");
+    if (walletData) {
+      dispatch(setMainWallet(JSON.parse(walletData)));
+    }
+  }, []);
+
   const getBalance = async () => {
-    if (tronWalletIsIntall() && getTronWallet()) {
+    if (
+      mainWallet.wallet === "tron" &&
+      tronWalletIsIntall() &&
+      getTronWallet()
+    ) {
       const tronWeb = (window as any).tronWeb;
       const tronBalance = await tronWeb.trx.getBalance(getTronWallet());
       if (tronBalance) {
         const formatTronBalance = tronWeb.fromSun(tronBalance);
         const tronUsdKoef: number = await getTronUsdKoef();
         setTotalBalance(
-          (prev) =>
-            prev +
-            Number((parseFloat(formatTronBalance) * tronUsdKoef).toFixed(2))
+          Number((parseFloat(formatTronBalance) * tronUsdKoef).toFixed(2))
         );
       }
     }
-    if (metamaskWalletIsIntall()) {
+    if (mainWallet.wallet === "metamsk" && metamaskWalletIsIntall()) {
       const metamaskWallet = await getMetamaskWallet();
       if (metamaskWallet) {
         const ethereum = (window as any).ethereum;
@@ -207,7 +218,10 @@ const WalletPopup = ({
           {isOpenSelect && (
             <div className="wallet-popup__select_wallet">
               {wallets.map(
-                ({ name, img, isInstall, getWallet, openAuthModal }, key) => (
+                (
+                  { name, type, img, isInstall, getWallet, openAuthModal },
+                  key
+                ) => (
                   <div className="wallet-popup__select_wallet-item" key={key}>
                     <div
                       className="wallet-popup__select_wallet-item__content"
@@ -216,15 +230,23 @@ const WalletPopup = ({
                         if (isInstall()) {
                           const walletToken = await getWallet();
                           if (walletToken) {
-                            const walletData = {
-                              wallet: name,
-                              token: walletToken,
-                            };
-                            dispatch(setMainWallet(walletData));
-                            localStorage.setItem(
-                              "main_wallet",
-                              JSON.stringify(walletData)
-                            );
+                            if (user[`${type}_token`]) {
+                              const walletData = {
+                                wallet: type,
+                                token: walletToken,
+                              };
+                              dispatch(setMainWallet(walletData));
+                              localStorage.setItem(
+                                "main_wallet",
+                                JSON.stringify(walletData)
+                              );
+                            } else {
+                              addNotification({
+                                type: "warning",
+                                title: `Authorization is required`,
+                                message: `Authorization of the ${name} wallet on the account page is required`,
+                              });
+                            }
                           } else {
                             addNotification({
                               type: "danger",
@@ -246,12 +268,15 @@ const WalletPopup = ({
                         {name}
                       </span>
                     </div>
-                    {mainWallet.wallet === name && <CheckIcon />}
+                    {mainWallet.wallet === type && <CheckIcon />}
                   </div>
                 )
               )}
               <div className="wallet-popup__select_wallet-item">
-                <div className="wallet-popup__select_wallet-item__content">
+                <div
+                  className="wallet-popup__select_wallet-item__content"
+                  onClick={() => dispatch(setUser(""))}
+                >
                   <div className="wallet-popup__select_wallet-item__img">
                     <LogoutIcon />
                   </div>

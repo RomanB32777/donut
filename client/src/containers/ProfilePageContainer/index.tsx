@@ -129,48 +129,63 @@ const titles = [
   },
   {
     title: "profile_form_title_wallet",
-    Component: ({ copyToken }: { copyToken?: (token: string) => void }) => {
+    Component: ({ copyToken, getUser }: { copyToken?: (token: string) => void, getUser?: any }) => {
       const [metaMaskWallet, setMetaMaskWallet] = useState<null | string>(null);
       const [tronWallet, setTronWallet] = useState<null | string>(null);
       const user = useSelector((state: any) => state.user);
       const dispatch = useDispatch();
 
       const getMetaWallet = async () => {
-        if (metamaskWalletIsIntall()) {
-          const walletMeta = await getMetamaskWallet();
-          if (walletMeta) {
-            setMetaMaskWallet(walletMeta);
-            const isExistUser = await checkIsExistUser(walletMeta);
-            if (!isExistUser)
-              await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
-                type_wallet: "metamask",
-                token: walletMeta,
-              });
-          }
-        }
+        user.metamask_token && setMetaMaskWallet(user.metamask_token);
+        user.tron_token && setTronWallet(user.tron_token);
 
-        if (tronWalletIsIntall()) {
-          const walletTron = getTronWallet();
-          if (walletTron) {
-            setTronWallet(walletTron);
-            const isExistUser = await checkIsExistUser(walletTron);
-            if (!isExistUser)
-              await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
-                type_wallet: "tron",
-                token: walletTron,
-              });
-          }
-        }
+
+        // if (metamaskWalletIsIntall()) {
+        //   const walletMeta = await getMetamaskWallet();
+        //   if (walletMeta) {
+        //     setMetaMaskWallet(walletMeta);
+        //     const isExistUser = await checkIsExistUser(walletMeta);
+        //     if (!isExistUser)
+        //       await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
+        //         type_wallet: "metamask",
+        //         token: walletMeta,
+        //       });
+        //   }
+        // }
+
+        // if (tronWalletIsIntall()) {
+        //   const walletTron = getTronWallet();
+        //   if (walletTron) {
+        //     setTronWallet(walletTron);
+        //     const isExistUser = await checkIsExistUser(walletTron);
+        //     if (!isExistUser)
+        //       await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
+        //         type_wallet: "tron",
+        //         token: walletTron,
+        //       });
+        //   }
+        // }
       };
 
       useEffect(() => {
         getMetaWallet();
-      }, []);
+      }, [user]);
 
       const registrationWalletClick = async (walletType: string) => {
         if (walletType === "metamask") {
           if (metamaskWalletIsIntall()) {
-            await getMetamaskWallet();
+            const metamaskWallet = await getMetamaskWallet();
+            if (metamaskWallet) {
+              const isExistUser = await checkIsExistUser(metamaskWallet);
+              if (!isExistUser) {
+                await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
+                  type_wallet: "metamask",
+                  token: metamaskWallet,
+                });
+                getUser && getUser(getTronWallet());
+                dispatch(tryToGetUser(getTronWallet()));
+              }
+            }
           } else {
             dispatch(openAuthMetamaskModal());
           }
@@ -179,7 +194,15 @@ const titles = [
             const wallet = getTronWallet();
             if (wallet) {
               const isExistUser = await checkIsExistUser(wallet);
-              console.log("test", isExistUser);
+              if (!isExistUser) {
+                await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
+                  type_wallet: "tron",
+                  token: wallet,
+                });
+                const metaWallet = await getMetamaskWallet();
+                getUser && getUser(metaWallet);
+                dispatch(tryToGetUser(metaWallet));
+              }
             }
           } else {
             dispatch(openAuthTronModal());
@@ -189,7 +212,7 @@ const titles = [
 
       return (
         <div>
-          {tronWalletIsIntall() ? (
+          {tronWalletIsIntall() && user.tron_token ? (
             <span
               onClick={() => copyToken && tronWallet && copyToken(tronWallet)}
             >
@@ -213,7 +236,7 @@ const titles = [
               <img src={TronlinkIcon} alt="TronlinkIcon" />
             </div>
           )}
-          {metamaskWalletIsIntall() ? (
+          {metamaskWalletIsIntall() && user.metamask_token ? (
             <span
               onClick={() =>
                 copyToken && metaMaskWallet && copyToken(metaMaskWallet)
@@ -275,7 +298,7 @@ const ProfilePageContainer = () => {
   const user = useSelector((state: any) => state.user);
 
   const [form, setForm] = useState<any>({
-    tron_token: "",
+    // tron_token: "",
     person_name: "",
     user_description: "",
     twitter: "",
@@ -283,6 +306,7 @@ const ProfilePageContainer = () => {
     google: "",
     discord: "",
     avatarlink: "",
+    backgroundlink: ""
   });
 
   const [isChanged, setIsChanged] = useState<boolean>(false);
@@ -351,8 +375,12 @@ const ProfilePageContainer = () => {
       setFileName("");
       setFile(null);
       setIsChanged(false);
-      getUser(getTronWallet());
-      dispatch(tryToGetUser(getTronWallet()));
+
+      const metaWallet = await getMetamaskWallet();
+      getUser(getTronWallet() || metaWallet);
+      dispatch(tryToGetUser(getTronWallet() || metaWallet));
+
+
       addSuccessNotification("Data saved successfully")
     } catch (error) {
       addNotification({
@@ -412,6 +440,7 @@ const ProfilePageContainer = () => {
                 if (title.includes("wallet"))
                   props = {
                     copyToken,
+                    getUser,
                   };
                 if (title.includes("name"))
                   props = {
@@ -530,7 +559,7 @@ const ProfilePageContainer = () => {
                 saveBtn={false}
                 isEditMode
                 sendBannerFile={sendBannerFile}
-                imgLink={form.avatarlink}
+                imgLink={form.backgroundlink}
                 setIsChanged={setIsChanged}
               />
             </div>

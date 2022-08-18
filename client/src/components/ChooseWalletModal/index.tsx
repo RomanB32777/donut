@@ -30,14 +30,18 @@ const ChooseWalletModal = () => {
   const registrationWalletClick = async (walletType: string) => {
     if (walletType === "metamask") {
       if (metamaskWalletIsIntall()) {
-        const wallet = await getMetamaskWallet();
-        if (wallet) {
-          dispatch(setMainWallet(wallet));
-          const isExist = await checkIsExistUser(wallet);
+        const walletToken = await getMetamaskWallet();
+        if (walletToken) {
+          const walletData = {
+            wallet: "metamask",
+            token: walletToken,
+          };
+          dispatch(setMainWallet(walletData));
+          const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             dispatch(openRegistrationModal());
           } else {
-            dispatch(tryToGetUser(wallet));
+            dispatch(tryToGetUser(walletToken));
             navigate(routes.profile);
             dispatch(closeModal());
           }
@@ -47,14 +51,18 @@ const ChooseWalletModal = () => {
       }
     } else {
       if (tronWalletIsIntall()) {
-        const wallet = getTronWallet();
-        if (wallet) {
-          dispatch(setMainWallet(wallet));
-          const isExist = await checkIsExistUser(wallet);
+        const walletToken = getTronWallet();
+        if (walletToken) {
+          const walletData = {
+            wallet: "tron",
+            token: walletToken,
+          };
+          dispatch(setMainWallet(walletData));
+          const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             dispatch(openRegistrationModal());
           } else {
-            dispatch(tryToGetUser(wallet));
+            dispatch(tryToGetUser(walletToken));
             navigate(routes.profile);
             dispatch(closeModal());
           }

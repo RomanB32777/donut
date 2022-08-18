@@ -75,3 +75,24 @@ export const checkIsExistUser = async (token: string) => {
    if (data.notExist) return false;
    return true;
 };
+
+export const checkNotifPermissions = () => {
+  var status = false
+  if ("Notification" in window) {
+    if (localStorage.getItem("permissionsNotif")) {
+      if (localStorage.getItem("permissionsNotif") === "true")
+        status =  true
+    }
+    else if (Notification.permission === "granted")
+      status =  true
+     
+    else Notification.requestPermission((permission) => {
+      if (permission === "granted") {
+        status = true;
+      } else {
+        status = false;
+      }
+    });
+  }
+  return status
+}

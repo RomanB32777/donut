@@ -50,13 +50,13 @@ const RegistrationModal = () => {
       if (res.error) {
         setIsUsernameError(true);
       } else {
-        const wallet = mainWallet || tronWalletIsIntall() ? getTronWallet() : getMetamaskWallet();
+        const wallet = mainWallet.token || (tronWalletIsIntall() ? getTronWallet() : getMetamaskWallet());
         wallet
           ? postData("/api/user/create-user", {
               role: choosenRole,
               username: username,
               token: wallet,
-              typeWallet: tronWalletIsIntall() ? "tron" : "metamask"
+              typeWallet: mainWallet.wallet || (tronWalletIsIntall() ? "tron" : "metamask")
             }).then((res) => {
               dispatch(tryToGetUser(wallet));
               navigate(routes.profile);

@@ -64,7 +64,7 @@ const messages = {
         // page titles
             page_title_my_profile: 'MY PROFILE',
             page_title_badges: 'BADGES',
-            page_title_notifications: 'NOTIFICATIONS',
+            page_title_notifications: 'ALERTS',
             page_title_creators: 'CREATORS',
             page_title_followers: 'FOLLOWERS',
             page_title_following: 'FOLLOWING',
