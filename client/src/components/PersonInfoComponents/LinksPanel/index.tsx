@@ -1,4 +1,4 @@
-import { DiscordIcon, FacebookIcon, TwitterIcon, YoutubeIcon } from "../../../icons/icons";
+import { FacebookIcon, InstagramIcon, TwitchIcon, TwitterIcon, YoutubeIcon } from "../../../icons/icons";
 
 import './styles.sass'
 
@@ -6,7 +6,8 @@ const LinksPanel = (props: {
     twitter: string;
     facebook: string;
     youtube: string;
-    discord: string
+    twitch: string;
+    instagram: string;
 }) => {
 
     return (
@@ -47,13 +48,24 @@ const LinksPanel = (props: {
             }
 
             {
-                props.discord && props.discord.length>0
+                props.twitch && props.twitch.length>0
                 &&
                 <a
-                    href={props.discord}
+                    href={props.twitch}
                     className='filled'
                 >
-                    <DiscordIcon/>
+                    <TwitchIcon/>
+                </a>
+            }
+
+{
+                props.instagram && props.instagram.length>0
+                &&
+                <a
+                    href={props.instagram}
+                    className='filled'
+                >
+                    <InstagramIcon/>
                 </a>
             }
 

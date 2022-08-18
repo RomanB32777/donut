@@ -1,5 +1,17 @@
 @use '../../commonStyles/variables'
 
+.navbar-banner
+    font-family: variables.$jakarta-font
+    font-style: normal
+    font-weight: 700
+    font-size: 20px
+    line-height: 24px
+    color: variables.$white-color
+    background: variables.$black-color
+    text-align: center
+    width: 100%
+    padding: 16px 0
+    
 .navbar-wrapper
     width: 100%
     height: 92px
@@ -10,6 +22,7 @@
     justify-content: center
 
     background: variables.$grey-background-color
+
 
     .navbar
         max-width: 1170px
@@ -211,6 +224,8 @@
         color: variables.$white-color
         overflow: hidden
         text-overflow: ellipsis
+        &-list
+            max-height: 250px
         &-item
             margin-bottom: 5px 
         &-link

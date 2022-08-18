@@ -179,13 +179,13 @@ class UserController {
 
     async editUser(req, res) {
         try {
-            const { user_id, person_name, twitter, google, facebook, discord, user_description } = req.body
+            const { user_id, person_name, twitter, google, facebook, twitch, instagram, user_description } = req.body
             const user = await db.query(`SELECT * FROM users WHERE id = $1`, [user_id])
             let table = 'backers'
             if (user.rows[0].roleplay === 'creators') {
                 table = 'creators'
             }
-            const editedUser = await db.query(`UPDATE ${table} SET person_name = $1, twitter = $2, google = $3, facebook = $4, discord = $5, user_description = $6 WHERE user_id = $7 RETURNING *`, [person_name, twitter, google, facebook, discord, user_description, user.rows[0].id])
+            const editedUser = await db.query(`UPDATE ${table} SET person_name = $1, twitter = $2, google = $3, facebook = $4, instagram = $5, user_description = $6, twitch = $7 WHERE user_id = $8 RETURNING *`, [person_name, twitter, google, facebook, instagram, user_description, twitch, user.rows[0].id])
             res.status(200).json(editedUser)
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })

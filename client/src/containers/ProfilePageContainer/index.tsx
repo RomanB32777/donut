@@ -15,8 +15,10 @@ import getTronWallet, {
 import {
   DiscordIcon,
   FacebookIcon,
+  InstagramIcon,
   LargeImageIcon,
   TronIcon,
+  TwitchIcon,
   TwitterIcon,
   UploadIcon,
   YoutubeIcon,
@@ -270,24 +272,29 @@ const titles = [
 
 const socials = [
   {
-    title: "facebook",
-    icon: <FacebookIcon />,
-    placeholder: "Your Facebook profile link",
-  },
-  {
     title: "google",
     icon: <YoutubeIcon />,
     placeholder: "Your Youtube profile link",
   },
   {
+    title: "twitch",
+    icon: <TwitchIcon />,
+    placeholder: "Your Twitch profile link",
+  },
+  {
+    title: "instagram",
+    icon: <InstagramIcon />,
+    placeholder: "Your Instagram profile link",
+  },
+  {
+    title: "facebook",
+    icon: <FacebookIcon />,
+    placeholder: "Your Facebook profile link",
+  },
+  {
     title: "twitter",
     icon: <TwitterIcon />,
     placeholder: "Your Twitter profile link",
-  },
-  {
-    title: "discord",
-    icon: <DiscordIcon />,
-    placeholder: "Your Discord profile link",
   },
 ];
 
@@ -304,7 +311,8 @@ const ProfilePageContainer = () => {
     twitter: "",
     facebook: "",
     google: "",
-    discord: "",
+    instagram: "",
+    twitch: "",
     avatarlink: "",
     backgroundlink: ""
   });

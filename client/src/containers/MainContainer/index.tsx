@@ -215,7 +215,7 @@ const MainContainer = () => {
         <div className="main-container__bottom-panel">
           <div>
             <span>
-              {/* <FormattedMessage id='mainpage_bottom_panel_title' /> */}
+              <FormattedMessage id='mainpage_bottom_panel_title' />
             </span>
             <BlueButton
               onClick={() => {

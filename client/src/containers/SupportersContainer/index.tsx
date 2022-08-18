@@ -13,7 +13,7 @@ import CanvasJSReact from "../../assets/canvasjs.react";
 import { FormattedMessage } from "react-intl";
 import { url } from "../../consts";
 import Calendar from "../../components/Calendar";
-import { addSuccessNotification } from "../../utils";
+import { addNotification, addSuccessNotification } from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 //var CanvasJSReact = require('./canvasjs.react');
 var CanvasJS = CanvasJSReact.CanvasJS;
@@ -568,11 +568,15 @@ const SupportersContainer = () => {
           </div>
           <div
             className="icon"
-            onClick={() =>
+            onClick={() => {
               navigator.clipboard.writeText(
                 `${baseURL}/donat/` + user.username
-              )
-            }
+              );
+              addNotification({
+                type: "success",
+                title: "Link successfully copied",
+              });
+            }}
           >
             <CopyIcon />
           </div>

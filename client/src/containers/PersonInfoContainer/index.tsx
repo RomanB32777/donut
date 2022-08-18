@@ -267,7 +267,8 @@ const PersonInfoContainer = () => {
             twitter={data.twitter}
             facebook={data.facebook}
             youtube={data.google}
-            discord={data.discord}
+            instagram={data.instagram}
+            twitch={data.twitch}
           />
 
           <div className="person-info-container__information-wrapper__information__buttons">

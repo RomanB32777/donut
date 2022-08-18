@@ -13,7 +13,7 @@ const messages = {
             registration_modal_input_username_error: 'Unfortunately, this username is already busy. Enter another one',
         // mainpage
             mainpage_main_title: 'Grab your Donutz!',
-            mainpage_main_button: 'Sign up with wallets',
+            mainpage_main_button: 'Sign up',
             mainpage_main_button_tronlink: 'Sign up with TronLink',
             mainpage_main_button_metamask: ' Sign up with Metamask',
             mainpage_main_button_logged: 'Go to profile',
@@ -39,7 +39,7 @@ const messages = {
             mainpage_donut_mocup_title: '1% bite is all it takes',
             mainpage_donut_mocup_subtitle: 'It’s the lowest commission on the market',
 
-            mainpage_bottom_panel_title: 'Let your audience support you and  enjoy your Donutz',
+            mainpage_bottom_panel_title: 'Are you ready to get your tasty Crypto Donutz?',
             mainpage_bottom_panel_button: 'Sign-up now',
 
         //navbar

@@ -46,13 +46,41 @@ const NotificationsPopup = ({ user }: { user: number }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const notifications = useSelector((state: any) => state.notifications);
-
-  console.log(notifications);
+  const [moreVisibleList, setMoreVisibleList] = useState(false);
 
   useEffect(() => {
     dispatch(getNotifications(user));
   }, [user]);
-  console.log(notifications);
+
+  const renderNotifList = (n: any) => (
+    <div className="notifications-popup__content-item" key={n.id}>
+      {n.donation &&
+        getNotificationMessage(
+          n.donation.creator_id === user ? "donat_creator" : "donat_supporter",
+          n.donation.username,
+          n.donation.sum_donation
+        )}
+      {n.follow &&
+        getNotificationMessage(
+          n.follow.creator_id === user
+            ? "following_creator"
+            : "following_backer",
+          n.follow.creator_id === user
+            ? n.follow.backer_username
+            : n.follow.creator_username
+        )}
+      {n.badge &&
+        getNotificationMessage(
+          n.badge.owner_user_id === user
+            ? "add_badge_creator"
+            : "add_badge_supporter",
+          n.badge.owner_user_id === user
+            ? n.badge.supporter_username
+            : n.badge.creator_username,
+          n.badge.badge_name
+        )}
+    </div>
+  );
 
   return (
     <div
@@ -63,42 +91,23 @@ const NotificationsPopup = ({ user }: { user: number }) => {
       }}
     >
       <div className="notifications-popup__content">
-        {notifications &&
-          Boolean(notifications.length) &&
-          notifications.slice(0, 5).map((n: any) => (
-            <div className="notifications-popup__content-item" key={n.id}>
-              {n.donation &&
-                getNotificationMessage(
-                  n.donation.creator_id === user
-                    ? "donat_creator"
-                    : "donat_supporter",
-                  n.donation.username,
-                  n.donation.sum_donation
-                )}
-              {n.follow &&
-                getNotificationMessage(
-                  n.follow.creator_id === user
-                    ? "following_creator"
-                    : "following_backer",
-                  n.follow.creator_id === user
-                    ? n.follow.backer_username
-                    : n.follow.creator_username
-                )}
-              {n.badge &&
-                getNotificationMessage(
-                  n.badge.owner_user_id === user
-                    ? "add_badge_creator"
-                    : "add_badge_supporter",
-                  n.badge.owner_user_id === user
-                    ? n.badge.supporter_username
-                    : n.badge.creator_username,
-                  n.badge.badge_name
-                )}
-            </div>
-          ))}
+        <div
+          className="notifications-popup__content-list"
+          style={{
+            overflowY: notifications.length >= 9 ? "scroll" : "auto",
+          }}
+        >
+          {notifications &&
+            Boolean(notifications.length) &&
+            notifications.slice(0, 9).map(renderNotifList)}
+          {moreVisibleList &&
+            Boolean(notifications.length) &&
+            notifications.slice(10).length &&
+            notifications.slice(10).map(renderNotifList)}
+        </div>
         <div
           className="notifications-popup__content-link"
-          onClick={() => navigate(routes.notifications)}
+          onClick={() => setMoreVisibleList(true)}
         >
           Load more
         </div>
@@ -138,6 +147,7 @@ const WalletPopup = ({
 
   const dispatch = useDispatch();
   const mainWallet = useSelector((state: any) => state.wallet);
+  const navigate = useNavigate();
 
   const getTronUsdKoef = async () => {
     const res: any = await axiosClient.get(
@@ -151,6 +161,25 @@ const WalletPopup = ({
     if (walletData) {
       dispatch(setMainWallet(JSON.parse(walletData)));
     }
+
+    const clickHandler = (event: any) => {
+      if (
+        event.target &&
+        event.target.className &&
+        (event.target.className.includes("select_wallet") ||
+          event.target.className.includes("popup__header"))
+      ) {
+        return true;
+      } else {
+        setOpenSelect(false);
+      }
+    };
+    document.addEventListener("click", clickHandler);
+
+    return () => {
+      document.removeEventListener("click", clickHandler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getBalance = async () => {
@@ -275,7 +304,10 @@ const WalletPopup = ({
               <div className="wallet-popup__select_wallet-item">
                 <div
                   className="wallet-popup__select_wallet-item__content"
-                  onClick={() => dispatch(setUser(""))}
+                  onClick={() => {
+                    dispatch(setUser(""));
+                    navigate(routes.main);
+                  }}
                 >
                   <div className="wallet-popup__select_wallet-item__img">
                     <LogoutIcon />
@@ -333,6 +365,10 @@ const Navbar = () => {
           {
             title: "Account",
             link: routes.profile,
+          },
+          {
+            title: "Alerts",
+            link: routes.notifications,
           },
           {
             title: "Collections",
@@ -420,6 +456,9 @@ const Navbar = () => {
 
   return (
     <>
+      <div className="navbar-banner">
+        Beta version. Working on Tron Nile Testnet and Polygon Mumbai Testnet
+      </div>
       <div className="navbar-wrapper">
         <div className="navbar">
           <div className="navbar__left-side">
@@ -522,7 +561,7 @@ const Navbar = () => {
             <div
               className="profile-popup-wrapper"
               style={{
-                height: user.roleplay === "creators" ? "395px" : "305px",
+                height: user.roleplay === "creators" ? "440px" : "305px",
                 display: "flex",
                 flexDirection: "column",
               }}
