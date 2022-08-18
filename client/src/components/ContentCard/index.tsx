@@ -5,7 +5,7 @@ import { url } from "../../consts";
 import { LargeImageIcon, TrashBinIcon } from "../../icons/icons";
 import "./styles.sass";
 
-import testIMG from '../../assets/person.png'
+import testIMG from "../../assets/person.png";
 
 interface IContentCard {
   name: string;
@@ -26,33 +26,33 @@ const ContentCard = (prop: { data: IContentCard; onClick?: () => void }) => {
     <div
       className={clsx("content-panel", { ableToDelete })}
       style={{
-        cursor: prop.data.link ? "pointer" : "auto",
+        cursor:  "pointer" // prop.data.link ? : "auto",
       }}
     >
-      <a
-        href={prop.data.link}
-        target="_blank"
-        rel="noreferrer"
-      >
+      <a href={prop.data.link} target="_blank" rel="noreferrer" className="content-panel__Link">
         <div className="content-panel__image">
           {prop.data.image && prop.data.image.length > 0 ? (
-            <img src={testIMG
-              // url + prop.data.image
-            } alt={prop.data.name} />
+            <img
+              src={
+                // testIMG
+                url + prop.data.image
+              }
+              alt={prop.data.name}
+            />
           ) : (
             <LargeImageIcon />
           )}
         </div>
         <div className="content-panel__info">
-          <span className="title">{prop.data.name}</span>
-          <span className="subtitle">{prop.data.desc}</span>
+          <span className="content-panel__info-title">{prop.data.name}</span>
+          <span className="content-panel__info-subtitle">{prop.data.desc}</span>
         </div>
       </a>
-      {/* {ableToDelete && ( */}
-      <div className="delete-icon" onClick={prop.onClick}>
-        <TrashBinIcon />
-      </div>
-      {/* )} */}
+      {ableToDelete && (
+        <div className="content-panel__delete-icon" onClick={prop.onClick}>
+          <TrashBinIcon />
+        </div>
+      )}
     </div>
   );
 };

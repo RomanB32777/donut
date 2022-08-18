@@ -5,6 +5,7 @@ const routes = {
     createNewBadge: '/create-new-badge',
     badges: '/badges',
     notifications: '/notifications',
+    donat: '/donat/:name',
     supporters: '/supporters/',
     nft: '/nft',
     createNft: '/create-nft',

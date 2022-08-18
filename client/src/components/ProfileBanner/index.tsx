@@ -99,7 +99,7 @@ const ProfileBanner = ({
         imgLink) && (
         <img
           src={
-            imagebase64 || `${url + data.backgroundlink}` || `${url + imgLink}`
+            imagebase64 || `${url + imgLink}` || `${url + data.backgroundlink}`
           }
           alt="banner"
         />

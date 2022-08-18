@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import BlueButton from "../../commonComponents/BlueButton";
 import LinksPanel from "../../components/PersonInfoComponents/LinksPanel";
@@ -20,10 +20,12 @@ import { PencilIcon, UploadIcon } from "../../icons/icons";
 import { tryToGetUser } from "../../store/types/User";
 import { addAuthNotification } from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
+import routes from "../../routes";
 
 const PersonInfoContainer = () => {
   const dispatch = useDispatch();
   const socket = useContext(WebSocketContext);
+  const navigate = useNavigate()
 
   const data = useSelector((state: any) => state.personInfo).main_info;
   const backer = useSelector((state: any) => state.user);
@@ -291,9 +293,10 @@ const PersonInfoContainer = () => {
                   fontSize="18px"
                   padding="6px 30px"
                   onClick={() => {
-                    tron_token
-                      ? dispatch(openSupportModal())
-                      : addAuthNotification();
+                    navigate(`/donat/${data.username}`)
+                    // tron_token
+                    //   ? dispatch(openSupportModal())
+                    //   : addAuthNotification();
                   }}
                 />
               </>

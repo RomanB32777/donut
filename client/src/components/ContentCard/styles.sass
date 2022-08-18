@@ -11,6 +11,7 @@
     position: relative
     transition: all .4s ease
     background: variables.$grey-background-color
+
     a
         text-decoration: none
         outline: none
@@ -36,7 +37,7 @@
         overflow: hidden
         padding: 13px
         max-height: 100px
-        .title
+        &-title
             font-family: variables.$inter-font
             font-style: normal
             font-weight: 700
@@ -50,7 +51,7 @@
             text-decoration: none
             outline: none
             border: none
-        .subtitle
+        &-subtitle
             max-width: 100%
             max-height: 44px
             text-overflow: ellipsis
@@ -70,21 +71,20 @@
             -webkit-box-orient: vertical
             text-overflow: ellipsis
 
-.delete-icon
-    opacity: 0
-    transition: all .6s ease-in-out
-    position: absolute
-    box-sizing: border-box
-    padding: 8px
-    border-radius: 5px
-    cursor: pointer
-    right: 24px
-    top: 24px
-    background: variables.$grey-background-color
-    z-index: 100
+    &__delete-icon
+        opacity: 0
+        transition: all .6s ease-in-out
+        position: absolute
+        box-sizing: border-box
+        padding: 8px
+        border-radius: 5px
+        cursor: pointer
+        right: 24px
+        top: 24px
+        background: variables.$grey-background-color
+        z-index: 100
 
 .ableToDelete
-
     &:hover
         img
             opacity: 0.6

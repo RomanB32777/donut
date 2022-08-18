@@ -1,8 +1,8 @@
 create TABLE users(
     id SERIAL PRIMARY KEY,
     tron_token VARCHAR(255) DEFAULT '',
-    matamask_token VARCHAR(255) DEFAULT '',
-    username VARCHAR(255) DEFAULT '',
+    metamask_token VARCHAR(255) DEFAULT '',
+    username VARCHAR(255) UNIQUE DEFAULT '',
     roleplay VARCHAR(15) DEFAULT ''
 );
 

@@ -18,7 +18,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (user && user.user_id) {
       const socket = io(baseURL, {
-        path: '/sockt/',
+        path: "/sockt/",
         query: {
           userId: user.user_id,
         },
@@ -39,16 +39,56 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
 
       socket.on("new_notification", (data) => {
         const { type } = data;
-        const title = type === "donat" ? "New donut" : "New following";
-        const message =
-          type === "donat"
-            ? getNotificationMessage("donat_creater", data.supporter, data.sum)
-            : getNotificationMessage("following_creater", data.follower);
-        addNotification({
-          type: "info",
-          title,
-          message,
-        });
+        switch (type) {
+          case "donat":
+            addNotification({
+              type: "info",
+              title: "New donut",
+              message: getNotificationMessage(
+                "donat_creator",
+                data.supporter,
+                data.sum
+              ),
+            });
+            break;
+
+          case "following":
+            addNotification({
+              type: "info",
+              title: "New following",
+              message: getNotificationMessage(
+                "following_creator",
+                data.follower
+              ),
+            });
+            break;
+
+          case "add_badge":
+            addNotification({
+              type: "info",
+              title: "New badge",
+              message: getNotificationMessage(
+                "add_badge_supporter",
+                data.supporter,
+                data.badgeName
+              ),
+            });
+            break;
+
+          case "remove_badge":
+            addNotification({
+              type: "info",
+              title: "Remove badge",
+              message: getNotificationMessage(
+                "remove_badge_supporter",
+                data.supporter
+              ),
+            });
+            break;
+
+          default:
+            break;
+        }
         dispatch(getNotifications(user.user_id));
       });
 

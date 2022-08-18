@@ -6,6 +6,8 @@ import {
   PersonCardIcon,
 } from "../../icons/icons";
 import getTronWallet, {
+  getMetamaskWallet,
+  metamaskWalletIsIntall,
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
 import postData from "../../functions/postData";
@@ -13,6 +15,7 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import {
   openAuthTronModal,
+  openAuthWalletsModal,
   openRegistrationModal,
 } from "../../store/types/Modal";
 import routes from "../../routes";
@@ -59,15 +62,13 @@ const MainContainer = () => {
   const dispatch = useDispatch();
 
   const checkIsExist = async (token: string) => {
-    postData("/api/user/check-user-exist/", { tron_token: token }).then(
-      (data) => {
-        if (data.notExist) {
-          dispatch(openRegistrationModal());
-        } else {
-          navigate(routes.profile);
-        }
+    postData("/api/user/check-user-exist/", { token }).then((data) => {
+      if (data.notExist) {
+        dispatch(openRegistrationModal());
+      } else {
+        navigate(routes.profile);
       }
-    );
+    });
   };
 
   const user: any = useSelector((state: any) => state.user);
@@ -87,13 +88,17 @@ const MainContainer = () => {
           </span>
           <BlueButton
             formatId={
-              user && user.id && user.username && user.username.length > 0
+              user && user.id
                 ? "mainpage_main_button_logged"
                 : "mainpage_main_button"
             }
             onClick={() => {
-              if (tronWalletIsIntall()) {
-                const wallet = getTronWallet();
+              if (tronWalletIsIntall() && metamaskWalletIsIntall() && !user.id) {
+                dispatch(openAuthWalletsModal());
+              } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
+                const wallet = tronWalletIsIntall()
+                  ? getTronWallet()
+                  : getMetamaskWallet();
                 if (user && user.id) {
                   navigate(routes.profile);
                 } else {
@@ -104,7 +109,7 @@ const MainContainer = () => {
                   }
                 }
               } else {
-                dispatch(openAuthTronModal());
+                dispatch(openAuthWalletsModal());
               }
             }}
             padding={document.body.clientWidth > 640 ? "23px" : "17px"}

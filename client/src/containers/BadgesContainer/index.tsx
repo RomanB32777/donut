@@ -54,7 +54,25 @@ const BadgesContainer = () => {
     res.status === 200 && user.id && getBadges(user.id);
   };
 
-  console.log(badgesList);
+  useEffect(() => {
+    const clickHandler = (event: any) => {
+      if (
+        event.target &&
+        event.target.className &&
+        (!event.target.className.includes("badge-panel") ||
+          !event.target.className.includes("content-panel"))
+      ) {
+        console.log("LOL");
+        setShowedPopupId(null);
+      }
+    };
+    document.addEventListener("click", clickHandler);
+
+    return () => {
+      document.removeEventListener("click", clickHandler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="badges-container">
@@ -84,13 +102,17 @@ const BadgesContainer = () => {
             ) => (
               <div
                 key={"badge-panel" + rowIndex}
+                className="badge-panel"
                 style={{
                   marginRight:
                     rowIndex % 4 !== 3 ? (1170 - 220 * 4) / 3 + "px" : "0px",
                   position: "relative",
                 }}
-                onMouseEnter={() => setShowedPopupId(rowIndex)}
-                onMouseLeave={() => setShowedPopupId(null)}
+                onClick={() => {
+                  showedPopupId === rowIndex
+                    ? setShowedPopupId(null)
+                    : setShowedPopupId(rowIndex);
+                }}
               >
                 <ContentCard
                   data={{
@@ -102,8 +124,13 @@ const BadgesContainer = () => {
                 />
 
                 {showedPopupId === rowIndex ? (
-                  <div className="badges-container__table__main__row__popup">
-                    <div className="row-popup__image">
+                  <div
+                    className="badges-container__table__main__row__popup"
+                    style={{
+                      [(rowIndex + 1) % 4 === 0 ? "right" : "left"]: "230px",
+                    }}
+                  >
+                    {/* <div className="row-popup__image">
                       {badge_image ? (
                         <img
                           src={
@@ -115,7 +142,7 @@ const BadgesContainer = () => {
                       ) : (
                         <LargeImageIcon />
                       )}
-                    </div>
+                    </div> */}
                     <div className="row-popup__text">
                       <div className="title">{badge_name}</div>
                       <div className="desc">{badge_desc}</div>

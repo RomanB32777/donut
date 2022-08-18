@@ -21,13 +21,19 @@ import {
   UploadIcon,
   YoutubeIcon,
 } from "../../icons/icons";
-import MetaMaskFox from "../../assets/MetaMask_Fox.png";
 import routes from "../../routes";
 import { setUser, tryToGetUser } from "../../store/types/User";
-import { addNotification } from "../../utils";
+import { addNotification, addSuccessNotification, checkIsExistUser } from "../../utils";
+
+import ProfileBanner from "../../components/ProfileBanner";
+import MetaMaskFox from "../../assets/MetaMask_Fox.png";
+import TronlinkIcon from "../../assets/tronlink.png";
 
 import "./styles.sass";
-import ProfileBanner from "../../components/ProfileBanner";
+import {
+  openAuthMetamaskModal,
+  openAuthTronModal,
+} from "../../store/types/Modal";
 
 const titles = [
   {
@@ -126,16 +132,34 @@ const titles = [
     Component: ({ copyToken }: { copyToken?: (token: string) => void }) => {
       const [metaMaskWallet, setMetaMaskWallet] = useState<null | string>(null);
       const [tronWallet, setTronWallet] = useState<null | string>(null);
+      const user = useSelector((state: any) => state.user);
+      const dispatch = useDispatch();
 
       const getMetaWallet = async () => {
         if (metamaskWalletIsIntall()) {
           const walletMeta = await getMetamaskWallet();
-          walletMeta && setMetaMaskWallet(walletMeta);
+          if (walletMeta) {
+            setMetaMaskWallet(walletMeta);
+            const isExistUser = await checkIsExistUser(walletMeta);
+            if (!isExistUser)
+              await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
+                type_wallet: "metamask",
+                token: walletMeta,
+              });
+          }
         }
 
         if (tronWalletIsIntall()) {
           const walletTron = getTronWallet();
-          walletTron && setTronWallet(walletTron);
+          if (walletTron) {
+            setTronWallet(walletTron);
+            const isExistUser = await checkIsExistUser(walletTron);
+            if (!isExistUser)
+              await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
+                type_wallet: "tron",
+                token: walletTron,
+              });
+          }
         }
       };
 
@@ -143,14 +167,34 @@ const titles = [
         getMetaWallet();
       }, []);
 
+      const registrationWalletClick = async (walletType: string) => {
+        if (walletType === "metamask") {
+          if (metamaskWalletIsIntall()) {
+            await getMetamaskWallet();
+          } else {
+            dispatch(openAuthMetamaskModal());
+          }
+        } else {
+          if (tronWalletIsIntall()) {
+            const wallet = getTronWallet();
+            if (wallet) {
+              const isExistUser = await checkIsExistUser(wallet);
+              console.log("test", isExistUser);
+            }
+          } else {
+            dispatch(openAuthTronModal());
+          }
+        }
+      };
+
       return (
         <div>
-          {tronWalletIsIntall() && (
+          {tronWalletIsIntall() ? (
             <span
               onClick={() => copyToken && tronWallet && copyToken(tronWallet)}
             >
               <div className="wallet_row">
-                <TronIcon />
+                <img src={TronlinkIcon} alt="TronlinkIcon" />
                 <span>
                   {tronWallet && tronWallet.length > 20
                     ? tronWallet.slice(0, 6) +
@@ -160,8 +204,16 @@ const titles = [
                 </span>
               </div>
             </span>
+          ) : (
+            <div
+              className="wallet_connect"
+              onClick={() => registrationWalletClick("tronlink")}
+            >
+              <span>Connect TronLink</span>
+              <img src={TronlinkIcon} alt="TronlinkIcon" />
+            </div>
           )}
-          {metamaskWalletIsIntall() && (
+          {metamaskWalletIsIntall() ? (
             <span
               onClick={() =>
                 copyToken && metaMaskWallet && copyToken(metaMaskWallet)
@@ -178,6 +230,14 @@ const titles = [
                 </span>
               </div>
             </span>
+          ) : (
+            <div
+              className="wallet_connect"
+              onClick={() => registrationWalletClick("metamask")}
+            >
+              <span>Connect Metamask</span>
+              <img src={MetaMaskFox} alt="MetaMaskFox" />
+            </div>
           )}
         </div>
       );
@@ -211,7 +271,6 @@ const socials = [
 const ProfilePageContainer = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const tron_wallet = getTronWallet();
 
   const user = useSelector((state: any) => state.user);
 
@@ -280,19 +339,28 @@ const ProfilePageContainer = () => {
   };
 
   const saveProfile = async () => {
-    await axiosClient.post("/api/user/user/edit/", {
-      ...form,
-      user_id: user.id,
-    });
-    if (imagebase64.length > 0) {
-      sendAvatarFile();
+    try {
+      await axiosClient.post("/api/user/user/edit/", {
+        ...form,
+        user_id: user.id,
+      });
+      if (imagebase64.length > 0) {
+        sendAvatarFile();
+      }
+      setSendBannerFile(true);
+      setFileName("");
+      setFile(null);
+      setIsChanged(false);
+      getUser(getTronWallet());
+      dispatch(tryToGetUser(getTronWallet()));
+      addSuccessNotification("Data saved successfully")
+    } catch (error) {
+      addNotification({
+        type: 'danger',
+        title: 'Error',
+        message: `An error occurred while saving data`
+      })
     }
-    setSendBannerFile(true);
-    setFileName("");
-    setFile(null);
-    setIsChanged(false);
-    getUser(getTronWallet());
-    dispatch(tryToGetUser(getTronWallet()));
   };
 
   const deleteProfile = async () => {

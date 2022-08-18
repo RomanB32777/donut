@@ -1,5 +1,5 @@
 import axiosClient, { baseURL } from "../../axiosClient";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import PageTitle from "../../commonComponents/PageTitle";
 import {
@@ -14,6 +14,7 @@ import { FormattedMessage } from "react-intl";
 import { url } from "../../consts";
 import Calendar from "../../components/Calendar";
 import { addSuccessNotification } from "../../utils";
+import { WebSocketContext } from "../../components/Websocket/WebSocket";
 //var CanvasJSReact = require('./canvasjs.react');
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -45,6 +46,8 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
     type: "",
     sort: "UP",
   });
+
+  const socket = useContext(WebSocketContext);
 
   const user = useSelector((state: any) => state.user);
 
@@ -143,8 +146,17 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
         `Badge added successfully to ${supporter.username}`
       );
       user.id && prop.getBadges(user.id);
+
+      socket &&
+        res.data &&
+        supporter &&
+        socket.emit("new_badge", {
+          supporter: { username: supporter.username, id: supporter.backer_id },
+          creator_id: res.data.assignedBadge.owner_user_id,
+          badgeID: res.data.assignedBadge.id,
+          badgeName: res.data.assignedBadge.badge_name,
+        });
     }
-    // const result = res.data;
   };
 
   const getPrice = async () => {
@@ -552,13 +564,13 @@ const SupportersContainer = () => {
             <FormattedMessage id="supporters_aud_info_subtitle" />
           </span>
           <div className="link">
-            https://cryptodonutz.xyz/creator/{user.username}
+            {baseURL}/donat/{user.username}
           </div>
           <div
             className="icon"
             onClick={() =>
               navigator.clipboard.writeText(
-                "https://cryptodonutz.xyz/creator/" + user.username
+                `${baseURL}/donat/` + user.username
               )
             }
           >

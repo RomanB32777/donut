@@ -33,7 +33,7 @@ app.use('/api/badge/', badgeRouter)
 app.use('/api/donation/', donationRouter)
 app.use('/api/nft/', nftRouter)
 
-function getActiveRooms(io) {
+const getActiveRooms = (io) => {
 	// Convert map into 2D list:
 	// ==> [['4ziBKG9XFS06NdtVAAAH', Set(1)], ['room1', Set(2)], ...]
 	const arr = Array.from(io.sockets.adapter.rooms);
@@ -47,7 +47,6 @@ io.on('connection', async (socket) => {
 	const { userId } = socket.handshake.query;
 	socket.join(userId);
 	// console.log('a user connected ', userId, socket.id);
-	// console.log(getActiveRooms(io));
 	socket.on('new_donat', async (data) => {
 		const { supporter, creator_id, sum, donationID } = data;
 		const rooms = getActiveRooms(io);
@@ -69,6 +68,30 @@ io.on('connection', async (socket) => {
 				socket.to(socketID).emit("new_notification", { type: 'following', follower: follower.username })
 			);
 			await db.query(`INSERT INTO notifications (follow, sender, recipient) values ($1, $2, $3);`, [followID, follower.id, creator_id])
+		}
+	});
+
+	socket.on('new_badge', async (data) => {
+		const { supporter, creator_id, badgeID, badgeName } = data;
+		const rooms = getActiveRooms(io);
+		if (rooms.length) {
+			const userSockets = rooms.find(({ room }) => +room === supporter.id).sockets;
+			userSockets && userSockets.length && userSockets.forEach(socketID =>
+				socket.to(socketID).emit("new_notification", { type: 'add_badge', supporter: supporter.username, badgeName })
+			);
+			await db.query(`INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3);`, [badgeID, creator_id, supporter.id])
+		}
+	});
+
+	socket.on('remove_badge', async (data) => {
+		const { supporter, creator_id, badgeID, badgeName } = data;
+		const rooms = getActiveRooms(io);
+		if (rooms.length) {
+			const userSockets = rooms.find(({ room }) => +room === supporter.id).sockets;
+			userSockets && userSockets.length && userSockets.forEach(socketID =>
+				socket.to(socketID).emit("new_notification", { type: 'remove_badge', supporter: supporter.username, badgeName })
+			);
+			await db.query(`INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3);`, [badgeID, creator_id, supporter.id])
 		}
 	});
 

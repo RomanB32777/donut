@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BlueButton from "../../commonComponents/BlueButton";
 
 import postData from "../../functions/postData";
@@ -11,7 +11,7 @@ import {
 } from "../../icons/icons";
 import { closeModal } from "../../store/types/Modal";
 import "./styles.sass";
-import getTronWallet from "../../functions/getTronWallet";
+import getTronWallet, { getMetamaskWallet, tronWalletIsIntall } from "../../functions/getTronWallet";
 import { useNavigate } from "react-router";
 import routes from "../../routes";
 import { setUser, tryToGetUser } from "../../store/types/User";
@@ -20,6 +20,7 @@ import { addNotification } from "../../utils";
 const RegistrationModal = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const mainWallet = useSelector((state: any) => state.wallet);
 
   useEffect(() => {
     const clickHandler = (event: React.MouseEvent<HTMLElement> | any) => {
@@ -49,14 +50,15 @@ const RegistrationModal = () => {
       if (res.error) {
         setIsUsernameError(true);
       } else {
-        const wallet = getTronWallet();
+        const wallet = mainWallet || tronWalletIsIntall() ? getTronWallet() : getMetamaskWallet();
         wallet
           ? postData("/api/user/create-user", {
               role: choosenRole,
               username: username,
-              tron_token: wallet,
+              token: wallet,
+              typeWallet: tronWalletIsIntall() ? "tron" : "metamask"
             }).then((res) => {
-              dispatch(tryToGetUser(getTronWallet()));
+              dispatch(tryToGetUser(wallet));
               navigate(routes.profile);
               dispatch(closeModal());
             })

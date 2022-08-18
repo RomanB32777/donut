@@ -1,10 +1,13 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import TronWalletImage from "../../assets/tronWallet";
+// import TronWalletImage from "../../assets/tronWallet";
 import { closeModal } from "../../store/types/Modal";
+import ChooseWalletModal from "../ChooseWalletModal";
 import "./styles.sass";
 
-const AuthModal = () => {
+declare type typeWallet = "all" | "Tronlink" | "Metamask";
+
+const AuthModal = ({ wallet }: { wallet: typeWallet }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -27,21 +30,36 @@ const AuthModal = () => {
   }, []);
 
   return (
-    <div className="auth-modal">
+    <div className={`auth-modal auth-modal_${wallet}`}>
       <span className="auth-modal__main-title">
-        Please login your Tronlink wallet
+        {wallet === "all"
+          ? "Choose the wallet"
+          : `Please login your ${wallet} wallet`}
       </span>
-      <span className="auth-modal__additional-title">
-        If you don’t have it, you can install by clicking the button below
-      </span>
-      <a
-        href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec"
-        target="_blank"
-        className="auth-modal__link"
-        rel="noreferrer"
-      >
-        Install Tronlink
-      </a>
+      {wallet === "all" ? (
+        <ChooseWalletModal />
+      ) : (
+        <>
+          <span className="auth-modal__additional-title">
+            If you don’t have it, you can install by clicking the button below
+          </span>
+          <a
+            href={
+              wallet === "Tronlink"
+                ? "https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec"
+                : "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+            }
+            target="_blank"
+            className="auth-modal__link"
+            rel="noreferrer"
+          >
+            Install {wallet}
+          </a>
+          <span className="auth-modal__additional-warning">
+            Reload the page after installing the extension
+          </span>
+        </>
+      )}
     </div>
   );
 };

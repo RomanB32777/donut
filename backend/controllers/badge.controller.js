@@ -54,8 +54,8 @@ class BadgeController {
             const contributor_user_id_list = existingBadge.rows[0].contributor_user_id_list
             const owners_quantity = existingBadge.rows[0].owners_quantity
             if (owners_quantity < quantity) {
-                const assignedBadge = await db.query('UPDATE badges SET owners_quantity = $1, contributor_user_id_list = $2 WHERE id = $3', [owners_quantity + 1, contributor_user_id_list + contributor_id + ' ', badge_id])
-                res.json(assignedBadge)
+                const assignedBadge = await db.query('UPDATE badges SET owners_quantity = $1, contributor_user_id_list = $2 WHERE id = $3 RETURNING *', [owners_quantity + 1, contributor_user_id_list + contributor_id + ' ', badge_id])
+                res.json({ assignedBadge: assignedBadge.rows[0] })
             } else {
                 res.json({ success: false })
             }
@@ -68,7 +68,7 @@ class BadgeController {
         try {
             const user_id = req.params.user_id
             const badges = await db.query(`SELECT * FROM badges WHERE contributor_user_id_list LIKE '%${user_id}%'`)
-            res.status(200).json({badges: badges.rows})
+            res.status(200).json({ badges: badges.rows })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }

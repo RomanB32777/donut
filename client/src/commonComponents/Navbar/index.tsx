@@ -25,7 +25,9 @@ import { useEffect, useState } from "react";
 import { url } from "../../consts";
 import { setUser } from "../../store/types/User";
 import {
+  openAuthMetamaskModal,
   openAuthTronModal,
+  openAuthWalletsModal,
   openRegistrationModal,
 } from "../../store/types/Modal";
 import postData from "../../functions/postData";
@@ -38,16 +40,19 @@ import MetaMaskIcon from "../../assets/MetaMask_Fox.png";
 
 import clsx from "clsx";
 import { setMainWallet } from "../../store/types/Wallet";
+import Web3 from "web3";
 
 const NotificationsPopup = ({ user }: { user: number }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const notifications = useSelector((state: any) => state.notifications);
 
+  console.log(notifications);
+
   useEffect(() => {
     dispatch(getNotifications(user));
   }, [user]);
-  // console.log(notificationsList);
+  console.log(notifications);
 
   return (
     <div
@@ -65,7 +70,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
               {n.donation &&
                 getNotificationMessage(
                   n.donation.creator_id === user
-                    ? "donat_creater"
+                    ? "donat_creator"
                     : "donat_supporter",
                   n.donation.username,
                   n.donation.sum_donation
@@ -73,11 +78,21 @@ const NotificationsPopup = ({ user }: { user: number }) => {
               {n.follow &&
                 getNotificationMessage(
                   n.follow.creator_id === user
-                    ? "following_creater"
+                    ? "following_creator"
                     : "following_backer",
                   n.follow.creator_id === user
                     ? n.follow.backer_username
                     : n.follow.creator_username
+                )}
+              {n.badge &&
+                getNotificationMessage(
+                  n.badge.owner_user_id === user
+                    ? "add_badge_creator"
+                    : "add_badge_supporter",
+                  n.badge.owner_user_id === user
+                    ? n.badge.supporter_username
+                    : n.badge.creator_username,
+                  n.badge.badge_name
                 )}
             </div>
           ))}
@@ -98,12 +113,14 @@ const wallets = [
     img: TronLinkIcon,
     isInstall: tronWalletIsIntall,
     getWallet: getTronWallet,
+    openAuthModal: openAuthTronModal,
   },
   {
     name: "MetaMask",
     img: MetaMaskIcon,
     isInstall: metamaskWalletIsIntall,
     getWallet: getMetamaskWallet,
+    openAuthModal: openAuthMetamaskModal,
   },
 ];
 
@@ -115,8 +132,57 @@ const WalletPopup = ({
   checkIsExist: any;
 }) => {
   const [isOpenSelect, setOpenSelect] = useState(false);
+  const [totalBalance, setTotalBalance] = useState<number>(0);
+
   const dispatch = useDispatch();
   const mainWallet = useSelector((state: any) => state.wallet);
+
+  const getTronUsdKoef = async () => {
+    const res: any = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
+    );
+    return res.data.price;
+  };
+
+  const getBalance = async () => {
+    if (tronWalletIsIntall() && getTronWallet()) {
+      const tronWeb = (window as any).tronWeb;
+      const tronBalance = await tronWeb.trx.getBalance(getTronWallet());
+      if (tronBalance) {
+        const formatTronBalance = tronWeb.fromSun(tronBalance);
+        const tronUsdKoef: number = await getTronUsdKoef();
+        setTotalBalance(
+          (prev) =>
+            prev +
+            Number((parseFloat(formatTronBalance) * tronUsdKoef).toFixed(2))
+        );
+      }
+    }
+    if (metamaskWalletIsIntall()) {
+      const metamaskWallet = await getMetamaskWallet();
+      if (metamaskWallet) {
+        const ethereum = (window as any).ethereum;
+
+        // getWeb3(ethereum)
+        // .then(console.log);
+
+        // const web3 = new Web3(ethereum);
+        // const balanceMetamask = await web3.eth.getBalance(
+        //   metamaskWallet //"0x62523d1357f47C42556C04031e9070b9B0F26694"
+        // );
+        // if (balanceMetamask) {
+        //   const formatBalance = Number(
+        //     web3.utils.fromWei(balanceMetamask, "ether")
+        //   );
+        //   setTotalBalance((prev) => prev + formatBalance);
+        // }
+      }
+    }
+  };
+
+  useEffect(() => {
+    getBalance();
+  }, []);
 
   return (
     <div className="wallet-popup-wrapper">
@@ -140,48 +206,50 @@ const WalletPopup = ({
           </div>
           {isOpenSelect && (
             <div className="wallet-popup__select_wallet">
-              {wallets.map(({ name, img, isInstall, getWallet }, key) => (
-                <div className="wallet-popup__select_wallet-item" key={key}>
-                  <div
-                    className="wallet-popup__select_wallet-item__content"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (isInstall()) {
-                        const walletToken = await getWallet();
-                        if (walletToken) {
-                          const walletData = {
-                            wallet: name,
-                            token: walletToken,
-                          };
-                          dispatch(setMainWallet(walletData));
-                          localStorage.setItem(
-                            "main_wallet",
-                            JSON.stringify(walletData)
-                          );
+              {wallets.map(
+                ({ name, img, isInstall, getWallet, openAuthModal }, key) => (
+                  <div className="wallet-popup__select_wallet-item" key={key}>
+                    <div
+                      className="wallet-popup__select_wallet-item__content"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (isInstall()) {
+                          const walletToken = await getWallet();
+                          if (walletToken) {
+                            const walletData = {
+                              wallet: name,
+                              token: walletToken,
+                            };
+                            dispatch(setMainWallet(walletData));
+                            localStorage.setItem(
+                              "main_wallet",
+                              JSON.stringify(walletData)
+                            );
+                          } else {
+                            addNotification({
+                              type: "danger",
+                              title: `${name} error`,
+                              message: `An error occurred while authorizing the wallet in ${name}`,
+                            });
+                          }
                         } else {
-                          addNotification({
-                            type: "danger",
-                            title: `${name} error`,
-                            message: `An error occurred while authorizing the wallet in ${name}`,
-                          });
+                          dispatch(openAuthModal());
                         }
-                      } else {
-                        dispatch(openAuthTronModal());
-                      }
-                    }}
-                  >
-                    <img
-                      className="wallet-popup__select_wallet-item__img"
-                      src={img}
-                      alt=""
-                    />
-                    <span className="wallet-popup__select_wallet-item__name">
-                      {name}
-                    </span>
+                      }}
+                    >
+                      <img
+                        className="wallet-popup__select_wallet-item__img"
+                        src={img}
+                        alt=""
+                      />
+                      <span className="wallet-popup__select_wallet-item__name">
+                        {name}
+                      </span>
+                    </div>
+                    {mainWallet.wallet === name && <CheckIcon />}
                   </div>
-                  {mainWallet.wallet === name && <CheckIcon />}
-                </div>
-              ))}
+                )
+              )}
               <div className="wallet-popup__select_wallet-item">
                 <div className="wallet-popup__select_wallet-item__content">
                   <div className="wallet-popup__select_wallet-item__img">
@@ -197,10 +265,10 @@ const WalletPopup = ({
         </div>
       </div>
       <div className="wallet-popup__content">
-          <div className="wallet-popup__content-balance">
-            <span className="balance_title">Total balance</span>
-            <span className="balance_sum">$10,00</span>
-          </div>
+        <div className="wallet-popup__content-balance">
+          <span className="balance_title">Total balance</span>
+          <span className="balance_sum">${totalBalance}</span>
+        </div>
       </div>
     </div>
   );
@@ -213,15 +281,13 @@ const Navbar = () => {
   const user = useSelector((state: any) => state.user);
 
   const checkIsExist = async (token: string) => {
-    postData("/api/user/check-user-exist/", { tron_token: token }).then(
-      (data) => {
-        if (data.notExist) {
-          dispatch(openRegistrationModal());
-        } else {
-          navigate(routes.profile);
-        }
+    postData("/api/user/check-user-exist/", { token }).then((data) => {
+      if (data.notExist) {
+        dispatch(openRegistrationModal());
+      } else {
+        navigate(routes.profile);
       }
-    );
+    });
   };
 
   const [isProfilePopupOpened, setProfilePopupOpened] =
@@ -380,8 +446,16 @@ const Navbar = () => {
             )}
             <div
               onClick={() => {
-                if (tronWalletIsIntall()) {
-                  const wallet = getTronWallet();
+                if (
+                  tronWalletIsIntall() &&
+                  metamaskWalletIsIntall() &&
+                  !user.id
+                ) {
+                  dispatch(openAuthWalletsModal());
+                } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
+                  const wallet = tronWalletIsIntall()
+                    ? getTronWallet()
+                    : getMetamaskWallet();
                   if (user && user.id) {
                     setProfilePopupOpened(true);
                     setNotificationPopupOpened(false);
@@ -394,7 +468,7 @@ const Navbar = () => {
                     }
                   }
                 } else {
-                  dispatch(openAuthTronModal());
+                  dispatch(openAuthWalletsModal());
                 }
               }}
               className="icon"

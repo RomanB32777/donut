@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { IntlProvider } from "react-intl";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./commonComponents/Navbar";
 
 import "./commonStyles/main.sass";
@@ -16,7 +16,9 @@ import BadgesPage from "./pages/BadgesPage";
 import PersonInfoPage from "./pages/PersonInfoPage";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  OPEN_AUTH_METAMASK_MODAL,
   OPEN_AUTH_TRON_MODAL,
+  OPEN_AUTH_WALLETS_MODAL,
   OPEN_REGISTRATION_MODAL,
   OPEN_SUPPORT_MODAL,
 } from "./store/types/Modal";
@@ -40,6 +42,7 @@ import "react-notifications-component/dist/theme.css";
 import { WebSocketProvider } from "./components/Websocket/WebSocket";
 import NotificationsPage from "./pages/NotificationsPage";
 import { setMainWallet } from "./store/types/Wallet";
+import DonatPage from "./pages/DonatPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -112,11 +115,21 @@ function App() {
               <Route path={routes.creator} element={<PersonInfoPage />} />
               <Route path={routes.creators} element={<CreatorsListPage />} />
               <Route path={routes.backers} element={<BackersPage />} />
+              <Route path={routes.donat} element={<DonatPage />} />
+              {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
             </Routes>
             <Footer />
             {modal && modal.length > 0 && (
               <div className="modal-wrapper">
-                {modal === OPEN_AUTH_TRON_MODAL && <AuthModal />}
+                {modal === OPEN_AUTH_TRON_MODAL && (
+                  <AuthModal wallet="Tronlink" />
+                )}
+                {modal === OPEN_AUTH_METAMASK_MODAL && (
+                  <AuthModal wallet="Metamask" />
+                )}
+                {modal === OPEN_AUTH_WALLETS_MODAL && (
+                  <AuthModal wallet="all" />
+                )}
                 {modal === OPEN_REGISTRATION_MODAL && <RegistrationModal />}
                 {modal === OPEN_SUPPORT_MODAL && <SupportModal />}
               </div>

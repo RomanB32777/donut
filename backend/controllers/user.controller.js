@@ -52,8 +52,8 @@ class UserController {
 
     async checkUserExist(req, res) {
         try {
-            const { tron_token } = req.body
-            const user = await db.query('SELECT * FROM users WHERE tron_token = $1', [tron_token])
+            const { token } = req.body
+            const user = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
             if (user.rows && user.rows.length === 0) {
                 res.status(200).json({ notExist: true })
             } else {
@@ -66,9 +66,9 @@ class UserController {
 
     async createUser(req, res) {
         try {
-            const { username, tron_token, role } = req.body
+            const { username, token, role, typeWallet } = req.body
             const date = new Date()
-            const newUser = await db.query(`INSERT INTO users (tron_token, username, roleplay) values ($1, $2, $3) RETURNING *;`, [tron_token, username.toLowerCase(), role])
+            const newUser = await db.query(`INSERT INTO users (${typeWallet}_token, username, roleplay) values ($1, $2, $3) RETURNING *;`, [token, username.toLowerCase(), role])
             if (role === 'creators') {
                 await db.query(`INSERT INTO creators (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
                 res.status(200).json({ message: 'Creator created!' })
@@ -93,8 +93,8 @@ class UserController {
 
     async getUser(req, res) {
         try {
-            const tron_token = req.params.tron_token
-            const user = await db.query('SELECT * FROM users WHERE tron_token = $1', [tron_token])
+            const token = req.params.token
+            const user = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
             if (user.rows[0] && user.rows[0].id) {
                 const subscriptions = await getSubscriptions(user.rows[0].username)
                 const role = await db.query(`SELECT * FROM ${user.rows[0].roleplay} WHERE user_id = $1`, [user.rows[0].id])
@@ -130,18 +130,20 @@ class UserController {
             if (notifications && notifications.rows.length) {
                 notificationsAll = await Promise.all(notifications.rows.map(async n => {
                     if (n.donation) {
-                        const donation = await db.query(`SELECT * FROM donations WHERE id = $1`, [n.donation])
+                        const donation = await db.query(`SELECT * FROM donations WHERE id = $1`, [n.donation]);
                         if (donation.rows[0]) return { ...n, donation: donation.rows[0] }
                         return n;
                     }
                     if (n.follow) {
-                        const follow = await db.query(`SELECT * FROM follows WHERE id = $1`, [n.follow])
+                        const follow = await db.query(`SELECT * FROM follows WHERE id = $1`, [n.follow]);
                         if (follow.rows[0]) return { ...n, follow: follow.rows[0] }
                         return n;
                     }
                     if (n.badge) {
-                        const badge = await db.query(`SELECT * FROM badges WHERE id = $1`, [n.badge])
-                        if (badge.rows[0]) return { ...n, badge: badge.rows[0] }
+                        const badge = await db.query(`SELECT * FROM badges WHERE id = $1`, [n.badge]);
+                        const creator = await db.query(`SELECT username FROM users WHERE id = $1`, [n.sender]);
+                        const supporter = await db.query(`SELECT username FROM users WHERE id = $1`, [n.recipient]);
+                        if (badge.rows[0] && creator.rows[0] && supporter.rows[0]) return { ...n, badge: { ...badge.rows[0], supporter_username: supporter.rows[0].username, creator_username: creator.rows[0].username } }
                         return n;
                     }
                 }))
@@ -183,7 +185,22 @@ class UserController {
                 table = 'creators'
             }
             const editedUser = await db.query(`UPDATE ${table} SET person_name = $1, twitter = $2, google = $3, facebook = $4, discord = $5, user_description = $6 WHERE user_id = $7 RETURNING *`, [person_name, twitter, google, facebook, discord, user_description, user.rows[0].id])
-            res.json(editedUser)
+            res.status(200).json(editedUser)
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async editUserWallet(req, res) {
+        try {
+            const { user_id } = req.params
+            const { type_wallet, token } = req.body
+            if (type_wallet && token && user_id) {
+                const editedUser = await db.query(`UPDATE users SET ${type_wallet}_token = $1 WHERE id = $2 RETURNING *`, [token, user_id])
+                res.status(200).json(editedUser)
+            } else {
+                res.status(500).json({ error: true, message: 'Something broke!' })
+            }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }

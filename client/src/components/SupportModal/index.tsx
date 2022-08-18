@@ -16,17 +16,29 @@ import { send } from "process";
 import { getPersonInfoPage } from "../../store/types/PersonInfo";
 import { addAuthNotification } from "../../utils";
 import { WebSocketContext } from "../Websocket/WebSocket";
+import clsx from "clsx";
+import Web3 from "web3";
 // const TronWeb = require('tronweb')
 // const tronWeb = new TronWeb()
 
-const SupportModal = () => {
+const SupportModal = ({
+  modificator,
+  notTitle,
+  additionalFields,
+}: {
+  modificator?: string;
+  notTitle?: boolean;
+  additionalFields?: any;
+}) => {
   const { pathname } = useLocation();
 
   const dispatch = useDispatch();
 
   const data = useSelector((state: any) => state.personInfo).main_info;
   const user = useSelector((state: any) => state.user);
+  const {wallet, token} = useSelector((state: any) => state.wallet);
 
+  console.log(wallet);
   const socket = useContext(WebSocketContext);
 
   const tron_token = getTronWallet();
@@ -71,6 +83,7 @@ const SupportModal = () => {
         creator_tron_token: data.tron_token,
         backer_tron_token: tron_token,
         sum: tron.toString(),
+        donation_message: additionalFields ? additionalFields.message : ""
       });
       if (res.status === 200) {
         setSent(true);
@@ -128,20 +141,65 @@ const SupportModal = () => {
     // });
   };
 
+  const getWeb3 = (ethereum: any) =>
+    new Promise((resolve) => {
+      let currentWeb3;
+
+      if (ethereum) {
+        currentWeb3 = new Web3(ethereum);
+        try {
+          // Request account access if needed
+          ethereum.enable();
+          // Acccounts now exposed
+          resolve(currentWeb3);
+        } catch (error) {
+          // User denied account access...
+          alert("Please allow access for the app to work");
+        }
+      } else if ((window as any).web3) {
+        // (window as any).web3 = new Web3(Web3.currentProvider);
+        // // Acccounts always exposed
+        // resolve(currentWeb3);
+      } else {
+        console.log(
+          "Non-Ethereum browser detected. You should consider trying MetaMask!"
+        );
+      }
+    });
+
   async function triggerContract() {
     try {
-      let instance = await (window as any).tronWeb
-        .contract()
-        .at(contractAddress);
-      // const res = await instance.transferMoney(data.tron_token).send({
-      //   feeLimit: 100_000_000,
-      //   callValue: 1000000 * parseFloat(tron), // это 100 trx
-      //   shouldPollResponse: false,
-      // });
-
-      // if (res) {
-      // }
-      sendDonation();
+      if (wallet === 'TronLink') {
+        let instance = await (window as any).tronWeb
+          .contract()
+          .at(contractAddress);
+        const res = await instance.transferMoney(data.tron_token).send({
+          feeLimit: 100_000_000,
+          callValue: 1000000 * parseFloat(tron), // это 100 trx
+          shouldPollResponse: false,
+        });
+  
+        if (res) {
+          sendDonation();
+        }
+      }
+      if (wallet === 'MetaMask') {
+        // ethereum
+        // .request({
+        //   method: 'eth_sendTransaction',
+        //   params: [
+        //     {
+        //       from: accounts[0],
+        //       to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
+        //       value: '0x29a2241af62c0000',
+        //       gasPrice: '0x09184e72a000',
+        //       gas: '0x2710',
+        //     },
+        //   ],
+        // })
+        // .then((txHash) => console.log(txHash))
+        // .catch((error) => console.error);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -149,22 +207,27 @@ const SupportModal = () => {
 
   return (
     <div
-      className="support-modal"
-      style={{
-        height: sent ? "300px" : "512px",
-        width: sent ? "600px" : "436px",
-      }}
+      className={clsx("support-modal", {
+        [`support-modal__${modificator}`]: modificator,
+      })}
+      // style={{
+      //   height: sent ? "300px" : "512px",
+      //   width: sent ? "600px" : "436px",
+      // }}
     >
       {!sent ? (
         <>
-          <div className="support-modal__logo">
-            <LogoIcon />
-          </div>
-          <span className="support-modal__title">
-            Become supporter of
-            {" " + pathname.slice(pathname.lastIndexOf("/") + 1)}
-          </span>
-
+          {!notTitle && (
+            <>
+              <div className="support-modal__logo">
+                <LogoIcon />
+              </div>
+              <span className="support-modal__title">
+                Become supporter of
+                {" " + pathname.slice(pathname.lastIndexOf("/") + 1)}
+              </span>
+            </>
+          )}
           <div className="support-modal__form">
             <span className="support-modal__form__title">
               Choose the donation sum below
