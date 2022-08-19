@@ -203,6 +203,7 @@ const WalletPopup = ({
       if (metamaskWallet) {
         const ethereum = (window as any).ethereum;
 
+        setTotalBalance(0);
         // getWeb3(ethereum)
         // .then(console.log);
 
@@ -222,7 +223,7 @@ const WalletPopup = ({
 
   useEffect(() => {
     getBalance();
-  }, []);
+  }, [mainWallet]);
 
   return (
     <div className="wallet-popup-wrapper">

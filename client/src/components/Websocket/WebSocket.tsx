@@ -58,7 +58,13 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
               message: messageDonat,
             });
             if (checkNotifPermissions())
-              new Notification(messageDonat, { image: notifImage });
+              new Notification(
+                `Supporter: ${data.supporter};
+                Sum: ${data.sum}
+                Message: ${messageDonat}
+              `,
+                { image: notifImage }
+              );
             break;
 
           case "following":
@@ -71,7 +77,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
               title: "New following",
               message: messageFollowing,
             });
-            if (checkNotifPermissions()) new Notification(messageFollowing, { image: notifImage });
+            // if (checkNotifPermissions()) new Notification(messageFollowing, { image: notifImage });
             break;
 
           case "add_badge":
