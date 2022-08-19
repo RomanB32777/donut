@@ -23,7 +23,7 @@ import routes from "../../routes";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { url } from "../../consts";
-import { setUser } from "../../store/types/User";
+import { setUser, tryToGetUser } from "../../store/types/User";
 import {
   openAuthMetamaskModal,
   openAuthTronModal,
@@ -198,7 +198,7 @@ const WalletPopup = ({
         );
       }
     }
-    if (mainWallet.wallet === "metamsk" && metamaskWalletIsIntall()) {
+    if (mainWallet.wallet === "metamask" && metamaskWalletIsIntall()) {
       const metamaskWallet = await getMetamaskWallet();
       if (metamaskWallet) {
         const ethereum = (window as any).ethereum;
@@ -343,6 +343,7 @@ const Navbar = () => {
       if (data.notExist) {
         dispatch(openRegistrationModal());
       } else {
+        dispatch(tryToGetUser(token));
         navigate(routes.profile);
       }
     });

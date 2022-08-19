@@ -3,23 +3,24 @@ const db = require('../db')
 class DonationController {
     async createDonation(req, res) {
         try {
-            const { creator_tron_token, backer_tron_token, donation_message, sum } = req.body
+            const { creator_token, backer_token, donation_message, sum, wallet } = req.body
             const initDate = new Date()
             // initDate.setDate(initDate.getDate() - 4);
             const formatedDate = initDate.getTime()
             const userOffset = -initDate.getTimezoneOffset() * 60 * 1000
             const date = new Date(formatedDate + userOffset).toISOString()
 
-            if (backer_tron_token && creator_tron_token) {
-                const creator = await db.query('SELECT * FROM users WHERE tron_token = $1', [creator_tron_token])
-                const backer = await db.query('SELECT * FROM users WHERE tron_token = $1', [backer_tron_token])
-                const donation = await db.query(`INSERT INTO donations (username, creator_username, donation_date, backer_id, sum_donation, donation_message, creator_id) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *`, [
+            if (backer_token && creator_token) {
+                const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [creator_token])
+                const backer = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [backer_token])
+                const donation = await db.query(`INSERT INTO donations (username, creator_username, donation_date, backer_id, sum_donation, donation_message, wallet_type, creator_id) values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`, [
                     backer.rows[0].username,
                     creator.rows[0].username,
                     date,
                     backer.rows[0].id,
                     sum,
                     donation_message,
+                    wallet,
                     creator.rows[0].id
                 ])
 

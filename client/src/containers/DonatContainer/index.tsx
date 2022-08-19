@@ -97,10 +97,12 @@ const DonatContainer = () => {
                 <div className="donat-container__payment_wallet_warning">
                   {data.tron_token &&
                     !data.metamask_token &&
+                    !user.tron_token &&
                     `${data && (data.person_name || data.username)} only accepts
                     donations via Tron. Please switch to
                     Tron and appropriate network!`}
                   {!data.tron_token &&
+                    !user.metamask_token &&
                     data.metamask_token &&
                     `${data && (data.person_name || data.username)} only accepts
                     donations via Polygon Mumbai Testnet. Please switch to
@@ -136,10 +138,16 @@ const DonatContainer = () => {
                           className="donat-container__payment_inputs-name"
                           value={form.username}
                           onChange={(event) => {
-                            setForm({
-                              ...form,
-                              username: event.target.value,
-                            });
+                            if (form.username.length === 0) {
+                              setForm({
+                                ...form,
+                                username: "@" + event.target.value,
+                              });
+                            } else
+                              setForm({
+                                ...form,
+                                username: event.target.value,
+                              });
                           }}
                         />
                       </div>

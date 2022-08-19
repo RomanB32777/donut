@@ -69,13 +69,12 @@ class UserController {
             const { username, token, role, typeWallet } = req.body
             const date = new Date()
             const newUser = await db.query(`INSERT INTO users (${typeWallet}_token, username, roleplay) values ($1, $2, $3) RETURNING *;`, [token, username.toLowerCase(), role])
-            console.log(typeWallet, newUser.rows[0]);
             if (role === 'creators') {
                 await db.query(`INSERT INTO creators (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
                 res.status(200).json({ message: 'Creator created!' })
             } else {
                 await db.query(`INSERT INTO backers (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
-                res.status(200).json({ message: 'Backer created!' })
+                res.status(200).json({ message: 'Backer created!', newUser: newUser.rows[0] })
             }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })

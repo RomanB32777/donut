@@ -569,15 +569,20 @@ const SupportersContainer = () => {
           <div
             className="icon"
             onClick={() => {
-              console.log(baseURL, user.username);
-              
-              navigator.clipboard.writeText(
-                `${baseURL}/donat/${user.username}` 
-              );
-              addNotification({
-                type: "success",
-                title: "Link successfully copied",
-              });
+              try {
+                navigator.clipboard.writeText(
+                  `${baseURL}/donat/${user.username}`
+                );
+                addNotification({
+                  type: "success",
+                  title: "Link successfully copied",
+                });
+              } catch (error) {
+                addNotification({
+                  type: "warning",
+                  title: "An error occurred while copying the link",
+                });
+              }
             }}
           >
             <CopyIcon />

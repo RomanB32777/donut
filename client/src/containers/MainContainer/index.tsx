@@ -23,6 +23,7 @@ import "./styles.sass";
 
 import { BlueDonut } from "../../assets/blueDonut";
 import { baseURL } from "../../axiosClient";
+import { tryToGetUser } from "../../store/types/User";
 
 const cryptoSteps = [
   {
@@ -66,6 +67,7 @@ const MainContainer = () => {
       if (data.notExist) {
         dispatch(openRegistrationModal());
       } else {
+        dispatch(tryToGetUser(token));
         navigate(routes.profile);
       }
     });

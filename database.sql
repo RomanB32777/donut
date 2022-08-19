@@ -58,6 +58,7 @@ create TABLE donations(
     sum_donation VARCHAR(63) DEFAULT '',
     creator_username VARCHAR(63) DEFAULT '',
     donation_message VARCHAR(255) DEFAULT '',
+    wallet_type VARCHAR(255) DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -5,21 +5,40 @@ import { closeModal, OPEN_SUPPORT_MODAL } from "../../store/types/Modal";
 import LogoIcon from "../../icons/LogoIcon";
 import "./styles.sass";
 import {
+  MaticIcon,
   NonSuccessTransactionIcon,
+  SmallToggleListArrowIcon,
   SuccessTransactionIcon,
   TronIcon,
 } from "../../icons/icons";
-import getTronWallet from "../../functions/getTronWallet";
+import getTronWallet, {
+  getMetamaskWallet,
+  metamaskWalletIsIntall,
+  tronWalletIsIntall,
+} from "../../functions/getTronWallet";
 import axiosClient from "../../axiosClient";
 import { contractAddress } from "../../consts";
 import { send } from "process";
 import { getPersonInfoPage } from "../../store/types/PersonInfo";
-import { addAuthNotification } from "../../utils";
+import { addAuthNotification, addNotification } from "../../utils";
 import { WebSocketContext } from "../Websocket/WebSocket";
 import clsx from "clsx";
 import Web3 from "web3";
+import postData from "../../functions/postData";
+import { tryToGetUser } from "../../store/types/User";
 // const TronWeb = require('tronweb')
 // const tronWeb = new TronWeb()
+
+const wallets = [
+  {
+    name: "MATIC",
+    icon: <MaticIcon />,
+  },
+  {
+    name: "TRX",
+    icon: <TronIcon />,
+  },
+];
 
 const SupportModal = ({
   modificator,
@@ -36,14 +55,14 @@ const SupportModal = ({
 
   const data = useSelector((state: any) => state.personInfo).main_info;
   const user = useSelector((state: any) => state.user);
-  const {wallet, token} = useSelector((state: any) => state.wallet);
+  const { wallet, token } = useSelector((state: any) => state.wallet);
 
-  console.log(wallet);
   const socket = useContext(WebSocketContext);
 
-  const tron_token = getTronWallet();
-
-  const [tron, setTron] = useState<string>("0");
+  const [sum, setSum] = useState<string>("0");
+  const [isOpenSelect, setOpenSelect] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<any>({});
+  const [visibleWallet, setVisibleWallet] = useState<any>([]);
   const [tronUsdtKoef, setTronUsdtKoef] = useState<string>("0");
 
   const [sent, setSent] = useState<boolean>(false);
@@ -55,6 +74,52 @@ const SupportModal = ({
     );
     setTronUsdtKoef(res.data.price);
   };
+
+  useEffect(() => {
+    if (wallet && token) {
+      if (wallet === "metamask") {
+        data.metamask_token
+          ? setSelectedWallet(wallets[0])
+          : setSelectedWallet(wallets[1]);
+      }
+      if (wallet === "tron") {
+        data.tron_token
+          ? setSelectedWallet(wallets[1])
+          : setSelectedWallet(wallets[0]);
+      }
+    } else {
+      if (tronWalletIsIntall() && getTronWallet())
+        setSelectedWallet(wallets[1]);
+      else if (metamaskWalletIsIntall()) {
+        getMetamaskWallet().then((token) => {
+          if (token) setSelectedWallet(wallets[0]);
+        });
+      }
+    }
+  }, [wallet, token, data]);
+
+  useEffect(() => {
+    const filterWallets = wallets.filter(async (wallet) => {
+      if (user)
+        return (
+          (wallet.name === "TRX" && user.tron_token && data.tron_token) ||
+          (wallet.name === "MATIC" &&
+            user.metamask_token &&
+            data.metamask_token)
+        );
+      else {
+        const metaWallet =
+          metamaskWalletIsIntall() && (await getMetamaskWallet());
+        return (
+          (wallet.name === "TRX" && getTronWallet() && data.tron_token) ||
+          (wallet.name === "MATIC" && metaWallet && data.metamask_token)
+        );
+      }
+    });
+    console.log(filterWallets);
+
+    setVisibleWallet(filterWallets);
+  }, [user, data, wallet]);
 
   useEffect(() => {
     getPrice();
@@ -78,16 +143,47 @@ const SupportModal = ({
   }, []);
 
   const sendDonation = async () => {
-    if (tron_token) {
+    let newUser: any = {}
+    if (additionalFields && additionalFields.username) {
+      const res = await postData("/api/user/check-username", {
+        username: additionalFields.username,
+      });
+
+      if (!res.error) {
+        const metaMaskWallet =
+          metamaskWalletIsIntall() && (await getMetamaskWallet());
+  
+        const walletCheck =
+          token || (selectedWallet.name === "TRX" ? getTronWallet() : metaMaskWallet);
+        if (walletCheck) {
+          const resCreate = await postData("/api/user/create-user", {
+            role: "backers",
+            username: additionalFields.username,
+            token: walletCheck,
+            typeWallet: wallet || (selectedWallet.name === "TRX" ? "tron" : "metamask"),
+          });
+  
+          if (resCreate.newUser) {
+            dispatch(tryToGetUser(walletCheck));
+            newUser = resCreate.newUser
+          } 
+        } else
+          addNotification({
+            type: "danger",
+            title: "Donat error",
+          });
+      }
+    }
+    if (selectedWallet && selectedWallet.name === "TRX" && (user.tron_token || newUser.tron_token)) {
       const res = await axiosClient.post("/api/donation/create/", {
-        creator_tron_token: data.tron_token,
-        backer_tron_token: tron_token,
-        sum: tron.toString(),
-        donation_message: additionalFields ? additionalFields.message : ""
+        creator_token: data.tron_token,
+        backer_token: user.tron_token || newUser.tron_token,
+        sum: sum.toString(),
+        wallet: "tron",
+        donation_message: additionalFields ? additionalFields.message : "",
       });
       if (res.status === 200) {
         setSent(true);
-        //   const msg = await res.json();
         const resData = res.data;
 
         if (resData.message === "success") {
@@ -95,9 +191,9 @@ const SupportModal = ({
             user &&
             resData.donation &&
             socket.emit("new_donat", {
-              supporter: { username: user.username, id: user.user_id },
+              supporter: { username: user.username || newUser.username, id: user.user_id || newUser.user_id },
               creator_id: data.user_id,
-              sum: tron.toString(),
+              sum: sum.toString(),
               donationID: resData.donation.id,
             });
           dispatch(
@@ -110,12 +206,58 @@ const SupportModal = ({
           setSuccess(true);
           setTimeout(() => {
             dispatch(closeModal());
-            setTron("0");
+            setSum("0");
           }, 5000);
         } else {
           setTimeout(() => {
             setSent(false);
-            setTron("0");
+            setSum("0");
+          }, 3500);
+        }
+      }
+    } else if (
+      selectedWallet &&
+      selectedWallet.name === "MATIC" &&
+      (user.metamask_token || newUser.metamask_token)
+    ) {
+      const res = await axiosClient.post("/api/donation/create/", {
+        creator_token: data.metamask_token,
+        backer_token: user.metamask_token || newUser.metamask_token,
+        sum: sum.toString(),
+        wallet: "metamask",
+        donation_message: additionalFields ? additionalFields.message : "",
+      });
+      if (res.status === 200) {
+        setSent(true);
+        //   const msg = await res.json();
+        const resData = res.data;
+
+        if (resData.message === "success") {
+          socket &&
+            user &&
+            resData.donation &&
+            socket.emit("new_donat", {
+              supporter: { username: user.username || newUser.username, id: user.user_id || newUser.user_id },
+              creator_id: data.user_id,
+              sum: sum.toString(),
+              donationID: resData.donation.id,
+            });
+          dispatch(
+            getPersonInfoPage({
+              page: "supporters",
+              username: pathname.slice(pathname.indexOf("@")),
+            })
+          );
+
+          setSuccess(true);
+          setTimeout(() => {
+            dispatch(closeModal());
+            setSum("0");
+          }, 5000);
+        } else {
+          setTimeout(() => {
+            setSent(false);
+            setSum("0");
           }, 3500);
         }
       }
@@ -169,21 +311,23 @@ const SupportModal = ({
 
   async function triggerContract() {
     try {
-      if (wallet === 'tron') {
+      if (selectedWallet.name === "TRX") {
         let instance = await (window as any).tronWeb
           .contract()
           .at(contractAddress);
         const res = await instance.transferMoney(data.tron_token).send({
           feeLimit: 100_000_000,
-          callValue: 1000000 * parseFloat(tron), // это 100 trx
+          callValue: 1000000 * parseFloat(sum), // это 100 trx
           shouldPollResponse: false,
         });
-  
+
         if (res) {
           sendDonation();
         }
       }
-      if (wallet === 'metamask') {
+      if (selectedWallet.name === "MATIC") {
+        sendDonation();
+
         // ethereum
         // .request({
         //   method: 'eth_sendTransaction',
@@ -237,31 +381,88 @@ const SupportModal = ({
                 type="text"
                 className="support-modal__form__input__inp"
                 onChange={(event) => {
-                  if (tron === "0") {
-                    setTron(event.target.value.slice(1));
+                  if (sum === "0") {
+                    setSum(event.target.value.slice(1));
                   } else {
-                    setTron(event.target.value);
+                    setSum(event.target.value);
                   }
                 }}
-                value={tron}
+                value={sum}
               />
-              <div className="support-modal__form__input__tron-panel">
-                <TronIcon />
+              <div
+                className="support-modal__form__input__tron-panel"
+                onClick={() => {
+                  visibleWallet.length > 1 && setOpenSelect(!isOpenSelect);
+                }}
+              >
+                {selectedWallet && selectedWallet.icon}
+                {/* <TronIcon /> */}
                 <span className="support-modal__form__input__tron-panel__title">
-                  TRX
+                  {/* TRX */}
+                  {selectedWallet && selectedWallet.name}
                 </span>
+                {visibleWallet.length > 1 && (
+                  <div className={clsx({ rotated: isOpenSelect })}>
+                    <SmallToggleListArrowIcon />
+                  </div>
+                )}
+                {isOpenSelect && (
+                  <div className="support-popup__select_wallet">
+                    {visibleWallet.length > 1 &&
+                      visibleWallet.map(
+                        (
+                          { name, icon }: { name: any; icon: any },
+                          key: number
+                        ) => (
+                          <div
+                            className="support-popup__select_wallet-item"
+                            key={key}
+                          >
+                            <div
+                              className="support-popup__select_wallet-item__content"
+                              onClick={() => setSelectedWallet({ name, icon })}
+                            >
+                              <div className="support-popup__select_wallet-item__img">
+                                {icon}
+                              </div>
+                              <span className="support-popup__select_wallet-item__name">
+                                {name}
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      )}
+                  </div>
+                )}
               </div>
             </div>
             <div className="support-modal__form__input">
               <span className="support-modal__form__input__title">
-                {tron.length > 0
-                  ? parseFloat(tron) * parseFloat(tronUsdtKoef)
+                {sum.length > 0
+                  ? parseFloat(sum) * parseFloat(tronUsdtKoef)
                   : "0"}
               </span>
-              <span className="support-modal__form__input__subtitle">USDT</span>
+              <span
+                className="support-modal__form__input__subtitle"
+                style={{
+                  paddingRight: visibleWallet.length > 1 ? "32px" : "0",
+                }}
+              >
+                USDT
+              </span>
             </div>
             <div
-              className="support-modal__form__button"
+              className={clsx("support-modal__form__button", {
+                "support-modal__form__button-disabled":
+                  (user.metamask_token &&
+                    !user.tron_token &&
+                    data.tron_token &&
+                    !data.metamask_token) ||
+                  (!user.metamask_token &&
+                    user.tron_token &&
+                    !data.tron_token &&
+                    data.metamask_token),
+              })}
               onClick={() => triggerContract()}
             >
               Support
@@ -271,7 +472,7 @@ const SupportModal = ({
       ) : success ? (
         <div className="success-transaction">
           <span>
-            You’ve successfully sent {tron} TRX to{" "}
+            You’ve successfully sent {sum} to{" "}
             {" " + pathname.slice(pathname.lastIndexOf("/") + 1)}
           </span>
           <SuccessTransactionIcon />

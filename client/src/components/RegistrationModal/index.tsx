@@ -13,6 +13,7 @@ import { closeModal } from "../../store/types/Modal";
 import "./styles.sass";
 import getTronWallet, {
   getMetamaskWallet,
+  metamaskWalletIsIntall,
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
 import { useNavigate } from "react-router";
@@ -49,13 +50,14 @@ const RegistrationModal = () => {
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
 
   const tryToLogin = async () => {
-    postData("/api/user/check-username", { username: username }).then((res) => {
+    postData("/api/user/check-username", { username: username }).then(async (res) => {
       if (res.error) {
         setIsUsernameError(true);
       } else {
+        const metaMaskWallet = metamaskWalletIsIntall() && await getMetamaskWallet()
         const wallet =
           mainWallet.token ||
-          (tronWalletIsIntall() ? getTronWallet() : getMetamaskWallet());
+          (tronWalletIsIntall() ? getTronWallet() : metaMaskWallet);
         wallet
           ? postData("/api/user/create-user", {
               role: choosenRole,
