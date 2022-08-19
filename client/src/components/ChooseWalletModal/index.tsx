@@ -37,6 +37,7 @@ const ChooseWalletModal = () => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
+          localStorage.setItem("main_wallet", JSON.stringify(walletData))
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             dispatch(openRegistrationModal());
@@ -58,6 +59,7 @@ const ChooseWalletModal = () => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
+          localStorage.setItem("main_wallet", JSON.stringify(walletData))
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             dispatch(openRegistrationModal());

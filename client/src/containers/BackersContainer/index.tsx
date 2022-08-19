@@ -244,7 +244,8 @@ const BackersContainer = () => {
             <FormattedMessage id="backers_page_sum_title" />
           </span>
           <div className="backers-container__right-side__sum__value">
-            {backers.sum} <TronIcon />
+            {backers.sum} 
+            {/* <TronIcon /> */}
           </div>
         </div>
 

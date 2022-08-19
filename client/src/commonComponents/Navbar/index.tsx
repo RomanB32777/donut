@@ -306,6 +306,7 @@ const WalletPopup = ({
                   className="wallet-popup__select_wallet-item__content"
                   onClick={() => {
                     dispatch(setUser(""));
+                    localStorage.removeItem('main_wallet');
                     navigate(routes.main);
                   }}
                 >
@@ -602,6 +603,7 @@ const Navbar = () => {
                     onClick={() => {
                       if (title.title === "Sign out") {
                         dispatch(setUser(""));
+                        localStorage.removeItem('main_wallet');
                       }
                       navigate(title.link);
                     }}

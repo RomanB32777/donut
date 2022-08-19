@@ -93,7 +93,11 @@ const MainContainer = () => {
                 : "mainpage_main_button"
             }
             onClick={() => {
-              if (tronWalletIsIntall() && metamaskWalletIsIntall() && !user.id) {
+              if (
+                tronWalletIsIntall() &&
+                metamaskWalletIsIntall() &&
+                !user.id
+              ) {
                 dispatch(openAuthWalletsModal());
               } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
                 const wallet = tronWalletIsIntall()
@@ -215,12 +219,20 @@ const MainContainer = () => {
         <div className="main-container__bottom-panel">
           <div>
             <span>
-              <FormattedMessage id='mainpage_bottom_panel_title' />
+              <FormattedMessage id="mainpage_bottom_panel_title" />
             </span>
             <BlueButton
               onClick={() => {
-                if (tronWalletIsIntall()) {
-                  const wallet = getTronWallet();
+                if (
+                  tronWalletIsIntall() &&
+                  metamaskWalletIsIntall() &&
+                  !user.id
+                ) {
+                  dispatch(openAuthWalletsModal());
+                } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
+                  const wallet = tronWalletIsIntall()
+                    ? getTronWallet()
+                    : getMetamaskWallet();
                   if (user && user.id) {
                     navigate(routes.profile);
                   } else {
@@ -231,18 +243,18 @@ const MainContainer = () => {
                     }
                   }
                 } else {
-                  dispatch(openAuthTronModal());
+                  dispatch(openAuthWalletsModal());
                 }
               }}
+              fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
               formatId={
-                user && user.id && user.username && user.username.length > 0
+                user && user.id
                   ? "mainpage_main_button_logged"
-                  : "mainpage_bottom_panel_button"
+                  : "mainpage_main_button"
               }
               padding={
                 document.body.clientWidth > 640 ? "22px 78px" : "12px 64px"
               }
-              fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
             />
           </div>
         </div>

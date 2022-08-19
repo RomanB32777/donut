@@ -185,6 +185,7 @@ class UserController {
             if (user.rows[0].roleplay === 'creators') {
                 table = 'creators'
             }
+            console.log("useruseruser", table);
             const editedUser = await db.query(`UPDATE ${table} SET person_name = $1, twitter = $2, google = $3, facebook = $4, instagram = $5, user_description = $6, twitch = $7 WHERE user_id = $8 RETURNING *`, [person_name, twitter, google, facebook, instagram, user_description, twitch, user.rows[0].id])
             res.status(200).json(editedUser)
         } catch (error) {

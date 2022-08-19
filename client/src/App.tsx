@@ -50,25 +50,27 @@ function App() {
   const locale = LOCALES.ENGLISH;
 
   const modal = useSelector((state: any) => state.modal);
-  const tron_token = getTronWallet();
+  // const tron_token = getTronWallet();
 
   const user = useSelector((state: any) => state.user);
 
   useEffect(() => {
-    if (tron_token) {
-      dispatch(tryToGetUser(tron_token));
-    }
+    // if (tron_token) {
+    // }
     const walletData = localStorage.getItem("main_wallet");
-    if (walletData) dispatch(setMainWallet(JSON.parse(walletData)));
+    if (walletData) {
+      const wallet = JSON.parse(walletData);
+      dispatch(setMainWallet(wallet));
 
-    var refreshId = setInterval(function () {
-      var tron = getTronWallet();
-      if (tron) {
-        dispatch(tryToGetUser(tron));
-        clearInterval(refreshId);
-      }
-    }, 1000);
-
+      dispatch(tryToGetUser(wallet.token));
+      var refreshId = setInterval(function () {
+        // var tron = getTronWallet();
+        if (wallet) {
+          dispatch(tryToGetUser(wallet.token));
+          clearInterval(refreshId);
+        }
+      }, 1000);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

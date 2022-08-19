@@ -95,9 +95,16 @@ const DonatContainer = () => {
                     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur, natus eveniet? Hic atque dolorum vero vitae excepturi laborum quia totam sint quos! Quod eum blanditiis repellendus officia labore accusamus assumenda!"}
                 </div>
                 <div className="donat-container__payment_wallet_warning">
-                  {data && (data.person_name || data.username)} only accepts
-                  donations via Polygon Mumbai Testnet. Please switch to
-                  Metamask and appropriate network!
+                  {data.tron_token &&
+                    !data.metamask_token &&
+                    `${data && (data.person_name || data.username)} only accepts
+                    donations via Tron. Please switch to
+                    Tron and appropriate network!`}
+                  {!data.tron_token &&
+                    data.metamask_token &&
+                    `${data && (data.person_name || data.username)} only accepts
+                    donations via Polygon Mumbai Testnet. Please switch to
+                    Metamask and appropriate network!`}
                 </div>
               </div>
               <div className="donat-container__payment-column">

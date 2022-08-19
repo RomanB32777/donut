@@ -11,7 +11,10 @@ import {
 } from "../../icons/icons";
 import { closeModal } from "../../store/types/Modal";
 import "./styles.sass";
-import getTronWallet, { getMetamaskWallet, tronWalletIsIntall } from "../../functions/getTronWallet";
+import getTronWallet, {
+  getMetamaskWallet,
+  tronWalletIsIntall,
+} from "../../functions/getTronWallet";
 import { useNavigate } from "react-router";
 import routes from "../../routes";
 import { setUser, tryToGetUser } from "../../store/types/User";
@@ -50,13 +53,17 @@ const RegistrationModal = () => {
       if (res.error) {
         setIsUsernameError(true);
       } else {
-        const wallet = mainWallet.token || (tronWalletIsIntall() ? getTronWallet() : getMetamaskWallet());
+        const wallet =
+          mainWallet.token ||
+          (tronWalletIsIntall() ? getTronWallet() : getMetamaskWallet());
         wallet
           ? postData("/api/user/create-user", {
               role: choosenRole,
               username: username,
               token: wallet,
-              typeWallet: mainWallet.wallet || (tronWalletIsIntall() ? "tron" : "metamask")
+              typeWallet:
+                mainWallet.wallet ||
+                (tronWalletIsIntall() ? "tron" : "metamask"),
             }).then((res) => {
               dispatch(tryToGetUser(wallet));
               navigate(routes.profile);

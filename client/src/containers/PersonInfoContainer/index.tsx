@@ -50,9 +50,6 @@ const PersonInfoContainer = () => {
 
   const isEditMode: boolean = (data.tron_token && (backer.tron_token === data.tron_token)) || (data.metamask_token && (backer.metamask_token === data.metamask_token));
 
-  console.log(data, backer.metamask_token === data.metamask_token, backer.metamask_token, data.metamask_token);
-  
-
   const [file, setFile] = useState<any>();
   const [fileName, setFileName] = useState("");
   const [imagebase64, setImagebase84] = useState<any>("");

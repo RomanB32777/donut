@@ -188,6 +188,8 @@ const titles = [
             const metamaskWallet = await getMetamaskWallet();
             if (metamaskWallet) {
               const isExistUser = await checkIsExistUser(metamaskWallet);
+              console.log(isExistUser);
+              
               if (!isExistUser) {
                 await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
                   type_wallet: "metamask",
@@ -195,6 +197,12 @@ const titles = [
                 });
                 getUser && getUser(getTronWallet());
                 dispatch(tryToGetUser(getTronWallet()));
+              } else {
+                addNotification({
+                  type: "warning",
+                  title: `The token is already in use by another user`,
+                  message: `The token (${metamaskWallet}) is already in use by another user. Please select another ${walletType} account`,
+                });
               }
             }
           } else {
@@ -213,6 +221,12 @@ const titles = [
                 const metaWallet = await getMetamaskWallet();
                 getUser && getUser(metaWallet);
                 dispatch(tryToGetUser(metaWallet));
+              } else {
+                addNotification({
+                  type: "warning",
+                  title: `The token is already in use by another user`,
+                  message: `The token (${wallet}) is already in use by another user. Please select another ${walletType} account`,
+                });
               }
             }
           } else {
@@ -401,9 +415,8 @@ const ProfilePageContainer = () => {
       setFile(null);
       setIsChanged(false);
 
-      const metaWallet = await getMetamaskWallet();
-      getUser(getTronWallet() || metaWallet);
-      dispatch(tryToGetUser(getTronWallet() || metaWallet));
+      getUser(user.tron_token || user.metamask_token);
+      dispatch(tryToGetUser(user.tron_token || user.metamask_token));
 
       addSuccessNotification("Data saved successfully");
     } catch (error) {
@@ -420,6 +433,7 @@ const ProfilePageContainer = () => {
       user_id: user.id,
     });
     dispatch(setUser(""));
+    localStorage.removeItem('main_wallet');
   };
 
   const fileToBase64 = (file: any) => {
