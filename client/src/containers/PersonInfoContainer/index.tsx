@@ -14,7 +14,7 @@ import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import Space from "../../space.png";
 
 import "./styles.sass";
-import getTronWallet from "../../functions/getTronWallet";
+import getTronWallet, { getMetamaskWallet } from "../../functions/getTronWallet";
 import axiosClient from "../../axiosClient";
 import { PencilIcon, UploadIcon } from "../../icons/icons";
 import { tryToGetUser } from "../../store/types/User";
@@ -32,6 +32,7 @@ const PersonInfoContainer = () => {
   const { isLoading } = useSelector((state: any) => state.loading);
 
   const tron_token = getTronWallet();
+  // const metamask_token = ""// getMetamaskWallet();
 
   const { pathname } = useLocation();
 
@@ -47,7 +48,10 @@ const PersonInfoContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backer]);
 
-  const isEditMode: boolean = tron_token === data.tron_token;
+  const isEditMode: boolean = (data.tron_token && (backer.tron_token === data.tron_token)) || (data.metamask_token && (backer.metamask_token === data.metamask_token));
+
+  console.log(data, backer.metamask_token === data.metamask_token, backer.metamask_token, data.metamask_token);
+  
 
   const [file, setFile] = useState<any>();
   const [fileName, setFileName] = useState("");
@@ -71,7 +75,7 @@ const PersonInfoContainer = () => {
   }, [backer, data]);
 
   const followClick = async () => {
-    if (tron_token) {
+    if (backer.tron_token || backer.metamask_token) {
       try {
         if (!isFollowing) {
           axiosClient
@@ -97,7 +101,7 @@ const PersonInfoContainer = () => {
                     username: pathname.slice(pathname.indexOf("@")),
                   })
                 );
-                dispatch(tryToGetUser(tron_token));
+                dispatch(tryToGetUser(backer.tron_token || backer.metamask_token));
               }
             });
         } else if (isFollowing) {
@@ -111,7 +115,7 @@ const PersonInfoContainer = () => {
               .post("/api/user/unfollow", { id: follow.id })
               .then((res) => {
                 if (res.status === 200) {
-                  dispatch(tryToGetUser(tron_token));
+                  dispatch(tryToGetUser(backer.tron_token || backer.metamask_token));
                 }
               });
           }

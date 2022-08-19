@@ -25,7 +25,11 @@ import {
 } from "../../icons/icons";
 import routes from "../../routes";
 import { setUser, tryToGetUser } from "../../store/types/User";
-import { addNotification, addSuccessNotification, checkIsExistUser } from "../../utils";
+import {
+  addNotification,
+  addSuccessNotification,
+  checkIsExistUser,
+} from "../../utils";
 
 import ProfileBanner from "../../components/ProfileBanner";
 import MetaMaskFox from "../../assets/MetaMask_Fox.png";
@@ -131,7 +135,13 @@ const titles = [
   },
   {
     title: "profile_form_title_wallet",
-    Component: ({ copyToken, getUser }: { copyToken?: (token: string) => void, getUser?: any }) => {
+    Component: ({
+      copyToken,
+      getUser,
+    }: {
+      copyToken?: (token: string) => void;
+      getUser?: any;
+    }) => {
       const [metaMaskWallet, setMetaMaskWallet] = useState<null | string>(null);
       const [tronWallet, setTronWallet] = useState<null | string>(null);
       const user = useSelector((state: any) => state.user);
@@ -140,7 +150,6 @@ const titles = [
       const getMetaWallet = async () => {
         user.metamask_token && setMetaMaskWallet(user.metamask_token);
         user.tron_token && setTronWallet(user.tron_token);
-
 
         // if (metamaskWalletIsIntall()) {
         //   const walletMeta = await getMetamaskWallet();
@@ -307,6 +316,7 @@ const ProfilePageContainer = () => {
   const [form, setForm] = useState<any>({
     // tron_token: "",
     person_name: "",
+    username: "",
     user_description: "",
     twitter: "",
     facebook: "",
@@ -314,7 +324,7 @@ const ProfilePageContainer = () => {
     instagram: "",
     twitch: "",
     avatarlink: "",
-    backgroundlink: ""
+    backgroundlink: "",
   });
 
   const [isChanged, setIsChanged] = useState<boolean>(false);
@@ -326,24 +336,31 @@ const ProfilePageContainer = () => {
     addNotification({ type: "success", title: "Token successfully copied" });
   };
 
-  const getUser = async (tron_token: string) => {
-    const { data } = await axiosClient.get("/api/user/" + tron_token);
+  const getUser = async (token: string) => {
+    const { data } = await axiosClient.get("/api/user/" + token);
 
     if (data.person_name && data.person_name.length > 0) {
       setIsNameExist(true);
     }
+
     setForm({
       ...data,
       user_description: data.user_description,
+      username: data.username,
       person_name: data.person_name,
       avatarlink: data.avatarlink,
       backgroundlink: data.backgroundlink,
     });
   };
 
+  const getUserByToken = async () => {
+    const metaWallet = await getMetamaskWallet();
+    getUser(user.tron_token ? getTronWallet() : metaWallet);
+  };
+
   useEffect(() => {
     if (user.id) {
-      getUser(getTronWallet());
+      getUserByToken();
     } else {
       navigate(routes.main);
     }
@@ -388,14 +405,13 @@ const ProfilePageContainer = () => {
       getUser(getTronWallet() || metaWallet);
       dispatch(tryToGetUser(getTronWallet() || metaWallet));
 
-
-      addSuccessNotification("Data saved successfully")
+      addSuccessNotification("Data saved successfully");
     } catch (error) {
       addNotification({
-        type: 'danger',
-        title: 'Error',
-        message: `An error occurred while saving data`
-      })
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while saving data`,
+      });
     }
   };
 

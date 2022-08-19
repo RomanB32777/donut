@@ -90,7 +90,7 @@ const ProfileBanner = ({
 
   return (
     <div
-      className="person-info-container__background"
+      className="banner-info-container__background"
       onMouseEnter={() => setIsMouseOnBackground(true)}
       onMouseLeave={() => setIsMouseOnBackground(false)}
     >
@@ -108,7 +108,7 @@ const ProfileBanner = ({
 
       {saveBtn && (
         <div
-          className="person-info-container__background__save"
+          className="banner-info-container__background__save"
           style={{
             opacity: fileName.length > 0 ? "1" : "0",
           }}
@@ -120,7 +120,7 @@ const ProfileBanner = ({
         </div>
       )}
       <div
-        className="person-info-container__background__dark"
+        className="banner-info-container__background__dark"
         style={{
           opacity: isMouseOnBackground && isEditMode ? "0.8" : "0",
         }}

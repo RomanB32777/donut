@@ -25,6 +25,8 @@ import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import SupportModal from "../../components/SupportModal";
 import ChooseWalletModal from "../../components/ChooseWalletModal";
 
+const maxlength = 120;
+
 const DonatContainer = () => {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
@@ -101,32 +103,9 @@ const DonatContainer = () => {
               <div className="donat-container__payment-column">
                 <div className="donat-container__payment_inputs">
                   {Boolean(Object.keys(user).length) ? (
-                    <textarea
-                      className="donat-container__payment_inputs-message"
-                      placeholder="Type your message here..."
-                      value={form.message}
-                      onChange={(event) => {
-                        setForm({
-                          ...form,
-                          message: event.target.value,
-                        });
-                      }}
-                    />
-                  ) : (
-                    <>
-                      <input
-                        placeholder="Your username"
-                        className="donat-container__payment_inputs-name"
-                        value={form.username}
-                        onChange={(event) => {
-                          setForm({
-                            ...form,
-                            username: event.target.value,
-                          });
-                        }}
-                      />
-
-                      <input
+                    <div className="donat-container__payment_inputs-item">
+                      <textarea
+                        maxLength={maxlength || 524288}
                         className="donat-container__payment_inputs-message"
                         placeholder="Type your message here..."
                         value={form.message}
@@ -137,6 +116,44 @@ const DonatContainer = () => {
                           });
                         }}
                       />
+                      <span className="donat-container__payment_inputs__subtitle">
+                        Number of input characters - {form.message.length} /
+                        {maxlength}
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="donat-container__payment_inputs-item">
+                        <input
+                          placeholder="Your username"
+                          className="donat-container__payment_inputs-name"
+                          value={form.username}
+                          onChange={(event) => {
+                            setForm({
+                              ...form,
+                              username: event.target.value,
+                            });
+                          }}
+                        />
+                      </div>
+                      <div className="donat-container__payment_inputs-item">
+                        <input
+                          maxLength={maxlength || 524288}
+                          className="donat-container__payment_inputs-message"
+                          placeholder="Type your message here..."
+                          value={form.message}
+                          onChange={(event) => {
+                            setForm({
+                              ...form,
+                              message: event.target.value,
+                            });
+                          }}
+                        />
+                        <div className="donat-container__payment_inputs__subtitle">
+                          Number of input characters - {form.message.length} /
+                          {maxlength}
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>

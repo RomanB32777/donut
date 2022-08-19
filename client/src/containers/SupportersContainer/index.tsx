@@ -569,8 +569,10 @@ const SupportersContainer = () => {
           <div
             className="icon"
             onClick={() => {
+              console.log(baseURL, user.username);
+              
               navigator.clipboard.writeText(
-                `${baseURL}/donat/` + user.username
+                `${baseURL}/donat/${user.username}` 
               );
               addNotification({
                 type: "success",

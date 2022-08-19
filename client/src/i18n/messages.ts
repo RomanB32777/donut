@@ -39,7 +39,7 @@ const messages = {
             mainpage_donut_mocup_title: '1% bite is all it takes',
             mainpage_donut_mocup_subtitle: 'It’s the lowest commission on the market',
 
-            mainpage_bottom_panel_title: 'Are you ready to get your tasty Crypto Donutz?',
+            mainpage_bottom_panel_title: 'Let your audience support you and  enjoy your Donutz',
             mainpage_bottom_panel_button: 'Sign-up now',
 
         //navbar
