@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 const getTronWallet = () => {
     if ((window as any).tronWeb && (window as any).tronWeb.defaultAddress.base58) {
         return (window as any).tronWeb.defaultAddress.base58
@@ -5,6 +6,7 @@ const getTronWallet = () => {
         return null
     } 
 }
+
 
 export const getMetamaskWallet = async () => {
     if ((window as any).ethereum) {
@@ -21,5 +23,19 @@ export const getMetamaskWallet = async () => {
 export const tronWalletIsIntall = () => (window as any).hasOwnProperty('tronWeb')
 
 export const metamaskWalletIsIntall = () => (window as any).hasOwnProperty('ethereum')
+
+export const getMetamaskData = async () => {
+    if (metamaskWalletIsIntall()) {
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress()
+        return {
+            signer,
+            address,
+            provider
+        }
+    } 
+}
 
 export default getTronWallet

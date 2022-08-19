@@ -12,12 +12,13 @@ import {
   TronIcon,
 } from "../../icons/icons";
 import getTronWallet, {
+  getMetamaskData,
   getMetamaskWallet,
   metamaskWalletIsIntall,
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
 import axiosClient from "../../axiosClient";
-import { contractAddress } from "../../consts";
+import { ABI, contractAddress, contractMetaAddress } from "../../consts";
 import { send } from "process";
 import { getPersonInfoPage } from "../../store/types/PersonInfo";
 import { addAuthNotification, addNotification } from "../../utils";
@@ -26,6 +27,7 @@ import clsx from "clsx";
 import Web3 from "web3";
 import postData from "../../functions/postData";
 import { tryToGetUser } from "../../store/types/User";
+import { ethers } from "ethers";
 // const TronWeb = require('tronweb')
 // const tronWeb = new TronWeb()
 
@@ -326,7 +328,24 @@ const SupportModal = ({
         }
       }
       if (selectedWallet.name === "MATIC") {
-        sendDonation();
+        if (metamaskWalletIsIntall()) {
+            const metamaskData = await getMetamaskData();
+            if (metamaskData) {
+              const { provider, signer } = metamaskData;
+              const contractInstance = new ethers.Contract(contractMetaAddress, ABI, provider);
+              console.log(contractInstance);
+              
+              // const tx =  await contractInstance.connect(signer).transferMoney(data.metamask_token).send({
+              //   feeLimit: 100_000_000,
+              //   callValue: 1000000 * parseFloat(sum), // это 100 trx
+              //   shouldPollResponse: false,
+              // })
+              // await tx.wait();  // Это чтобы дождаться, когда транзация будет замайнена в блок
+              // sendDonation();
+            }
+        }
+
+
 
         // ethereum
         // .request({

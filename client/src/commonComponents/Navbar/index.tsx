@@ -14,6 +14,7 @@ import LogoIcon from "../../icons/LogoIcon";
 import Search from "../../components/Search";
 import { useDispatch, useSelector } from "react-redux";
 import getTronWallet, {
+  getMetamaskData,
   getMetamaskWallet,
   metamaskWalletIsIntall,
   tronWalletIsIntall,
@@ -41,6 +42,7 @@ import MetaMaskIcon from "../../assets/MetaMask_Fox.png";
 import clsx from "clsx";
 import { setMainWallet } from "../../store/types/Wallet";
 import Web3 from "web3";
+import { ethers } from "ethers";
 
 const NotificationsPopup = ({ user }: { user: number }) => {
   const navigate = useNavigate();
@@ -156,6 +158,13 @@ const WalletPopup = ({
     return res.data.price;
   };
 
+  const getMaticUsdKoef = async () => {
+    const res: any = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+    );
+    return res.data.price;
+  };
+
   useEffect(() => {
     const walletData = localStorage.getItem("main_wallet");
     if (walletData) {
@@ -201,22 +210,18 @@ const WalletPopup = ({
     if (mainWallet.wallet === "metamask" && metamaskWalletIsIntall()) {
       const metamaskWallet = await getMetamaskWallet();
       if (metamaskWallet) {
-        const ethereum = (window as any).ethereum;
-
-        setTotalBalance(0);
-        // getWeb3(ethereum)
-        // .then(console.log);
-
-        // const web3 = new Web3(ethereum);
-        // const balanceMetamask = await web3.eth.getBalance(
-        //   metamaskWallet //"0x62523d1357f47C42556C04031e9070b9B0F26694"
-        // );
-        // if (balanceMetamask) {
-        //   const formatBalance = Number(
-        //     web3.utils.fromWei(balanceMetamask, "ether")
-        //   );
-        //   setTotalBalance((prev) => prev + formatBalance);
-        // }
+        const metamaskData = await getMetamaskData();
+        if (metamaskData) {
+          const { provider, address } = metamaskData;
+          const balance = await provider.getBalance(address);
+          const maticUsdKoef: number = await getMaticUsdKoef();
+          if (balance) {
+            const newSumKoef =
+              Number(ethers.utils.formatEther(balance.toString())) *
+              maticUsdKoef;
+            setTotalBalance(Number(newSumKoef.toFixed(2)));
+          }
+        }
       }
     }
   };
@@ -307,7 +312,7 @@ const WalletPopup = ({
                   className="wallet-popup__select_wallet-item__content"
                   onClick={() => {
                     dispatch(setUser(""));
-                    localStorage.removeItem('main_wallet');
+                    localStorage.removeItem("main_wallet");
                     navigate(routes.main);
                   }}
                 >
@@ -605,7 +610,7 @@ const Navbar = () => {
                     onClick={() => {
                       if (title.title === "Sign out") {
                         dispatch(setUser(""));
-                        localStorage.removeItem('main_wallet');
+                        localStorage.removeItem("main_wallet");
                       }
                       navigate(title.link);
                     }}
