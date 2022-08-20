@@ -30,22 +30,22 @@ export const getMetamaskData = async () => {
         const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
 
         if (chainId !== '0x13881') {
-            const res = await (window as any).ethereum.request({
+            await (window as any).ethereum.request({
                 method: 'wallet_addEthereumChain',
                 params: [
                   {
                     chainId: '0x13881',
+                    nativeCurrency: {
+                        name: 'MATIC',
+                        symbol: 'MATIC',
+                        decimals: 18,
+                      },
                     chainName: 'Mumbai',
                     rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
                   },
                 ],
               });
-              console.log(res);
-              
             }
-
-
-            
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const address = await signer.getAddress()

@@ -368,56 +368,64 @@ const SupportModal = ({
   async function triggerContract() {
     try {
       if (selectedWallet.name === "TRX") {
-        // let instance = await (window as any).tronWeb
-        //   .contract()
-        // .at(contractAddress);
-        // const res = await instance.transferMoney(data.tron_token).send({
-        //   feeLimit: 100_000_000,
-        //   callValue: 1000000 * parseFloat(sum), // это 100 trx
-        //   shouldPollResponse: false,
-        // });
-
-        // if (res) {
-        sendDonation();
-        // }
+        if (user.tron_token) {
+          let instance = await (window as any).tronWeb
+            .contract()
+            .at(contractAddress);
+          const res = await instance.transferMoney(data.tron_token).send({
+            feeLimit: 100_000_000,
+            callValue: 1000000 * parseFloat(sum), // это 100 trx
+            shouldPollResponse: false,
+          });
+          if (res) {
+            sendDonation();
+          }
+        } else {
+          addNotification({
+            type: "danger",
+            title: "TronLink error",
+            message:
+              "An error occurred while authorizing the wallet in tronlink",
+          });
+        }
       }
       if (selectedWallet.name === "MATIC") {
         if (metamaskWalletIsIntall()) {
-          const metamaskData = await getMetamaskData();
-          if (metamaskData) {
-            const { signer } = metamaskData;
-            const smartContract = new ethers.Contract(
-              contractMetaAddress,
-              abiOfContract,
-              signer
-            );
+          if (user.metamask_token) {
+            const metamaskData = await getMetamaskData();
+            if (metamaskData) {
+              const { signer } = metamaskData;
+              const smartContract = new ethers.Contract(
+                contractMetaAddress,
+                abiOfContract,
+                signer
+              );
 
-            const tx = await smartContract.transferMoney(data.metamask_token, {
-              value: ethers.utils.parseEther(sum),
+              const tx = await smartContract.transferMoney(
+                data.metamask_token,
+                {
+                  value: ethers.utils.parseEther(sum),
+                }
+              );
+              try {
+                setLoadingState(true);
+                await tx.wait(); // Это чтобы дождаться, когда транзация будет замайнена в блок
+                setLoadingState(false);
+                sendDonation();
+              } catch (error) {
+                setLoadingState(false);
+                console.log(error);
+              }
+            }
+          } else {
+            addNotification({
+              type: "danger",
+              title: "Metamask error",
+              message:
+                "An error occurred while authorizing the wallet in metamask",
             });
-            setLoadingState(true);
-            const resTransaction = await tx.wait(); // Это чтобы дождаться, когда транзация будет замайнена в блок
-            console.log(resTransaction);
-            setLoadingState(false);
-            sendDonation();
           }
         }
-
-        // ethereum
-        // .request({
-        //   method: 'eth_sendTransaction',
-        //   params: [
-        //     {
-        //       from: accounts[0],
-        //       to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
-        //       value: '0x29a2241af62c0000',
-        //       gasPrice: '0x09184e72a000',
-        //       gas: '0x2710',
-        //     },
-        //   ],
-        // })
-        // .then((txHash) => console.log(txHash))
-        // .catch((error) => console.error);
       }
     } catch (error) {
       console.log(error);
@@ -434,8 +442,15 @@ const SupportModal = ({
       //   width: sent ? "600px" : "436px",
       // }}
     >
-      {loadingState && <div>loading...</div>}
-      {!sent ? (
+      {loadingState && (
+        <div className="success-transaction">
+          <span>Loading...</span>
+          <span>
+            Don't close the site until the result of the transaction is loaded
+          </span>
+        </div>
+      )}
+      {!sent && !loadingState ? (
         <>
           {!notTitle && (
             <>
