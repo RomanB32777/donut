@@ -1,20 +1,35 @@
 export const contractAddress = "TX6dd8YNKRCKZazcBZUHZQjyckzxvPKYJU"
-export const contractMetaAddress = "0x62523d1357f47C42556C04031e9070b9B0F26694"
-export const url = '/images/'
+export const contractMetaAddress = "0x52cbc30830650aa032e49e330240ce334fa302c6";
+export const abiOfContract = [
+  {
+   "inputs": [],
+   "stateMutability": "nonpayable",
+   "type": "constructor"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address payable",
+     "name": "_creator",
+     "type": "address"
+    }
+   ],
+   "name": "transferMoney",
+   "outputs": [],
+   "stateMutability": "payable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "withdrawPendingBalance",
+   "outputs": [],
+   "stateMutability": "payable",
+   "type": "function"
+  },
+  {
+   "stateMutability": "payable",
+   "type": "receive"
+  }
+]
 
-export const ABI = [
-    {
-      inputs: [],
-      name: "count",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "increment",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-  ];
+export const url = '/images/'

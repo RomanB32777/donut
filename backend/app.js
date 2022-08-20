@@ -48,12 +48,20 @@ io.on('connection', async (socket) => {
 	socket.join(userId);
 	// console.log('a user connected ', userId, socket.id);
 	socket.on('new_donat', async (data) => {
-		const { supporter, creator_id, sum, donationID } = data;
+		const { supporter, creator_id, sum, donationID, wallet } = data;
 		const rooms = getActiveRooms(io);
 		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => +room === creator_id).sockets;
-			userSockets && userSockets.length && userSockets.forEach(socketID =>
-				socket.to(socketID).emit("new_notification", { type: 'donat', supporter: supporter.username, sum })
+			const userSockets = rooms.find(({ room }) => +room === creator_id)?.sockets;
+			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID])
+			
+			donation.rows[0] && userSockets && userSockets.length && userSockets.forEach(socketID =>
+				socket.to(socketID).emit("new_notification", {
+					type: 'donat', supporter: supporter.username, additional: {
+						sum,
+						wallet,
+						message: donation.rows[0].donation_message
+					}
+				})
 			);
 			await db.query(`INSERT INTO notifications (donation, sender, recipient) values ($1, $2, $3);`, [donationID, supporter.id, creator_id])
 		}

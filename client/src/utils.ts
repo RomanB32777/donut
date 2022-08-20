@@ -42,10 +42,10 @@ declare type typeNotification = 'donat_creator' | 'donat_supporter' | 'following
 export const getNotificationMessage = (type: typeNotification, user: any, data?: any) => {
   switch (type) {
     case 'donat_creator':
-      return `${user} sent you ${data} TRX!`
+      return `${user} sent you ${data.additional ? data.additional.sum : data.sum} ${(data.additional ? data.additional.wallet : data.wallet ) === 'tron' ? 'TRX' : 'MATIC'}!`
 
       case 'donat_supporter':
-        return `You sent ${data} TRX to ${user}!`
+        return `You sent ${data.additional ? data.additional.sum : data.sum} ${(data.additional ? data.additional.wallet : data.wallet ) === 'tron' ? 'TRX' : 'MATIC'} to ${user}!`
   
     case 'following_creator':
       return `${user} started following you`

@@ -27,13 +27,32 @@ export const metamaskWalletIsIntall = () => (window as any).hasOwnProperty('ethe
 export const getMetamaskData = async () => {
     if (metamaskWalletIsIntall()) {
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
+
+        if (chainId !== '0x13881') {
+            const res = await (window as any).ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x13881',
+                    chainName: 'Mumbai',
+                    rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                  },
+                ],
+              });
+              console.log(res);
+              
+            }
+
+
+            
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const address = await signer.getAddress()
         return {
             signer,
             address,
-            provider
+            provider,
         }
     } 
 }

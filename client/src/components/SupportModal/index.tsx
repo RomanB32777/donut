@@ -18,7 +18,11 @@ import getTronWallet, {
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
 import axiosClient from "../../axiosClient";
-import { ABI, contractAddress, contractMetaAddress } from "../../consts";
+import {
+  abiOfContract,
+  contractAddress,
+  contractMetaAddress,
+} from "../../consts";
 import { send } from "process";
 import { getPersonInfoPage } from "../../store/types/PersonInfo";
 import { addAuthNotification, addNotification } from "../../utils";
@@ -66,6 +70,8 @@ const SupportModal = ({
   const [selectedWallet, setSelectedWallet] = useState<any>({});
   const [visibleWallet, setVisibleWallet] = useState<any>([]);
   const [tronUsdtKoef, setTronUsdtKoef] = useState<string>("0");
+  const [maticUsdtKoef, setMaticUsdtKoef] = useState<string>("0");
+  const [loadingState, setLoadingState] = useState(false);
 
   const [sent, setSent] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(true);
@@ -75,6 +81,13 @@ const SupportModal = ({
       "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
     );
     setTronUsdtKoef(res.data.price);
+  };
+
+  const getMaticUsdKoef = async () => {
+    const res: any = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+    );
+    setMaticUsdtKoef(res.data.price);
   };
 
   useEffect(() => {
@@ -101,30 +114,55 @@ const SupportModal = ({
   }, [wallet, token, data]);
 
   useEffect(() => {
-    const filterWallets = wallets.filter(async (wallet) => {
-      if (user)
-        return (
-          (wallet.name === "TRX" && user.tron_token && data.tron_token) ||
-          (wallet.name === "MATIC" &&
+    const filterWallets = Promise.all(
+      wallets.filter(async (wallet) => {
+        if (user) {
+          console.log(
+            wallet.name,
+            (wallet.name === "TRX" && user.tron_token && data.tron_token) ||
+              (wallet.name === "MATIC" &&
+                user.metamask_token &&
+                data.metamask_token)
+          );
+          if (wallet.name === "TRX" && user.tron_token && data.tron_token) {
+            console.log("true trx");
+
+            return true;
+          }
+          if (
+            wallet.name === "MATIC" &&
             user.metamask_token &&
-            data.metamask_token)
-        );
-      else {
-        const metaWallet =
-          metamaskWalletIsIntall() && (await getMetamaskWallet());
-        return (
-          (wallet.name === "TRX" && getTronWallet() && data.tron_token) ||
-          (wallet.name === "MATIC" && metaWallet && data.metamask_token)
-        );
+            data.metamask_token
+          ) {
+            console.log("true mat");
+
+            return true;
+          }
+          console.log("false ", wallet.name);
+          return false;
+        } else {
+          const metaWallet =
+            metamaskWalletIsIntall() && (await getMetamaskWallet());
+
+          return (
+            (wallet.name === "TRX" && getTronWallet() && data.tron_token) ||
+            (wallet.name === "MATIC" && metaWallet && data.metamask_token)
+          );
+        }
+      })
+    );
+    filterWallets.then((res) => {
+      if (res) {
+        console.log(res);
+
+        setVisibleWallet(res);
       }
     });
-    console.log(filterWallets);
-
-    setVisibleWallet(filterWallets);
-  }, [user, data, wallet]);
+  }, [user, data]);
 
   useEffect(() => {
     getPrice();
+    getMaticUsdKoef();
 
     const clickHandler = (event: React.MouseEvent<HTMLElement> | any) => {
       if (
@@ -145,7 +183,7 @@ const SupportModal = ({
   }, []);
 
   const sendDonation = async () => {
-    let newUser: any = {}
+    let newUser: any = {};
     if (additionalFields && additionalFields.username) {
       const res = await postData("/api/user/check-username", {
         username: additionalFields.username,
@@ -154,21 +192,23 @@ const SupportModal = ({
       if (!res.error) {
         const metaMaskWallet =
           metamaskWalletIsIntall() && (await getMetamaskWallet());
-  
+
         const walletCheck =
-          token || (selectedWallet.name === "TRX" ? getTronWallet() : metaMaskWallet);
+          token ||
+          (selectedWallet.name === "TRX" ? getTronWallet() : metaMaskWallet);
         if (walletCheck) {
           const resCreate = await postData("/api/user/create-user", {
             role: "backers",
             username: additionalFields.username,
             token: walletCheck,
-            typeWallet: wallet || (selectedWallet.name === "TRX" ? "tron" : "metamask"),
+            typeWallet:
+              wallet || (selectedWallet.name === "TRX" ? "tron" : "metamask"),
           });
-  
+
           if (resCreate.newUser) {
             dispatch(tryToGetUser(walletCheck));
-            newUser = resCreate.newUser
-          } 
+            newUser = resCreate.newUser;
+          }
         } else
           addNotification({
             type: "danger",
@@ -176,7 +216,13 @@ const SupportModal = ({
           });
       }
     }
-    if (selectedWallet && selectedWallet.name === "TRX" && (user.tron_token || newUser.tron_token)) {
+
+    console.log(selectedWallet, user.tron_token, newUser.tron_token);
+    if (
+      selectedWallet &&
+      selectedWallet.name === "TRX" &&
+      (user.tron_token || newUser.tron_token)
+    ) {
       const res = await axiosClient.post("/api/donation/create/", {
         creator_token: data.tron_token,
         backer_token: user.tron_token || newUser.tron_token,
@@ -193,7 +239,11 @@ const SupportModal = ({
             user &&
             resData.donation &&
             socket.emit("new_donat", {
-              supporter: { username: user.username || newUser.username, id: user.user_id || newUser.user_id },
+              supporter: {
+                username: user.username || newUser.username,
+                id: user.user_id || newUser.user_id,
+              },
+              wallet: "tron",
               creator_id: data.user_id,
               sum: sum.toString(),
               donationID: resData.donation.id,
@@ -239,7 +289,11 @@ const SupportModal = ({
             user &&
             resData.donation &&
             socket.emit("new_donat", {
-              supporter: { username: user.username || newUser.username, id: user.user_id || newUser.user_id },
+              supporter: {
+                username: user.username || newUser.username,
+                id: user.user_id || newUser.user_id,
+              },
+              wallet: "metamask",
               creator_id: data.user_id,
               sum: sum.toString(),
               donationID: resData.donation.id,
@@ -314,38 +368,40 @@ const SupportModal = ({
   async function triggerContract() {
     try {
       if (selectedWallet.name === "TRX") {
-        let instance = await (window as any).tronWeb
-          .contract()
-          .at(contractAddress);
-        const res = await instance.transferMoney(data.tron_token).send({
-          feeLimit: 100_000_000,
-          callValue: 1000000 * parseFloat(sum), // это 100 trx
-          shouldPollResponse: false,
-        });
+        // let instance = await (window as any).tronWeb
+        //   .contract()
+        // .at(contractAddress);
+        // const res = await instance.transferMoney(data.tron_token).send({
+        //   feeLimit: 100_000_000,
+        //   callValue: 1000000 * parseFloat(sum), // это 100 trx
+        //   shouldPollResponse: false,
+        // });
 
-        if (res) {
-          sendDonation();
-        }
+        // if (res) {
+        sendDonation();
+        // }
       }
       if (selectedWallet.name === "MATIC") {
         if (metamaskWalletIsIntall()) {
-            const metamaskData = await getMetamaskData();
-            if (metamaskData) {
-              const { provider, signer } = metamaskData;
-              const contractInstance = new ethers.Contract(contractMetaAddress, ABI, provider);
-              console.log(contractInstance);
-              
-              // const tx =  await contractInstance.connect(signer).transferMoney(data.metamask_token).send({
-              //   feeLimit: 100_000_000,
-              //   callValue: 1000000 * parseFloat(sum), // это 100 trx
-              //   shouldPollResponse: false,
-              // })
-              // await tx.wait();  // Это чтобы дождаться, когда транзация будет замайнена в блок
-              // sendDonation();
-            }
+          const metamaskData = await getMetamaskData();
+          if (metamaskData) {
+            const { signer } = metamaskData;
+            const smartContract = new ethers.Contract(
+              contractMetaAddress,
+              abiOfContract,
+              signer
+            );
+
+            const tx = await smartContract.transferMoney(data.metamask_token, {
+              value: ethers.utils.parseEther(sum),
+            });
+            setLoadingState(true);
+            const resTransaction = await tx.wait(); // Это чтобы дождаться, когда транзация будет замайнена в блок
+            console.log(resTransaction);
+            setLoadingState(false);
+            sendDonation();
+          }
         }
-
-
 
         // ethereum
         // .request({
@@ -378,6 +434,7 @@ const SupportModal = ({
       //   width: sent ? "600px" : "436px",
       // }}
     >
+      {loadingState && <div>loading...</div>}
       {!sent ? (
         <>
           {!notTitle && (
@@ -458,7 +515,12 @@ const SupportModal = ({
             <div className="support-modal__form__input">
               <span className="support-modal__form__input__title">
                 {sum.length > 0
-                  ? parseFloat(sum) * parseFloat(tronUsdtKoef)
+                  ? parseFloat(sum) *
+                    parseFloat(
+                      selectedWallet.name === "TRX"
+                        ? tronUsdtKoef
+                        : maticUsdtKoef
+                    )
                   : "0"}
               </span>
               <span
