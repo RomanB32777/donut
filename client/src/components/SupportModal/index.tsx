@@ -443,7 +443,7 @@ const SupportModal = ({
       // }}
     >
       {loadingState && (
-        <div className="success-transaction">
+        <div className="loading-transaction">
           <span>Loading...</span>
           <span>
             Don't close the site until the result of the transaction is loaded
@@ -565,7 +565,7 @@ const SupportModal = ({
             </div>
           </div>
         </>
-      ) : success ? (
+      ) : (success && !loadingState) ? (
         <div className="success-transaction">
           <span>
             You’ve successfully sent {sum} to{" "}
@@ -573,7 +573,7 @@ const SupportModal = ({
           </span>
           <SuccessTransactionIcon />
         </div>
-      ) : (
+      ) : (!loadingState) && (
         <div className="non-success-transaction">
           <span>Something wrong happened. Try again</span>
           <NonSuccessTransactionIcon />
