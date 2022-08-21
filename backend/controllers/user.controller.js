@@ -263,7 +263,7 @@ class UserController {
             // const creator = await db.query(`SELECT * FROM creators WHERE username = $1`, [username])
             // const supporters = await db.query(`SELECT * FROM supporters WHERE creator_id = $1 ORDER BY sum_donations DESC`, [user.rows[0].id])
             const supporters = await db.query(`
-                SELECT username, SUM(sum_donation::integer) AS sum_donations
+                SELECT username, SUM(sum_donation::numeric) AS sum_donations
                 FROM donations
                 WHERE creator_id = $1
                 GROUP BY username

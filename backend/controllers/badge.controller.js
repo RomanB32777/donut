@@ -15,10 +15,12 @@ const getImageName = () => {
 class BadgeController {
     async createBadge(req, res) {
         try {
-            const { tron_token, badge_name, badge_desc, link, quantity } = req.body
-            const creator = await db.query('SELECT * FROM users WHERE tron_token = $1', [tron_token])
-            const newBadge = await db.query(`INSERT INTO badges (owner_user_id, badge_name, badge_desc, link, quantity) values ($1, $2, $3, $4, $5) RETURNING *`, [creator.rows[0].id, badge_name, badge_desc, link, quantity])
-            res.status(200).json({ badge: newBadge.rows[0] })
+            const { token, badge_name, badge_desc, link, quantity } = req.body
+            const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
+            if (creator) {
+                const newBadge = await db.query(`INSERT INTO badges (owner_user_id, badge_name, badge_desc, link, quantity) values ($1, $2, $3, $4, $5) RETURNING *`, [creator.rows[0].id, badge_name, badge_desc, link, quantity])
+                res.status(200).json({ badge: newBadge.rows[0] })
+            }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }

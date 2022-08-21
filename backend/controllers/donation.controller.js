@@ -1,4 +1,20 @@
+const axios = require("axios");
+
 const db = require('../db')
+
+const getTronUsdKoef = async () => {
+    const res = await axios.get(
+        "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
+    );
+    return res.data.price;
+};
+
+const getMaticUsdKoef = async () => {
+    const res = await axios.get(
+        "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+    );
+    return res.data.price;
+};
 
 class DonationController {
     async createDonation(req, res) {
@@ -73,10 +89,14 @@ class DonationController {
 
     async getBackersInfo(req, res) {
         try {
-            const sumRows = await db.query(`SELECT sum_donation FROM donations`)
+            const sumRows = await db.query(`SELECT sum_donation, wallet_type FROM donations`)
             let sum = 0
-            sumRows.rows.forEach((summ) => sum += parseFloat(summ.sum_donation))
+            const trxKoef = await getTronUsdKoef()
+            const maticKoef = await getMaticUsdKoef()
 
+            sumRows.rows.forEach((summ) =>
+                sum += Number((parseFloat(summ.sum_donation) * (summ.wallet_type === "tron" ? trxKoef : maticKoef)).toFixed(2))
+            )
 
             const allDonations = await db.query(`SELECT * FROM donations`)
             const sums = allDonations.rows.map((sum) => (parseFloat(sum.sum_donation))).sort(function (a, b) {
@@ -139,7 +159,7 @@ class DonationController {
 
 
             res.status(200).json({
-                sum: sum,
+                sum,
                 topDonations: donations.reverse(),
                 supporters: supporters
             })
