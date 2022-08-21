@@ -45,7 +45,7 @@ create TABLE supporters(
     backer_id INTEGER,
     sum_donations VARCHAR(63) DEFAULT '',
     creator_id INTEGER,
-    amount_donations INTEGER,
+    amount_donations NUMERIC,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

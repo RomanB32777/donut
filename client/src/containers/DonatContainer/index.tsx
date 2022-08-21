@@ -39,9 +39,10 @@ const DonatContainer = () => {
   });
 
   useEffect(() => {
+    const pathnameEnd = pathname.slice(pathname.indexOf("@"))
     dispatch(
       tryToGetPersonInfo({
-        username: pathname.slice(pathname.indexOf("@")),
+        username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -174,6 +175,7 @@ const DonatContainer = () => {
                 </div>
                 <SupportModal
                   additionalFields={form}
+                  setForm={setForm}
                   notTitle
                   modificator="donat-page"
                 />

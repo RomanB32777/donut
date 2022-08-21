@@ -1,7 +1,7 @@
 import axiosClient from "../../../axiosClient";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { TronIcon } from "../../../icons/icons";
+import { MaticIcon, TronIcon } from "../../../icons/icons";
 
 const titles = ["NAME", "DONATION", "USD", "DATE/TIME"];
 
@@ -60,7 +60,7 @@ const LatestDonationsTable = () => {
               <span>{row.username}</span>
               <span>
                 {row.sum_donation}
-                <TronIcon />
+                {row.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
               </span>
               <span>
                 {"$ " + Math.round(parseFloat(row.sum_donation) * tronUsdtKoef)}

@@ -5,10 +5,15 @@ import { useNavigate } from "react-router";
 import BlueButton from "../../commonComponents/BlueButton";
 import LargeInput from "../../commonComponents/LargeInput";
 import PageTitle from "../../commonComponents/PageTitle";
-import getTronWallet from "../../functions/getTronWallet";
+import getTronWallet, {
+  getMetamaskWallet,
+  metamaskWalletIsIntall,
+  tronWalletIsIntall,
+} from "../../functions/getTronWallet";
 import { LargeImageIcon } from "../../icons/icons";
 import routes from "../../routes";
 import "./styles.sass";
+import { useSelector } from "react-redux";
 
 const NewBadgeContainer = () => {
   const navigate = useNavigate();
@@ -25,6 +30,7 @@ const NewBadgeContainer = () => {
   const [file, setFile] = useState<any>();
   const [fileName, setFileName] = useState("");
   const [imagebase64, setImagebase84] = useState<any>("");
+  const mainWallet = useSelector((state: any) => state.wallet);
 
   const fileToBase64 = (file: any) => {
     new Promise((resolve, reject) => {
@@ -44,6 +50,14 @@ const NewBadgeContainer = () => {
   };
 
   const createBadge = async () => {
+    let token: string = "";
+    if (mainWallet.wallet === "metamask") {
+      const metaMaskWallet =
+        metamaskWalletIsIntall() && (await getMetamaskWallet());
+      token = metaMaskWallet;
+    } else if (mainWallet.wallet === "tron") {
+      token = tronWalletIsIntall() && getTronWallet();
+    }
     const res: any = await fetch(baseURL + "/api/badge/create-badge", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
@@ -55,7 +69,7 @@ const NewBadgeContainer = () => {
       },
       redirect: "follow", // manual, *follow, error
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify({ ...form, tron_token: tron_wallet }),
+      body: JSON.stringify({ ...form, token }),
     });
     const result = await res.json();
     if (result) {

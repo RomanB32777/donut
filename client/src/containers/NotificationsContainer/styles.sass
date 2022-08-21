@@ -216,7 +216,40 @@
                             color: variables.$white-color
                             text-decoration: none
                         
-
+.link-wrapper
+    display: flex
+    flex-direction: row
+    align-items: center
+    margin-top: 16px
+    width: 100%
+    span
+        margin-right: 62px
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 700
+        font-size: 20px
+        line-height: 25px
+        color: variables.$grey-color
+    .link
+        font-family: variables.$jakarta-font
+        color: variables.$grey-color
+        font-style: normal
+        font-weight: 700
+        font-size: 17px
+        line-height: 21px
+        text-align: center
+        box-sizing: border-box
+        padding: 6px 
+        background: #000000
+        border: 1px solid #BBB9B9
+        border-radius: 10px
+    
+    .icon
+        margin-left: 10px
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
 .rotated
     svg
         transform: rotate(180deg)

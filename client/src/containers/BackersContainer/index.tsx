@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { baseURL } from "../../axiosClient";
 import { url } from "../../consts";
-import { DonutIcon, FlagIcon, ShieldIcon, TronIcon } from "../../icons/icons";
+import { DonutIcon, FlagIcon, MaticIcon, ShieldIcon, TronIcon } from "../../icons/icons";
 import "./styles.sass";
 
 const topDonationsWidth = {
@@ -125,7 +125,7 @@ const BackersContainer = () => {
                           .map((dns: any) => (
                             <div
                               key={
-                                "dns" + dns.reator_username + dns.sum_donation
+                                "dns" + dns.creator_username + dns.sum_donation
                               }
                             >
                               <span
@@ -137,7 +137,7 @@ const BackersContainer = () => {
                               </span>
                               <span>
                                 {dns.sum_donation}
-                                <TronIcon />
+                                {dns.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
                               </span>
                             </div>
                           ))}
@@ -244,7 +244,7 @@ const BackersContainer = () => {
             <FormattedMessage id="backers_page_sum_title" />
           </span>
           <div className="backers-container__right-side__sum__value">
-            {backers.sum} 
+            {backers.sum} USD
             {/* <TronIcon /> */}
           </div>
         </div>
@@ -288,7 +288,7 @@ const BackersContainer = () => {
                 </span>
                 <span>
                   {donation.sum_donation}
-                  <TronIcon />
+                  {donation.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
                 </span>
               </div>
             ))}

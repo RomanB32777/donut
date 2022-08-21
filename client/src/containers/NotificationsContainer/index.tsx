@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useDispatch, useSelector } from "react-redux";
-import axiosClient from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../commonComponents/PageTitle";
-import { SmallToggleListArrowIcon } from "../../icons/icons";
+import { CopyIcon, SmallToggleListArrowIcon } from "../../icons/icons";
+import routes from "../../routes";
 import { getNotifications } from "../../store/types/Notifications";
-import { DateFormatter } from "../../utils";
+import { addNotification, DateFormatter } from "../../utils";
 import "./styles.sass";
 
 const tableHeaderTitles = [
@@ -105,6 +106,35 @@ const NotificationsContainer = () => {
           {permissionsNotif ? "On" : "Off"}
         </button>
       </div>
+      <div className="link-wrapper">
+          <span>
+            Link for stream
+          </span>
+          <div className="link">
+            {baseURL + routes.donatMessage}
+          </div>
+          <div
+            className="icon"
+            onClick={() => {
+              try {
+                navigator.clipboard.writeText(
+                  `${baseURL + routes.donatMessage}`
+                );
+                addNotification({
+                  type: "success",
+                  title: "Link successfully copied",
+                });
+              } catch (error) {
+                addNotification({
+                  type: "warning",
+                  title: "An error occurred while copying the link",
+                });
+              }
+            }}
+          >
+            <CopyIcon />
+          </div>
+        </div>
       <div className="notifications-container__table">
         <div className="notifications-container__table__header">
           {tableHeaderTitles.map(({ title, sorting }) => (

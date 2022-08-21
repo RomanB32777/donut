@@ -49,10 +49,12 @@ const wallets = [
 const SupportModal = ({
   modificator,
   notTitle,
+  setForm,
   additionalFields,
 }: {
   modificator?: string;
   notTitle?: boolean;
+  setForm?: any;
   additionalFields?: any;
 }) => {
   const { pathname } = useLocation();
@@ -113,51 +115,90 @@ const SupportModal = ({
     }
   }, [wallet, token, data]);
 
+  // useEffect(() => {
+  //   const filters = wallets.filter((wallet) => {
+  //     console.log(wallet);
+
+  //     if (Object.keys(user).length) {
+  //       if (wallet.name === "TRX" && user.tron_token && data.tron_token) {
+  //         // setVisibleWallet([...visibleWallet, wallet]);
+  //         return true;
+  //       }
+  //       if (
+  //         wallet.name === "MATIC" &&
+  //         user.metamask_token &&
+  //         data.metamask_token
+  //       ) {
+  //         return true;
+  //         // setVisibleWallet([...visibleWallet, wallet]);
+  //       }
+  //     } else {
+  //       if (metamaskWalletIsIntall()) {
+  //         let flag = false;
+  //         getMetamaskWallet().then((res) => {
+  //           if (res && wallet.name === "MATIC") {
+  //             flag = Boolean(
+  //               wallet.name === "MATIC" && res && data.metamask_token
+  //             );
+  //             console.log("FJF");
+
+  //             // true;
+  //             // && setVisibleWallet([...visibleWallet, wallet]);
+  //           }
+  //         });
+  //         console.log("<LMKD", flag);
+
+  //         return flag;
+  //       }
+  //       if (tronWalletIsIntall() && wallet.name === "TRX") {
+  //         return Boolean(
+  //           wallet.name === "TRX" && getTronWallet() && data.tron_token
+  //         );
+  //       }
+  //     }
+  //     return false;
+  //   });
+
+  //   console.log(filters);
+  // }, [user, data]);
+
   useEffect(() => {
-    const filterWallets = Promise.all(
-      wallets.filter(async (wallet) => {
-        if (user) {
-          console.log(
-            wallet.name,
-            (wallet.name === "TRX" && user.tron_token && data.tron_token) ||
-              (wallet.name === "MATIC" &&
-                user.metamask_token &&
-                data.metamask_token)
-          );
-          if (wallet.name === "TRX" && user.tron_token && data.tron_token) {
-            console.log("true trx");
+    const asyncFilter = async (arr: any, predicate: any) => {
+      const results = await Promise.all(arr.map(predicate));
 
-            return true;
-          }
-          if (
+      return arr.filter((_v: any, index: any) => results[index]);
+    };
+
+    asyncFilter(wallets, async (wallet: any) => {
+      if (Object.keys(user).length) {
+        return (
+          Boolean(
+            wallet.name === "TRX" && user.tron_token && data.tron_token
+          ) ||
+          Boolean(
             wallet.name === "MATIC" &&
-            user.metamask_token &&
-            data.metamask_token
-          ) {
-            console.log("true mat");
-
-            return true;
-          }
-          console.log("false ", wallet.name);
-          return false;
-        } else {
-          const metaWallet =
-            metamaskWalletIsIntall() && (await getMetamaskWallet());
-
-          return (
-            (wallet.name === "TRX" && getTronWallet() && data.tron_token) ||
-            (wallet.name === "MATIC" && metaWallet && data.metamask_token)
-          );
-        }
-      })
-    );
-    filterWallets.then((res) => {
-      if (res) {
-        console.log(res);
-
-        setVisibleWallet(res);
+              user.metamask_token &&
+              data.metamask_token
+          )
+        );
       }
-    });
+      if (metamaskWalletIsIntall()) {
+        const met = await getMetamaskWallet();
+        if (met && wallet.name === "MATIC") {
+          return Boolean(wallet.name === "MATIC" && met && data.metamask_token);
+        }
+      }
+      if (tronWalletIsIntall() && wallet.name === "TRX") {
+        return Boolean(
+          wallet.name === "TRX" && getTronWallet() && data.tron_token
+        );
+      }
+    })
+      .then((res) => {
+        setVisibleWallet(res);
+        res.length && setSelectedWallet(res[0]);
+      })
+      .catch(console.error);
   }, [user, data]);
 
   useEffect(() => {
@@ -182,42 +223,7 @@ const SupportModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sendDonation = async () => {
-    let newUser: any = {};
-    if (additionalFields && additionalFields.username) {
-      const res = await postData("/api/user/check-username", {
-        username: additionalFields.username,
-      });
-
-      if (!res.error) {
-        const metaMaskWallet =
-          metamaskWalletIsIntall() && (await getMetamaskWallet());
-
-        const walletCheck =
-          token ||
-          (selectedWallet.name === "TRX" ? getTronWallet() : metaMaskWallet);
-        if (walletCheck) {
-          const resCreate = await postData("/api/user/create-user", {
-            role: "backers",
-            username: additionalFields.username,
-            token: walletCheck,
-            typeWallet:
-              wallet || (selectedWallet.name === "TRX" ? "tron" : "metamask"),
-          });
-
-          if (resCreate.newUser) {
-            dispatch(tryToGetUser(walletCheck));
-            newUser = resCreate.newUser;
-          }
-        } else
-          addNotification({
-            type: "danger",
-            title: "Donat error",
-          });
-      }
-    }
-
-    console.log(selectedWallet, user.tron_token, newUser.tron_token);
+  const sendDonation = async (newUser?: any) => {
     if (
       selectedWallet &&
       selectedWallet.name === "TRX" &&
@@ -255,15 +261,20 @@ const SupportModal = ({
             })
           );
 
+          setSum(resData.donation.sum_donation);
           setSuccess(true);
-          setTimeout(() => {
-            dispatch(closeModal());
-            setSum("0");
-          }, 5000);
+          setForm({
+            message: "",
+            username: "",
+          });
+          // setTimeout(() => {
+          //   dispatch(closeModal());
+          //   setSum("0");
+          // }, 5000);
         } else {
           setTimeout(() => {
             setSent(false);
-            setSum("0");
+            // setSum("0");
           }, 3500);
         }
       }
@@ -305,15 +316,19 @@ const SupportModal = ({
             })
           );
 
+          setSum(resData.donation.sum_donation);
           setSuccess(true);
-          setTimeout(() => {
-            dispatch(closeModal());
-            setSum("0");
-          }, 5000);
+          setForm({
+            message: "",
+            username: "",
+          });
+          // setTimeout(() => {
+          //   dispatch(closeModal());
+          // }, 5000);
         } else {
           setTimeout(() => {
             setSent(false);
-            setSum("0");
+            // setSum("0");
           }, 3500);
         }
       }
@@ -366,6 +381,9 @@ const SupportModal = ({
     });
 
   async function triggerContract() {
+    if (Number(sum) <= 0.2) {
+      setSum(".2");
+    }
     try {
       if (selectedWallet.name === "TRX") {
         if (user.tron_token) {
@@ -379,6 +397,52 @@ const SupportModal = ({
           });
           if (res) {
             sendDonation();
+          }
+        } else if (additionalFields && additionalFields.username) {
+          const res = await postData("/api/user/check-username", {
+            username: additionalFields.username,
+          });
+
+          if (!res.error) {
+            const metaMaskWallet =
+              metamaskWalletIsIntall() && (await getMetamaskWallet());
+
+            const walletCheck =
+              token ||
+              (selectedWallet.name === "TRX"
+                ? getTronWallet()
+                : metaMaskWallet);
+                
+            if (walletCheck) {
+              const resCreate = await postData("/api/user/create-user", {
+                role: "backers",
+                username: additionalFields.username,
+                token: walletCheck,
+                typeWallet:
+                  wallet ||
+                  (selectedWallet.name === "TRX" ? "tron" : "metamask"),
+              });
+
+              if (resCreate.newUser) {
+                dispatch(tryToGetUser(walletCheck));
+                let instance = await (window as any).tronWeb
+                  .contract()
+                  .at(contractAddress);
+                const res = await instance.transferMoney(data.tron_token).send({
+                  feeLimit: 100_000_000,
+                  callValue: 1000000 * parseFloat(sum), // это 100 trx
+                  shouldPollResponse: false,
+                });
+
+                if (res) {
+                  sendDonation(resCreate.newUser);
+                }
+              }
+            } else
+              addNotification({
+                type: "danger",
+                title: "Donat error",
+              });
           }
         } else {
           addNotification({
@@ -416,6 +480,65 @@ const SupportModal = ({
                 setLoadingState(false);
                 console.log(error);
               }
+            }
+          } else if (additionalFields && additionalFields.username) {
+            const res = await postData("/api/user/check-username", {
+              username: additionalFields.username,
+            });
+
+            if (!res.error) {
+              const metaMaskWallet =
+                metamaskWalletIsIntall() && (await getMetamaskWallet());
+
+              const walletCheck =
+                token ||
+                (selectedWallet.name === "TRX"
+                  ? getTronWallet()
+                  : metaMaskWallet);
+              if (walletCheck) {
+                const resCreate = await postData("/api/user/create-user", {
+                  role: "backers",
+                  username: additionalFields.username,
+                  token: walletCheck,
+                  typeWallet:
+                    wallet ||
+                    (selectedWallet.name === "TRX" ? "tron" : "metamask"),
+                });
+
+                if (resCreate.newUser) {
+                  dispatch(tryToGetUser(walletCheck));
+
+                  const metamaskData = await getMetamaskData();
+                  if (metamaskData) {
+                    const { signer } = metamaskData;
+                    const smartContract = new ethers.Contract(
+                      contractMetaAddress,
+                      abiOfContract,
+                      signer
+                    );
+
+                    const tx = await smartContract.transferMoney(
+                      data.metamask_token,
+                      {
+                        value: ethers.utils.parseEther(sum),
+                      }
+                    );
+                    try {
+                      setLoadingState(true);
+                      await tx.wait(); // Это чтобы дождаться, когда транзация будет замайнена в блок
+                      setLoadingState(false);
+                      sendDonation(resCreate.newUser);
+                    } catch (error) {
+                      setLoadingState(false);
+                      console.log(error);
+                    }
+                  }
+                }
+              } else
+                addNotification({
+                  type: "danger",
+                  title: "Donat error",
+                });
             }
           } else {
             addNotification({
@@ -565,19 +688,21 @@ const SupportModal = ({
             </div>
           </div>
         </>
-      ) : (success && !loadingState) ? (
+      ) : success && !loadingState ? (
         <div className="success-transaction">
           <span>
-            You’ve successfully sent {sum} to{" "}
+            You’ve successfully sent {sum} {selectedWallet.name} to{" "}
             {" " + pathname.slice(pathname.lastIndexOf("/") + 1)}
           </span>
           <SuccessTransactionIcon />
         </div>
-      ) : (!loadingState) && (
-        <div className="non-success-transaction">
-          <span>Something wrong happened. Try again</span>
-          <NonSuccessTransactionIcon />
-        </div>
+      ) : (
+        !loadingState && (
+          <div className="non-success-transaction">
+            <span>Something wrong happened. Try again</span>
+            <NonSuccessTransactionIcon />
+          </div>
+        )
       )}
     </div>
   );

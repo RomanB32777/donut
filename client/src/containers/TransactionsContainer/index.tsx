@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import PageTitle from '../../commonComponents/PageTitle'
-import { TronIcon } from '../../icons/icons'
+import { MaticIcon, TronIcon } from '../../icons/icons'
 import './styles.sass'
 
 const titles = [
@@ -59,6 +59,9 @@ const TransactionsContainer = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
+    console.log(data);
+    
+
     return (
         <div
             className='transactions-container'
@@ -107,7 +110,11 @@ const TransactionsContainer = () => {
                                             {
                                                 row.sum_donation
                                             }
-                                            <TronIcon/>
+                                            <span style={{
+                                                marginLeft: '5px'
+                                            }}>
+                                            {row.wallet_type === "tron" ? <TronIcon/> : <MaticIcon />}
+                                            </span>
                                         </span>
                                         <span>
                                             { 

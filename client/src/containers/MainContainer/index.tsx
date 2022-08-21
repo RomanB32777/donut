@@ -199,7 +199,7 @@ const MainContainer = () => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className="main-container__video-wrapper"
           style={{
             flexDirection: "column",
@@ -216,7 +216,7 @@ const MainContainer = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
-        </div>
+        </div> */}
 
         <div className="main-container__bottom-panel">
           <div>

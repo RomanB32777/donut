@@ -368,8 +368,15 @@ const ProfilePageContainer = () => {
   };
 
   const getUserByToken = async () => {
-    const metaWallet = await getMetamaskWallet();
-    getUser(user.tron_token ? getTronWallet() : metaWallet);
+    let token = user.tron_token 
+    if (!token) {
+      if (tronWalletIsIntall())
+        token = getTronWallet()
+
+      if (!token && metamaskWalletIsIntall())
+        token =  await getMetamaskWallet()
+    }
+    getUser(token);
   };
 
   useEffect(() => {

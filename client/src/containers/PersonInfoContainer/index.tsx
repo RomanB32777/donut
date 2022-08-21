@@ -295,7 +295,7 @@ const PersonInfoContainer = () => {
                   fontSize="18px"
                   padding="6px 30px"
                   onClick={() => {
-                    navigate(`/donat/${data.username}`)
+                    navigate(`/donat/${data.username}/${data.tron_tolen || data.metamask_token}`)
                     // tron_token
                     //   ? dispatch(openSupportModal())
                     //   : addAuthNotification();

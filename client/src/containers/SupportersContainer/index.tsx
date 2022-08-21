@@ -5,6 +5,7 @@ import PageTitle from "../../commonComponents/PageTitle";
 import {
   CalendarIcon,
   CopyIcon,
+  MaticIcon,
   SmallToggleListArrowIcon,
   TronIcon,
 } from "../../icons/icons";
@@ -15,6 +16,7 @@ import { url } from "../../consts";
 import Calendar from "../../components/Calendar";
 import { addNotification, addSuccessNotification } from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
+import routes from "../../routes";
 //var CanvasJSReact = require('./canvasjs.react');
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -218,7 +220,13 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
               </span>
               <span>
                 {row.sum_donations}
-                <TronIcon />
+                <span
+                  style={{
+                    marginLeft: "5px",
+                  }}
+                >
+                  {row.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
+                </span>
               </span>
               <span>
                 {"$ " +
@@ -571,7 +579,7 @@ const SupportersContainer = () => {
             onClick={() => {
               try {
                 navigator.clipboard.writeText(
-                  `${baseURL}/donat/${user.username}`
+                  `${baseURL}/donat/${user.username}/${user.tron_tolen || user.metamask_token}`
                 );
                 addNotification({
                   type: "success",

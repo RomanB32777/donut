@@ -43,6 +43,7 @@ import { WebSocketProvider } from "./components/Websocket/WebSocket";
 import NotificationsPage from "./pages/NotificationsPage";
 import { setMainWallet } from "./store/types/Wallet";
 import DonatPage from "./pages/DonatPage";
+import DonatMessagePage from "./pages/DonatMessagePage";
 
 function App() {
   const dispatch = useDispatch();
@@ -118,6 +119,7 @@ function App() {
               <Route path={routes.creators} element={<CreatorsListPage />} />
               <Route path={routes.backers} element={<BackersPage />} />
               <Route path={routes.donat} element={<DonatPage />} />
+              <Route path={routes.donatMessage} element={<DonatMessagePage />} />
               {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
             </Routes>
             <Footer />

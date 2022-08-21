@@ -50,35 +50,42 @@ const RegistrationModal = () => {
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
 
   const tryToLogin = async () => {
-    postData("/api/user/check-username", { username: username }).then(async (res) => {
-      if (res.error) {
-        setIsUsernameError(true);
-      } else {
-        const metaMaskWallet = metamaskWalletIsIntall() && await getMetamaskWallet()
-        const wallet =
-          mainWallet.token ||
-          (tronWalletIsIntall() ? getTronWallet() : metaMaskWallet);
-        wallet
-          ? postData("/api/user/create-user", {
-              role: choosenRole,
-              username: username,
-              token: wallet,
-              typeWallet:
-                mainWallet.wallet ||
-                (tronWalletIsIntall() ? "tron" : "metamask"),
-            }).then((res) => {
-              dispatch(tryToGetUser(wallet));
-              navigate(routes.profile);
-              dispatch(closeModal());
-            })
-          : addNotification({
-              type: "danger",
-              title: "TronLink error",
-              message:
-                "An error occurred while authorizing the wallet in tronlink",
-            });
+    postData("/api/user/check-username", { username: username }).then(
+      async (res) => {
+        if (res.error) {
+          setIsUsernameError(true);
+        } else {
+          let wallet: string = "";
+          
+          if (mainWallet.wallet === "metamask") {
+            const metaMaskWallet =
+              metamaskWalletIsIntall() && (await getMetamaskWallet());
+            wallet = metaMaskWallet;
+          } else if (mainWallet.wallet === "tron") {
+            wallet = getTronWallet();
+          }
+          wallet
+            ? postData("/api/user/create-user", {
+                role: choosenRole,
+                username: username,
+                token: wallet,
+                typeWallet:
+                  mainWallet.wallet ||
+                  (tronWalletIsIntall() ? "tron" : "metamask"),
+              }).then((res) => {
+                dispatch(tryToGetUser(wallet));
+                navigate(routes.profile);
+                dispatch(closeModal());
+              })
+            : addNotification({
+                type: "danger",
+                title: "TronLink error",
+                message:
+                  "An error occurred while authorizing the wallet in tronlink",
+              });
+        }
       }
-    });
+    );
   };
 
   return (
