@@ -252,7 +252,7 @@ const BackersContainer = () => {
             <FormattedMessage id="backers_page_sum_title" />
           </span>
           <div className="backers-container__right-side__sum__value">
-            {backers.sum} USD
+            {backers.sum.toFixed(2)} USD
             {/* <TronIcon /> */}
           </div>
         </div>

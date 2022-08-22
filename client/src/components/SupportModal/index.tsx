@@ -667,12 +667,12 @@ const SupportModal = ({
             <div className="support-modal__form__input">
               <span className="support-modal__form__input__title">
                 {sum.length > 0
-                  ? parseFloat(sum) *
+                  ? (parseFloat(sum) *
                     parseFloat(
                       selectedWallet.name === "TRX"
                         ? tronUsdtKoef
                         : maticUsdtKoef
-                    )
+                    )).toFixed(2)
                   : "0"}
               </span>
               <span
