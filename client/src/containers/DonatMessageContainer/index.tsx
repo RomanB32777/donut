@@ -19,7 +19,7 @@ const DonatMessageContainer = () => {
     notifications.length && setLastNotif(notifications[0].donation);
     setTimeout(() => {
       setLastNotif({});
-    }, 5000);
+    }, 10000);
 
     // return clearTimeout(timeout);
   }, [notifications]);
