@@ -21,7 +21,7 @@ import { tryToGetUser } from "../../store/types/User";
 
 import "./styles.sass";
 
-const ChooseWalletModal = () => {
+const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const data = useSelector((state: any) => state.personInfo).main_info;
@@ -37,14 +37,16 @@ const ChooseWalletModal = () => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
-          localStorage.setItem("main_wallet", JSON.stringify(walletData))
+          !withoutLogin && localStorage.setItem("main_wallet", JSON.stringify(walletData));
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
-            dispatch(openRegistrationModal());
+            !withoutLogin && dispatch(openRegistrationModal());
           } else {
             dispatch(tryToGetUser(walletToken));
-            navigate(routes.profile);
-            dispatch(closeModal());
+            if (!withoutLogin) {
+              navigate(routes.profile);
+              dispatch(closeModal());
+            }
           }
         }
       } else {
@@ -59,14 +61,16 @@ const ChooseWalletModal = () => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
-          localStorage.setItem("main_wallet", JSON.stringify(walletData))
+          !withoutLogin && localStorage.setItem("main_wallet", JSON.stringify(walletData));
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
-            dispatch(openRegistrationModal());
+            !withoutLogin && dispatch(openRegistrationModal());
           } else {
             dispatch(tryToGetUser(walletToken));
-            navigate(routes.profile);
-            dispatch(closeModal());
+            if (!withoutLogin) {
+              navigate(routes.profile);
+              dispatch(closeModal());
+            }
           }
         }
       } else {

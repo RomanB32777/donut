@@ -24,6 +24,9 @@ import getTronWallet, {
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import SupportModal from "../../components/SupportModal";
 import ChooseWalletModal from "../../components/ChooseWalletModal";
+import { setMainWallet } from "../../store/types/Wallet";
+import { checkIsExistUser } from "../../utils";
+import { tryToGetUser } from "../../store/types/User";
 
 const maxlength = 120;
 
@@ -32,6 +35,7 @@ const DonatContainer = () => {
   const { pathname } = useLocation();
   const user = useSelector((state: any) => state.user);
   const data = useSelector((state: any) => state.personInfo).main_info;
+  const mainWallet = useSelector((state: any) => state.wallet);
 
   const [form, setForm] = useState<any>({
     message: "",
@@ -39,12 +43,34 @@ const DonatContainer = () => {
   });
 
   useEffect(() => {
-    const pathnameEnd = pathname.slice(pathname.indexOf("@"))
-    dispatch(
-      tryToGetPersonInfo({
-        username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
-      })
-    );
+    const pathnameEnd = pathname.slice(pathname.indexOf("@"));
+
+    const checkUser = async () => {
+      if (mainWallet.token) {
+        const isExist = await checkIsExistUser(mainWallet.token);
+
+        if (isExist) {
+          dispatch(tryToGetUser(mainWallet.token));
+        }
+
+      }
+      console.log(user);
+      
+      !Object.keys(user) && dispatch(setMainWallet({}));
+      dispatch(
+        tryToGetPersonInfo({
+          username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
+        })
+      );
+    };
+
+    // checkUser()
+    !Object.keys(user) && dispatch(setMainWallet({}));
+      dispatch(
+        tryToGetPersonInfo({
+          username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
+        })
+      );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -53,11 +79,11 @@ const DonatContainer = () => {
     []
   );
 
-  console.log(data, !user);
-
   return (
     <div className="donat-container">
-      {isNotRegisterWallet ? (
+      {isNotRegisterWallet ||
+      // !Object.keys(user).length ||
+      !Object.keys(mainWallet).length ? (
         <div className="donat-container__registration_wrapper">
           <div className="donat-container__registration">
             <div className="donat-container__registration_title">
@@ -66,7 +92,7 @@ const DonatContainer = () => {
                 Choose one below!
               </div>
             </div>
-            <ChooseWalletModal />
+            <ChooseWalletModal withoutLogin />
           </div>
         </div>
       ) : (

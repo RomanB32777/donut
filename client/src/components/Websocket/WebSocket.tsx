@@ -10,6 +10,7 @@ import {
 } from "../../utils";
 
 import notifImage from "../../assets/notif_donation.png";
+import { useLocation } from "react-router";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -18,29 +19,78 @@ export { WebSocketContext };
 export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const [valueContext, setValueContext] = useState<null | Socket>(null);
   const user = useSelector((state: any) => state.user);
+  const { pathname } = useLocation();
 
   const dispatch = useDispatch();
 
+  const setUnloginUserSocket = (username: string) => {
+    const socket = io(baseURL, {
+      path: "/sockt/",
+      query: {
+        userName: username,
+      },
+    });
+
+    socket.on("connect", () => {
+      console.log("connect");
+      // user && user.user_id && socket.emit("connect_user", user.user_id);
+    });
+
+    socket.on("connect_error", () => {
+      console.log("connect_error");
+    });
+
+    socket.on("disconnect", () => {
+      console.log("disconnect");
+    });
+
+    socket.on("new_notification", (data) => {
+      const { type } = data;
+      switch (type) {
+        case "donat":
+          // if (checkNotifPermissions())
+          //   new Notification(
+          //     `Supporter: ${data.supporter}; Sum: ${data.additional.sum} ${
+          //       data.additional.wallet === "tron" ? "TRX" : "MATIC"
+          //     }; Message: ${data.additional.message}`,
+          //     { image: notifImage }
+          //   );
+          dispatch(getNotifications(username));
+          break;
+      }
+    });
+    return socket;
+  };
+
   useEffect(() => {
-    if (user && user.user_id) {
+    if (!(user && user.user_id && user.username)) {
+      const pathnameEnd = pathname.slice(pathname.indexOf("@"));
+      const socketUnlogin = setUnloginUserSocket(pathnameEnd.slice(0, pathnameEnd.indexOf("/")))
+      setValueContext(socketUnlogin);
+
+      return () => {
+        socketUnlogin.disconnect();
+      };
+    } else if (user && user.user_id && user.username) {
+      // Object.keys(nologinSocket) && nologinSocket.hasOwnProperty('disconnect') && nologinSocket.disconnect()
       const socket = io(baseURL, {
         path: "/sockt/",
         query: {
-          userId: user.user_id,
+          userName: user.username,
         },
       });
 
       socket.on("connect", () => {
-        console.log("connect");
+        console.log("connect useeeer");
         // user && user.user_id && socket.emit("connect_user", user.user_id);
       });
 
       socket.on("connect_error", () => {
-        console.log("connect_error");
+        console.log("connect_error useeeer");
       });
 
       socket.on("disconnect", () => {
-        console.log("disconnect");
+        console.log("disconnect useeer");
       });
 
       socket.on("new_notification", (data) => {
@@ -59,7 +109,9 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
             });
             if (checkNotifPermissions())
               new Notification(
-                `Supporter: ${data.supporter}; Sum: ${data.additional.sum} ${data.additional.wallet === 'tron' ? 'TRX' : 'MATIC'}; Message: ${data.additional.message}`,
+                `Supporter: ${data.supporter}; Sum: ${data.additional.sum} ${
+                  data.additional.wallet === "tron" ? "TRX" : "MATIC"
+                }; Message: ${data.additional.message}`,
                 { image: notifImage }
               );
             break;

@@ -26,7 +26,7 @@ const DonatMessageContainer = () => {
 
   useEffect(() => {
     const pathnameEnd = pathname.slice(pathname.indexOf("@"));
-
+    // dispatch(setActiveUserName(pathnameEnd.slice(0, pathnameEnd.indexOf("/"))));
     dispatch(
       tryToGetPersonInfo({
         username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),

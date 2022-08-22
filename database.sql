@@ -106,6 +106,8 @@ create TABLE nft(
 create TABLE notifications (
     id SERIAL PRIMARY KEY,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    recipientName VARCHAR(255) DEFAULT '',
+    senderName VARCHAR(255) DEFAULT '',
     sender INTEGER,
     FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
     recipient INTEGER,

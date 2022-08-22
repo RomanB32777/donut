@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { baseURL } from "../../axiosClient";
 import { url } from "../../consts";
-import { DonutIcon, FlagIcon, MaticIcon, ShieldIcon, TronIcon } from "../../icons/icons";
+import {
+  DonutIcon,
+  FlagIcon,
+  MaticIcon,
+  ShieldIcon,
+  TronIcon,
+} from "../../icons/icons";
 import "./styles.sass";
 
 const topDonationsWidth = {
@@ -101,8 +107,7 @@ const BackersContainer = () => {
                 </div>
               </div>
 
-              {
-              supporterIndex === onMouseOverIdType.index &&
+              {supporterIndex === onMouseOverIdType.index &&
                 ((onMouseOverIdType.type === "dns" &&
                   supporter.donations &&
                   supporter.donations.length > 0 && (
@@ -137,15 +142,18 @@ const BackersContainer = () => {
                               </span>
                               <span>
                                 {dns.sum_donation}
-                                {dns.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
+                                {dns.wallet_type === "tron" ? (
+                                  <TronIcon />
+                                ) : (
+                                  <MaticIcon />
+                                )}
                               </span>
                             </div>
                           ))}
                       </div>
                     </div>
                   )) ||
-                  (
-                    onMouseOverIdType.type === "bgs" &&
+                  (onMouseOverIdType.type === "bgs" &&
                     supporter.badges &&
                     supporter.badges.length > 0 && (
                       <div
@@ -287,8 +295,13 @@ const BackersContainer = () => {
                   {donation.creator_username}
                 </span>
                 <span>
+                  {donation.sum_donation.indexOf(".") === 0 && "0"}
                   {donation.sum_donation}
-                  {donation.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
+                  {donation.wallet_type === "tron" ? (
+                    <TronIcon />
+                  ) : (
+                    <MaticIcon />
+                  )}
                 </span>
               </div>
             ))}

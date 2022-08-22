@@ -44,14 +44,15 @@ const getActiveRooms = (io) => {
 
 
 io.on('connection', async (socket) => {
-	const { userId } = socket.handshake.query;
-	socket.join(userId);
+	const { userName } = socket.handshake.query;
+	socket.join(userName);
+
 	// console.log('a user connected ', userId, socket.id);
 	socket.on('new_donat', async (data) => {
-		const { supporter, creator_id, sum, donationID, wallet } = data;
+		const { supporter, creator_id, creator_username, sum, donationID, wallet } = data;
 		const rooms = getActiveRooms(io);
 		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => +room === creator_id)?.sockets;
+			const userSockets = rooms.find(({ room }) => room === creator_username)?.sockets;
 			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID])
 			
 			donation.rows[0] && userSockets && userSockets.length && userSockets.forEach(socketID =>
@@ -63,7 +64,7 @@ io.on('connection', async (socket) => {
 					}
 				})
 			);
-			await db.query(`INSERT INTO notifications (donation, sender, recipient) values ($1, $2, $3);`, [donationID, supporter.id, creator_id])
+			await db.query(`INSERT INTO notifications (donation, sender, senderName, recipient, recipientName) values ($1, $2, $3, $4, $5);`, [donationID, supporter.id, supporter.username, creator_id, creator_username])
 		}
 	});
 

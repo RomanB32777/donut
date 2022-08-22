@@ -141,8 +141,13 @@ class UserController {
     async getUserNotifications(req, res) {
         try {
             let notificationsAll = []
-            const userID = req.params.id
-            const notifications = await db.query(`SELECT * FROM notifications WHERE sender = $1 OR recipient = $1 ORDER BY creation_date DESC`, [userID])
+            const user = req.params.user
+            let notifications = {}
+            if (typeof user === 'string' && user.includes("@"))
+                notifications = await db.query(`SELECT * FROM notifications WHERE senderName = $1 OR recipientName = $1 ORDER BY creation_date DESC`, [user])
+            else
+                notifications = await db.query(`SELECT * FROM notifications WHERE sender = $1 OR recipient = $1 ORDER BY creation_date DESC`, [user])
+
             if (notifications && notifications.rows.length) {
                 notificationsAll = await Promise.all(notifications.rows.map(async n => {
                     if (n.donation) {
@@ -275,7 +280,7 @@ class UserController {
     async getPersonInfoSupporters(req, res) { // неправильный подсчет суммы иногда !
         try {
             const username = req.params.username
-        
+
             const trxKoef = await getTronUsdKoef();
             const maticKoef = await getMaticUsdKoef();
 

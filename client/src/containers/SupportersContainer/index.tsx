@@ -14,7 +14,7 @@ import CanvasJSReact from "../../assets/canvasjs.react";
 import { FormattedMessage } from "react-intl";
 import { url } from "../../consts";
 import Calendar from "../../components/Calendar";
-import { addNotification, addSuccessNotification } from "../../utils";
+import { addNotification, addSuccessNotification, getRandomStr } from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 import routes from "../../routes";
 //var CanvasJSReact = require('./canvasjs.react');
@@ -676,9 +676,7 @@ const SupportersContainer = () => {
             onClick={() => {
               try {
                 navigator.clipboard.writeText(
-                  `${baseURL}/donat/${user.username}/${
-                    user.tron_tolen || user.metamask_token
-                  }`
+                  `${baseURL}/donat/${user.username}/${getRandomStr(10)}`
                 );
                 addNotification({
                   type: "success",

@@ -94,15 +94,17 @@ const SupportModal = ({
 
   useEffect(() => {
     if (wallet && token) {
+      console.log(wallet, data);
+
       if (wallet === "metamask") {
-        data.metamask_token
-          ? setSelectedWallet(wallets[0])
-          : setSelectedWallet(wallets[1]);
+        // data.metamask_token &&
+        setSelectedWallet(wallets[0]);
+        // : setSelectedWallet(wallets[1]);
       }
       if (wallet === "tron") {
-        data.tron_token
-          ? setSelectedWallet(wallets[1])
-          : setSelectedWallet(wallets[0]);
+        // data.tron_token &&
+        setSelectedWallet(wallets[1]);
+        // : setSelectedWallet(wallets[0]);
       }
     } else {
       if (tronWalletIsIntall() && getTronWallet())
@@ -251,6 +253,7 @@ const SupportModal = ({
               },
               wallet: "tron",
               creator_id: data.user_id,
+              creator_username: data.username,
               sum: sum.toString(),
               donationID: resData.donation.id,
             });
@@ -306,6 +309,7 @@ const SupportModal = ({
               },
               wallet: "metamask",
               creator_id: data.user_id,
+              creator_username: data.username,
               sum: sum.toString(),
               donationID: resData.donation.id,
             });
@@ -387,6 +391,7 @@ const SupportModal = ({
     // }
     try {
       if (selectedWallet.name === "TRX") {
+        // && wallet === "tron") {
         if (user.tron_token) {
           let instance = await (window as any).tronWeb
             .contract()
@@ -455,6 +460,7 @@ const SupportModal = ({
         }
       }
       if (selectedWallet.name === "MATIC") {
+        // && wallet === "metamask") {
         if (metamaskWalletIsIntall()) {
           if (user.metamask_token) {
             const metamaskData = await getMetamaskData();
@@ -501,7 +507,8 @@ const SupportModal = ({
                   role: "backers",
                   username: additionalFields.username,
                   token: walletCheck,
-                  typeWallet: (selectedWallet.name === "TRX" ? "tron" : "metamask"),
+                  typeWallet:
+                    selectedWallet.name === "TRX" ? "tron" : "metamask",
                 });
 
                 if (resCreate.newUser) {
@@ -548,7 +555,15 @@ const SupportModal = ({
             });
           }
         }
-      }
+      } 
+      // else {
+      //   addNotification({
+      //     type: "danger",
+      //     title: "Wallet error",
+      //     message:
+      //       "An error occurred while authorizing the wallet (different wallets)",
+      //   });
+      // }
     } catch (error) {
       console.log(error);
     }
