@@ -18,7 +18,7 @@ import getTronWallet, { getMetamaskWallet } from "../../functions/getTronWallet"
 import axiosClient from "../../axiosClient";
 import { PencilIcon, UploadIcon } from "../../icons/icons";
 import { tryToGetUser } from "../../store/types/User";
-import { addAuthNotification } from "../../utils";
+import { addAuthNotification, getRandomStr } from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 import routes from "../../routes";
 
@@ -30,6 +30,7 @@ const PersonInfoContainer = () => {
   const data = useSelector((state: any) => state.personInfo).main_info;
   const backer = useSelector((state: any) => state.user);
   const { isLoading } = useSelector((state: any) => state.loading);
+  
 
   const tron_token = getTronWallet();
   // const metamask_token = ""// getMetamaskWallet();
@@ -295,7 +296,7 @@ const PersonInfoContainer = () => {
                   fontSize="18px"
                   padding="6px 30px"
                   onClick={() => {
-                    navigate(`/donat/${data.username}/${data.tron_tolen || data.metamask_token}`)
+                    navigate(`/donat/${data.username}/${getRandomStr(10)}`)
                     // tron_token
                     //   ? dispatch(openSupportModal())
                     //   : addAuthNotification();

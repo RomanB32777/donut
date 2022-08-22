@@ -26,17 +26,31 @@ const DonatMessageContainer = () => {
 
   useEffect(() => {
     const pathnameEnd = pathname.slice(pathname.indexOf("@"));
+
     dispatch(
       tryToGetPersonInfo({
         username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
       })
     );
+
+    const pageContainer = document.querySelector(".container");
+    const navbar = document.querySelector(".navbar-wrapper");
+    const navbarBanner = document.querySelector(".navbar-banner");
+    const footer = document.querySelector(".footer");
+
+    if (navbar && navbarBanner && footer && pageContainer) {
+      [navbar, navbarBanner, footer].forEach((el) => {
+        el.classList.add("hidden");
+      });
+      pageContainer.classList.add("transparent");
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="donat-messsage-container">
-      {lastNotif && (
+      {Boolean(Object.keys(lastNotif).length) && (
         <>
           <img src={bigImg} alt="" />
           <div className="donat-messsage-container_title">

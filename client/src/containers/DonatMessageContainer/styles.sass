@@ -10,6 +10,8 @@
 
     img
         margin-top: 25px
+        animation: infiniteRotating 10s linear infinite
+
 
     &_title
         margin-top: 85px
@@ -34,3 +36,10 @@
     svg
         width: 46px
         height: 46px
+
+
+@keyframes infiniteRotating
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(-360deg)

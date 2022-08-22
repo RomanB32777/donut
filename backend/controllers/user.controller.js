@@ -1,6 +1,22 @@
+const axios = require("axios");
+
 const db = require('../db')
 
 const fs = require('fs')
+
+const getTronUsdKoef = async () => {
+    const res = await axios.get(
+        "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
+    );
+    return res.data.price;
+};
+
+const getMaticUsdKoef = async () => {
+    const res = await axios.get(
+        "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+    );
+    return res.data.price;
+};
 
 const getImageName = () => {
     var result = '';
@@ -259,11 +275,15 @@ class UserController {
     async getPersonInfoSupporters(req, res) { // неправильный подсчет суммы иногда !
         try {
             const username = req.params.username
+        
+            const trxKoef = await getTronUsdKoef();
+            const maticKoef = await getMaticUsdKoef();
+
             const user = await db.query(`SELECT * FROM users WHERE username = $1`, [username])
             // const creator = await db.query(`SELECT * FROM creators WHERE username = $1`, [username])
             // const supporters = await db.query(`SELECT * FROM supporters WHERE creator_id = $1 ORDER BY sum_donations DESC`, [user.rows[0].id])
             const supporters = await db.query(`
-                SELECT username, SUM(sum_donation::numeric) AS sum_donations
+                SELECT username, SUM(sum_donation::numeric * CASE WHEN donations.wallet_type IN ('tron') THEN ${trxKoef} ELSE ${maticKoef} END) AS sum_donations
                 FROM donations
                 WHERE creator_id = $1
                 GROUP BY username

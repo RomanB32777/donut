@@ -40,7 +40,6 @@ const titles = ["NAME", "DONATIONS SUM", "USD", "TRANSACTIONS"];
 
 const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
   const [idBadgePopup, setIdBadgePopup] = useState<number | null>(null);
-  const [tronUsdtKoef, setTronUsdtKoef] = useState<number>(0);
 
   const [supporters, setSupporters] = useState<any>();
 
@@ -53,10 +52,31 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
 
   const user = useSelector((state: any) => state.user);
 
-  const sort = (type: string) => {
+  const getPrice = async () => {
+    const res: any = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
+    );
+    return res.data.price;
+  };
+
+  const getMaticUsdKoef = async () => {
+    const res = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+    );
+    return res.data.price;
+  };
+
+  const sort = async (type: string) => {
     if (type === "sum") {
+      const tronUsdtKoef = await getPrice();
+      const metamaskUsdtKoef = await getMaticUsdKoef();
       let transactions = prop.supporters
-        .map((sup: any) => parseFloat(sup.sum_donation))
+        .map(
+          (sup: any) =>
+            parseFloat(sup.sum_donation) *
+            (sup.wallet_type === "tron" ? tronUsdtKoef : metamaskUsdtKoef)
+        )
+        // parseFloat(sup.sum_donation))
         .sort(function (a: any, b: any) {
           return a - b;
         });
@@ -85,6 +105,36 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
         setSupporters(res);
       }
     } else if (type === "trans") {
+      let transactions = prop.supporters
+        .map((sup: any) => sup.amount_donations)
+        .sort(function (a: any, b: any) {
+          return a - b;
+        });
+      let sortedTrans: any = {};
+      transactions.forEach((elem: any) => {
+        sortedTrans[elem] = [];
+      });
+      prop.supporters.forEach((sup: any) => {
+        let safd = sup.amount_donations;
+        if (sortedTrans[safd] && sortedTrans[safd].length > 0) {
+          sortedTrans[safd] = [...sortedTrans[safd], sup];
+        } else {
+          sortedTrans[safd] = [sup];
+        }
+      });
+      let res: any[] = [];
+      Object.keys(sortedTrans).forEach(
+        (trans: any) => (res = [...res, ...sortedTrans[trans]])
+      );
+
+      if (sorting.sort === "UP") {
+        setSorting({ type: type, sort: "DOWN" });
+        setSupporters(res.reverse());
+      } else {
+        setSorting({ type: type, sort: "UP" });
+        setSupporters(res);
+      }
+    } else if (type === "usd") {
       let transactions = prop.supporters
         .map((sup: any) => sup.amount_donations)
         .sort(function (a: any, b: any) {
@@ -161,15 +211,7 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
     }
   };
 
-  const getPrice = async () => {
-    const res: any = await axiosClient.get(
-      "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
-    );
-    setTronUsdtKoef(res.data.price);
-  };
-
   useEffect(() => {
-    getPrice();
     setSupporters(prop.supporters);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prop.supporters]);
@@ -178,7 +220,7 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
     <div className="supporters-container__table">
       <div className="supporters-container__table__header">
         <div>NAME</div>
-        <div onClick={() => sort("sum")}>
+        {/* <div onClick={() => sort("sum")}>
           DONATIONS SUM
           <div
             className={
@@ -187,8 +229,17 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
           >
             <SmallToggleListArrowIcon />
           </div>
+        </div> */}
+        <div onClick={() => sort("sum")}>
+          USD
+          <div
+            className={
+              sorting.type === "sum" && sorting.sort === "DOWN" ? "rotated" : ""
+            }
+          >
+            <SmallToggleListArrowIcon />
+          </div>
         </div>
-        <div>USD</div>
         <div onClick={() => sort("trans")}>
           TRANSACTIONS
           <div
@@ -218,7 +269,7 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
               >
                 {row.username}
               </span>
-              <span>
+              {/* <span>
                 {row.sum_donations}
                 <span
                   style={{
@@ -227,10 +278,10 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
                 >
                   {row.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />}
                 </span>
-              </span>
+              </span> */}
               <span>
-                {"$ " +
-                  Math.round(parseFloat(row.sum_donations) * tronUsdtKoef)}
+                {"$ " + Math.round(parseFloat(row.sum_donations))}
+                {/* tronUsdtKoef */}
               </span>
               <span>{row.amount_donations || ""}</span>
 
@@ -312,6 +363,8 @@ const SupportersContainer = () => {
     //  parseInt(new Date().toISOString().slice(5,7))-1
   });
 
+  console.log(supporters);
+
   const getBadges = async (id: string) => {
     const res = await fetch(baseURL + "/api/badge/get-badges-by-creator/" + id);
     if (res.status === 200) {
@@ -332,6 +385,23 @@ const SupportersContainer = () => {
   const [dailyDonations, setDailyDonations] = useState<any>([]);
   const [timesDonations, setTimesDonations] = useState<any>([]);
 
+  const [tronUsdtKoef, setTronUsdtKoef] = useState<number>(0);
+  const [metamaskUsdtKoef, setMetamaskUsdtKoef] = useState<number>(0);
+
+  const getPrice = async () => {
+    const res: any = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
+    );
+    setTronUsdtKoef(res.data.price);
+  };
+
+  const getMaticUsdKoef = async () => {
+    const res = await axiosClient.get(
+      "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+    );
+    setMetamaskUsdtKoef(res.data.price);
+  };
+
   const getDailyDonations = (date: any) => {
     let dates: { [key: string]: number } = {};
     let times: { [key: string]: number } = {};
@@ -339,6 +409,8 @@ const SupportersContainer = () => {
       [key: string]: { donations_sum: number; count: number; id: number };
     } = {};
     let oneDay: number;
+
+    console.log(donations);
 
     donations.forEach((donation) => {
       const username = donation.username;
@@ -362,15 +434,26 @@ const SupportersContainer = () => {
               id: donation.backer_id,
               donations_sum:
                 ((tableData[username] && tableData[username].donations_sum) ||
-                  0) + parseFloat(donation.sum_donation),
+                  0) +
+                parseFloat(donation.sum_donation) *
+                  (donation.wallet_type === "tron"
+                    ? tronUsdtKoef
+                    : metamaskUsdtKoef),
               count:
                 ((tableData[username] && tableData[username].count) || 0) + 1,
             },
           };
 
+          console.log(tableData);
+
           dates = {
             ...dates,
-            [day]: (dates[day] || 0) + parseFloat(donation.sum_donation),
+            [day]:
+              (dates[day] || 0) +
+              parseFloat(donation.sum_donation) *
+                (donation.wallet_type === "tron"
+                  ? tronUsdtKoef
+                  : metamaskUsdtKoef),
           };
         }
       }
@@ -417,7 +500,11 @@ const SupportersContainer = () => {
               id: donation.backer_id,
               donations_sum:
                 ((tableData[username] && tableData[username].donations_sum) ||
-                  0) + parseFloat(donation.sum_donation),
+                  0) +
+                parseFloat(donation.sum_donation) *
+                  (donation.wallet_type === "tron"
+                    ? tronUsdtKoef
+                    : metamaskUsdtKoef),
               count:
                 ((tableData[username] && tableData[username].count) || 0) + 1,
             },
@@ -425,7 +512,12 @@ const SupportersContainer = () => {
 
           times = {
             ...times,
-            [time]: (times[time] || 0) + parseFloat(donation.sum_donation),
+            [time]:
+              (times[time] || 0) +
+              parseFloat(donation.sum_donation) *
+                (donation.wallet_type === "tron"
+                  ? tronUsdtKoef
+                  : metamaskUsdtKoef),
           };
         }
       });
@@ -450,6 +542,9 @@ const SupportersContainer = () => {
       sum_donations: tableData[username].donations_sum,
       amount_donations: tableData[username].count,
     }));
+
+    console.log(formatTableData);
+
     setSupporters(formatTableData);
   };
 
@@ -467,6 +562,8 @@ const SupportersContainer = () => {
   };
 
   useEffect(() => {
+    getMaticUsdKoef();
+    getPrice();
     if (user.id) {
       getData(user.id);
       getBadges(user.id);
@@ -579,7 +676,9 @@ const SupportersContainer = () => {
             onClick={() => {
               try {
                 navigator.clipboard.writeText(
-                  `${baseURL}/donat/${user.username}/${user.tron_tolen || user.metamask_token}`
+                  `${baseURL}/donat/${user.username}/${
+                    user.tron_tolen || user.metamask_token
+                  }`
                 );
                 addNotification({
                   type: "success",

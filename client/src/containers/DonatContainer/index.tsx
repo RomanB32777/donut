@@ -92,8 +92,7 @@ const DonatContainer = () => {
                   )}
                 </div>
                 <div className="donat-container__payment_creator_description">
-                  {data.user_description ||
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur, natus eveniet? Hic atque dolorum vero vitae excepturi laborum quia totam sint quos! Quod eum blanditiis repellendus officia labore accusamus assumenda!"}
+                  {data.user_description}
                 </div>
                 <div className="donat-container__payment_wallet_warning">
                   {data.tron_token &&

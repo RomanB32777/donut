@@ -1,10 +1,10 @@
 import axiosClient from "../../../axiosClient";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { TronIcon } from "../../../icons/icons";
+import { MaticIcon, TronIcon } from "../../../icons/icons";
 import "./styles.sass";
 
-const titles = ["Name", "DONATIONS", "USD"];
+const titles = ["Name", "USD"];
 
 // const data: {[index: string]:any}[] = [
 //     {
@@ -48,6 +48,9 @@ const SupportersMainTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log(data);
+  
+
   return (
     <div className="supporters-main-table">
       <div className="supporters-main-table__header">
@@ -70,13 +73,16 @@ const SupportersMainTable = () => {
                 key={"supporters-main-table__main__row" + rowIndex}
               >
                 {Object.keys(row).map((val, valIndex) => {
+                  console.log(row[val], val);
+                  
                   if (keys.includes(val)) {
                     return (
                       <span
                         key={"supporters-main-table__main__row__val" + valIndex}
                       >
-                        {row[val]}
-                        <div>{val === "sum_donations" && <TronIcon />}</div>
+                        {val !== "sum_donations" && row[val]}
+                        {/* {dns.wallet_type === "tron" ? <TronIcon /> : <MaticIcon />} */}
+                        {/* <div>{val === "sum_donations" && <TronIcon />}</div> */}
                       </span>
                     );
                   }
@@ -87,7 +93,8 @@ const SupportersMainTable = () => {
                   }}
                 >
                   {"$ " +
-                    Math.round(parseFloat(row.sum_donations) * tronUsdtKoef)}
+                    Math.round(parseFloat(row.sum_donations) )}
+                    {/* tronUsdtKoef */}
                 </span>
               </div>
             ))}

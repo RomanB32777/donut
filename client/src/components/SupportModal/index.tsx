@@ -254,13 +254,13 @@ const SupportModal = ({
               sum: sum.toString(),
               donationID: resData.donation.id,
             });
+          const pathnameEnd = pathname.slice(pathname.indexOf("@"));
           dispatch(
             getPersonInfoPage({
               page: "supporters",
-              username: pathname.slice(pathname.indexOf("@")),
+              username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
             })
           );
-
           setSum(resData.donation.sum_donation);
           setSuccess(true);
           setForm({
@@ -309,10 +309,11 @@ const SupportModal = ({
               sum: sum.toString(),
               donationID: resData.donation.id,
             });
+          const pathnameEnd = pathname.slice(pathname.indexOf("@"));
           dispatch(
             getPersonInfoPage({
               page: "supporters",
-              username: pathname.slice(pathname.indexOf("@")),
+              username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
             })
           );
 
@@ -381,9 +382,9 @@ const SupportModal = ({
     });
 
   async function triggerContract() {
-    if (Number(sum) <= 0.2) {
-      setSum(".2");
-    }
+    // if (Number(sum) <= 0.2) {
+    //   setSum(".2");
+    // }
     try {
       if (selectedWallet.name === "TRX") {
         if (user.tron_token) {
@@ -412,7 +413,7 @@ const SupportModal = ({
               (selectedWallet.name === "TRX"
                 ? getTronWallet()
                 : metaMaskWallet);
-                
+
             if (walletCheck) {
               const resCreate = await postData("/api/user/create-user", {
                 role: "backers",
@@ -500,9 +501,7 @@ const SupportModal = ({
                   role: "backers",
                   username: additionalFields.username,
                   token: walletCheck,
-                  typeWallet:
-                    wallet ||
-                    (selectedWallet.name === "TRX" ? "tron" : "metamask"),
+                  typeWallet: (selectedWallet.name === "TRX" ? "tron" : "metamask"),
                 });
 
                 if (resCreate.newUser) {
@@ -667,7 +666,7 @@ const SupportModal = ({
                   paddingRight: visibleWallet.length > 1 ? "32px" : "0",
                 }}
               >
-                USDT
+                USD
               </span>
             </div>
             <div
@@ -692,7 +691,7 @@ const SupportModal = ({
         <div className="success-transaction">
           <span>
             You’ve successfully sent {sum} {selectedWallet.name} to{" "}
-            {" " + pathname.slice(pathname.lastIndexOf("/") + 1)}
+            {" " + data.username}
           </span>
           <SuccessTransactionIcon />
         </div>

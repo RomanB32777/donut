@@ -8,7 +8,7 @@ import PageTitle from "../../commonComponents/PageTitle";
 import { CopyIcon, SmallToggleListArrowIcon } from "../../icons/icons";
 import routes from "../../routes";
 import { getNotifications } from "../../store/types/Notifications";
-import { addNotification, DateFormatter } from "../../utils";
+import { addNotification, DateFormatter, getRandomStr } from "../../utils";
 import "./styles.sass";
 
 const tableHeaderTitles = [
@@ -28,11 +28,14 @@ const NotificationsContainer = () => {
     sort: "UP",
   });
 
+  const [randomStr, setRandomStr] = useState<string>("")
+
   const [permissionsNotif, setPermissionsNotif] = useState(false);
 
   useEffect(() => {
     if (user.id) {
       dispatch(getNotifications(user.id));
+      setRandomStr(getRandomStr(10))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -97,7 +100,7 @@ const NotificationsContainer = () => {
   return (
     <div className="notifications-container">
       <PageTitle formatId="page_title_notifications" />
-      <div className="notifications-container__permissions">
+      {/* <div className="notifications-container__permissions">
         <span>Donation alerts</span>
         <button
           onClick={browserNotify}
@@ -105,20 +108,20 @@ const NotificationsContainer = () => {
         >
           {permissionsNotif ? "On" : "Off"}
         </button>
-      </div>
+      </div> */}
       <div className="link-wrapper">
           <span>
             Link for stream
           </span>
           <div className="link">
-            {baseURL + routes.donatMessage}
+            {baseURL + '/donat-message/' + user.username + '/' + randomStr}
           </div>
           <div
             className="icon"
             onClick={() => {
               try {
                 navigator.clipboard.writeText(
-                  `${baseURL + routes.donatMessage}`
+                  `${baseURL + '/donat-message/'+ user.username + '/' + randomStr }`
                 );
                 addNotification({
                   type: "success",

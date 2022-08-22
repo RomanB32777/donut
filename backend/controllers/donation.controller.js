@@ -26,6 +26,9 @@ class DonationController {
             const userOffset = -initDate.getTimezoneOffset() * 60 * 1000
             const date = new Date(formatedDate + userOffset).toISOString()
 
+            const trxKoef = await getTronUsdKoef();
+            const maticKoef = await getMaticUsdKoef();
+
             if (backer_token && creator_token) {
                 const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [creator_token])
                 const backer = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [backer_token])
@@ -46,7 +49,9 @@ class DonationController {
                 }
                 if (supporter.rows && supporter.rows.length > 0) {
                     await db.query('UPDATE supporters SET sum_donations = $1, amount_donations = $2 WHERE backer_id = $3', [
-                        (parseFloat(supporter.rows[0].sum_donations) + parseFloat(sum)).toString(),
+                        (parseFloat(supporter.rows[0].sum_donations) + Number(
+                            parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef))
+                        ).toString(),
                         supporter.rows[0].amount_donations + 1,
                         backer.rows[0].id,
                     ])
@@ -54,7 +59,7 @@ class DonationController {
                     await db.query(`INSERT INTO supporters (username, backer_id, sum_donations, creator_id, amount_donations ) values ($1, $2, $3, $4, $5) RETURNING * `, [
                         backer.rows[0].username,
                         backer.rows[0].id,
-                        sum,
+                        Number(parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef)).toString(), 
                         creator.rows[0].id,
                         1
                     ])
@@ -80,7 +85,7 @@ class DonationController {
 
             res.status(200).json({
                 supporters: supporters.rows,
-                donations: donations.rows
+                donations: donations.rows,
             })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
@@ -90,9 +95,9 @@ class DonationController {
     async getBackersInfo(req, res) {
         try {
             const sumRows = await db.query(`SELECT sum_donation, wallet_type FROM donations`)
-            let sum = 0
-            const trxKoef = await getTronUsdKoef()
-            const maticKoef = await getMaticUsdKoef()
+            let sum = 0;
+            const trxKoef = await getTronUsdKoef();
+            const maticKoef = await getMaticUsdKoef();
 
             sumRows.rows.forEach((summ) =>
                 sum += Number((parseFloat(summ.sum_donation) * (summ.wallet_type === "tron" ? trxKoef : maticKoef)).toFixed(2))
