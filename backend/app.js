@@ -54,7 +54,7 @@ io.on('connection', async (socket) => {
 		if (rooms.length) {
 			const userSockets = rooms.find(({ room }) => room === creator_username)?.sockets;
 			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID])
-			
+
 			donation.rows[0] && userSockets && userSockets.length && userSockets.forEach(socketID =>
 				socket.to(socketID).emit("new_notification", {
 					type: 'donat', supporter: supporter.username, additional: {
@@ -69,10 +69,10 @@ io.on('connection', async (socket) => {
 	});
 
 	socket.on('new_following', async (data) => {
-		const { follower, creator_id, followID } = data;
+		const { follower, creator_id, creator_username, followID } = data;
 		const rooms = getActiveRooms(io);
 		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => +room === creator_id).sockets;
+			const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
 			userSockets && userSockets.length && userSockets.forEach(socketID =>
 				socket.to(socketID).emit("new_notification", { type: 'following', follower: follower.username })
 			);
@@ -81,14 +81,14 @@ io.on('connection', async (socket) => {
 	});
 
 	socket.on('new_badge', async (data) => {
-		const { supporter, creator_id, badgeID, badgeName } = data;
+		const { supporter, creator_id, creator_username, badgeID, badgeName } = data;
 		const rooms = getActiveRooms(io);
 		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => +room === supporter.id).sockets;
+			const userSockets = rooms.find(({ room }) => room === supporter.username).sockets;
 			userSockets && userSockets.length && userSockets.forEach(socketID =>
 				socket.to(socketID).emit("new_notification", { type: 'add_badge', supporter: supporter.username, badgeName })
 			);
-			await db.query(`INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3);`, [badgeID, creator_id, supporter.id])
+			await db.query(`INSERT INTO notifications (badge, sender, senderName, recipient, recipientName) values ($1, $2, $3, $4, $5);`, [badgeID, creator_id, creator_username, supporter.id, supporter.username])
 		}
 	});
 
@@ -96,7 +96,7 @@ io.on('connection', async (socket) => {
 		const { supporter, creator_id, badgeID, badgeName } = data;
 		const rooms = getActiveRooms(io);
 		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => +room === supporter.id).sockets;
+			const userSockets = rooms.find(({ room }) => room === supporter.username).sockets;
 			userSockets && userSockets.length && userSockets.forEach(socketID =>
 				socket.to(socketID).emit("new_notification", { type: 'remove_badge', supporter: supporter.username, badgeName })
 			);

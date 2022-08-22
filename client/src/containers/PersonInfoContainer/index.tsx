@@ -91,6 +91,7 @@ const PersonInfoContainer = () => {
                   socket.emit("new_following", {
                     follower: { username: backer.username, id: backer.user_id },
                     creator_id: data.user_id,
+                    creator_username: data.username,
                     followID: res.data.follow.id,
                   });
                 dispatch(

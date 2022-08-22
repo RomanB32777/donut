@@ -205,6 +205,7 @@ const Table = (prop: { supporters: any; badges: any; getBadges: any }) => {
         socket.emit("new_badge", {
           supporter: { username: supporter.username, id: supporter.backer_id },
           creator_id: res.data.assignedBadge.owner_user_id,
+          creator_username: res.data.assignedBadge.owner_user_id,
           badgeID: res.data.assignedBadge.id,
           badgeName: res.data.assignedBadge.badge_name,
         });

@@ -37,7 +37,7 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
-          !withoutLogin && localStorage.setItem("main_wallet", JSON.stringify(walletData));
+          !withoutLogin && sessionStorage.setItem("main_wallet", JSON.stringify(walletData));
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             !withoutLogin && dispatch(openRegistrationModal());
@@ -61,7 +61,7 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
-          !withoutLogin && localStorage.setItem("main_wallet", JSON.stringify(walletData));
+          !withoutLogin && sessionStorage.setItem("main_wallet", JSON.stringify(walletData));
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             !withoutLogin && dispatch(openRegistrationModal());
