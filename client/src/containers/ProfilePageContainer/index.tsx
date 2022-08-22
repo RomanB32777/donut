@@ -357,6 +357,9 @@ const ProfilePageContainer = () => {
       setIsNameExist(true);
     }
 
+    console.log(data);
+    
+
     setForm({
       ...data,
       user_description: data.user_description,
@@ -368,7 +371,7 @@ const ProfilePageContainer = () => {
   };
 
   const getUserByToken = async () => {
-    let token = user.tron_token 
+    let token = user.tron_token || user.metamask_token
     if (!token) {
       if (tronWalletIsIntall())
         token = getTronWallet()
