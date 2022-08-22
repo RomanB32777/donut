@@ -443,7 +443,7 @@ const ProfilePageContainer = () => {
       user_id: user.id,
     });
     dispatch(setUser(""));
-    localStorage.removeItem('main_wallet');
+    sessionStorage.removeItem('main_wallet');
   };
 
   const fileToBase64 = (file: any) => {

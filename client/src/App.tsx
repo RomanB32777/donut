@@ -58,7 +58,7 @@ function App() {
   useEffect(() => {
     // if (tron_token) {
     // }
-    const walletData = localStorage.getItem("main_wallet");
+    const walletData = sessionStorage.getItem("main_wallet");
     if (walletData) {
       const wallet = JSON.parse(walletData);
       dispatch(setMainWallet(wallet));
