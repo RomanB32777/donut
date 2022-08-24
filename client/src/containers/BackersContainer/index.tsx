@@ -120,9 +120,9 @@ const BackersContainer = () => {
                           type: "bgs",
                         })
                       }
-                      onMouseLeave={() =>
-                        setOnMouseOverIdType({ index: 10000000, type: "" })
-                      }
+                      // onMouseLeave={() =>
+                      //   setOnMouseOverIdType({ index: 10000000, type: "" })
+                      // }
                     >
                       <ShieldIcon />
                     </div>
@@ -180,7 +180,7 @@ const BackersContainer = () => {
                     supporter.badges &&
                     supporter.badges.length > 0 && (
                       <div
-                        className="backers-container__left-side__supporter__popup"
+                        className="backers-container__left-side__supporter__popup backers-container__left-side__supporter__popup_bgs"
                         style={{
                           right: "0px",
                           width: "280px",
@@ -194,6 +194,7 @@ const BackersContainer = () => {
                                 <span
                                   style={{
                                     justifyContent: "flex-start",
+                                    minWidth: "70px"
                                   }}
                                 >
                                   <img src={url + bgs.badge_image} alt="bgs" />
