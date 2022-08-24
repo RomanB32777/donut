@@ -476,7 +476,6 @@ const SupportersContainer = () => {
     if (datesArr.length === 1) {
       tableData = {};
       donations.forEach((donation) => {
-        // иначе действия на вывод по часовой выдачи донатов за день
         const username = donation.username;
         if (
           date.end.length !== 0 && date.start.length !== 0

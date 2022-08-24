@@ -398,7 +398,7 @@ const SupportModal = ({
             .at(contractAddress);
           const res = await instance.transferMoney(data.tron_token).send({
             feeLimit: 100_000_000,
-            callValue: 1000000 * parseFloat(sum), // это 100 trx
+            callValue: 1000000 * parseFloat(sum),
             shouldPollResponse: false,
           });
           if (res) {
@@ -436,7 +436,7 @@ const SupportModal = ({
                   .at(contractAddress);
                 const res = await instance.transferMoney(data.tron_token).send({
                   feeLimit: 100_000_000,
-                  callValue: 1000000 * parseFloat(sum), // это 100 trx
+                  callValue: 1000000 * parseFloat(sum),
                   shouldPollResponse: false,
                 });
 
@@ -480,7 +480,7 @@ const SupportModal = ({
               );
               try {
                 setLoadingState(true);
-                await tx.wait(); // Это чтобы дождаться, когда транзация будет замайнена в блок
+                await tx.wait();
                 setLoadingState(false);
                 sendDonation();
               } catch (error) {
@@ -531,7 +531,7 @@ const SupportModal = ({
                     );
                     try {
                       setLoadingState(true);
-                      await tx.wait(); // Это чтобы дождаться, когда транзация будет замайнена в блок
+                      await tx.wait(); 
                       setLoadingState(false);
                       sendDonation(resCreate.newUser);
                     } catch (error) {

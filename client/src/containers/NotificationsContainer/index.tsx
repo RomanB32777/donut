@@ -59,7 +59,6 @@ const NotificationsContainer = () => {
   };
 
   const browserNotify = () => {
-    // Проверка поддержки браузером уведомлений
     if (!("Notification" in window)) {
       console.log("This browser does not support desktop notification");
       return;
@@ -68,7 +67,6 @@ const NotificationsContainer = () => {
     permissionsNotif
       ? setPermissionsNotif(!permissionsNotif)
       : Notification.requestPermission((permission) => {
-          // Если пользователь разрешил, то создаём уведомление
           if (permission === "granted") {
             new Notification("Уведомления разрешены!");
             setPermissionsNotif(true);

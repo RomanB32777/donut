@@ -615,7 +615,6 @@ const ProfilePageContainer = () => {
         </div>
       </div>
 
-      {/* Заменить на новые уведомления */}
       {/* <span
                 className="save-message"
                 style={{

@@ -52,7 +52,7 @@ class DonationController {
                         (parseFloat(supporter.rows[0].sum_donations) + Number(
                             parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef))
                         ).toString(),
-                        supporter.rows[0].amount_donations + 1,
+                        +supporter.rows[0].amount_donations + 1,
                         backer.rows[0].id,
                     ])
                 } else {

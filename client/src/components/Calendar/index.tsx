@@ -28,7 +28,7 @@ const Calendar = (props: {
   const [date, setDate] = useState({
     start: "",
     end: "",
-    month: new Date().getMonth() + 1, // счет с 0
+    month: new Date().getMonth() + 1, 
   });
 
   const [data, setData] = useState<any>("");
@@ -67,7 +67,7 @@ const Calendar = (props: {
   });
 
   function createCalendar(year: any, month: any): any {
-    let mon = month - 1; // месяцы в JS идут от 0 до 11, а не от 1 до 12
+    let mon = month - 1; 
     let d = new Date(year, mon);
     // let prevD = new Date(year, mon - 1);
     // let nextD = new Date(year, mon + 1);
@@ -109,14 +109,12 @@ const Calendar = (props: {
       }
 
       if (getDay(d) % 7 === 6) {
-        // вс, последний день - перевод строки
         table += `</tr><tr class=${"calendar-wrapper__calendar__main"}>`;
       }
 
       d.setDate(d.getDate() + 1);
     }
 
-    // добить таблицу пустыми ячейками, если нужно
     // 29 30 31 * * * *
     if (getDay(d) !== 0) {
       for (let i = getDay(d); i < 7; i++) {
@@ -124,7 +122,6 @@ const Calendar = (props: {
       }
     }
 
-    // закрыть таблицу
     table += "</tr></table>";
 
     return table;
@@ -136,9 +133,8 @@ const Calendar = (props: {
   }, [props.currentDate]);
 
   function getDay(date: any) {
-    // получить номер дня недели, от 0 (пн) до 6 (вс)
     let day = date.getDay();
-    if (day === 0) day = 7; // сделать воскресенье (0) последним днем
+    if (day === 0) day = 7;
     return day - 1;
   }
 

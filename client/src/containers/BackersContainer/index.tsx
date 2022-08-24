@@ -53,7 +53,7 @@ const BackersContainer = () => {
   };
 
   const getUsernameByID = async (id: number) => {
-    const res = await fetch(baseURL + `/api/user/${id}`);
+    const res = await fetch(baseURL + `/api/user/id/${id}`);
     if (res.status === 200) {
       const result = await res.json();
       return result.user.username;
