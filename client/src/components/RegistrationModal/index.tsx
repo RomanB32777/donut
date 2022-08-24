@@ -64,6 +64,8 @@ const RegistrationModal = () => {
           } else if (mainWallet.wallet === "tron") {
             wallet = getTronWallet();
           }
+          console.log(mainWallet, wallet);
+          
           wallet
             ? postData("/api/user/create-user", {
                 role: choosenRole,
@@ -79,9 +81,9 @@ const RegistrationModal = () => {
               })
             : addNotification({
                 type: "danger",
-                title: "TronLink error",
+                title: "Auth error",
                 message:
-                  "An error occurred while authorizing the wallet in tronlink",
+                  "An error occurred while authorizing the wallet",
               });
         }
       }

@@ -24,6 +24,7 @@ import "./styles.sass";
 import { BlueDonut } from "../../assets/blueDonut";
 import { baseURL } from "../../axiosClient";
 import { tryToGetUser } from "../../store/types/User";
+import { setMainWallet } from "../../store/types/Wallet";
 
 const cryptoSteps = [
   {
@@ -75,6 +76,46 @@ const MainContainer = () => {
 
   const user: any = useSelector((state: any) => state.user);
 
+  const signUp = async () => {
+    if (
+      tronWalletIsIntall() &&
+      metamaskWalletIsIntall() &&
+      !user.id
+    ) {
+      dispatch(openAuthWalletsModal());
+    } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
+      let wallet = {
+        token: "",
+        wallet: "",
+      };
+      if (tronWalletIsIntall()) {
+        wallet = {
+          wallet: "tron",
+          token: getTronWallet(),
+        };
+      } else if (metamaskWalletIsIntall()) {
+        const tokenMeta = await getMetamaskWallet();
+        wallet = {
+          wallet: "metamask",
+          token: tokenMeta,
+        };
+      }
+      if (user && user.id) {
+        navigate(routes.profile);
+      } else {
+        if (wallet.token) {
+          checkIsExist(wallet.token);
+          dispatch(setMainWallet(wallet));
+          sessionStorage.setItem("main_wallet", JSON.stringify(wallet));
+        } else {
+          dispatch(openRegistrationModal());
+        }
+      }
+    } else {
+      dispatch(openAuthWalletsModal());
+    }
+  }
+
   return (
     <div className="main-container">
       <div
@@ -94,30 +135,7 @@ const MainContainer = () => {
                 ? "mainpage_main_button_logged"
                 : "mainpage_main_button"
             }
-            onClick={() => {
-              if (
-                tronWalletIsIntall() &&
-                metamaskWalletIsIntall() &&
-                !user.id
-              ) {
-                dispatch(openAuthWalletsModal());
-              } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
-                const wallet = tronWalletIsIntall()
-                  ? getTronWallet()
-                  : getMetamaskWallet();
-                if (user && user.id) {
-                  navigate(routes.profile);
-                } else {
-                  if (wallet) {
-                    checkIsExist(wallet);
-                  } else {
-                    dispatch(openRegistrationModal());
-                  }
-                }
-              } else {
-                dispatch(openAuthWalletsModal());
-              }
-            }}
+            onClick={signUp}
             padding={document.body.clientWidth > 640 ? "23px" : "17px"}
             fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
           />
@@ -224,30 +242,7 @@ const MainContainer = () => {
               <FormattedMessage id="mainpage_bottom_panel_title" />
             </span>
             <BlueButton
-              onClick={() => {
-                if (
-                  tronWalletIsIntall() &&
-                  metamaskWalletIsIntall() &&
-                  !user.id
-                ) {
-                  dispatch(openAuthWalletsModal());
-                } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
-                  const wallet = tronWalletIsIntall()
-                    ? getTronWallet()
-                    : getMetamaskWallet();
-                  if (user && user.id) {
-                    navigate(routes.profile);
-                  } else {
-                    if (wallet) {
-                      checkIsExist(wallet);
-                    } else {
-                      dispatch(openRegistrationModal());
-                    }
-                  }
-                } else {
-                  dispatch(openAuthWalletsModal());
-                }
-              }}
+              onClick={signUp}
               fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
               formatId={
                 user && user.id

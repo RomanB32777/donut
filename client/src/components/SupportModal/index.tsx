@@ -531,7 +531,7 @@ const SupportModal = ({
                     );
                     try {
                       setLoadingState(true);
-                      await tx.wait(); 
+                      await tx.wait();
                       setLoadingState(false);
                       sendDonation(resCreate.newUser);
                     } catch (error) {
@@ -555,7 +555,7 @@ const SupportModal = ({
             });
           }
         }
-      } 
+      }
       // else {
       //   addNotification({
       //     type: "danger",
@@ -581,9 +581,9 @@ const SupportModal = ({
     >
       {loadingState && (
         <div className="loading-transaction">
-          <span>Loading...</span>
+          <span>Transaction is being processed...</span>
           <span>
-            Don't close the site until the result of the transaction is loaded
+            Don’t refresh the page or close it until you receive confirmation!
           </span>
         </div>
       )}
@@ -609,7 +609,7 @@ const SupportModal = ({
                 type="text"
                 className="support-modal__form__input__inp"
                 onChange={(event) => {
-                  if (sum === "0") {
+                  if (sum === "0" && event.target.value !== "0.") {
                     setSum(event.target.value.slice(1));
                   } else {
                     setSum(event.target.value);
@@ -667,12 +667,14 @@ const SupportModal = ({
             <div className="support-modal__form__input">
               <span className="support-modal__form__input__title">
                 {sum.length > 0
-                  ? (parseFloat(sum) *
-                    parseFloat(
-                      selectedWallet.name === "TRX"
-                        ? tronUsdtKoef
-                        : maticUsdtKoef
-                    )).toFixed(2)
+                  ? (
+                      parseFloat(sum) *
+                      parseFloat(
+                        selectedWallet.name === "TRX"
+                          ? tronUsdtKoef
+                          : maticUsdtKoef
+                      )
+                    ).toFixed(2)
                   : "0"}
               </span>
               <span
