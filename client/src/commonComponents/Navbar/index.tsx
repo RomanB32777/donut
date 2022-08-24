@@ -462,6 +462,46 @@ const Navbar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const signUp = async () => {
+    if (
+      tronWalletIsIntall() &&
+      metamaskWalletIsIntall() &&
+      !user.id
+    ) {
+      dispatch(openAuthWalletsModal());
+    } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
+      let wallet = {
+        token: "",
+        wallet: "",
+      };
+      if (tronWalletIsIntall()) {
+        wallet = {
+          wallet: "tron",
+          token: getTronWallet(),
+        };
+      } else if (metamaskWalletIsIntall()) {
+        const tokenMeta = await getMetamaskWallet();
+        wallet = {
+          wallet: "metamask",
+          token: tokenMeta,
+        };
+      }
+      if (user && user.id) {
+        navigate(routes.profile);
+      } else {
+        if (wallet.token) {
+          checkIsExist(wallet.token);
+          dispatch(setMainWallet(wallet));
+          sessionStorage.setItem("main_wallet", JSON.stringify(wallet));
+        } else {
+          dispatch(openRegistrationModal());
+        }
+      }
+    } else {
+      dispatch(openAuthWalletsModal());
+    }
+  }
+
   return (
     <>
       <div className="navbar-banner">
@@ -517,32 +557,7 @@ const Navbar = () => {
               </div>
             )}
             <div
-              onClick={() => {
-                if (
-                  tronWalletIsIntall() &&
-                  metamaskWalletIsIntall() &&
-                  !user.id
-                ) {
-                  dispatch(openAuthWalletsModal());
-                } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
-                  const wallet = tronWalletIsIntall()
-                    ? getTronWallet()
-                    : getMetamaskWallet();
-                  if (user && user.id) {
-                    setProfilePopupOpened(true);
-                    setNotificationPopupOpened(false);
-                    setWalletPopupOpened(false);
-                  } else {
-                    if (wallet) {
-                      checkIsExist(wallet);
-                    } else {
-                      dispatch(openRegistrationModal());
-                    }
-                  }
-                } else {
-                  dispatch(openAuthWalletsModal());
-                }
-              }}
+              onClick={signUp}
               className="icon"
             >
               <AccountCircleIcon />
