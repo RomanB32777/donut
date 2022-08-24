@@ -11,6 +11,8 @@ import {
 } from "../../icons/icons";
 import "./styles.sass";
 
+import testImg from "../../assets/tronlink_big.png";
+
 const topDonationsWidth = {
   supporter: "36%",
   creator: "36%",
@@ -33,7 +35,28 @@ const BackersContainer = () => {
     const res = await fetch(baseURL + "/api/donation/backers-info/");
     if (res.status === 200) {
       const result = await res.json();
-      setBackers(result);
+
+      const supporters = await Promise.all(
+        result.supporters.map(async (s: any) => {
+          const badges = await Promise.all(
+            s.badges.map(async (b: any) => {
+              const ownerUserName = await getUsernameByID(b.owner_user_id);
+              return { ...b, ownerUserName };
+            })
+          );
+          return { ...s, badges };
+        })
+      );
+
+      setBackers({ ...result, supporters });
+    }
+  };
+
+  const getUsernameByID = async (id: number) => {
+    const res = await fetch(baseURL + `/api/user/${id}`);
+    if (res.status === 200) {
+      const result = await res.json();
+      return result.user.username;
     }
   };
 
@@ -42,7 +65,7 @@ const BackersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(backers.supporters);
+  console.log(backers);
 
   return (
     <div className="backers-container">
@@ -160,47 +183,53 @@ const BackersContainer = () => {
                         className="backers-container__left-side__supporter__popup"
                         style={{
                           right: "0px",
-                          width: "360px",
+                          width: "280px",
                         }}
                       >
                         <span className="title">Badges</span>
                         <div className="list">
-                          {supporter.badges.slice(0, 3).map((bgs: any) => (
-                            <div key={"bgs" + bgs.name + Math.random()}>
-                              <span
-                                style={{
-                                  justifyContent: "flex-start",
-                                }}
-                              >
-                                <img src={url + bgs.badge_image} />
-                              </span>
-                              <span
-                                style={{
-                                  justifyContent:
-                                    bgs.badge_name && bgs.badge_name.length > 10
-                                      ? "flex-start"
-                                      : "center",
-                                  marginLeft:
-                                    bgs.badge_name && bgs.badge_name.length > 20
-                                      ? "20px"
-                                      : "0",
-                                }}
-                              >
-                                {bgs.badge_name}
-                              </span>
-                              <span
-                                style={{
-                                  justifyContent:
-                                    bgs.owner_username &&
-                                    bgs.owner_username.length > 10
-                                      ? "flex-start"
-                                      : "center",
-                                }}
-                              >
-                                {bgs.owner_username}
-                              </span>
-                            </div>
-                          ))}
+                          {supporter.badges.slice(0, 3).map((bgs: any) => {
+                            return (
+                              <div className="badgeItem" key={"bgs" + bgs.name + Math.random()}>
+                                <span
+                                  style={{
+                                    justifyContent: "flex-start",
+                                  }}
+                                >
+                                  <img src={url + bgs.badge_image} alt="bgs" />
+                                </span>
+                                <div className="list-item_txt">
+                                  <span
+                                    style={{
+                                      justifyContent:
+                                        // bgs.badge_name && bgs.badge_name.length > 10
+                                        "flex-start",
+                                      // : "center",
+                                      marginLeft:
+                                        bgs.badge_name &&
+                                        bgs.badge_name.length > 20
+                                          ? "20px"
+                                          : "0",
+                                    }}
+                                  >
+                                    {bgs.badge_name}
+                                  </span>
+                                  <span
+                                  className="ownerName"
+                                    style={{
+                                      justifyContent:
+                                        bgs.owner_username &&
+                                        bgs.owner_username.length > 10
+                                          ? "flex-start"
+                                          : "center",
+                                    }}
+                                  >
+                                    by {bgs.ownerUserName}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )) ||
@@ -297,11 +326,13 @@ const BackersContainer = () => {
                 <span>
                   {donation.sum_donation.indexOf(".") === 0 && "0"}
                   {donation.sum_donation}
-                  {donation.wallet_type === "tron" ? (
-                    <TronIcon />
-                  ) : (
-                    <MaticIcon />
-                  )}
+                  <span className="table_wallet-icon">
+                    {donation.wallet_type === "tron" ? (
+                      <TronIcon />
+                    ) : (
+                      <MaticIcon />
+                    )}
+                  </span>
                 </span>
               </div>
             ))}

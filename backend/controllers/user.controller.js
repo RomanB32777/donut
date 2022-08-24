@@ -138,6 +138,16 @@ class UserController {
         }
     }
 
+    async getUserByID(req, res) {
+        try {
+            const id = req.params.id
+            const user = await db.query(`SELECT * FROM users WHERE id = $1`, [id])
+            res.status(200).json({user: user.rows[0]})
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
     async getUserNotifications(req, res) {
         try {
             let notificationsAll = []

@@ -52,16 +52,18 @@
             &__popup
                 position: absolute
                 z-index: 120
-                height: 160px
+                min-height: 160px
                 margin-top: 8px
                 width: 360px
-                background: variables.$blue-color
+                background: variables.$main-color
                 box-sizing: border-box
                 padding: 12px
                 border-radius: 10px
                 display: flex
                 flex-direction: column
                 align-items: center
+                -webkit-box-shadow: 0px 0px 4px 2px variables.$main-color
+                box-shadow: 0px 0px 4px 2px variables.$main-color
                 .title
                     font-family: variables.$jakarta-font
                     color: variables.$white-color
@@ -76,12 +78,25 @@
                     flex-direction: column
                     font-family: variables.$jakarta-font
                     color: variables.$white-color
+                    .badgeItem
+                        &:not(:last-child)
+                            margin-bottom: 18px
+                            
+                    &-item
+                        &_txt
+                            display: flex
+                            flex-direction: column
+                            margin-left: 15px
+                            
+                            .ownerName
+                                color: variables.$grey-color
+
                     & > div
                         width: 100%
                         display: flex
                         flex-direction: row
                         align-items: center
-                        justify-content: space-between
+                        // justify-content: space-between
                         font-style: normal
                         font-weight: 700
                         font-size: 17px
@@ -92,16 +107,18 @@
                             flex-direction: row
                             align-items: center
                             justify-content: center
-                            height: 21px
+                            // height: 21px
                             //max-width: 30%
                             //width: 30%
                             //text-overflow: ellipsis
                             overflow: hidden
+
                             img
-                                max-width: 16px
-                                max-height: 16px
+                                width: 70px
+                                height: 70px
                                 overflow: hidden
                                 object-fit: cover
+                                border-radius: 10px
                             svg
                                 transform: scale(0.7)
     &__right-side
@@ -219,3 +236,6 @@
                         justify-content: center
                         // svg
                         //     margin-left: 4px
+
+.table_wallet-icon
+    margin-left: 4px
