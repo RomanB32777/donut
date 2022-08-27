@@ -463,11 +463,7 @@ const Navbar = () => {
   }, []);
 
   const signUp = async () => {
-    if (
-      tronWalletIsIntall() &&
-      metamaskWalletIsIntall() &&
-      !user.id
-    ) {
+    if (tronWalletIsIntall() && metamaskWalletIsIntall() && !user.id) {
       dispatch(openAuthWalletsModal());
     } else if (tronWalletIsIntall() || metamaskWalletIsIntall()) {
       let wallet = {
@@ -487,7 +483,9 @@ const Navbar = () => {
         };
       }
       if (user && user.id) {
-        navigate(routes.profile);
+        setProfilePopupOpened(true);
+        setNotificationPopupOpened(false);
+        setWalletPopupOpened(false);
       } else {
         if (wallet.token) {
           checkIsExist(wallet.token);
@@ -500,7 +498,7 @@ const Navbar = () => {
     } else {
       dispatch(openAuthWalletsModal());
     }
-  }
+  };
 
   return (
     <>
@@ -556,10 +554,7 @@ const Navbar = () => {
                 <NotificationIcon />
               </div>
             )}
-            <div
-              onClick={signUp}
-              className="icon"
-            >
+            <div onClick={signUp} className="icon">
               <AccountCircleIcon />
             </div>
             {user && user.id && (

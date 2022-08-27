@@ -120,9 +120,9 @@ const BackersContainer = () => {
                           type: "bgs",
                         })
                       }
-                      // onMouseLeave={() =>
-                      //   setOnMouseOverIdType({ index: 10000000, type: "" })
-                      // }
+                      onMouseLeave={() =>
+                        setOnMouseOverIdType({ index: 10000000, type: "" })
+                      }
                     >
                       <ShieldIcon />
                     </div>
@@ -206,11 +206,11 @@ const BackersContainer = () => {
                                         // bgs.badge_name && bgs.badge_name.length > 10
                                         "flex-start",
                                       // : "center",
-                                      marginLeft:
-                                        bgs.badge_name &&
-                                        bgs.badge_name.length > 20
-                                          ? "20px"
-                                          : "0",
+                                      // marginLeft:
+                                      //   bgs.badge_name &&
+                                      //   bgs.badge_name.length > 20
+                                      //     ? "20px"
+                                      //     : "0",
                                     }}
                                   >
                                     {bgs.badge_name}
