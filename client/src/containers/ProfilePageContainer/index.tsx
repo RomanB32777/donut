@@ -45,30 +45,24 @@ const titles = [
   {
     title: "profile_form_title_name",
     Component: ({
-      isNameExist,
       form,
       setIsChanged,
       setForm,
     }: {
-      isNameExist?: boolean;
       form?: any;
       setIsChanged?: any;
       setForm?: any;
     }) => (
       <span>
-        {isNameExist ? (
-          form.person_name
-        ) : (
-          <input
-            type="text"
-            value={form.person_name}
-            placeholder="Your name"
-            onChange={(event) => {
-              setIsChanged(true);
-              setForm({ ...form, person_name: event.target.value });
-            }}
-          />
-        )}
+        <input
+          type="text"
+          value={form.person_name}
+          placeholder="Your name"
+          onChange={(event) => {
+            setIsChanged(true);
+            setForm({ ...form, person_name: event.target.value });
+          }}
+        />
       </span>
     ),
   },
@@ -189,7 +183,7 @@ const titles = [
             if (metamaskWallet) {
               const isExistUser = await checkIsExistUser(metamaskWallet);
               console.log(isExistUser);
-              
+
               if (!isExistUser) {
                 await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
                   type_wallet: "metamask",
@@ -342,7 +336,7 @@ const ProfilePageContainer = () => {
   });
 
   const [isChanged, setIsChanged] = useState<boolean>(false);
-  const [isNameExist, setIsNameExist] = useState<boolean>(false);
+  // const [isNameExist, setIsNameExist] = useState<boolean>(false);
   const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false);
 
   const copyToken = (wallet: string) => {
@@ -353,12 +347,11 @@ const ProfilePageContainer = () => {
   const getUser = async (token: string) => {
     const { data } = await axiosClient.get("/api/user/" + token);
 
-    if (data.person_name && data.person_name.length > 0) {
-      setIsNameExist(true);
-    }
+    // if (data.person_name && data.person_name.length > 0) {
+    //   setIsNameExist(true);
+    // }
 
-    console.log(data);
-    
+    // console.log(data);
 
     setForm({
       ...data,
@@ -371,13 +364,11 @@ const ProfilePageContainer = () => {
   };
 
   const getUserByToken = async () => {
-    let token = user.tron_token || user.metamask_token
+    let token = user.tron_token || user.metamask_token;
     if (!token) {
-      if (tronWalletIsIntall())
-        token = getTronWallet()
+      if (tronWalletIsIntall()) token = getTronWallet();
 
-      if (!token && metamaskWalletIsIntall())
-        token =  await getMetamaskWallet()
+      if (!token && metamaskWalletIsIntall()) token = await getMetamaskWallet();
     }
     getUser(token);
   };
@@ -443,7 +434,7 @@ const ProfilePageContainer = () => {
       user_id: user.id,
     });
     dispatch(setUser(""));
-    sessionStorage.removeItem('main_wallet');
+    sessionStorage.removeItem("main_wallet");
   };
 
   const fileToBase64 = (file: any) => {
@@ -492,7 +483,7 @@ const ProfilePageContainer = () => {
                   };
                 if (title.includes("name"))
                   props = {
-                    isNameExist,
+                    // isNameExist,
                     form,
                     setIsChanged,
                     setForm,
