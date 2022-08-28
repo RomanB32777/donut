@@ -54,8 +54,6 @@ const DonatContainer = () => {
         }
 
       }
-      console.log(user);
-      
       !Object.keys(user) && dispatch(setMainWallet({}));
       dispatch(
         tryToGetPersonInfo({

@@ -17,7 +17,6 @@ const CreatorsListContainer = () => {
     const res = await fetch(baseURL +  `/api/user/users/${name}`);
     
     const result = await res.json();
-    console.log(result);
     setUsersList(result);
   };
 

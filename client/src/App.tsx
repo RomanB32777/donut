@@ -60,8 +60,6 @@ function App() {
     // }
     const walletData = sessionStorage.getItem("main_wallet");
 
-    console.log(walletData);
-    
     if (walletData) {
       const wallet = JSON.parse(walletData);
       dispatch(setMainWallet(wallet));

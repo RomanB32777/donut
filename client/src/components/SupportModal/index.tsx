@@ -556,14 +556,6 @@ const SupportModal = ({
           }
         }
       }
-      // else {
-      //   addNotification({
-      //     type: "danger",
-      //     title: "Wallet error",
-      //     message:
-      //       "An error occurred while authorizing the wallet (different wallets)",
-      //   });
-      // }
     } catch (error) {
       console.log(error);
     }

@@ -12,7 +12,6 @@ export const getMetamaskWallet = async () => {
     if ((window as any).ethereum) {
         const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
         if (accounts.length === 0) {
-            console.log('Please connect to MetaMask.');
             return null;
         } else return accounts[0]
     } else {

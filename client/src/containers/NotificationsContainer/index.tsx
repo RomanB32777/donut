@@ -58,25 +58,6 @@ const NotificationsContainer = () => {
     console.log(type);
   };
 
-  const browserNotify = () => {
-    if (!("Notification" in window)) {
-      console.log("This browser does not support desktop notification");
-      return;
-    }
-
-    permissionsNotif
-      ? setPermissionsNotif(!permissionsNotif)
-      : Notification.requestPermission((permission) => {
-          if (permission === "granted") {
-            new Notification("Уведомления разрешены!");
-            setPermissionsNotif(true);
-          } else {
-            setPermissionsNotif(false);
-          }
-        });
-    // }
-  };
-
   useEffect(() => {
     if ("Notification" in window) {
       const storagePermission = localStorage.getItem("permissionsNotif");
@@ -98,15 +79,6 @@ const NotificationsContainer = () => {
   return (
     <div className="notifications-container">
       <PageTitle formatId="page_title_notifications" />
-      {/* <div className="notifications-container__permissions">
-        <span>Donation alerts</span>
-        <button
-          onClick={browserNotify}
-          className={permissionsNotif ? "on" : "off"}
-        >
-          {permissionsNotif ? "On" : "Off"}
-        </button>
-      </div> */}
       <div className="link-wrapper">
           <span>
             Link for stream

@@ -6,7 +6,6 @@ import { setLoading } from "../../store/types/Loading";
 
 
 const asyncGetMainData = async (username: any, id: any) => {
-    console.log(store.getState())
     const res:any = await fetch(
         baseURL + '/api/user/creators/'+username+'/' + ( id ? id : 0)
     )

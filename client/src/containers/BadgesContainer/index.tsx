@@ -62,7 +62,6 @@ const BadgesContainer = () => {
         (!event.target.className.includes("badge-panel") ||
           !event.target.className.includes("content-panel"))
       ) {
-        console.log("LOL");
         setShowedPopupId(null);
       }
     };

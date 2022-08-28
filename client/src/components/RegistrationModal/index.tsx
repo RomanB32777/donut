@@ -64,8 +64,7 @@ const RegistrationModal = () => {
           } else if (mainWallet.wallet === "tron") {
             wallet = getTronWallet();
           }
-          console.log(mainWallet, wallet);
-          
+
           wallet
             ? postData("/api/user/create-user", {
                 role: choosenRole,

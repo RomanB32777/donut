@@ -65,8 +65,6 @@ const BackersContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(backers);
-
   return (
     <div className="backers-container">
       <div className="backers-container__left-side">
@@ -88,9 +86,9 @@ const BackersContainer = () => {
                           type: "dns",
                         })
                       }
-                      onMouseLeave={() =>
-                        setOnMouseOverIdType({ index: 10000000, type: "" })
-                      }
+                      // onMouseLeave={() =>
+                      //   setOnMouseOverIdType({ index: 10000000, type: "" })
+                      // }
                     >
                       <DonutIcon />
                     </div>
@@ -138,7 +136,7 @@ const BackersContainer = () => {
                       className="backers-container__left-side__supporter__popup"
                       style={{
                         right: "0px",
-                        width: "320px",
+                        width: "280px",
                       }}
                     >
                       <span className="title">Latest donations</span>
@@ -155,14 +153,12 @@ const BackersContainer = () => {
                               key={
                                 "dns" + dns.creator_username + dns.sum_donation
                               }
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
                             >
-                              <span
-                                style={{
-                                  paddingLeft: "1.5rem",
-                                }}
-                              >
-                                {dns.creator_username}
-                              </span>
+                              <span>{dns.creator_username}</span>
                               <span>
                                 {dns.sum_donation}
                                 {dns.wallet_type === "tron" ? (
@@ -190,11 +186,14 @@ const BackersContainer = () => {
                         <div className="list">
                           {supporter.badges.slice(0, 3).map((bgs: any) => {
                             return (
-                              <div className="badgeItem" key={"bgs" + bgs.name + Math.random()}>
+                              <div
+                                className="badgeItem"
+                                key={"bgs" + bgs.name + Math.random()}
+                              >
                                 <span
                                   style={{
                                     justifyContent: "flex-start",
-                                    minWidth: "70px"
+                                    minWidth: "70px",
                                   }}
                                 >
                                   <img src={url + bgs.badge_image} alt="bgs" />
@@ -216,7 +215,7 @@ const BackersContainer = () => {
                                     {bgs.badge_name}
                                   </span>
                                   <span
-                                  className="ownerName"
+                                    className="ownerName"
                                     style={{
                                       justifyContent:
                                         bgs.owner_username &&

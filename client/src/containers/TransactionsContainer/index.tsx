@@ -59,9 +59,6 @@ const TransactionsContainer = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
-    console.log(data);
-    
-
     return (
         <div
             className='transactions-container'

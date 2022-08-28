@@ -182,8 +182,6 @@ const titles = [
             const metamaskWallet = await getMetamaskWallet();
             if (metamaskWallet) {
               const isExistUser = await checkIsExistUser(metamaskWallet);
-              console.log(isExistUser);
-
               if (!isExistUser) {
                 await axiosClient.post(`api/user/edit-token/${user.user_id}`, {
                   type_wallet: "metamask",

@@ -48,9 +48,6 @@ const SupportersMainTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(data);
-  
-
   return (
     <div className="supporters-main-table">
       <div className="supporters-main-table__header">
@@ -73,8 +70,6 @@ const SupportersMainTable = () => {
                 key={"supporters-main-table__main__row" + rowIndex}
               >
                 {Object.keys(row).map((val, valIndex) => {
-                  console.log(row[val], val);
-                  
                   if (keys.includes(val)) {
                     return (
                       <span
@@ -86,15 +81,15 @@ const SupportersMainTable = () => {
                       </span>
                     );
                   }
+                  return <></>;
                 })}
                 <span
                   style={{
                     textAlign: "end",
                   }}
                 >
-                  {"$ " +
-                    Math.round(parseFloat(row.sum_donations) )}
-                    {/* tronUsdtKoef */}
+                  {"$ " + Math.round(parseFloat(row.sum_donations))}
+                  {/* tronUsdtKoef */}
                 </span>
               </div>
             ))}

@@ -364,8 +364,6 @@ const SupportersContainer = () => {
     //  parseInt(new Date().toISOString().slice(5,7))-1
   });
 
-  console.log(supporters);
-
   const getBadges = async (id: string) => {
     const res = await fetch(baseURL + "/api/badge/get-badges-by-creator/" + id);
     if (res.status === 200) {
@@ -411,8 +409,6 @@ const SupportersContainer = () => {
     } = {};
     let oneDay: number;
 
-    console.log(donations);
-
     donations.forEach((donation) => {
       const username = donation.username;
       const donation_month = donation.donation_date.slice(5, 7);
@@ -444,8 +440,6 @@ const SupportersContainer = () => {
                 ((tableData[username] && tableData[username].count) || 0) + 1,
             },
           };
-
-          console.log(tableData);
 
           dates = {
             ...dates,
@@ -542,8 +536,6 @@ const SupportersContainer = () => {
       sum_donations: tableData[username].donations_sum,
       amount_donations: tableData[username].count,
     }));
-
-    console.log(formatTableData);
 
     setSupporters(formatTableData);
   };

@@ -103,25 +103,6 @@ io.on('connection', async (socket) => {
 			await db.query(`INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3);`, [badgeID, creator_id, supporter.id])
 		}
 	});
-
-	// console.log('a user connected ', userId, socket.id);
-	// const socketDB = await db.query('SELECT * FROM sockets WHERE user_id = $1', [userId])
-	// if (socketDB.rows && !socketDB.rows.length) {
-	// }
-
-	// io.allSockets().then(data => console.log(data))
-	// socket.on('connect_user', (data) => {
-	// 	console.log(data);
-	// 	// io.sockets.emit('add_mess', data);
-	// })
-	// console.log("ROOMS", );
-	// for (const room of socket.rooms) {
-	// 	console.log(room);
-	// }
-
-	// socket.on('disconnect', (reason) => {
-	// 	console.log('disconnect', reason);
-	// })
 });
 
 

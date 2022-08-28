@@ -31,30 +31,23 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    socket.on("connect", () => {
-      console.log("connect");
-      // user && user.user_id && socket.emit("connect_user", user.user_id);
-    });
+    // socket.on("connect", () => {
+    //   console.log("connect");
+    //   // user && user.user_id && socket.emit("connect_user", user.user_id);
+    // });
 
-    socket.on("connect_error", () => {
-      console.log("connect_error");
-    });
+    // socket.on("connect_error", () => {
+    //   console.log("connect_error");
+    // });
 
-    socket.on("disconnect", () => {
-      console.log("disconnect");
-    });
+    // socket.on("disconnect", () => {
+    //   console.log("disconnect");
+    // });
 
     socket.on("new_notification", (data) => {
       const { type } = data;
       switch (type) {
         case "donat":
-          // if (checkNotifPermissions())
-          //   new Notification(
-          //     `Supporter: ${data.supporter}; Sum: ${data.additional.sum} ${
-          //       data.additional.wallet === "tron" ? "TRX" : "MATIC"
-          //     }; Message: ${data.additional.message}`,
-          //     { image: notifImage }
-          //   );
           dispatch(getNotifications(username));
           break;
       }
@@ -72,7 +65,6 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
         socketUnlogin.disconnect();
       };
     } else if (user && user.user_id && user.username) {
-      // Object.keys(nologinSocket) && nologinSocket.hasOwnProperty('disconnect') && nologinSocket.disconnect()
       const socket = io(baseURL, {
         path: "/sockt/",
         query: {
@@ -80,18 +72,17 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
-      socket.on("connect", () => {
-        console.log("connect useeeer");
-        // user && user.user_id && socket.emit("connect_user", user.user_id);
-      });
+      // socket.on("connect", () => {
+      //   console.log("connect useeeer");
+      // });
 
-      socket.on("connect_error", () => {
-        console.log("connect_error useeeer");
-      });
+      // socket.on("connect_error", () => {
+      //   console.log("connect_error useeeer");
+      // });
 
-      socket.on("disconnect", () => {
-        console.log("disconnect useeer");
-      });
+      // socket.on("disconnect", () => {
+      //   console.log("disconnect useeer");
+      // });
 
       socket.on("new_notification", (data) => {
         const { type } = data;
@@ -126,7 +117,6 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
               title: "New following",
               message: messageFollowing,
             });
-            // if (checkNotifPermissions()) new Notification(messageFollowing, { image: notifImage });
             break;
 
           case "add_badge":
