@@ -19,6 +19,7 @@ create TABLE creators(
     twitch VARCHAR(255) DEFAULT '',
     creation_date VARCHAR(255) DEFAULT '',
     user_description VARCHAR(512) DEFAULT '',
+    security_string VARCHAR(100) DEFAULT '',
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

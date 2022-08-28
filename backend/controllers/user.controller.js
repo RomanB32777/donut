@@ -18,11 +18,11 @@ const getMaticUsdKoef = async () => {
     return res.data.price;
 };
 
-const getImageName = () => {
+const getImageName = (length) => {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for (var i = 0; i < 32; i++) {
+    for (var i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() *
             charactersLength));
     }
@@ -86,7 +86,8 @@ class UserController {
             const date = new Date()
             const newUser = await db.query(`INSERT INTO users (${typeWallet}_token, username, roleplay) values ($1, $2, $3) RETURNING *;`, [token, username.toLowerCase(), role])
             if (role === 'creators') {
-                await db.query(`INSERT INTO creators (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
+                const security_string = getImageName(10)
+                await db.query(`INSERT INTO creators (username, user_id, creation_date, security_string) values ($1, $2, $3, $4) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date, security_string])
                 res.status(200).json({ message: 'Creator created!' })
             } else {
                 await db.query(`INSERT INTO backers (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
@@ -241,7 +242,7 @@ class UserController {
         try {
             const user_id = req.params.user_id
             const file = req.files.file;
-            const filename = getImageName()
+            const filename = getImageName(32)
             file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
             const user = await db.query(`SELECT * FROM users WHERE id = $1`, [user_id])
             let table = 'backers'
@@ -259,7 +260,7 @@ class UserController {
         try {
             const user_id = req.params.user_id
             const file = req.files.file;
-            const filename = getImageName()
+            const filename = getImageName(32)
             file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
             const user = await db.query(`SELECT * FROM users WHERE id = $1`, [user_id])
             let table = 'backers'

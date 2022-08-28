@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { baseURL } from "../../axiosClient";
+import Loader from "../../components/Loader";
 import { url } from "../../consts";
 import {
   DonutIcon,
@@ -11,20 +12,13 @@ import {
 } from "../../icons/icons";
 import "./styles.sass";
 
-import testImg from "../../assets/tronlink_big.png";
-
-const topDonationsWidth = {
-  supporter: "36%",
-  creator: "36%",
-  donation: "16%",
-};
-
 const BackersContainer = () => {
   const [backers, setBackers] = useState({
     sum: 0,
     topDonations: [],
     supporters: [],
   });
+  const [loading, setLoading] = useState(false);
 
   const [onMouseOverIdType, setOnMouseOverIdType] = useState({
     index: 100000000,
@@ -32,6 +26,7 @@ const BackersContainer = () => {
   });
 
   const getBackers = async () => {
+    setLoading(true);
     const res = await fetch(baseURL + "/api/donation/backers-info/");
     if (res.status === 200) {
       const result = await res.json();
@@ -50,6 +45,7 @@ const BackersContainer = () => {
 
       setBackers({ ...result, supporters });
     }
+    setLoading(false);
   };
 
   const getUsernameByID = async (id: number) => {
@@ -68,7 +64,10 @@ const BackersContainer = () => {
   return (
     <div className="backers-container">
       <div className="backers-container__left-side">
-        {backers.supporters &&
+        {loading ? (
+          <Loader size="big" />
+        ) : (
+          backers.supporters &&
           backers.supporters.length > 0 &&
           backers.supporters.map((supporter: any, supporterIndex: number) => (
             <div
@@ -86,9 +85,9 @@ const BackersContainer = () => {
                           type: "dns",
                         })
                       }
-                      // onMouseLeave={() =>
-                      //   setOnMouseOverIdType({ index: 10000000, type: "" })
-                      // }
+                      onMouseLeave={() =>
+                        setOnMouseOverIdType({ index: 10000000, type: "" })
+                      }
                     >
                       <DonutIcon />
                     </div>
@@ -201,15 +200,7 @@ const BackersContainer = () => {
                                 <div className="list-item_txt">
                                   <span
                                     style={{
-                                      justifyContent:
-                                        // bgs.badge_name && bgs.badge_name.length > 10
-                                        "flex-start",
-                                      // : "center",
-                                      // marginLeft:
-                                      //   bgs.badge_name &&
-                                      //   bgs.badge_name.length > 20
-                                      //     ? "20px"
-                                      //     : "0",
+                                      justifyContent: "flex-start",
                                     }}
                                   >
                                     {bgs.badge_name}
@@ -272,7 +263,8 @@ const BackersContainer = () => {
                       </div>
                     )))}
             </div>
-          ))}
+          ))
+        )}
       </div>
 
       <div className="backers-container__right-side">
@@ -281,8 +273,11 @@ const BackersContainer = () => {
             <FormattedMessage id="backers_page_sum_title" />
           </span>
           <div className="backers-container__right-side__sum__value">
-            {backers.sum.toFixed(2)} USD
-            {/* <TronIcon /> */}
+            {loading ? (
+              <Loader size="small" />
+            ) : (
+              <>{backers.sum.toFixed(2)} USD</>
+            )}
           </div>
         </div>
 
@@ -297,45 +292,49 @@ const BackersContainer = () => {
               <span>Creator</span>
               <span>Donation</span>
             </div>
-            {backers.topDonations.map((donation: any, dIn) => (
-              <div
-                key={
-                  "backers-container__right-side__top-donations__table__panel" +
-                  dIn
-                }
-                className="backers-container__right-side__top-donations__table__panel"
-              >
-                <span
-                  style={{
-                    justifyContent:
-                      donation.username.length > 10 ? "flex-start" : "center",
-                  }}
+            {loading ? (
+              <Loader size="small" />
+            ) : (
+              backers.topDonations.map((donation: any, dIn) => (
+                <div
+                  key={
+                    "backers-container__right-side__top-donations__table__panel" +
+                    dIn
+                  }
+                  className="backers-container__right-side__top-donations__table__panel"
                 >
-                  {donation.username}
-                </span>
-                <span
-                  style={{
-                    justifyContent:
-                      donation.creator_username.length > 10
-                        ? "flex-start"
-                        : "center",
-                  }}
-                >
-                  {donation.creator_username}
-                </span>
-                <span>
-                  {donation.sum_donation.indexOf(".") === 0 && "0"}
-                  {donation.sum_donation}
-                  <span className="table_wallet-icon">
-                    {donation.wallet_type === "tron" ? (
-                      <TronIcon />
-                    ) : (
-                      <MaticIcon />
-                    )}
+                  <span
+                    style={{
+                      justifyContent:
+                        donation.username.length > 10 ? "flex-start" : "center",
+                    }}
+                  >
+                    {donation.username}
                   </span>
-                </span>
-              </div>
-            ))}
+                  <span
+                    style={{
+                      justifyContent:
+                        donation.creator_username.length > 10
+                          ? "flex-start"
+                          : "center",
+                    }}
+                  >
+                    {donation.creator_username}
+                  </span>
+                  <span>
+                    {donation.sum_donation.indexOf(".") === 0 && "0"}
+                    {donation.sum_donation}
+                    <span className="table_wallet-icon">
+                      {donation.wallet_type === "tron" ? (
+                        <TronIcon />
+                      ) : (
+                        <MaticIcon />
+                      )}
+                    </span>
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

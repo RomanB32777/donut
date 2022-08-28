@@ -14,7 +14,10 @@ import CanvasJSReact from "../../assets/canvasjs.react";
 import { FormattedMessage } from "react-intl";
 import { url } from "../../consts";
 import Calendar from "../../components/Calendar";
-import { addNotification, addSuccessNotification, getRandomStr } from "../../utils";
+import {
+  addNotification,
+  addSuccessNotification,
+} from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 import routes from "../../routes";
 //var CanvasJSReact = require('./canvasjs.react');
@@ -571,6 +574,11 @@ const SupportersContainer = () => {
     [dailyDonations]
   );
 
+  const linkForSupport = useMemo(
+    () => baseURL + "/donat/" + user.username + "/" + user.security_string,
+    [user]
+  );
+
   return (
     <div className="supporters-container">
       <PageTitle formatId="supporters_page_title" />
@@ -661,15 +669,13 @@ const SupportersContainer = () => {
             <FormattedMessage id="supporters_aud_info_subtitle" />
           </span>
           <div className="link">
-            {baseURL}/donat/{user.username}
+            {linkForSupport}
           </div>
           <div
             className="icon"
             onClick={() => {
               try {
-                navigator.clipboard.writeText(
-                  `${baseURL}/donat/${user.username}/${getRandomStr(10)}`
-                );
+                navigator.clipboard.writeText(linkForSupport);
                 addNotification({
                   type: "success",
                   title: "Link successfully copied",

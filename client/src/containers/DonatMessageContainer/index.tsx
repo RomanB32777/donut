@@ -13,7 +13,12 @@ const DonatMessageContainer = () => {
   const { pathname } = useLocation();
   const notifications = useSelector((state: any) => state.notifications);
 
-  const [lastNotif, setLastNotif] = useState<any>({});
+  const [lastNotif, setLastNotif] = useState<any>({
+    // wallet_type: "tron",
+    // sum_donation: 50,
+    // username: "tester",
+    // donation_message: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!"
+  });
 
   useEffect(() => {
     notifications.length && setLastNotif(notifications[0].donation);

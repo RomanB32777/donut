@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import PageTitle from "../../commonComponents/PageTitle";
 import { CopyIcon, SmallToggleListArrowIcon } from "../../icons/icons";
 import routes from "../../routes";
 import { getNotifications } from "../../store/types/Notifications";
-import { addNotification, DateFormatter, getRandomStr } from "../../utils";
+import { addNotification, DateFormatter } from "../../utils";
 import "./styles.sass";
 
 const tableHeaderTitles = [
@@ -28,14 +28,11 @@ const NotificationsContainer = () => {
     sort: "UP",
   });
 
-  const [randomStr, setRandomStr] = useState<string>("")
-
   const [permissionsNotif, setPermissionsNotif] = useState(false);
 
   useEffect(() => {
     if (user.id) {
       dispatch(getNotifications(user.id));
-      setRandomStr(getRandomStr(10))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -76,6 +73,11 @@ const NotificationsContainer = () => {
     localStorage.setItem("permissionsNotif", String(permissionsNotif));
   }, [permissionsNotif]);
 
+  console.log(user);
+  
+
+  const linkForStream = useMemo(() => baseURL + '/donat-message/' + user.username + '/' + user.security_string, [user])
+
   return (
     <div className="notifications-container">
       <PageTitle formatId="page_title_notifications" />
@@ -84,15 +86,13 @@ const NotificationsContainer = () => {
             Link for stream
           </span>
           <div className="link">
-            {baseURL + '/donat-message/' + user.username + '/' + randomStr}
+            {linkForStream}
           </div>
           <div
             className="icon"
             onClick={() => {
               try {
-                navigator.clipboard.writeText(
-                  `${baseURL + '/donat-message/'+ user.username + '/' + randomStr }`
-                );
+                navigator.clipboard.writeText(linkForStream);
                 addNotification({
                   type: "success",
                   title: "Link successfully copied",

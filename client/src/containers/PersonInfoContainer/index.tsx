@@ -18,7 +18,7 @@ import getTronWallet, { getMetamaskWallet } from "../../functions/getTronWallet"
 import axiosClient from "../../axiosClient";
 import { PencilIcon, UploadIcon } from "../../icons/icons";
 import { tryToGetUser } from "../../store/types/User";
-import { addAuthNotification, getRandomStr } from "../../utils";
+import { addAuthNotification } from "../../utils";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 import routes from "../../routes";
 
@@ -297,7 +297,7 @@ const PersonInfoContainer = () => {
                   fontSize="18px"
                   padding="6px 30px"
                   onClick={() => {
-                    navigate(`/donat/${data.username}/${getRandomStr(10)}`)
+                    navigate(`/donat/${data.username}/${data.security_string}`)
                     // tron_token
                     //   ? dispatch(openSupportModal())
                     //   : addAuthNotification();
