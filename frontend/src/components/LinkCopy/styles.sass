@@ -1,0 +1,58 @@
+@use '../../commonStyles/variables'
+
+.link-wrapper
+    display: flex
+    flex-direction: column
+    width: 100%
+    // margin-top: 16px
+    // align-items: center
+    
+    span
+        margin-right: 62px
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 700
+        font-size: 20px
+        line-height: 25px
+        color: variables.$grey-color
+
+    .link-description
+        margin-bottom: 17px
+
+    .link-block,
+    .simpleLink-block
+        display: flex
+
+        .link
+            font-family: variables.$jakarta-font
+            color: variables.$grey-color
+            font-style: normal
+            font-size: 17px
+            line-height: 21px
+            text-align: center
+            box-sizing: border-box
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
+
+        .icon
+            margin-left: 10px
+            display: flex
+            justify-content: center
+            align-items: center
+            cursor: pointer
+
+    .simpleLink-block
+        .link
+            font-weight: 400
+            max-width: 400px
+
+    .link-block
+        .link
+            font-weight: 700
+            background: #000000
+            border: 1px solid #BBB9B9
+            border-radius: 10px
+            max-width: 550px
+            max-height: 55px
+            padding: 13px

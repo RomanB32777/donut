@@ -1,0 +1,48 @@
+@use '../../commonStyles/variables'
+
+.ant-table,
+.ant-table-cell,
+.ant-pagination-item
+    background: none !important
+    color: variables.$white-color !important
+    font-family: variables.$inter-font
+    font-style: normal
+    font-size: 17px
+    line-height: 22px
+    color: variables.$white-color
+
+.ant-table-thead
+    .ant-table-cell
+        font-weight: 600 !important
+
+.ant-pagination
+    align-items: baseline
+
+    .ant-pagination-prev,
+    .ant-pagination-next
+        min-width: auto
+        button
+            color: variables.$white-color !important
+            background: none !important
+            border: none !important
+
+        &.ant-pagination-disabled
+            button
+                color: variables.$grey-color !important
+
+    .ant-pagination-item
+        border: none
+        min-width: auto
+        a
+            color: variables.$white-color !important
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-size: 15px
+            line-height: 20px
+            padding: 0
+            
+    .ant-pagination-item-active 
+        a
+            color: variables.$blue-color !important
+
+

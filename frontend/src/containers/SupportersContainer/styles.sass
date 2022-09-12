@@ -1,0 +1,247 @@
+@use '../../commonStyles/variables'
+    
+.supporters-container
+    max-width: 1170px
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    margin: 0 24px 
+    @media (max-width: 640px)
+        width: 90%
+        margin: 0 auto
+
+    &__line
+        width: 100%
+        height: 1px
+        margin: 32px 0
+        background: variables.$grey-color
+    
+    &__calendar-wrapper
+        width: 100%
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: space-between
+        position: relative
+        margin-top: 32px
+        & > span
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 700
+            font-size: 20px
+            line-height: 25px
+
+            color: variables.$white-color
+        .button
+            display: flex
+            flex-direction: row
+            align-items: center
+            box-sizing: border-box
+            padding: 8px 14px
+            background: #1D14FF
+            border-radius: 10px
+            cursor: pointer
+            transition: all .4s ease
+            &:hover
+                -webkit-box-shadow: 0px 0px 4px 2px variables.$blue-color
+                box-shadow: 0px 0px 4px 2px variables.$blue-color
+         
+            span
+                margin-right: 2px
+                font-family: variables.$jakarta-font
+                font-style: normal
+                font-weight: 700
+                font-size: 20px
+                line-height: 25px
+                color: variables.$white-color
+            
+
+    &__description
+        display: flex
+        flex-direction: column
+        align-items: flex-start
+        width: 100%
+        margin: 12px 0
+        .title
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 700
+            font-size: 20px
+            line-height: 25px
+            color: variables.$white-color
+        .link-wrapper
+            display: flex
+            flex-direction: row
+            align-items: center
+            margin-top: 16px
+            span
+                margin-right: 62px
+                font-family: variables.$jakarta-font
+                font-style: normal
+                font-weight: 700
+                font-size: 20px
+                line-height: 25px
+                color: variables.$grey-color
+            .link
+                font-family: variables.$jakarta-font
+                color: variables.$grey-color
+                font-style: normal
+                font-weight: 700
+                font-size: 17px
+                line-height: 21px
+                text-align: center
+                box-sizing: border-box
+                padding: 6px 
+                background: #000000
+                border: 1px solid #BBB9B9
+                border-radius: 10px
+            
+            .icon
+                margin-left: 10px
+                display: flex
+                justify-content: center
+                align-items: center
+                cursor: pointer
+
+    &__table
+        display: flex
+        flex-direction: column
+        width: 100%
+        margin-top: 48px
+        max-width: 1170px
+        margin-bottom: 256px
+        &__header
+            width: 100%
+            background: variables.$grey-background-color
+            display: flex
+            flex-direction: row
+            align-items: center
+            justify-content: space-between
+            box-sizing: border-box
+            padding: 14px 28px
+            & > div
+                // display: flex
+                // flex-direction: row
+                // align-items: center
+                position: relative
+                width: 25%
+                text-align: center
+                font-family: variables.$inter-font
+                font-style: normal
+                font-weight: 700
+                font-size: 16px
+                line-height: 19px
+                color: variables.$grey-color
+                box-sizing: border-box
+                padding: 0 4px
+                div
+                    right: 24px
+                    position: absolute
+                    top: -4px
+                    svg
+                        transition: all .4s ease-in-out
+        &__main
+            display: flex
+            flex-direction: column
+            width: 100%
+
+            &__row
+                width: 100%
+                display: flex
+                flex-direction: row
+                align-items: center
+                justify-content: space-between
+                box-sizing: border-box
+                padding: 14px 28px 
+                position: relative
+                span 
+                    padding: 0 8px
+                    width: 25%
+                    display: flex
+                    box-sizing: border-box
+                    font-family: variables.$inter-font
+                    font-style: normal
+                    font-weight: 700
+                    font-size: 16px
+                    line-height: 19px
+                    color: variables.$white-color
+                    width: 25%
+                    display: flex
+                    justify-content: center
+                    align-items: center
+                    overflow: hidden
+                    box-sizing: border-box
+                    padding: 0 4px
+                    text-align: center
+                    svg
+                        margin-left: 2px
+                    
+
+                &__popup
+                    z-index: 100
+                    position: absolute
+                    left: 16px
+                    top: 40px
+                    width: 480px
+                    height: 240px
+                    box-sizing: border-box
+                    padding: 12px 24px
+                    border-radius: 10px
+                    background: variables.$grey-background-color
+                    color: variables.$white-color
+                    display: flex
+                    flex-direction: column
+                    align-items: flex-start
+                    .title
+                        width: 100%
+                        font-family: variables.$inter-font
+                        font-style: normal
+                        font-weight: 700
+                        font-size: 17px
+                        line-height: 19px
+                        color: variables.$white-color
+                    &__list
+                        display: flex
+                        flex-direction: column
+                        align-items: center
+                        width: 100%
+                        margin-top: 4px
+                        overflow-y: scroll
+                        & > div
+                            width: 100%
+                            display: flex
+                            flex-direction: row
+                            align-items: center
+                            justify-content: space-between
+                            cursor: pointer
+                            box-sizing: border-box
+                            padding: 4px 8px
+                            transition: all .4s ease
+                            border-radius: 6px
+                            &:hover
+                                background: black
+                            span
+                                width: 33%
+                                max-width: 33%
+                                text-overflow: ellipsis
+                                overflow: hidden
+                                flex-wrap: wrap
+                                img
+                                    max-width: 24px
+                                    max-height: 24px
+                    
+
+.calendar-popup
+    position: absolute
+    width: 400px
+    height: 256px
+    top: 48px
+    right: 0px
+    background: variables.$grey-background-color
+    border-radius: 10px
+    z-index: 100
+
+.rotated
+    svg
+        transform: rotate(180deg)

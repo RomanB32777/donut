@@ -1,0 +1,101 @@
+@use '../././../commonStyles/variables'
+
+.goals
+    &-header
+        display: flex
+        justify-content: space-between
+        align-items: center
+        margin-bottom: 45px
+
+        .subtitle
+            margin: 0
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 20px
+            line-height: 25px
+            color: variables.$white-color
+
+    &-wrapper
+        margin-bottom: 70px
+
+    &-archiveWrapper
+        margin-top: 50px
+
+    &-item
+        background: variables.$grey-background-color
+        border-radius: 20px
+        padding: 20px 30px
+
+        &:not(:last-child)
+            margin-bottom: 25px
+
+        &__mainInfo
+            padding-right: 25px
+
+            p
+                font-family: variables.$jakarta-font
+                font-style: normal
+                font-weight: 600
+                font-size: 20px
+                line-height: 25px
+                color: variables.$white-color
+
+            &_title
+                margin-top: 0
+                margin-bottom: 5px
+
+            &_description
+                margin: 0
+
+        &__btns
+            display: flex
+            justify-content: flex-end
+
+            svg
+                cursor: pointer
+                width: 24px
+                height: 24px
+
+        &__details
+            margin-top: 40px
+            margin-bottom: 35px
+
+            .preview-block
+                max-width: 432px
+                width: 100%
+                height: 394px
+                background: url('../../assets/previewBg.png')
+                display: flex
+                align-items: center
+                justify-content: center
+                flex-direction: column
+
+                &_title
+                    margin-top: 12px
+                    font-family: variables.$jakarta-font
+                    font-style: normal
+                    font-weight: 600
+                    font-size: 17px
+                    line-height: 22px
+                    // color: variables.$white-color
+                &_goal
+                    display: flex
+                    border-radius: 25px
+                    align-items: center
+                    border: 1px solid variables.$grey-color
+
+                    p
+                        margin: 0
+                        font-family: variables.$jakarta-font
+                        font-style: normal
+                        font-weight: 700
+                        font-size: 17px
+                        line-height: 22px
+                        padding: 12px 70px 12px 30px
+
+            .form
+                &-element
+                    &:not(:last-child)
+                        margin-bottom: 10px
+

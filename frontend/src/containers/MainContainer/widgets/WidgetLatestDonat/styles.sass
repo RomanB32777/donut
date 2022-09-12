@@ -1,0 +1,30 @@
+@use '../../../../commonStyles/_variables'
+
+.widget-latestDonat
+    .widget    
+        &__item
+            display: block !important
+            
+            &_header
+                display: flex
+                justify-content: space-between
+                align-items: center
+
+                &_sum
+                    color: variables.$white-color
+
+            &_message
+                margin: 0
+                margin-top: 8px
+                overflow: hidden
+                text-overflow: ellipsis
+                display: -webkit-box
+                -webkit-line-clamp: 2
+                -webkit-box-orient: vertical
+                font-family: variables.$inter-font
+                font-style: normal
+                font-size: 15px
+                line-height: 20px
+                font-weight: 400
+                color: variables.$white-color
+

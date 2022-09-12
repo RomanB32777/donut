@@ -1,0 +1,52 @@
+@use '../../commonStyles/variables'
+    
+.nft-container
+    max-width: 1170px
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    margin: 0 24px 
+    @media (max-width: 640px)
+        width: 90%
+        margin: 0 auto
+    &__header
+        margin-top: 60px
+        width: 100%
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: space-between
+        span
+            width: fit-content
+            margin-right: auto
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 700
+            font-size: 20px
+            line-height: 25px
+            color: variables.$white-color
+    &__list 
+        margin-top: 62px
+        width: 100%
+        display: flex
+        flex-direction: row
+        align-items: center
+        flex-wrap: wrap
+
+.deleted-message
+    position: fixed
+    z-index: 120
+    bottom: 120px
+    transition: all .6s ease-in-out
+    background: #19191F
+    border-radius: 10px
+    box-sizing: border-box
+    padding: 12px 40px
+    color: #25EC39
+    font-family: variables.$jakarta-font
+    font-style: normal
+    font-weight: 600
+    font-size: 21px
+    line-height: 24px
+    text-align: center

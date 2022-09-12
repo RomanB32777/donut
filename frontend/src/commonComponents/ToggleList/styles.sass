@@ -1,0 +1,40 @@
+@use '../../commonStyles/variables'
+    
+.toggle-list
+    min-width: 100%
+    max-width: 1170px
+
+    display: flex
+    flex-direction: column
+    align-items: center
+    overflow: hidden
+    margin-bottom: 24px
+    &__header
+        width: 100%
+        background: variables.$grey-background-color
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: space-between
+        box-sizing: border-box
+        padding: 12px 38px
+        span 
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 700
+            font-size: 20px
+            line-height: 24px
+            color: variables.$white-color
+        div
+            transition: all .4s ease
+            display: flex
+            justify-content: center
+            align-items: center
+        .rotated
+            transform: rotate(180deg)
+    &__component
+        width: calc(100% - 76px)
+        margin: 0 auto
+        transition: all 2s ease
+
+

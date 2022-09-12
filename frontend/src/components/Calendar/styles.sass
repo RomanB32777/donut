@@ -1,0 +1,66 @@
+@use '../../commonStyles/variables'
+    
+.calendar-wrapper
+    display: flex
+    flex-direction: column
+    box-sizing: border-box
+    padding: 16px 36px
+    background: variables.$grey-background-color
+    border-top: 1px solid black
+    border-radius: 0 0 10px 10px
+    &__header
+        width: 100%
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: space-between
+        margin-left: 2px
+        span
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 16px
+            line-height: 19px
+            color: #8D8A8A
+    &__calendar
+        width: 100%
+
+        &__header
+            width: 100%
+            th
+                font-family: variables.$jakarta-font
+                font-style: normal
+                font-weight: 400
+                font-size: 19px
+                line-height: 21px
+                letter-spacing: 0.08em
+
+                color: variables.$white-color
+                width: 18px
+        &__main
+            width: 100%
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 19px
+            line-height: 21px
+
+            color: #8D8A8A
+            .choosen
+                background: #F4FBF5
+                border-radius: 5px
+            td
+                width: 100px
+                min-width: 36px
+                text-align: center
+                cursor: pointer
+                transition: all .4s ease-in-out
+                box-sizing: content-box
+                border-radius: 5px
+                &:hover
+                    background: #FFFFFF
+                    border-radius: 5px
+
+            .additional
+                color: #E1E4E1
+                width: 36px

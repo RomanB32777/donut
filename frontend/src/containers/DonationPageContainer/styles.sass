@@ -1,0 +1,49 @@
+@use '../././../commonStyles/variables'
+
+.qr
+    margin-top: 40px
+
+    &-title
+        display: flex
+        align-items: center
+        margin-bottom: 15px
+        cursor: pointer
+
+        span
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 20px
+            line-height: 25px
+            color: variables.$white-color
+
+        svg
+            transition: transform .4s
+
+        &.rotated
+            svg
+                transform: rotate(180deg)
+
+    &-wrapper
+        display: flex
+        align-items: center
+
+    &-block
+        background: variables.$white-color
+        padding: 8px 8px 4px
+        width: fit-content
+        margin-right: 50px
+
+.designSettings
+    margin-top: 40px
+    max-width: 750px
+
+.form
+    &-element
+        width: 100%
+
+        textarea
+            height: 150px
+
+.saveBottom
+    margin-top: 50px

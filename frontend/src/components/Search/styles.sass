@@ -1,0 +1,67 @@
+@use '../../commonStyles/variables'
+
+.search-wrapper
+    display: flex
+    flex-direction: column
+    width: 330px
+    position: relative
+    z-index: 100
+    &__input-panel
+        display: flex
+        flex-direction: row
+        align-items: center
+
+        background: variables.$black-color
+        border-radius: 15px
+        box-sizing: border-box
+        padding: 8px
+
+        transition: all 1.2s ease
+        svg
+            margin-right: 9px
+        input
+            border: none
+            outline: none
+            background: variables.$black-color
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 700
+            font-size: 17px
+            line-height: 21px
+            color:  variables.$white-color
+            &::placeholder
+                color: variables.$grey-color
+    
+    &__list-panel
+        overflow: hidden
+        width: 100%
+        position: absolute
+        top: 40px
+
+        transition: all .6s ease
+
+        background: variables.$black-color
+
+        border-radius: 0 0 15px 15px
+        box-sizing: border-box
+
+        &__person
+            display: block
+            outline: none
+            text-decoration: none
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 17px
+            line-height: 21px
+            color: variables.$white-color
+            margin: 3px 2px
+            margin-left: 16px
+            cursor: pointer
+            background: variables.$black-color
+            transition: all .6s ease-in-out
+            box-sizing: border-box
+            padding: 1px 2px
+            border-radius: 4px
+            &:hover
+                background: variables.$grey-color

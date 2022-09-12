@@ -1,0 +1,43 @@
+@use '../../commonStyles/variables'
+
+.ant-picker
+    padding: 0
+    background: none
+
+    .ant-picker-input
+        & > input
+            padding: 15px 22px
+            background: variables.$grey-background-color
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 600
+            font-size: 17px
+            line-height: 22px
+            color: variables.$white-color
+            text-align: center
+            border: 1px solid variables.$white-color
+            border-radius: 30px
+
+    .ant-picker-range-separator
+        background: variables.$white-color
+        border: 0.5px solid variables.$white-color
+
+        .ant-picker-separator
+            display: none
+
+    .ant-picker-active-bar
+        bottom: 0
+        height: 100%
+        width: 173px !important
+        margin-left: 0
+        background: none
+        border: 2px solid variables.$blue-color
+        border-radius: 30px
+        transition: none
+
+    .ant-picker-suffix
+        display: none
+
+    .ant-picker-clear
+        color: variables.$white-color
+        background: none
