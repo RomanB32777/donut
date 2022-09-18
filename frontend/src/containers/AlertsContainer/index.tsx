@@ -45,7 +45,7 @@ const AlertsContainer = () => {
       console.log(data);
       const userData: IAlertData = {
         banner: {
-          preview: `${url + data.banner_link}`,
+          preview:  data.banner_link ? `${url + data.banner_link}` : "",
           file: formData.banner.file,
         },
         message_color: data.message_color,

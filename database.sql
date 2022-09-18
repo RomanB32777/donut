@@ -123,9 +123,9 @@ create TABLE notifications (
 create TABLE alerts (
     id SERIAL PRIMARY KEY,
     banner_link VARCHAR(255) DEFAULT '',
-    message_color  VARCHAR(10) DEFAULT '',
-    name_color  VARCHAR(10) DEFAULT '',
-    sum_color VARCHAR(10) DEFAULT '',
+    message_color  VARCHAR(10) DEFAULT '#ffffff',
+    name_color  VARCHAR(10) DEFAULT '#ffffff',
+    sum_color VARCHAR(10) DEFAULT '#ffffff',
     duration NUMERIC DEFAULT 5,
     sound VARCHAR(255) DEFAULT '',
     voice BOOLEAN DEFAULT 'false',
