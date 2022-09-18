@@ -52,7 +52,7 @@ io.on('connection', async (socket) => {
 		const { supporter, creator_id, creator_username, sum, donationID, wallet } = data;
 		const rooms = getActiveRooms(io);
 		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => room === creator_username)?.sockets;
+			const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
 			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID])
 
 			donation.rows[0] && userSockets && userSockets.length && userSockets.forEach(socketID =>

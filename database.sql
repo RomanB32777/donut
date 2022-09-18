@@ -12,13 +12,12 @@ create TABLE creators(
     person_name VARCHAR(255) DEFAULT '',
     avatarLink VARCHAR(255) DEFAULT '',
     backgroundLink VARCHAR(255) DEFAULT '',
-    twitter VARCHAR(255) DEFAULT '',
-    google VARCHAR(255) DEFAULT '',
-    facebook VARCHAR(255) DEFAULT '',
-    instagram VARCHAR(255) DEFAULT '',
-    twitch VARCHAR(255) DEFAULT '',
     creation_date VARCHAR(255) DEFAULT '',
     user_description VARCHAR(512) DEFAULT '',
+    welcome_text VARCHAR(255) DEFAULT '',
+    btn_text VARCHAR(255) DEFAULT '',
+    main_color VARCHAR(255) DEFAULT '#2B4BFB',
+    background_color VARCHAR(255) DEFAULT '#212127',
     security_string VARCHAR(100) DEFAULT '',
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -121,3 +120,29 @@ create TABLE notifications (
 	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE
 );
 
+create TABLE alerts (
+    id SERIAL PRIMARY KEY,
+    banner_link VARCHAR(255) DEFAULT '',
+    message_color  VARCHAR(10) DEFAULT '',
+    name_color  VARCHAR(10) DEFAULT '',
+    sum_color VARCHAR(10) DEFAULT '',
+    duration NUMERIC DEFAULT 5,
+    sound VARCHAR(255) DEFAULT '',
+    voice BOOLEAN DEFAULT 'false',
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+create TABLE goals (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) DEFAULT '',
+    amount_goal NUMERIC DEFAULT 1,
+    amount_raised NUMERIC DEFAULT 0,
+    isArchive BOOLEAN DEFAULT 'false',
+    title_color VARCHAR(10) DEFAULT '#ffffff',
+    progress_color VARCHAR(10) DEFAULT '#1D14FF',
+    background_color VARCHAR(10) DEFAULT '#212127',
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    CHECK (amount_goal >= amount_raised)
+);

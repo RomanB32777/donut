@@ -59,7 +59,7 @@ class DonationController {
                     await db.query(`INSERT INTO supporters (username, backer_id, sum_donations, creator_id, amount_donations ) values ($1, $2, $3, $4, $5) RETURNING * `, [
                         backer.rows[0].username,
                         backer.rows[0].id,
-                        Number(parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef)).toString(), 
+                        Number(parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef)).toString(),
                         creator.rows[0].id,
                         1
                     ])
@@ -168,6 +168,35 @@ class DonationController {
                 topDonations: donations.reverse(),
                 supporters: supporters
             })
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+
+    async getLatestDonations(req, res) {
+        try {
+            const { creator_id, timePeriod } = req.params
+            const data = await db.query('SELECT * FROM donations WHERE creator_id = $1', [creator_id])
+            if (data && data.rows && data.rows.length > 0) {
+                res.status(200).json({ donations: data.rows })
+            } else {
+                res.status(200).json({ donations: [] })
+            }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getTopDonations(req, res) {
+        try {
+            const { creator_id, timePeriod } = req.params
+            const data = await db.query('SELECT * FROM donations WHERE creator_id = $1 ORDER BY sum_donation', [creator_id])
+            if (data && data.rows && data.rows.length > 0) {
+                res.status(200).json({ donations: data.rows })
+            } else {
+                res.status(200).json({ donations: [] })
+            }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
