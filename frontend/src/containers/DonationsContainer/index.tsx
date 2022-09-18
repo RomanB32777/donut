@@ -69,10 +69,10 @@ const DonationsContainer = () => {
             </div>
           </Col>
           {isCreator && (
-            <Col span={6}>
+            <Col span={7}>
               <div className="donations-header__right">
                 <Row justify="space-between">
-                  <Col span={12}>
+                  <Col span={11}>
                     <BaseButton
                       formatId="create_filter_button"
                       onClick={filterBtnClick}

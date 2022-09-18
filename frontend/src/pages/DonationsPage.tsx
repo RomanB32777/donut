@@ -1,7 +1,5 @@
 import DonationsContainer from "../containers/DonationsContainer";
 
-const DonationsPage = () => (
-    <DonationsContainer/>
-)
+const DonationsPage = () => <DonationsContainer />;
 
-export default DonationsPage
+export default DonationsPage;

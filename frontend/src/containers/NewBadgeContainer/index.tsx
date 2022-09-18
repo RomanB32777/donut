@@ -14,6 +14,7 @@ import { LargeImageIcon } from "../../icons/icons";
 import routes from "../../routes";
 import "./styles.sass";
 import { useSelector } from "react-redux";
+import BaseButton from "../../commonComponents/BaseButton";
 
 const NewBadgeContainer = () => {
   const navigate = useNavigate();
@@ -165,11 +166,12 @@ const NewBadgeContainer = () => {
                 : "0",
           }}
         >
-          <BlueButton
+          <BaseButton
             formatId="create_badge_form_button"
             padding="6px 40px"
             onClick={createBadge}
             fontSize="18px"
+            isBlue
           />
         </div>
       </div>

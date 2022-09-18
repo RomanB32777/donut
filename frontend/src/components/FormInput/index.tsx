@@ -1,3 +1,4 @@
+import { HTMLInputTypeAttribute } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import "./styles.sass";
@@ -8,33 +9,39 @@ const FormInput = ({
   name,
   placeholder,
   typeInput,
+  disabled,
   modificator,
   descriptionInput,
+  maxLength,
   isTextarea,
   InputCol,
   labelCol,
+  gutter,
   addonBefore,
   addonAfter,
   setValue,
 }: {
-  label?: string;
   value: string;
-  name: string;
+  label?: string;
+  name?: string;
   placeholder?: string;
-  typeInput?: string;
+  typeInput?: HTMLInputTypeAttribute;
+  disabled?: boolean;
   modificator?: string;
   descriptionInput?: string;
+  maxLength?: number;
   isTextarea?: boolean;
   InputCol?: number;
   labelCol?: number;
+  gutter?: number | [number, number];
   addonBefore?: React.ReactNode;
   addonAfter?: React.ReactNode;
   setValue?: (value: string) => void;
 }) => {
-  const idForInput = `form_el_${name.split(" ").join("_")}`;
+  // const idForInput = `form_el_${name.split(" ").join("_")}`;
   return (
     <div className="formInput">
-      <Row>
+      <Row gutter={gutter || 0}>
         <Col
           span={labelCol || (label ? 12 : 0)}
           className={clsx({
@@ -59,10 +66,10 @@ const FormInput = ({
                 withAddonBefore: Boolean(addonBefore),
               })}
               disabled={!Boolean(setValue)}
-              name={name}
+              name={name || ""}
               placeholder={placeholder || ""}
+              maxLength={maxLength || 524288}
               value={value}
-              id={idForInput}
               onChange={(e) => setValue && setValue(e.target.value)}
             />
           ) : (
@@ -71,12 +78,13 @@ const FormInput = ({
                 withAddonAfter: Boolean(addonAfter),
                 withAddonBefore: Boolean(addonBefore),
               })}
-              disabled={!Boolean(setValue)}
-              name={name}
+              disabled={disabled || !Boolean(setValue)}
+              name={name || ""}
               placeholder={placeholder || ""}
               type={typeInput || "text"}
+              min={0}
+              maxLength={maxLength || 524288}
               value={value}
-              id={idForInput}
               onChange={(e) => setValue && setValue(e.target.value)}
             />
           )}

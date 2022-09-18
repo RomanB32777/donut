@@ -432,7 +432,7 @@ const ProfilePageContainer = () => {
       user_id: user.id,
     });
     dispatch(setUser(""));
-    sessionStorage.removeItem("main_wallet");
+    localStorage.removeItem("main_wallet");
   };
 
   const fileToBase64 = (file: any) => {

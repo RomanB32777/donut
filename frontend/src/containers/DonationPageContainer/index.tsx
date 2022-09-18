@@ -1,33 +1,52 @@
 import { Col, Row } from "antd";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import QRCode from "react-qr-code";
 import clsx from "clsx";
 
-import { baseURL } from "../../axiosClient";
-import BlueButton from "../../commonComponents/BlueButton";
+import axiosClient, { baseURL } from "../../axiosClient";
+import BaseButton from "../../commonComponents/BaseButton";
 import PageTitle from "../../commonComponents/PageTitle";
 import ColorPicker from "../../components/ColorPicker";
 import LinkCopy from "../../components/LinkCopy";
 import UploadImage from "../../components/UploadImage";
 import FormInput from "../../components/FormInput";
 import { SmallToggleListArrowIcon } from "../../icons/icons";
-
+import { IFileInfo } from "../../types";
+import { addNotification, addSuccessNotification, sendFile } from "../../utils";
+import { url } from "../../consts";
 import "./styles.sass";
+
+interface IDonationInfoData {
+  avatar: IFileInfo;
+  banner: IFileInfo;
+  welcome_text: string;
+  btn_text: string;
+  main_color: string;
+  background_color: string;
+}
 
 const DonationPageContainer = () => {
   const user = useSelector((state: any) => state.user);
-
-  const [file, setFile] = useState<any>();
-  const [imgPreview, setImgPreview] = useState<any>("");
-  const [mainColor, setMainColor] = useState("#ffffff");
-  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
-  const [welcomeText, setWelcomeText] = useState("");
-  const [buttonText, setButtonText] = useState("");
+  const [donationInfoData, setDonationInfoData] = useState<IDonationInfoData>({
+    avatar: {
+      preview: "",
+      file: null,
+    },
+    banner: {
+      preview: "",
+      file: null,
+    },
+    welcome_text: "",
+    btn_text: "",
+    main_color: "#ffffff",
+    background_color: "#ffffff",
+  });
 
   const [isOpenQR, setIsOpenQR] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const onImageCownload = () => {
+  const onImageDownload = () => {
     const svg = document.getElementById("QRCode");
     if (svg) {
       const svgData = new XMLSerializer().serializeToString(svg);
@@ -48,10 +67,82 @@ const DonationPageContainer = () => {
     }
   };
 
+  const getUser = async (token: string) => {
+    const { data } = await axiosClient.get("/api/user/" + token);
+
+    const userData: IDonationInfoData = {
+      avatar: {
+        preview: data.avatarlink ? `${url + data.avatarlink}` : "",
+        file: donationInfoData.avatar.file,
+      },
+      banner: {
+        preview: data.backgroundlink ? `${url + data.backgroundlink}` : "",
+        file: donationInfoData.banner.file,
+      },
+      welcome_text: data.welcome_text,
+      btn_text: data.btn_text,
+      main_color: data.main_color,
+      background_color: data.background_color,
+    };
+
+    setDonationInfoData({
+      ...donationInfoData,
+      ...userData,
+    });
+  };
+
+  const sendData = async () => {
+    try {
+      setLoading(true);
+      const {
+        avatar,
+        banner,
+        welcome_text,
+        btn_text,
+        main_color,
+        background_color,
+      } = donationInfoData;
+      await axiosClient.put("/api/user/edit/", {
+        welcome_text,
+        btn_text,
+        main_color,
+        background_color,
+        user_id: user.id,
+      });
+      avatar.file &&
+        (await sendFile(avatar.file, user, "/api/user/edit-image/"));
+      banner.file &&
+        (await sendFile(banner.file, user, "/api/user/edit-background/"));
+      // await getUser(user.tron_token || user.metamask_token);
+      // dispatch(tryToGetUser(user.tron_token || user.metamask_token));
+      setLoading(false);
+      addSuccessNotification("Data saved successfully");
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while saving data`,
+      });
+    }
+  };
+
+  useEffect(() => {
+    getUser(user.tron_token || user.metamask_token);
+  }, [user]);
+
   const linkForSupport = useMemo(
-    () => baseURL + "/donat/" + user.username + "/" + user.security_string,
+    () => baseURL + "/support/" + user.username + "/" + user.security_string,
     [user]
   );
+
+  const {
+    avatar,
+    banner,
+    welcome_text,
+    btn_text,
+    main_color,
+    background_color,
+  } = donationInfoData;
 
   return (
     <div className="donationPage-container">
@@ -83,11 +174,12 @@ const DonationPageContainer = () => {
             <div className="qr-block">
               <QRCode id="QRCode" size={125} value={linkForSupport} />
             </div>
-            <BlueButton
+            <BaseButton
               formatId="profile_form_download_png_button"
               padding="6px 26px"
-              onClick={onImageCownload}
+              onClick={onImageDownload}
               fontSize="18px"
+              isBlue
             />
           </div>
         )}
@@ -98,11 +190,39 @@ const DonationPageContainer = () => {
           <Col span={24}>
             <div className="form-element">
               <UploadImage
+                label="Avatar:"
+                formats={["PNG", "JPG", "JPEG", "GIF"]}
+                filePreview={avatar.preview}
+                setFile={({ preview, file }) =>
+                  setDonationInfoData({
+                    ...donationInfoData,
+                    avatar: {
+                      file,
+                      preview,
+                    },
+                  })
+                }
+                labelCol={8}
+                InputCol={16}
+              />
+            </div>
+          </Col>
+
+          <Col span={24}>
+            <div className="form-element">
+              <UploadImage
                 label="Banner:"
                 formats={["PNG", "JPG", "JPEG"]}
-                imgPreview={imgPreview}
-                setImgPreview={setImgPreview}
-                setFile={setFile}
+                filePreview={banner.preview}
+                setFile={({ preview, file }) =>
+                  setDonationInfoData({
+                    ...donationInfoData,
+                    banner: {
+                      file,
+                      preview,
+                    },
+                  })
+                }
                 labelCol={8}
                 InputCol={16}
                 isBanner
@@ -114,8 +234,13 @@ const DonationPageContainer = () => {
               <FormInput
                 label="Welcome text:"
                 name="welcomeText"
-                value={welcomeText}
-                setValue={(value) => setWelcomeText(value)}
+                value={welcome_text}
+                setValue={(value) =>
+                  setDonationInfoData({
+                    ...donationInfoData,
+                    welcome_text: value,
+                  })
+                }
                 labelCol={8}
                 InputCol={16}
                 isTextarea
@@ -127,8 +252,13 @@ const DonationPageContainer = () => {
               <FormInput
                 label="Button text:"
                 name="buttonText"
-                value={buttonText}
-                setValue={(value) => setButtonText(value)}
+                value={btn_text}
+                setValue={(value) =>
+                  setDonationInfoData({
+                    ...donationInfoData,
+                    btn_text: value,
+                  })
+                }
                 labelCol={8}
                 InputCol={10}
               />
@@ -137,9 +267,14 @@ const DonationPageContainer = () => {
           <Col span={24}>
             <div className="form-element">
               <ColorPicker
-                setColor={setMainColor}
-                color={mainColor}
+                color={main_color}
                 label="Main color:"
+                setColor={(value) =>
+                  setDonationInfoData({
+                    ...donationInfoData,
+                    main_color: value,
+                  })
+                }
                 labelCol={8}
               />
             </div>
@@ -147,20 +282,27 @@ const DonationPageContainer = () => {
           <Col span={24}>
             <div className="form-element">
               <ColorPicker
-                setColor={setBackgroundColor}
-                color={backgroundColor}
+                color={background_color}
                 label="Background color:"
+                setColor={(value) =>
+                  setDonationInfoData({
+                    ...donationInfoData,
+                    background_color: value,
+                  })
+                }
                 labelCol={8}
               />
             </div>
           </Col>
         </Row>
         <div className="saveBottom">
-          <BlueButton
+          <BaseButton
             formatId="profile_form_save_changes_button"
             padding="6px 35px"
-            onClick={() => console.log("dd")}
+            onClick={sendData}
             fontSize="18px"
+            disabled={loading}
+            isBlue
           />
         </div>
       </div>

@@ -1,7 +1,5 @@
 import DonatMessageContainer from "../containers/DonatMessageContainer";
 
-const DonatMessagePage = () => (
-    <DonatMessageContainer />
-)
+const DonatMessagePage = () => <DonatMessageContainer />;
 
-export default DonatMessagePage
+export default DonatMessagePage;

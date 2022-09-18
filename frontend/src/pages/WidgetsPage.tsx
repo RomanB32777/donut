@@ -1,7 +1,5 @@
 import { Outlet } from "react-router";
 
-const WidgetsPage = () => (
-    <Outlet />
-)
+const WidgetsPage = () => <Outlet />;
 
-export default WidgetsPage
+export default WidgetsPage;

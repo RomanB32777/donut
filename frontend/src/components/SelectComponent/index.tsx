@@ -7,16 +7,20 @@ const SelectComponent = ({
   title,
   list,
   selectItem,
+  modificator,
 }: {
   title: string;
   list: string[];
   selectItem: (item: string) => void;
+  modificator?: string;
 }) => {
   const [isOpenSelect, setOpenSelect] = useState(false);
 
   return (
     <div
-      className="select"
+      className={clsx("select", {
+        [modificator as string]: modificator,
+      })}
       onClick={() => {
         setOpenSelect(!isOpenSelect);
       }}
@@ -30,7 +34,7 @@ const SelectComponent = ({
         <SmallToggleListArrowIcon />
       </div>
       {isOpenSelect && (
-        <div className={clsx("select__list")}>
+        <div className="select__list">
           {list.map((item, key) => (
             <div
               className={clsx("select__list-item", {

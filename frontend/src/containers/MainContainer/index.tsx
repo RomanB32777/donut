@@ -65,7 +65,7 @@ const MainContainer = () => {
         if (wallet.token) {
           checkIsExist(wallet.token);
           dispatch(setMainWallet(wallet));
-          sessionStorage.setItem("main_wallet", JSON.stringify(wallet));
+          localStorage.setItem("main_wallet", JSON.stringify(wallet));
         } else {
           dispatch(openRegistrationModal());
         }

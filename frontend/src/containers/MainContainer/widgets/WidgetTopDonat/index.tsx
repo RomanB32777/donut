@@ -2,8 +2,8 @@ import { useState } from "react";
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
 import { filterItems } from "../../consts";
-import "./styles.sass";
 import { ITableData, tableColums } from "./tableData";
+import "./styles.sass";
 
 const data: ITableData[] = [
   {

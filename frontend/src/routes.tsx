@@ -4,9 +4,8 @@ import BadgesPage from "./pages/BadgesPage";
 import DonatPage from "./pages/DonatPage";
 
 import {
-  SupportIcon,
   DonationPageIcon,
-  DonationsIcon,
+  PeopleIcon,
   ShieldMenuIcon,
   // WidgetsIcon,
 } from "./icons/icons";
@@ -28,6 +27,8 @@ import RegistrationModal from "./components/RegistrationModal";
 import { useSelector } from "react-redux";
 import ChooseWalletModal from "./components/ChooseWalletModal";
 import Loader from "./components/Loader";
+import DonatMessagePage from "./pages/DonatMessagePage";
+import DonatGoalPage from "./pages/DonatGoalPage";
 
 const routes = {
   main: "/",
@@ -55,9 +56,12 @@ interface IRoute extends RouteObject {
   children?: IRoute[];
   roleRequired?: string;
   protected?: boolean;
+  hiddenLayoutElements?: boolean;
+  noPaddingMainConteiner?: boolean;
 }
 
-declare type userRoles = 'creators' | 'backers' 
+declare type userRoles = "creators" | "backers";
+
 //protected Route state
 type ProtectedRouteType = {
   roleRequired?: userRoles;
@@ -68,11 +72,6 @@ const ProtectedRoutes = (props: ProtectedRouteType) => {
   const { isLoading } = useSelector((state: any) => state.loading);
 
   if (!user.id && isLoading) return <Loader size="big" />;
-  // if (user.id && !isLoading) {
-  //   return <Outlet />;
-  // } else {
-  //   return <Navigate to="/login" />;
-  // }
 
   //if the role required is there or not
   if (props.roleRequired) {
@@ -142,12 +141,6 @@ export const routers: IRoute[] = [
                 element: <DonationGoalsPage />,
                 menu: true,
               },
-              {
-                path: "polls",
-                name: "Polls",
-                element: <AlertsPage />,
-                menu: true,
-              },
             ],
           },
         ],
@@ -156,7 +149,7 @@ export const routers: IRoute[] = [
         path: "donations",
         element: <DonationsPage />,
         name: "Donations",
-        icon: <DonationsIcon />,
+        icon: <PeopleIcon />,
         menu: true,
       },
       {
@@ -173,13 +166,6 @@ export const routers: IRoute[] = [
         icon: <SettingOutlined />,
         menu: true,
       },
-      {
-        path: "support",
-        element: <BadgesPage />,
-        name: "Support",
-        icon: <SupportIcon />,
-        menu: true,
-      },
     ],
   },
   {
@@ -189,6 +175,21 @@ export const routers: IRoute[] = [
   {
     path: "/register",
     element: <RegistrationModal />,
+  },
+  {
+    path: "support/:name/:token",
+    element: <DonatPage />,
+    noPaddingMainConteiner: true,
+  },
+  {
+    path: "donat-message/:name/:token",
+    element: <DonatMessagePage />,
+    hiddenLayoutElements: true,
+  },
+  {
+    path: "donat-goal/:name/:id",
+    element: <DonatGoalPage />,
+    hiddenLayoutElements: true,
   },
 ];
 export const Pages = () => {

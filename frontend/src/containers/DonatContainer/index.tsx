@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import axiosClient, { baseURL } from "../../axiosClient";
 import BlueButton from "../../commonComponents/BlueButton";
 import PageTitle from "../../commonComponents/PageTitle";
 import ContentCard from "../../components/ContentCard";
 import { url } from "../../consts";
-import { InfoIcon, LargeImageIcon } from "../../icons/icons";
+import { InfoIcon, LargeImageIcon, StarIcon } from "../../icons/icons";
 import routes from "../../routes";
+import SpaceImg from "../../space.png";
+import TestImg from "../../assets/4.jpg";
 import "./styles.sass";
 
 import {
@@ -27,24 +29,59 @@ import ChooseWalletModal from "../../components/ChooseWalletModal";
 import { setMainWallet } from "../../store/types/Wallet";
 import { checkIsExistUser } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
+import FormInput from "../../components/FormInput";
+import SelectComponent from "../../components/SelectComponent";
+import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
+import BaseButton from "../../commonComponents/BaseButton";
+import clsx from "clsx";
+import { getGoals } from "../../store/types/Goals";
+import { IGoalData } from "../../types";
 
 const maxlength = 120;
 
+interface IDonatForm {
+  message: string;
+  username: string;
+  amount: string;
+  selectedGoal: string;
+}
+
 const DonatContainer = () => {
   const dispatch = useDispatch();
-  const { pathname } = useLocation();
+  const { name } = useParams();
   const user = useSelector((state: any) => state.user);
-  const data = useSelector((state: any) => state.personInfo).main_info;
+  const personInfo = useSelector((state: any) => state.personInfo).main_info;
+  const goals = useSelector((state: any) => state.goals);
   const mainWallet = useSelector((state: any) => state.wallet);
 
-  const [form, setForm] = useState<any>({
+  const [usdtKoef, setUsdtKoef] = useState(0);
+  const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
+
+  const [form, setForm] = useState<IDonatForm>({
     message: "",
     username: "",
+    amount: "0",
+    selectedGoal: "0",
   });
 
-  useEffect(() => {
-    const pathnameEnd = pathname.slice(pathname.indexOf("@"));
+  const getUsdKoef = async (currency: string) => {
+    const res: any = await axiosClient.get(
+      `https://www.binance.com/api/v3/ticker/price?symbol=${currency}USDT`
+    );
+    setUsdtKoef(res.data.price);
+  };
 
+  const onChange = (e: RadioChangeEvent) => {
+    console.log("radio checked", e.target.value);
+    setForm({
+      ...form,
+      selectedGoal: e.target.value,
+    });
+    // setValue(e.target.value);
+  };
+
+  useEffect(() => {
+    getUsdKoef("MATIC");
     const checkUser = async () => {
       if (mainWallet.token) {
         const isExist = await checkIsExistUser(mainWallet.token);
@@ -52,161 +89,201 @@ const DonatContainer = () => {
         if (isExist) {
           dispatch(tryToGetUser(mainWallet.token));
         }
-
       }
       !Object.keys(user) && dispatch(setMainWallet({}));
       dispatch(
         tryToGetPersonInfo({
-          username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
+          username: name,
         })
       );
     };
 
     // checkUser()
     !Object.keys(user) && dispatch(setMainWallet({}));
-      dispatch(
-        tryToGetPersonInfo({
-          username: pathnameEnd.slice(0, pathnameEnd.indexOf("/")),
-        })
-      );
+    dispatch(
+      tryToGetPersonInfo({
+        username: name,
+      })
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    dispatch(getGoals(personInfo.user_id));
+  }, [personInfo]);
 
   const isNotRegisterWallet = useMemo(
     () => !metamaskWalletIsIntall() && !tronWalletIsIntall(),
     []
   );
 
+  const { username, message, amount, selectedGoal } = form;
+
   return (
-    <div className="donat-container">
-      {isNotRegisterWallet ||
-      // !Object.keys(user).length ||
-      !Object.keys(mainWallet).length ? (
-        <div className="donat-container__registration_wrapper">
-          <div className="donat-container__registration">
-            <div className="donat-container__registration_title">
-              In order to send donations , you need to connect your wallet
-              <div className="donat-container__registration_title-choose">
-                Choose one below!
+    <div
+      className="donat-container"
+      style={{
+        background: personInfo.background_color,
+      }}
+    >
+      <div className="donat-info-container">
+        <div className="donat-info-container__background">
+          <img
+            src={
+              // personInfo.backgroundlink
+              //   ? `${url + personInfo.backgroundlink}`
+              //   :
+              SpaceImg
+            }
+            alt="banner"
+          />
+        </div>
+
+        <div className="donat-info-container__information-wrapper">
+          <div className="donat-info-container__information-wrapper__information">
+            <div className="donat-main-info">
+              <div className="donat-main-info__picture">
+                {personInfo.avatarlink && personInfo.avatarlink.length > 0 ? (
+                  <img
+                    src={
+                      TestImg
+                      // personInfo.avatarlink && `${url + personInfo.avatarlink}`
+                    }
+                    alt="avatar"
+                  />
+                ) : (
+                  <div className="icon" />
+                )}
+              </div>
+              <div className="donat-main-info__personal">
+                <span className="title">{personInfo.welcome_text}</span>
+                {/* <span className="subtitle">{personInfo.username}</span> */}
               </div>
             </div>
-            <ChooseWalletModal withoutLogin />
           </div>
         </div>
-      ) : (
-        <div className="donat-container__payment_wrapper">
-          <div className="donat-container__payment">
-            <div className="donat-container__payment_title">
-              Become supporter of {data && (data.person_name || data.username)}
-            </div>
-            <div className="donat-container__payment-row">
-              <div className="donat-container__payment-column">
-                <div className="donat-container__payment_creator_avatar">
-                  {data.avatarlink ? (
-                    <img
-                      src={
-                        data.avatarlink &&
-                        data.avatarlink.length > 0 &&
-                        `${url + data.avatarlink}`
-                      }
-                      alt="avavta"
-                    />
-                  ) : (
-                    <div className="icon" />
-                  )}
+      </div>
+      <div className="donat-container__payment_wrapper">
+        <div className="donat-container__payment">
+          <div className="donat-container__payment-row">
+            <div className="donat-container__payment-column">
+              <div className="donat-container__payment_inputs">
+                <div className="donat-container__payment_inputs-item">
+                  <FormInput
+                    value={username}
+                    setValue={(username) => {
+                      if (username.length === 0) {
+                        setForm({
+                          ...form,
+                          username: "@" + username,
+                        });
+                      } else
+                        setForm({
+                          ...form,
+                          username,
+                        });
+                    }}
+                    modificator="donat-container__payment_inputs-name"
+                    placeholder="Your username"
+                  />
                 </div>
-                <div className="donat-container__payment_creator_description">
-                  {data.user_description}
+                <div className="donat-container__payment_inputs-item">
+                  <FormInput
+                    value={message}
+                    setValue={(message) => {
+                      setForm({
+                        ...form,
+                        message,
+                      });
+                    }}
+                    modificator="donat-container__payment_inputs-message"
+                    placeholder="Type your message here..."
+                    maxLength={maxlength}
+                    descriptionInput={`Number of input characters - ${message.length} /
+                    ${maxlength}`}
+                    isTextarea
+                  />
                 </div>
-                <div className="donat-container__payment_wallet_warning">
-                  {data.tron_token &&
-                    !data.metamask_token &&
-                    !user.tron_token &&
-                    `${data && (data.person_name || data.username)} only accepts
-                    donations via Tron. Please switch to
-                    Tron and appropriate network!`}
-                  {!data.tron_token &&
-                    !user.metamask_token &&
-                    data.metamask_token &&
-                    `${data && (data.person_name || data.username)} only accepts
-                    donations via Polygon Mumbai Testnet. Please switch to
-                    Metamask and appropriate network!`}
-                </div>
-              </div>
-              <div className="donat-container__payment-column">
-                <div className="donat-container__payment_inputs">
-                  {Boolean(Object.keys(user).length) ? (
-                    <div className="donat-container__payment_inputs-item">
-                      <textarea
-                        maxLength={maxlength || 524288}
-                        className="donat-container__payment_inputs-message"
-                        placeholder="Type your message here..."
-                        value={form.message}
-                        onChange={(event) => {
-                          setForm({
-                            ...form,
-                            message: event.target.value,
-                          });
-                        }}
+                <div className="donat-container__payment_inputs-item">
+                  <FormInput
+                    value={amount}
+                    setValue={(amount) => {
+                      setForm({
+                        ...form,
+                        amount,
+                      });
+                    }}
+                    typeInput="number"
+                    addonAfter={
+                      <SelectComponent
+                        title="MATIC"
+                        list={["MATIC"]}
+                        selectItem={(selected) => console.log(selected)}
+                        modificator="donat-container__payment_inputs-select"
                       />
-                      <span className="donat-container__payment_inputs__subtitle">
-                        Number of input characters - {form.message.length} /
-                        {maxlength}
-                      </span>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="donat-container__payment_inputs-item">
-                        <input
-                          placeholder="Your username"
-                          className="donat-container__payment_inputs-name"
-                          value={form.username}
-                          onChange={(event) => {
-                            if (form.username.length === 0) {
-                              setForm({
-                                ...form,
-                                username: "@" + event.target.value,
-                              });
-                            } else
-                              setForm({
-                                ...form,
-                                username: event.target.value,
-                              });
-                          }}
-                        />
-                      </div>
-                      <div className="donat-container__payment_inputs-item">
-                        <input
-                          maxLength={maxlength || 524288}
-                          className="donat-container__payment_inputs-message"
-                          placeholder="Type your message here..."
-                          value={form.message}
-                          onChange={(event) => {
-                            setForm({
-                              ...form,
-                              message: event.target.value,
-                            });
-                          }}
-                        />
-                        <div className="donat-container__payment_inputs__subtitle">
-                          Number of input characters - {form.message.length} /
-                          {maxlength}
-                        </div>
-                      </div>
-                    </>
-                  )}
+                    }
+                    modificator="donat-container__payment_inputs-amount"
+                    placeholder="Donation amount"
+                    descriptionInput={`Equal to ${parseFloat(
+                      String(+amount * usdtKoef)
+                    ).toFixed(2)} USD`}
+                  />
                 </div>
-                <SupportModal
-                  additionalFields={form}
-                  setForm={setForm}
-                  notTitle
-                  modificator="donat-page"
-                />
               </div>
+              <div className="donat-container__payment_goals">
+                <Row justify="space-between">
+                  <Col span={6}>
+                    <div
+                      className={clsx("donat-container__payment_goals_btn", {
+                        active: isOpenSelectGoal,
+                      })}
+                      onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
+                      style={{
+                        background: personInfo.main_color,
+                      }}
+                    >
+                      <StarIcon />
+                      <p>Participate in goal achievement</p>
+                    </div>
+                  </Col>
+                  {isOpenSelectGoal && (
+                    <Col span={17}>
+                      <div className="donat-container__payment_goals_list">
+                        <Radio.Group onChange={onChange} value={selectedGoal}>
+                          <Space direction="vertical">
+                            <Radio value={0}>Don’t participate</Radio>
+                            {goals.length &&
+                              goals
+                                .filter((goal: IGoalData) => !goal.isArchive)
+                                .map((goal: IGoalData) => (
+                                  <Radio key={goal.id} value={goal.id}>
+                                    {goal.title}
+                                  </Radio>
+                                ))}
+                          </Space>
+                        </Radio.Group>
+                      </div>
+                    </Col>
+                  )}
+                </Row>
+              </div>
+              <BaseButton
+                title={personInfo.btn_text || "Donate"}
+                onClick={() => console.log()}
+                padding="10px 25px"
+                fontSize="21px"
+                isBlue
+              />
+              {/* <SupportModal
+                additionalFields={form}
+                setForm={setForm}
+                notTitle
+                modificator="donat-page"
+              /> */}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

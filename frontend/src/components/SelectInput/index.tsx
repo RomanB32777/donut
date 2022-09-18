@@ -5,38 +5,53 @@ import "./styles.sass";
 const { Option } = Select;
 
 const SelectInput = ({
-  label,
   value,
   list,
+  label,
+  placeholder,
   modificator,
-  InputCol,
-  SelectCol,
+  labelCol,
+  selectCol,
+  isTags,
+  descriptionSelect,
   setValue,
 }: {
-  label?: string;
-  value: string;
+  value: string | string[];
   list: string[];
+  label?: string;
+  placeholder?: string;
   modificator?: string;
-  InputCol?: number;
-  SelectCol?: number;
-  setValue?: (value: string) => void;
+  labelCol?: number;
+  selectCol?: number;
+  isTags?: boolean;
+  descriptionSelect?: string;
+  setValue?: (value: string | string[]) => void;
 }) => {
   return (
     <div className="selectInput">
       <Row>
         <Col
-          span={SelectCol || (label ? 12 : 0)}
+          span={labelCol || (label ? 12 : 0)}
           className="selectInput__label_wrapper"
         >
           <span className="selectInput__label">{label}</span>
         </Col>
         <Col
-          span={InputCol || (label ? 12 : 24)}
+          span={selectCol || (label ? 12 : 24)}
           className={clsx("selectInput__input", {
             [modificator as string]: modificator,
           })}
         >
-          <Select defaultValue={value} onChange={setValue} bordered={false}>
+          <Select
+            placeholder={placeholder || ""}
+            value={
+              Array.isArray(value) ? (value as string[]) : (value as string)
+            }
+            mode={isTags ? "tags" : undefined}
+            onChange={setValue}
+            // bordered={false}
+            showArrow
+          >
             {list.map((item) => (
               <Option value={item} key={item}>
                 {item}
@@ -45,6 +60,16 @@ const SelectInput = ({
           </Select>
         </Col>
       </Row>
+      {descriptionSelect && (
+        <Row>
+          <Col
+            offset={labelCol || (label ? 12 : 0)}
+            span={selectCol || (label ? 12 : 24)}
+          >
+            <p className="selectInput__description">{descriptionSelect}</p>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };

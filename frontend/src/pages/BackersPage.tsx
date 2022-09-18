@@ -1,7 +1,5 @@
 import BackersContainer from "../containers/BackersContainer";
 
-const BackersPage = () => (
-    <BackersContainer/>
-)
+const BackersPage = () => <BackersContainer />;
 
-export default BackersPage
+export default BackersPage;

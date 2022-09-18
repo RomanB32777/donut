@@ -1,18 +1,86 @@
-import { useState } from "react";
-import BlueButton from "../../commonComponents/BlueButton";
+import { Col, Row } from "antd";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axiosClient from "../../axiosClient";
+import BaseButton from "../../commonComponents/BaseButton";
 import PageTitle from "../../commonComponents/PageTitle";
+import FormInput from "../../components/FormInput";
+import ModalComponent from "../../components/ModalComponent";
+import { getGoals } from "../../store/types/Goals";
+import { IGoalData } from "../../types";
+import { addNotification, addSuccessNotification } from "../../utils";
 import GoalItem from "./GoalItem";
 
 import "./styles.sass";
 
-const DonationGoalsContainer = () => {
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+interface IWidgetGoalData {
+  widgetAmount: string;
+  widgetDescription: string;
+  id?: number;
+}
 
-  const testData = {
-    goalTitleColor: "#ffffff",
-    progressBarColor: "#1D14FF",
-    backgroundColor: "#212127",
+const DonationGoalsContainer = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user);
+  const goals = useSelector((state: any) => state.goals);
+
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<IWidgetGoalData>({
+    widgetAmount: "0",
+    widgetDescription: "",
+  });
+
+  const openEditModal = (widget: IGoalData) => {
+    const { id, amount_goal, title } = widget;
+    setFormData({
+      id,
+      widgetAmount: String(amount_goal),
+      widgetDescription: title,
+    });
+    setIsOpenModal(true);
   };
+
+  const sendData = async () => {
+    try {
+      setLoading(true);
+      const { widgetDescription, widgetAmount, id } = formData;
+      id
+        ? await axiosClient.put("/api/user/goals-widget/", {
+            goalData: {
+              title: widgetDescription,
+              amount_goal: +widgetAmount,
+            },
+            id,
+          })
+        : await axiosClient.post("/api/user/goals-widget/", {
+            title: widgetDescription,
+            amount_goal: +widgetAmount,
+            creator_id: user.id,
+          });
+      dispatch(getGoals(user.id));
+      setIsOpenModal(false);
+      setFormData({
+        widgetAmount: "0",
+        widgetDescription: "",
+      });
+      addSuccessNotification("Data created successfully");
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while creating data`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    user.id && dispatch(getGoals(user.id));
+  }, [user]);
+
+  const { widgetAmount, widgetDescription } = formData;
 
   return (
     <div className="donationGoalsPage-container">
@@ -21,20 +89,97 @@ const DonationGoalsContainer = () => {
         <p className="subtitle">
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
         </p>
-        <BlueButton
+        <BaseButton
           formatId="create_new_form_button"
           padding="6px 35px"
-          onClick={() => setIsOpenDrawer(true)}
+          onClick={() => setIsOpenModal(true)}
           fontSize="18px"
+          isBlue
         />
       </div>
       <div className="goals-wrapper">
-        <GoalItem goalData={testData} />
+        {Boolean(goals.length) &&
+          goals
+            .filter((goal: IGoalData) => !goal.isArchive)
+            .map((goal: IGoalData) => (
+              <GoalItem
+                key={goal.id}
+                goalData={goal}
+                openEditModal={openEditModal}
+              />
+            ))}
       </div>
       <PageTitle formatId="page_title_donation_history" />
       <div className="goals-archiveWrapper">
-        <GoalItem goalData={testData} isArchive />
+        {Boolean(goals.length) &&
+          goals
+            .filter((goal: IGoalData) => goal.isArchive)
+            .map((goal: IGoalData) => (
+              <GoalItem key={goal.id} goalData={goal} />
+            ))}
+        {/* <GoalItem goalData={testData} isArchive /> */}
       </div>
+      <ModalComponent
+        visible={isOpenModal}
+        title="New donation goal"
+        setIsVisible={setIsOpenModal}
+        width={880}
+      >
+        <div className="goals-modal">
+          <Row gutter={[0, 18]} className="goals-modal__form" justify="center">
+            <Col span={24}>
+              <div className="form-element">
+                <FormInput
+                  label="Goal description:"
+                  name="widgetDescription"
+                  value={widgetDescription}
+                  setValue={(value) =>
+                    setFormData({ ...formData, widgetDescription: value })
+                  }
+                  labelCol={6}
+                  InputCol={14}
+                />
+              </div>
+            </Col>
+            <Col span={24}>
+              <div className="form-element">
+                <FormInput
+                  label="Amount to raise:"
+                  name="widgetAmount"
+                  value={widgetAmount}
+                  typeInput="number"
+                  setValue={(value) =>
+                    setFormData({ ...formData, widgetAmount: value })
+                  }
+                  addonAfter={<span>USD</span>}
+                  labelCol={6}
+                  InputCol={10}
+                />
+              </div>
+            </Col>
+          </Row>
+          <div className="goals-modal__btns">
+            <div className="goals-modal__btns_save">
+              <BaseButton
+                formatId="profile_form_save_goal_button"
+                padding="6px 35px"
+                onClick={sendData}
+                fontSize="18px"
+                disabled={loading}
+                isBlue
+              />
+            </div>
+            <div className="goals-modal__btns_cancel">
+              <BaseButton
+                formatId="profile_form_cancel_button"
+                padding="6px 35px"
+                onClick={() => setIsOpenModal(false)}
+                fontSize="18px"
+              />
+            </div>
+          </div>
+        </div>
+      </ModalComponent>
     </div>
   );
 };

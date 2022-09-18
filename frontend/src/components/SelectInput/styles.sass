@@ -14,7 +14,17 @@
         font-size: 20px
         line-height: 25px
         color: variables.$white-color
-
+        
+    &__description
+        margin-top: 10px
+        margin-bottom: 0
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 400
+        font-size: 17px
+        line-height: 22px
+        color: variables.$grey-color
+        
     .ant-select,
     .ant-select:not(.ant-select-customize-input)
         width: 100%
@@ -26,13 +36,17 @@
             width: 100%
             height: auto
             background-color: transparent
-            border: 1px solid variables.$white-color !important
+            border: 1px solid variables.$white-color
+            border-color: variables.$white-color
             border-radius: 10px
             padding: 9px 24px
 
         .ant-select-arrow
             color: variables.$white-color
             padding-right: 20px
+
+        input
+            color: variables.$white-color
 
     .ant-select:not(.ant-select-disabled):hover
         .ant-select-selector
@@ -45,6 +59,12 @@
         font-size: 20px
         line-height: 25px
         color: variables.$white-color
+        background: none
+        border: none
+        padding: 0
+
+        .ant-select-selection-item-remove
+            display: none
 
     .ant-select-single.ant-select-open
         .ant-select-selection-item

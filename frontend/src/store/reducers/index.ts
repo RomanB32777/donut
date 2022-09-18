@@ -7,6 +7,7 @@ import UserReducer from "./User/UserReducer"
 import LoadingReducer from "./Loading/LoadingReducer"
 import NotificationsReducer from "./Notifications/NotificationsReducer"
 import WalletReducer from "./Wallet/WalletReducer"
+import GoalsReducer from "./Goals/GoalsReducer"
 
 const rootReducer = combineReducers({
     user: UserReducer,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     personInfoPage: PersonInfoPageReducer,
     loading: LoadingReducer,
     notifications: NotificationsReducer,
-    wallet: WalletReducer
+    wallet: WalletReducer,
+    goals: GoalsReducer,
 })
 
 export { rootReducer }

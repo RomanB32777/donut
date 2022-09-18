@@ -1,36 +1,43 @@
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Col, Row, Drawer } from "antd";
 import { useState } from "react";
+import { Col, Row } from "antd";
 import { useSelector } from "react-redux";
 import BaseButton from "../../commonComponents/BaseButton";
-import BlueButton from "../../commonComponents/BlueButton";
 import PageTitle from "../../commonComponents/PageTitle";
 import DatesPicker from "../../components/DatesPicker";
 import FormInput from "../../components/FormInput";
 import LinkCopy from "../../components/LinkCopy";
+import ModalComponent from "../../components/ModalComponent";
 import SelectInput from "../../components/SelectInput";
+import ConfirmPopup from "../../components/ConfirmPopup";
 import { PencilIcon, TrashBinIcon } from "../../icons/icons";
 import "./styles.sass";
 
 interface IWidgetData {
   widgetTitle: string;
   widgetDescription: string;
-  widgetTemplate: string;
+  widgetTemplate: string[];
   widgetDataType: string;
   widgetTimePeriod: string;
 }
 
+const templateList = ["{username}", "{sum}", "{message}"];
+
 const StreamStatsContainer = () => {
   const user = useSelector((state: any) => state.user);
 
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [formData, setFormData] = useState<IWidgetData>({
     widgetTitle: "",
     widgetDescription: "",
-    widgetTemplate: "",
+    widgetTemplate: [],
     widgetDataType: "Top donations",
     widgetTimePeriod: "Today",
   });
+
+  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    setIsOpenModal(true);
+  };
 
   const {
     widgetTitle,
@@ -47,11 +54,12 @@ const StreamStatsContainer = () => {
         <p className="subtitle">
           Create your custom widgets to display on your streams
         </p>
-        <BlueButton
+        <BaseButton
           formatId="create_new_form_button"
           padding="6px 35px"
-          onClick={() => setIsOpenDrawer(true)}
+          onClick={() => setIsOpenModal(true)}
           fontSize="18px"
+          isBlue
         />
       </div>
       <div className="stats-wrapper">
@@ -86,38 +94,30 @@ const StreamStatsContainer = () => {
                   style={{
                     marginRight: 5,
                   }}
+                  onClick={clickEditBtn}
                 >
                   <PencilIcon />
                 </div>
-                <div>
-                  <TrashBinIcon />
-                </div>
+                <ConfirmPopup confirm={() => console.log()}>
+                  <div style={{ marginLeft: 5 }}>
+                    <TrashBinIcon />
+                  </div>
+                </ConfirmPopup>
               </div>
             </Col>
           </Row>
         </div>
       </div>
-      <Drawer
-        width="100%"
-        placement="right"
-        visible={isOpenDrawer}
-        closable={false}
-        className="stats-drawer"
+
+      <ModalComponent
+        visible={isOpenModal}
+        title="New widget creation"
+        setIsVisible={setIsOpenModal}
+        width={880}
+        topModal
       >
-        <div className="stats-drawer__header">
-          <div
-            className="stats-drawer__header_arrow"
-            onClick={() => setIsOpenDrawer(false)}
-          >
-            <ArrowLeftOutlined />
-          </div>
-          <PageTitle
-            formatId="page_title_stream_stats_create"
-            notMarginBottom
-          />
-        </div>
-        <div className="stats-drawer__form">
-          <Row gutter={[0, 18]} className="form">
+        <div className="stats-modal">
+          <Row gutter={[0, 18]} className="stats-modal__form" justify="center">
             <Col span={24}>
               <div className="form-element">
                 <FormInput
@@ -127,8 +127,8 @@ const StreamStatsContainer = () => {
                   setValue={(value) =>
                     setFormData({ ...formData, widgetTitle: value })
                   }
-                  labelCol={5}
-                  InputCol={10}
+                  labelCol={6}
+                  InputCol={16}
                 />
               </div>
             </Col>
@@ -141,8 +141,8 @@ const StreamStatsContainer = () => {
                   setValue={(value) =>
                     setFormData({ ...formData, widgetDescription: value })
                   }
-                  labelCol={5}
-                  InputCol={10}
+                  labelCol={6}
+                  InputCol={16}
                   isTextarea
                 />
               </div>
@@ -154,10 +154,13 @@ const StreamStatsContainer = () => {
                   list={["Top donations", "Top supporters", "Recent donations"]}
                   value={widgetDataType}
                   setValue={(value) =>
-                    setFormData({ ...formData, widgetDataType: value })
+                    setFormData({
+                      ...formData,
+                      widgetDataType: value as string,
+                    })
                   }
-                  SelectCol={5}
-                  InputCol={6}
+                  labelCol={6}
+                  selectCol={16}
                 />
               </div>
             </Col>
@@ -176,15 +179,18 @@ const StreamStatsContainer = () => {
                   ]}
                   value={widgetTimePeriod}
                   setValue={(value) =>
-                    setFormData({ ...formData, widgetTimePeriod: value })
+                    setFormData({
+                      ...formData,
+                      widgetTimePeriod: value as string,
+                    })
                   }
-                  SelectCol={5}
-                  InputCol={6}
+                  labelCol={6}
+                  selectCol={16}
                 />
                 {widgetTimePeriod === "Custom date" && (
                   <div className="customDatesPicker">
                     <Row>
-                      <Col offset={5}>
+                      <Col offset={6}>
                         <DatesPicker />
                       </Col>
                     </Row>
@@ -192,43 +198,47 @@ const StreamStatsContainer = () => {
                 )}
               </div>
             </Col>
-
             <Col span={24}>
               <div className="form-element">
-                <FormInput
+                <SelectInput
                   label="Template:"
-                  name="widgetTemplate"
-                  descriptionInput="{username}, {sum}, {message}"
+                  list={templateList}
                   value={widgetTemplate}
                   setValue={(value) =>
-                    setFormData({ ...formData, widgetTemplate: value })
+                    setFormData({
+                      ...formData,
+                      widgetTemplate: value as string[],
+                    })
                   }
-                  labelCol={5}
-                  InputCol={6}
+                  descriptionSelect={templateList.join(", ")}
+                  selectCol={16}
+                  labelCol={6}
+                  isTags
                 />
               </div>
             </Col>
           </Row>
-          <div className="stats-drawer__btns">
-            <div className="stats-drawer__btns_save">
-              <BlueButton
+          <div className="stats-modal__btns">
+            <div className="stats-modal__btns_save">
+              <BaseButton
                 formatId="profile_form_save_widget_button"
                 padding="6px 35px"
                 onClick={() => console.log("dd")}
                 fontSize="18px"
+                isBlue
               />
             </div>
-            <div className="stats-drawer__btns_cancel">
+            <div className="stats-modal__btns_cancel">
               <BaseButton
                 formatId="profile_form_cancel_button"
                 padding="6px 35px"
-                onClick={() => setIsOpenDrawer(false)}
+                onClick={() => setIsOpenModal(false)}
                 fontSize="18px"
               />
             </div>
           </div>
         </div>
-      </Drawer>
+      </ModalComponent>
     </div>
   );
 };

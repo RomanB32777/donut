@@ -1,23 +1,104 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import LinkCopy from "../../../components/LinkCopy";
 import { PencilIcon, TrashBinIcon } from "../../../icons/icons";
 import ColorPicker from "../../../components/ColorPicker";
+import ConfirmPopup from "../../../components/ConfirmPopup";
+import BaseButton from "../../../commonComponents/BaseButton";
+import axiosClient, { baseURL } from "../../../axiosClient";
+import { getGoals } from "../../../store/types/Goals";
+import { IGoalData } from "../../../types";
+import { addNotification, addSuccessNotification } from "../../../utils";
+
+interface IEditGoalData {
+  title_color: string;
+  progress_color: string;
+  background_color: string;
+}
 
 const GoalItem = ({
   goalData,
-  isArchive,
-  setGoalData,
+  openEditModal,
 }: {
-  goalData: any;
-  isArchive?: boolean;
-  setGoalData?: any;
+  goalData: IGoalData;
+  openEditModal?: (data: IGoalData) => void;
 }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user);
+
   const [isActiveDetails, setisActiveDetails] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [editGoalData, setEditGoalData] = useState<IEditGoalData>({
+    title_color: "#ffffff",
+    progress_color: "#1D14FF",
+    background_color: "#212127",
+  });
+
   const handleActiveDetails = () =>
     !isArchive && setisActiveDetails(!isActiveDetails);
 
-  const { goalTitleColor, progressBarColor, backgroundColor } = goalData;
+  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    openEditModal && openEditModal(goalData);
+  };
+
+  const sendColorsData = async () => {
+    try {
+      setLoading(true);
+      const { id } = goalData;
+      const { title_color, progress_color, background_color } = editGoalData;
+      await axiosClient.put("/api/user/goals-widget/", {
+        goalData: {
+          title_color,
+          progress_color,
+          background_color,
+        },
+        id,
+      });
+      dispatch(getGoals(user.id));
+      addSuccessNotification("Data saved successfully");
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while saving data`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteGoalWidget = async () => {
+    try {
+      setLoading(true);
+      const { id } = goalData;
+      await axiosClient.delete("/api/user/goals-widget/" + id);
+      dispatch(getGoals(user.id));
+      addSuccessNotification("Widget deleted successfully");
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while deleting data`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const { title_color, progress_color, background_color } = goalData;
+    setEditGoalData({
+      title_color,
+      progress_color,
+      background_color,
+    });
+  }, []);
+
+  const { id, title, amount_goal, amount_raised, isArchive } = goalData;
+  const { title_color, progress_color, background_color } = editGoalData;
+
   return (
     <>
       <div
@@ -31,10 +112,9 @@ const GoalItem = ({
           <Col span={3}>
             <Progress
               type="circle"
-              percent={75}
+              percent={Math.round((amount_raised / amount_goal) * 100)}
               width={83}
-              strokeColor="#1D14FF"
-              showInfo={false}
+              strokeColor={progress_color}
             />
           </Col>
           <Col span={21}>
@@ -46,9 +126,9 @@ const GoalItem = ({
             >
               <Col span={9}>
                 <div className="goals-item__mainInfo">
-                  <p className="goals-item__mainInfo_title">Buy a computer</p>
+                  <p className="goals-item__mainInfo_title">{title}</p>
                   <p className="goals-item__mainInfo_description">
-                    Raised: 100/1000 USD
+                    Raised: {amount_raised}/{amount_goal} USD
                   </p>
                 </div>
               </Col>
@@ -56,9 +136,7 @@ const GoalItem = ({
                 {!isArchive && (
                   <div className="goals-item__link">
                     <LinkCopy
-                      link={
-                        "http://localhost:5000/donat-message/undefined/undefined"
-                      }
+                      link={baseURL + "/donat-goal/" + user.username + "/" + id}
                       isSimple
                     />
                   </div>
@@ -67,16 +145,20 @@ const GoalItem = ({
               <Col span={2}>
                 <div className="goals-item__btns">
                   {!isArchive && (
-                    <div
-                      style={{
-                        marginRight: 5,
-                      }}
-                    >
+                    <div onClick={clickEditBtn} style={{ marginRight: 10 }}>
                       <PencilIcon />
                     </div>
                   )}
-                  <div>
-                    <TrashBinIcon />
+                  <div
+                    onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                      e.stopPropagation()
+                    }
+                  >
+                    <ConfirmPopup confirm={deleteGoalWidget}>
+                      <div>
+                        <TrashBinIcon />
+                      </div>
+                    </ConfirmPopup>
                   </div>
                 </div>
               </Col>
@@ -86,46 +168,50 @@ const GoalItem = ({
       </div>
       {isActiveDetails && (
         <div className="goals-item__details">
-          <Row gutter={[4, 4]} className="goals-item__details-container">
+          <Row
+            gutter={[4, 4]}
+            className="goals-item__details-container"
+            justify="space-between"
+          >
             <Col span={10}>
               <div className="preview-block">
                 <div className="preview-block_title">
                   <p>
                     <span
                       style={{
-                        color: goalTitleColor,
+                        color: title_color,
                       }}
                     >
-                      Buy a computer
+                      {title}
                     </span>
                   </p>
                 </div>
                 <div
                   className="preview-block_goal"
                   style={{
-                    //   color: messageColor,
-                    background: backgroundColor,
+                    background: background_color,
                   }}
                 >
                   <Progress
                     type="circle"
                     percent={75}
                     width={46}
-                    strokeColor={progressBarColor}
-                    showInfo={false}
+                    strokeColor={progress_color}
                   />
 
-                  <p>100 / 1000 USD</p>
+                  <p>
+                    {amount_raised} / {amount_goal} USD
+                  </p>
                 </div>
               </div>
             </Col>
-            <Col span={12} className="form">
+            <Col span={13} className="form">
               <div className="form-element">
                 <ColorPicker
                   setColor={(color) =>
-                    setGoalData({ ...goalData, goalTitleColor: color })
+                    setEditGoalData({ ...editGoalData, title_color: color })
                   }
-                  color={goalTitleColor}
+                  color={title_color}
                   label="Goal title color:"
                   labelCol={9}
                 />
@@ -133,9 +219,9 @@ const GoalItem = ({
               <div className="form-element">
                 <ColorPicker
                   setColor={(color) =>
-                    setGoalData({ ...goalData, progressBarColor: color })
+                    setEditGoalData({ ...editGoalData, progress_color: color })
                   }
-                  color={progressBarColor}
+                  color={progress_color}
                   label="Progress bar color:"
                   labelCol={9}
                 />
@@ -143,11 +229,24 @@ const GoalItem = ({
               <div className="form-element">
                 <ColorPicker
                   setColor={(color) =>
-                    setGoalData({ ...goalData, backgroundColor: color })
+                    setEditGoalData({
+                      ...editGoalData,
+                      background_color: color,
+                    })
                   }
-                  color={backgroundColor}
+                  color={background_color}
                   label="Background color:"
                   labelCol={9}
+                />
+              </div>
+              <div className="btn-block">
+                <BaseButton
+                  formatId="profile_form_save_changes_button"
+                  padding="6px 35px"
+                  onClick={sendColorsData}
+                  fontSize="18px"
+                  disabled={loading}
+                  isBlue
                 />
               </div>
             </Col>

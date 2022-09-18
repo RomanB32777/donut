@@ -4,12 +4,12 @@ const messages = {
     [LOCALES.ENGLISH]: {
 
         // reg modal
-            registration_modal_title: 'Are you creator or supporter?',
+            registration_modal_title: 'Thanks for joining us!',
             registration_modal_card_creator_title: 'Creator',
             registration_modal_card_backer_title: 'Supporter',
-            registration_modal_input_title: 'Please enter your username (you cannot change it in future):',
+            registration_modal_input_title: 'Please type in your username to complete the registration',
             registration_modal_input_placeholder: '@username',
-            registration_modal_input_button: 'Register',
+            registration_modal_input_button: 'Create account',
             registration_modal_input_username_error: 'Unfortunately, this username is already busy. Enter another one',
         // mainpage
             mainpage_main_title: 'Grab your Donutz!',
@@ -88,14 +88,16 @@ const messages = {
         // badges page
             new_badge_page_file_load_title: 'Upload badge',
             new_badge_page_file_load_subtitle: 'Please use 32x32px image',
-            badges_page_new_title: 'Create and manage the Badges for your supporters',
-            badges_page_new_button: 'Create a badge',
+            badges_page_new_title: 'Mint and manage the Badges for your supporters',
+            badges_page_new_button: 'Mint badge',
+            badges_page_assign_button: 'Assign badge',
             badges_page_table_header_icon: 'Icon',
             badges_page_table_header_badge: 'Badge Name',
             badges_page_table_header_qnt: 'QNT',
             badges_page_table_header_info: 'Info',
             badges_page_table_header_delete: 'Delete',
             badges_page_delete_button: 'Delete badge',
+            badges_page_create_title: 'MINT NEW BADGE',
 
         // notifications page
             notifications_page_table_header_username: 'Username',
@@ -114,6 +116,7 @@ const messages = {
             
             profile_form_save_changes_button: 'Save changes',
             profile_form_save_widget_button: 'Save widget',
+            profile_form_save_goal_button: 'Save goal',
             profile_form_cancel_button: 'Cancel',
             profile_form_download_png_button: 'Download PNG',
             profile_form_delete_button: 'Delete account',

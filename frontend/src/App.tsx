@@ -1,55 +1,28 @@
 import React, { useEffect } from "react";
 import { IntlProvider } from "react-intl";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import Navbar from "./commonComponents/Navbar";
+import { BrowserRouter } from "react-router-dom";
 
 import "./commonStyles/main.sass";
-//import PersonInfoContainer from './containers/PersonInfoContainer';
 import { LOCALES } from "./i18n/locales";
 import messages from "./i18n/messages";
-// import routes from "./routes";
-
-import ProfilePage from "./pages/ProfilePage";
-import NewBadgePage from "./pages/NewBadgePage";
-import MainPage from "./pages/MainPage";
-import BadgesPage from "./pages/BadgesPage";
-import PersonInfoPage from "./pages/PersonInfoPage";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  OPEN_AUTH_METAMASK_MODAL,
-  OPEN_AUTH_TRON_MODAL,
-  OPEN_AUTH_WALLETS_MODAL,
-  OPEN_REGISTRATION_MODAL,
-  OPEN_SUPPORT_MODAL,
-} from "./store/types/Modal";
-import AuthModal from "./components/AuthModal";
-import RegistrationModal from "./components/RegistrationModal";
-import SupportModal from "./components/SupportModal";
-import getTronWallet from "./functions/getTronWallet";
+import { useDispatch } from "react-redux";
 import { tryToGetUser } from "./store/types/User";
 import { ReactNotifications } from "react-notifications-component";
 
 import "react-notifications-component/dist/theme.css";
 import { WebSocketProvider } from "./components/Websocket/WebSocket";
 import { setMainWallet } from "./store/types/Wallet";
+import { setLoading } from "./store/types/Loading";
 
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import LayoutApp from "./containers/LayoutContainer";
 
 function App() {
   const dispatch = useDispatch();
-
   const locale = LOCALES.ENGLISH;
 
-  const modal = useSelector((state: any) => state.modal);
-  // const tron_token = getTronWallet();
-
-  const user = useSelector((state: any) => state.user);
-
   useEffect(() => {
-    // if (tron_token) {
-    // }
-    const walletData = sessionStorage.getItem("main_wallet");
+    const walletData = localStorage.getItem("main_wallet");
 
     if (walletData) {
       const wallet = JSON.parse(walletData);
@@ -63,6 +36,8 @@ function App() {
           clearInterval(refreshId);
         }
       }, 1000);
+    } else {
+      dispatch(setLoading(false));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

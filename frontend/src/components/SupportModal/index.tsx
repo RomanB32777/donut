@@ -96,14 +96,10 @@ const SupportModal = ({
       console.log(wallet, data);
 
       if (wallet === "metamask") {
-        // data.metamask_token &&
         setSelectedWallet(wallets[0]);
-        // : setSelectedWallet(wallets[1]);
       }
       if (wallet === "tron") {
-        // data.tron_token &&
         setSelectedWallet(wallets[1]);
-        // : setSelectedWallet(wallets[0]);
       }
     } else {
       if (tronWalletIsIntall() && getTronWallet())
@@ -115,53 +111,6 @@ const SupportModal = ({
       }
     }
   }, [wallet, token, data]);
-
-  // useEffect(() => {
-  //   const filters = wallets.filter((wallet) => {
-  //     console.log(wallet);
-
-  //     if (Object.keys(user).length) {
-  //       if (wallet.name === "TRX" && user.tron_token && data.tron_token) {
-  //         // setVisibleWallet([...visibleWallet, wallet]);
-  //         return true;
-  //       }
-  //       if (
-  //         wallet.name === "MATIC" &&
-  //         user.metamask_token &&
-  //         data.metamask_token
-  //       ) {
-  //         return true;
-  //         // setVisibleWallet([...visibleWallet, wallet]);
-  //       }
-  //     } else {
-  //       if (metamaskWalletIsIntall()) {
-  //         let flag = false;
-  //         getMetamaskWallet().then((res) => {
-  //           if (res && wallet.name === "MATIC") {
-  //             flag = Boolean(
-  //               wallet.name === "MATIC" && res && data.metamask_token
-  //             );
-  //             console.log("FJF");
-
-  //             // true;
-  //             // && setVisibleWallet([...visibleWallet, wallet]);
-  //           }
-  //         });
-  //         console.log("<LMKD", flag);
-
-  //         return flag;
-  //       }
-  //       if (tronWalletIsIntall() && wallet.name === "TRX") {
-  //         return Boolean(
-  //           wallet.name === "TRX" && getTronWallet() && data.tron_token
-  //         );
-  //       }
-  //     }
-  //     return false;
-  //   });
-
-  //   console.log(filters);
-  // }, [user, data]);
 
   useEffect(() => {
     const asyncFilter = async (arr: any, predicate: any) => {
@@ -294,7 +243,6 @@ const SupportModal = ({
       });
       if (res.status === 200) {
         setSent(true);
-        //   const msg = await res.json();
         const resData = res.data;
 
         if (resData.message === "success") {
@@ -326,9 +274,6 @@ const SupportModal = ({
             message: "",
             username: "",
           });
-          // setTimeout(() => {
-          //   dispatch(closeModal());
-          // }, 5000);
         } else {
           setTimeout(() => {
             setSent(false);
@@ -359,9 +304,6 @@ const SupportModal = ({
   };
 
   async function triggerContract() {
-    // if (Number(sum) <= 0.2) {
-    //   setSum(".2");
-    // }
     try {
       if (selectedWallet.name === "TRX") {
         // && wallet === "tron") {
@@ -539,10 +481,6 @@ const SupportModal = ({
       className={clsx("support-modal", {
         [`support-modal__${modificator}`]: modificator,
       })}
-      // style={{
-      //   height: sent ? "300px" : "512px",
-      //   width: sent ? "600px" : "436px",
-      // }}
     >
       {loadingState && (
         <div className="loading-transaction">

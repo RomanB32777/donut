@@ -16,7 +16,7 @@ import { FormattedMessage } from "react-intl";
 import { setMainWallet } from "../../store/types/Wallet";
 import { useNavigate } from "react-router";
 import routes from "../../routes";
-import { checkIsExistUser } from "../../utils";
+import { addNotification, checkIsExistUser } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 
 import "./styles.sass";
@@ -37,7 +37,8 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
-          !withoutLogin && sessionStorage.setItem("main_wallet", JSON.stringify(walletData));
+          !withoutLogin &&
+            localStorage.setItem("main_wallet", JSON.stringify(walletData));
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             !withoutLogin && navigate("/register");
@@ -51,7 +52,26 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
           }
         }
       } else {
-        dispatch(openAuthMetamaskModal());
+        addNotification({
+          type: "warning",
+          title: "You don't have the Metamask wallet extension installed",
+          message: (
+            <a
+              href={
+                "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+              }
+              target="_blank"
+              className="auth-modal__link"
+              rel="noreferrer"
+              style={{
+                color: "#fff",
+                textDecoration: "underline",
+              }}
+            >
+              Install Metamask
+            </a>
+          ),
+        });
       }
     } else {
       if (tronWalletIsIntall()) {
@@ -62,7 +82,8 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
             token: walletToken,
           };
           dispatch(setMainWallet(walletData));
-          !withoutLogin && sessionStorage.setItem("main_wallet", JSON.stringify(walletData));
+          !withoutLogin &&
+            localStorage.setItem("main_wallet", JSON.stringify(walletData));
           const isExist = await checkIsExistUser(walletToken);
           if (!isExist) {
             !withoutLogin && dispatch(openRegistrationModal());
@@ -81,35 +102,24 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
   };
 
   return (
-    <div className="donat-popup__registration_wallets">
-      <div className="donat-popup__registration_wallets-item">
-        <div className="donat-popup__registration_wallets-img">
-          <img src={MetaMaskFoxBig} alt="" />
-        </div>
-        <div
-          className="donat-popup__registration_wallets-btn"
-          onClick={() => registrationWalletClick("metamask")}
-        >
-          <FormattedMessage id="mainpage_main_button_metamask" />
-        </div>
-        <div className="donat-popup__registration_wallets-descr">
-          Working on Polygon Mumbai Testnet
+    <div className="donat-popup">
+      <p className="donat-popup__main-title">Choose the wallet</p>
+      <div className="donat-popup__registration_wallets">
+        <div className="donat-popup__registration_wallets-item">
+          <div className="donat-popup__registration_wallets-img">
+            <img src={MetaMaskFoxBig} alt="" />
+          </div>
+          <div
+            className="donat-popup__registration_wallets-btn"
+            onClick={() => registrationWalletClick("metamask")}
+          >
+            <FormattedMessage id="mainpage_main_button_metamask" />
+          </div>
+          <div className="donat-popup__registration_wallets-descr">
+            Working on EVMOS Testnet
+          </div>
         </div>
       </div>
-      {/* <div className="donat-popup__registration_wallets-item">
-        <div className="donat-popup__registration_wallets-img">
-          <img src={TronlinkBig} alt="" />
-        </div>
-        <div
-          className="donat-popup__registration_wallets-btn"
-          onClick={() => registrationWalletClick("tronlink")}
-        >
-          <FormattedMessage id="mainpage_main_button_tronlink" />
-        </div>
-        <div className="donat-popup__registration_wallets-descr">
-          Working on Tron Nile Testnet
-        </div>
-      </div> */}
     </div>
   );
 };

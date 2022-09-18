@@ -3,58 +3,109 @@ import { useEffect, useMemo, useState } from "react";
 import { Col, Row, Switch, Slider } from "antd";
 
 import { useSelector } from "react-redux";
-import { baseURL } from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../commonComponents/PageTitle";
-import { addNotification, DateFormatter } from "../../utils";
+import {
+  addNotification,
+  addSuccessNotification,
+  DateFormatter,
+} from "../../utils";
 import ColorPicker from "../../components/ColorPicker";
 import UploadImage from "../../components/UploadImage";
 import donImg from "../../assets/big_don.png";
-import BlueButton from "../../commonComponents/BlueButton";
+import BaseButton from "../../commonComponents/BaseButton";
 import LinkCopy from "../../components/LinkCopy";
-import "./styles.sass";
 import SelectComponent from "../../components/SelectComponent";
-
-const soundsList = ["money.mp4", "fanfan.mp4", "cash.mp4"];
-
-interface IAlertData {
-  messageColor: string;
-  donorNameColor: string;
-  donationSumColor: string;
-  durationSec: number;
-  sound: string;
-}
+import { IAlertData, IFileInfo } from "../../types";
+import { soundsList, url } from "../../consts";
+import "./styles.sass";
 
 const AlertsContainer = () => {
   const user = useSelector((state: any) => state.user);
-  // const dispatch = useDispatch();
-  // const notifications = useSelector((state: any) => state.notifications);
 
-  const [permissionsNotif, setPermissionsNotif] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<IAlertData>({
+    banner: {
+      preview: "",
+      file: null,
+    },
+    message_color: "#ffffff",
+    name_color: "#ffffff",
+    sum_color: "#ffffff",
+    duration: 5,
+    sound: soundsList[0],
+    voice: false,
+  });
 
-  // useEffect(() => {
-  //   if (user.id) {
-  //     dispatch(getNotifications(user.id));
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user]);
+  const getAlertsWidgetData = async (user: any) => {
+    if (user.id) {
+      const { data } = await axiosClient.get(
+        "/api/user/get-alerts-widget/" + user.id
+      );
+      console.log(data);
+      const userData: IAlertData = {
+        banner: {
+          preview: `${url + data.banner_link}`,
+          file: formData.banner.file,
+        },
+        message_color: data.message_color,
+        name_color: data.name_color,
+        sum_color: data.sum_color,
+        duration: data.duration,
+        sound: data.sound,
+        voice: data.voice,
+      };
 
-  useEffect(() => {
-    if ("Notification" in window) {
-      const storagePermission = localStorage.getItem("permissionsNotif");
-      if (storagePermission) {
-        storagePermission === "true"
-          ? setPermissionsNotif(true)
-          : setPermissionsNotif(false);
-      } else
-        Notification.permission === "granted"
-          ? setPermissionsNotif(true)
-          : setPermissionsNotif(false);
+      setFormData({
+        ...formData,
+        ...userData,
+      });
     }
-  }, []);
+  };
+
+  const sendData = async () => {
+    try {
+      setLoading(true);
+      const {
+        banner,
+        message_color,
+        name_color,
+        sum_color,
+        duration,
+        sound,
+        voice,
+      } = formData;
+
+      const form = new FormData();
+      banner.file && form.append("file", banner.file);
+      form.append(
+        "alertData",
+        JSON.stringify({
+          message_color,
+          name_color,
+          sum_color,
+          duration,
+          sound,
+          voice,
+        })
+      );
+      form.append("creator_id", user.id);
+      await axiosClient.put("/api/user/edit-alerts-widget/", form);
+      addSuccessNotification("Data saved successfully");
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while saving data`,
+      });
+    }  finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem("permissionsNotif", String(permissionsNotif));
-  }, [permissionsNotif]);
+    getAlertsWidgetData(user);
+  }, [user]);
 
   const linkForStream = useMemo(
     () =>
@@ -62,18 +113,7 @@ const AlertsContainer = () => {
     [user]
   );
 
-  const [file, setFile] = useState<any>();
-  const [imgPreview, setImgPreview] = useState<any>("");
-
-  const [formData, setFormData] = useState<IAlertData>({
-    messageColor: "#ffffff",
-    donorNameColor: "#ffffff",
-    donationSumColor: "#ffffff",
-    durationSec: 5,
-    sound: soundsList[0],
-  });
-
-  const { messageColor, donorNameColor, donationSumColor, durationSec, sound } =
+  const { banner, message_color, name_color, sum_color, duration, sound } =
     formData;
 
   return (
@@ -87,17 +127,21 @@ const AlertsContainer = () => {
       />
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />
-        <Row gutter={[4, 4]} className="alertsSettings-container">
+        <Row
+          gutter={[4, 4]}
+          className="alertsSettings-container"
+          justify="space-between"
+        >
           <Col span={10}>
             <div className="preview-block">
               <div className="preview-block_img">
-                <img src={imgPreview || donImg} alt="preview logo" />
+                <img src={banner.preview || donImg} alt="preview logo" />
               </div>
               <div className="preview-block_title">
                 <p>
                   <span
                     style={{
-                      color: donorNameColor,
+                      color: name_color,
                     }}
                   >
                     MrBeast
@@ -105,7 +149,7 @@ const AlertsContainer = () => {
                   -{" "}
                   <span
                     style={{
-                      color: donationSumColor,
+                      color: sum_color,
                     }}
                   >
                     10 NEAR
@@ -115,47 +159,54 @@ const AlertsContainer = () => {
               <p
                 className="preview-block_message"
                 style={{
-                  color: messageColor,
+                  color: message_color,
                 }}
               >
                 Thank you for your stream!
               </p>
             </div>
           </Col>
-          <Col span={12} className="form">
+          <Col span={13} className="form">
             <div className="form-element">
               <UploadImage
                 label="Banner:"
                 formats={["PNG", "JPG", "JPEG", "GIF"]}
-                imgPreview={imgPreview}
-                setImgPreview={setImgPreview}
-                setFile={setFile}
+                filePreview={banner.preview}
+                setFile={({ preview, file }) =>
+                  setFormData({
+                    ...formData,
+                    banner: {
+                      file,
+                      preview,
+                    },
+                  })
+                }
               />
             </div>
             <div className="form-element">
               <ColorPicker
                 setColor={(color) =>
-                  setFormData({ ...formData, messageColor: color })
+                  setFormData({ ...formData, message_color: color })
                 }
-                color={messageColor}
+                color={message_color}
                 label="Message color:"
               />
             </div>
             <div className="form-element">
               <ColorPicker
                 setColor={(color) =>
-                  setFormData({ ...formData, donorNameColor: color })
+                  setFormData({ ...formData, name_color: color })
                 }
-                color={donorNameColor}
+                color={name_color}
                 label="Donor name color:"
               />
             </div>
             <div className="form-element">
               <ColorPicker
                 setColor={(color) =>
-                  setFormData({ ...formData, donationSumColor: color })
+                  setFormData({ ...formData, sum_color: color })
                 }
-                color={donationSumColor}
+                color={sum_color}
                 label="Donation sum color:"
               />
             </div>
@@ -172,13 +223,13 @@ const AlertsContainer = () => {
                   <div className="durationSlider">
                     <Slider
                       onChange={(num) =>
-                        setFormData({ ...formData, durationSec: num })
+                        setFormData({ ...formData, duration: num })
                       }
-                      value={durationSec}
+                      value={duration}
                       max={15}
                       min={3}
                     />
-                    <span>{durationSec} sec</span>
+                    <span>{duration} sec</span>
                   </div>
                 </Col>
               </Row>
@@ -215,7 +266,12 @@ const AlertsContainer = () => {
                 <Col span={12}>
                   <div className="voiceSwitch-wrapper">
                     <span>Disabled</span>
-                    <Switch id="voiceSwitch" defaultChecked />
+                    <Switch
+                      id="voiceSwitch"
+                      onChange={(flag) =>
+                        setFormData({ ...formData, voice: flag })
+                      }
+                    />
                     <span>Abled</span>
                   </div>
                 </Col>
@@ -224,11 +280,13 @@ const AlertsContainer = () => {
           </Col>
         </Row>
         <div className="saveBottom">
-          <BlueButton
+          <BaseButton
             formatId="profile_form_save_changes_button"
             padding="6px 35px"
-            onClick={() => console.log("dd")}
+            onClick={sendData}
             fontSize="18px"
+            disabled={loading}
+            isBlue
           />
         </div>
       </div>

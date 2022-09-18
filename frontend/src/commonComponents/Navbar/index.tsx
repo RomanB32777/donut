@@ -165,7 +165,7 @@ const WalletPopup = ({
   };
 
   useEffect(() => {
-    const walletData = sessionStorage.getItem("main_wallet");
+    const walletData = localStorage.getItem("main_wallet");
     if (walletData) {
       dispatch(setMainWallet(JSON.parse(walletData)));
     }
@@ -270,7 +270,7 @@ const WalletPopup = ({
                                 token: walletToken,
                               };
                               dispatch(setMainWallet(walletData));
-                              sessionStorage.setItem(
+                              localStorage.setItem(
                                 "main_wallet",
                                 JSON.stringify(walletData)
                               );
@@ -311,7 +311,7 @@ const WalletPopup = ({
                   className="wallet-popup__select_wallet-item__content"
                   onClick={() => {
                     dispatch(setUser(""));
-                    sessionStorage.removeItem("main_wallet");
+                    localStorage.removeItem("main_wallet");
                     navigate(routes.main);
                   }}
                 >
@@ -489,7 +489,7 @@ const Navbar = () => {
         if (wallet.token) {
           checkIsExist(wallet.token);
           dispatch(setMainWallet(wallet));
-          sessionStorage.setItem("main_wallet", JSON.stringify(wallet));
+          localStorage.setItem("main_wallet", JSON.stringify(wallet));
         } else {
           dispatch(openRegistrationModal());
         }
@@ -619,7 +619,7 @@ const Navbar = () => {
                     onClick={() => {
                       if (title.title === "Sign out") {
                         dispatch(setUser(""));
-                        sessionStorage.removeItem("main_wallet");
+                        localStorage.removeItem("main_wallet");
                       }
                       navigate(title.link);
                     }}

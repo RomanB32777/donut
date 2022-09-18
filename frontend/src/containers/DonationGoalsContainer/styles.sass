@@ -22,10 +22,27 @@
     &-archiveWrapper
         margin-top: 50px
 
+    &-modal
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+
+        &__btns
+            display: flex
+            margin-top: 45px
+
+            &_save
+                margin-right: 30px
+
     &-item
         background: variables.$grey-background-color
         border-radius: 20px
         padding: 20px 30px
+
+        .ant-progress-text
+            font-family: variables.$jakarta-font
+            color: variables.$white-color
 
         &:not(:last-child)
             margin-bottom: 25px
@@ -53,9 +70,10 @@
             justify-content: flex-end
 
             svg
+                color: variables.$white-color
                 cursor: pointer
-                width: 24px
-                height: 24px
+                width: 20px
+                height: 20px
 
         &__details
             margin-top: 40px
@@ -70,6 +88,11 @@
                 align-items: center
                 justify-content: center
                 flex-direction: column
+
+                
+                .ant-progress-text
+                    font-family: variables.$jakarta-font
+                    color: variables.$white-color
 
                 &_title
                     margin-top: 12px
@@ -99,3 +122,5 @@
                     &:not(:last-child)
                         margin-bottom: 10px
 
+                .btn-block
+                    margin-top: 30px
