@@ -16,7 +16,12 @@ import {
 import { url } from "../../consts";
 
 import { getNotifications } from "../../store/types/Notifications";
-import { getNotificationMessage } from "../../utils";
+import {
+  addNotification,
+  copyStr,
+  getNotificationMessage,
+  shortStr,
+} from "../../utils";
 import "./styles.sass";
 import SelectComponent from "../../components/SelectComponent";
 import { setUser } from "../../store/types/User";
@@ -40,37 +45,55 @@ const getItem = ({
   label,
 });
 
+const scrollToPosition = (top = 0) => {
+  try {
+    window.scroll({
+      top: top,
+      left: 0,
+      behavior: "smooth",
+    });
+  } catch (_) {
+    window.scrollTo(0, top);
+  }
+};
+
 const HeaderSelect = ({
+  title,
   user,
   isOpenSelect,
-  setOpenSelect,
+  handlerHeaderSelect,
 }: {
-  user: any;
-  isOpenSelect: boolean;
-  setOpenSelect: (status: boolean) => void;
+  title: string;
+  user?: any;
+  isOpenSelect?: boolean;
+  handlerHeaderSelect?: () => void;
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [] = useState(false);
+
   return (
     <div className="header-select">
-      <div className="header-select__image">
-        {user.avatarlink ? <img src={url + user.avatarlink} alt="" /> : <></>}
-      </div>
-      <div
-        className="header-select__info"
-        onClick={() => {
-          setOpenSelect(!isOpenSelect);
-        }}
-      >
-        <span className="header-select__info__name">{user.username}</span>
-        <div
-          className={clsx("icon", "header-select__info__icon", {
-            rotated: isOpenSelect,
-          })}
-        >
-          <SmallToggleListArrowIcon />
+      {user && (
+        <div className="header-select__image">
+          {user.avatarlink && <img src={url + user.avatarlink} alt="" />}
         </div>
+      )}
+      <div
+        className={clsx("header-select__info", {
+          withoutArrow: isOpenSelect === undefined,
+        })}
+        onClick={() => handlerHeaderSelect && handlerHeaderSelect()}
+      >
+        <span className="header-select__info__name">{title}</span>
+        {isOpenSelect !== undefined && (
+          <div
+            className={clsx("icon", "header-select__info__icon", {
+              rotated: isOpenSelect,
+            })}
+          >
+            <SmallToggleListArrowIcon />
+          </div>
+        )}
       </div>
       {isOpenSelect && (
         <div className="header-select__info-popup">
@@ -78,7 +101,7 @@ const HeaderSelect = ({
             <div
               className="header-select__info-item__content"
               onClick={() => {
-                setOpenSelect(false);
+                handlerHeaderSelect && handlerHeaderSelect();
                 dispatch(setUser(""));
                 localStorage.removeItem("main_wallet");
                 navigate("/");
@@ -193,6 +216,22 @@ const LayoutApp = () => {
   const { pathname } = useLocation();
 
   const user = useSelector((state: any) => state.user);
+  const mainWallet = useSelector((state: any) => state.wallet);
+
+  const [isNotificationPopupOpened, setNotificationPopupOpened] =
+    useState<boolean>(false);
+
+  const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
+
+  const handlerHeaderSelect = () => {
+    setIsOpenHeaderSelect(!isOpenHeaderSelect);
+    setNotificationPopupOpened(false);
+  };
+
+  const handlerNotificationPopup = () => {
+    setNotificationPopupOpened(!isNotificationPopupOpened);
+    setIsOpenHeaderSelect(false);
+  };
 
   const menuItems: IRoute[] = useMemo(
     () =>
@@ -213,14 +252,11 @@ const LayoutApp = () => {
     [pathname]
   );
 
-  const [isNotificationPopupOpened, setNotificationPopupOpened] =
-    useState<boolean>(false);
-
-  const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
   const hiddenLayoutElements: boolean = useMemo(() => {
     const pathsWithHiddenLayoutElements = routers.filter(
       (route) => route.hiddenLayoutElements
     );
+
     return pathsWithHiddenLayoutElements.some(
       (route) => pathname.split("/")[1] === route.path?.split("/")[0]
     );
@@ -258,12 +294,6 @@ const LayoutApp = () => {
     return currRoute ? currRoute.name : "/";
   }, [menuItems, activeRoute]);
 
-  useEffect(() => {
-    // console.log(isOpenHeaderSelect, isNotificationPopupOpened);
-    // isOpenHeaderSelect && setNotificationPopupOpened(false);
-    // isNotificationPopupOpened && setIsOpenHeaderSelect(false);
-  }, [isOpenHeaderSelect, isNotificationPopupOpened]);
-
   return (
     <DocumentTitle title={`Crypto Donutz - ${titleApp}`}>
       <Layout
@@ -293,7 +323,10 @@ const LayoutApp = () => {
               selectedKeys={[activeRoute]}
               defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
               mode="inline"
-              onClick={({ key }) => navigate(key)}
+              onClick={({ key }) => {
+                navigate(key);
+                scrollToPosition();
+              }}
               items={
                 menuItems &&
                 menuItems.map(({ name, icon, menu, path, children }) => {
@@ -334,14 +367,12 @@ const LayoutApp = () => {
             hidden={hiddenLayoutElements}
           >
             <div className="navbar__right-side">
-              {user && user.id && (
+              {user.id && (
                 <>
                   <div className="notifications">
                     <div
                       className="icon icon-notifications"
-                      onClick={() =>
-                        setNotificationPopupOpened(!isNotificationPopupOpened)
-                      }
+                      onClick={handlerNotificationPopup}
                     >
                       <AlertIcon />
                     </div>
@@ -350,11 +381,20 @@ const LayoutApp = () => {
                     )}
                   </div>
                   <HeaderSelect
+                    title={user.username}
                     user={user}
                     isOpenSelect={isOpenHeaderSelect}
-                    setOpenSelect={setIsOpenHeaderSelect}
+                    handlerHeaderSelect={handlerHeaderSelect}
                   />
                 </>
+              )}
+              {!user.id && mainWallet && (
+                <HeaderSelect
+                  title={mainWallet.token && shortStr(mainWallet.token, 8)}
+                  handlerHeaderSelect={() => {
+                    mainWallet.token && copyStr(mainWallet.token);
+                  }}
+                />
               )}
             </div>
           </Header>

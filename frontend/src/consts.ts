@@ -35,6 +35,4 @@ export const abiOfContract = [
     }
 ]
 
-export const soundsList = ["money.mp4", "fanfan.mp4", "cash.mp4"];
-
 export const url = '/images/'

@@ -31,19 +31,6 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    // socket.on("connect", () => {
-    //   console.log("connect");
-    //   // user && user.user_id && socket.emit("connect_user", user.user_id);
-    // });
-
-    // socket.on("connect_error", () => {
-    //   console.log("connect_error");
-    // });
-
-    // socket.on("disconnect", () => {
-    //   console.log("disconnect");
-    // });
-
     socket.on("new_notification", (data) => {
       const { type } = data;
       switch (type) {
@@ -71,18 +58,6 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
           userName: user.username,
         },
       });
-
-      // socket.on("connect", () => {
-      //   console.log("connect useeeer");
-      // });
-
-      // socket.on("connect_error", () => {
-      //   console.log("connect_error useeeer");
-      // });
-
-      // socket.on("disconnect", () => {
-      //   console.log("disconnect useeer");
-      // });
 
       socket.on("new_notification", (data) => {
         const { type } = data;

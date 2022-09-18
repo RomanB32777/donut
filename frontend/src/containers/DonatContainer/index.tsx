@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -23,11 +23,18 @@ import getTronWallet, {
   metamaskWalletIsIntall,
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
-import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
+import {
+  getPersonInfoPage,
+  tryToGetPersonInfo,
+} from "../../store/types/PersonInfo";
 import SupportModal from "../../components/SupportModal";
 import ChooseWalletModal from "../../components/ChooseWalletModal";
 import { setMainWallet } from "../../store/types/Wallet";
-import { checkIsExistUser } from "../../utils";
+import {
+  addNotification,
+  addSuccessNotification,
+  checkIsExistUser,
+} from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
@@ -36,6 +43,7 @@ import BaseButton from "../../commonComponents/BaseButton";
 import clsx from "clsx";
 import { getGoals } from "../../store/types/Goals";
 import { IGoalData } from "../../types";
+import { WebSocketContext } from "../../components/Websocket/WebSocket";
 
 const maxlength = 120;
 
@@ -43,8 +51,15 @@ interface IDonatForm {
   message: string;
   username: string;
   amount: string;
-  selectedGoal: string;
+  selectedGoal: number;
 }
+
+const initObj: IDonatForm = {
+  message: "",
+  username: "",
+  amount: "0",
+  selectedGoal: 0,
+};
 
 const DonatContainer = () => {
   const dispatch = useDispatch();
@@ -57,12 +72,13 @@ const DonatContainer = () => {
   const [usdtKoef, setUsdtKoef] = useState(0);
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
 
+  const socket = useContext(WebSocketContext);
+
   const [form, setForm] = useState<IDonatForm>({
-    message: "",
-    username: "",
-    amount: "0",
-    selectedGoal: "0",
+    ...initObj,
   });
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const getUsdKoef = async (currency: string) => {
     const res: any = await axiosClient.get(
@@ -71,45 +87,122 @@ const DonatContainer = () => {
     setUsdtKoef(res.data.price);
   };
 
-  const onChange = (e: RadioChangeEvent) => {
-    console.log("radio checked", e.target.value);
+  const onChangeRadio = (e: RadioChangeEvent) => {
     setForm({
       ...form,
       selectedGoal: e.target.value,
     });
-    // setValue(e.target.value);
+  };
+
+  // const tryToLogin = async () => {};
+  const sendDonation = async () => {
+    let newUser: any = {};
+    try {
+      setLoading(true);
+      if (!user.id) {
+        const { data } = await axiosClient.post("/api/user/check-username", {
+          username,
+        });
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          const { data, status } =
+            mainWallet.token &&
+            (await axiosClient.post("/api/user/create-user", {
+              role: "backers",
+              username: username,
+              token: mainWallet.token,
+              typeWallet: mainWallet.wallet || "metamask",
+            }));
+
+          if (status === 200) {
+            newUser = data.newUser;
+            dispatch(tryToGetUser(mainWallet.token));
+          }
+        }
+      }
+      const { data, status } = await axiosClient.post("/api/donation/create/", {
+        creator_token: personInfo.metamask_token,
+        backer_token: user.metamask_token || newUser.metamask_token,
+        sum: amount,
+        wallet: "metamask",
+        donation_message: message,
+      });
+
+      if (status === 200) {
+        if (data.message === "success") {
+          socket &&
+            user &&
+            data.donation &&
+            socket.emit("new_donat", {
+              supporter: {
+                username: user.username || newUser.username,
+                id: user.user_id || newUser.user_id,
+              },
+              wallet: "metamask",
+              creator_id: data.donation.creator_id,
+              creator_username: data.donation.creator_username,
+              sum: amount,
+              donationID: data.donation.id,
+            });
+          // dispatch(
+          //   getPersonInfoPage({
+          //     page: "supporters",
+          //     username: name,
+          //   })
+          // );
+          addSuccessNotification("Good");
+          setForm({
+            ...initObj,
+            username,
+          });
+        } else {
+          console.log("error");
+          addNotification({
+            type: "danger",
+            title: "Error",
+            message: `An error occurred while sending data`,
+          });
+        }
+      }
+    } catch (error) {
+      console.log("error", error);
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while sending data`,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getUsdKoef("MATIC");
-    const checkUser = async () => {
-      if (mainWallet.token) {
-        const isExist = await checkIsExistUser(mainWallet.token);
-
-        if (isExist) {
-          dispatch(tryToGetUser(mainWallet.token));
-        }
-      }
-      !Object.keys(user) && dispatch(setMainWallet({}));
-      dispatch(
-        tryToGetPersonInfo({
-          username: name,
-        })
-      );
-    };
-
-    // checkUser()
-    !Object.keys(user) && dispatch(setMainWallet({}));
     dispatch(
       tryToGetPersonInfo({
         username: name,
       })
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [name]);
 
   useEffect(() => {
-    dispatch(getGoals(personInfo.user_id));
+    const setUser = async () => {
+      if (user.id) setForm({ ...form, username: user.username });
+      else {
+        const address = await getMetamaskWallet();
+        const wallet = {
+          wallet: "metamask",
+          token: address,
+        };
+        dispatch(setMainWallet(wallet));
+      }
+    };
+    setUser();
+  }, [user]);
+
+  useEffect(() => {
+    personInfo.user_id && dispatch(getGoals(personInfo.user_id));
   }, [personInfo]);
 
   const isNotRegisterWallet = useMemo(
@@ -130,10 +223,9 @@ const DonatContainer = () => {
         <div className="donat-info-container__background">
           <img
             src={
-              // personInfo.backgroundlink
-              //   ? `${url + personInfo.backgroundlink}`
-              //   :
-              SpaceImg
+              personInfo.backgroundlink
+                ? `${url + personInfo.backgroundlink}`
+                : SpaceImg
             }
             alt="banner"
           />
@@ -146,8 +238,7 @@ const DonatContainer = () => {
                 {personInfo.avatarlink && personInfo.avatarlink.length > 0 ? (
                   <img
                     src={
-                      TestImg
-                      // personInfo.avatarlink && `${url + personInfo.avatarlink}`
+                      personInfo.avatarlink && `${url + personInfo.avatarlink}`
                     }
                     alt="avatar"
                   />
@@ -171,18 +262,28 @@ const DonatContainer = () => {
                 <div className="donat-container__payment_inputs-item">
                   <FormInput
                     value={username}
-                    setValue={(username) => {
+                    setValue={(value) => {
                       if (username.length === 0) {
                         setForm({
                           ...form,
-                          username: "@" + username,
+                          username: "@" + value,
                         });
-                      } else
+                      } else if (
+                        value.length < username.length &&
+                        value.length === 2
+                      ) {
                         setForm({
                           ...form,
-                          username,
+                          username: "",
                         });
+                      } else {
+                        setForm({
+                          ...form,
+                          username: value,
+                        });
+                      }
                     }}
+                    disabled={Boolean(user.username)}
                     modificator="donat-container__payment_inputs-name"
                     placeholder="Your username"
                   />
@@ -216,8 +317,8 @@ const DonatContainer = () => {
                     typeInput="number"
                     addonAfter={
                       <SelectComponent
-                        title="MATIC"
-                        list={["MATIC"]}
+                        title="EVMOS"
+                        list={["EVMOS"]}
                         selectItem={(selected) => console.log(selected)}
                         modificator="donat-container__payment_inputs-select"
                       />
@@ -249,7 +350,10 @@ const DonatContainer = () => {
                   {isOpenSelectGoal && (
                     <Col span={17}>
                       <div className="donat-container__payment_goals_list">
-                        <Radio.Group onChange={onChange} value={selectedGoal}>
+                        <Radio.Group
+                          onChange={onChangeRadio}
+                          value={selectedGoal}
+                        >
                           <Space direction="vertical">
                             <Radio value={0}>Don’t participate</Radio>
                             {goals.length &&
@@ -269,9 +373,10 @@ const DonatContainer = () => {
               </div>
               <BaseButton
                 title={personInfo.btn_text || "Donate"}
-                onClick={() => console.log()}
+                onClick={sendDonation}
                 padding="10px 25px"
                 fontSize="21px"
+                disabled={loading}
                 isBlue
               />
               {/* <SupportModal

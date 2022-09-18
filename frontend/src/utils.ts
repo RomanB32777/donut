@@ -121,3 +121,24 @@ export const sendFile = async (file: File, user: any, url: string) => {
     }
   }
 };
+
+export const shortStr = (str: string, length: number) => {
+  return str.length > 30 
+    ? str.slice(0, 6) + "..." + str.slice(str.length - length)
+    : str;
+}
+
+export const copyStr = (str: string) => {
+  try {
+    navigator.clipboard.writeText(str);
+    addNotification({
+      type: "success",
+      title: "Link successfully copied",
+    });
+  } catch (error) {
+    addNotification({
+      type: "warning",
+      title: "An error occurred while copying the link",
+    });
+  }
+}

@@ -489,7 +489,7 @@ const Navbar = () => {
         if (wallet.token) {
           checkIsExist(wallet.token);
           dispatch(setMainWallet(wallet));
-          localStorage.setItem("main_wallet", JSON.stringify(wallet));
+          // localStorage.setItem("main_wallet", JSON.stringify(wallet));
         } else {
           dispatch(openRegistrationModal());
         }

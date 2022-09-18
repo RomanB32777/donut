@@ -10,16 +10,13 @@ import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import bigImg from "../../assets/big_don.png";
 import axiosClient from "../../axiosClient";
 import { IAlertData } from "../../types";
-import { soundsList, url } from "../../consts";
-
-import sound from "../../assets/sounds/fanfary.mp3";
+import { url } from "../../consts";
+import { soundsList } from "../../assets/sounds";
 import "./styles.sass";
 
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
   const { name } = useParams();
-  const [play, { stop, duration }] = useSound(sound);
-
   const user = useSelector((state: any) => state.user);
   const notifications = useSelector((state: any) => state.notifications);
 
@@ -40,7 +37,7 @@ const DonatMessageContainer = () => {
     name_color: "#ffffff",
     sum_color: "#ffffff",
     duration: 5,
-    sound: soundsList[0],
+    sound: "sound_1",
     voice: false,
   });
 
@@ -109,7 +106,9 @@ const DonatMessageContainer = () => {
     getAlertsWidgetData(user);
   }, [user]);
 
-  const { banner, message_color, name_color, sum_color } = alertWidgetData;
+  const { banner, message_color, name_color, sum_color, sound } = alertWidgetData;
+
+  const [play, { duration }] = useSound(soundsList[sound]);
 
   return (
     <div className="donat-messsage-container">

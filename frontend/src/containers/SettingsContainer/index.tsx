@@ -9,9 +9,9 @@ import BaseButton from "../../commonComponents/BaseButton";
 import ConfirmPopup from "../../components/ConfirmPopup";
 import { setUser, tryToGetUser } from "../../store/types/User";
 import walletSmall from "../../assets/MetaMask_Fox.png";
-import { addNotification, addSuccessNotification } from "../../utils";
-import "./styles.sass";
+import { addNotification, addSuccessNotification, copyStr, shortStr } from "../../utils";
 import { setLoading } from "../../store/types/Loading";
+import "./styles.sass";
 
 const SettingsContainer = () => {
   const user = useSelector((state: any) => state.user);
@@ -34,7 +34,7 @@ const SettingsContainer = () => {
           username,
           user_id: user.id,
         });
-        dispatch(tryToGetUser(user.tron_token || user.metamask_token));
+        dispatch(tryToGetUser(user.metamask_token));
         addSuccessNotification("Data saved successfully");
       } catch (error) {
         addNotification({
@@ -67,15 +67,7 @@ const SettingsContainer = () => {
     navigate("/");
   };
 
-  const shortWalletToken = useMemo(
-    () =>
-      user.metamask_token.length > 30
-        ? user.metamask_token.slice(0, 6) +
-          "..." +
-          user.metamask_token.slice(user.metamask_token.length - 22)
-        : user.metamask_token,
-    [user]
-  );
+  const shortWalletToken = useMemo(() => user.metamask_token && shortStr(user.metamask_token, 22), [user]);
 
   const { username, wallet } = formSettings;
 
@@ -129,18 +121,7 @@ const SettingsContainer = () => {
                   <div
                     className="form-element__action"
                     onClick={() => {
-                      try {
-                        navigator.clipboard.writeText(wallet);
-                        addNotification({
-                          type: "success",
-                          title: "Link successfully copied",
-                        });
-                      } catch (error) {
-                        addNotification({
-                          type: "warning",
-                          title: "An error occurred while copying the link",
-                        });
-                      }
+                      copyStr(wallet);
                     }}
                   >
                     Copy

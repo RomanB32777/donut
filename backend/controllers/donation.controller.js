@@ -20,6 +20,7 @@ class DonationController {
     async createDonation(req, res) {
         try {
             const { creator_token, backer_token, donation_message, sum, wallet } = req.body
+
             const initDate = new Date()
             // initDate.setDate(initDate.getDate() - 4);
             const formatedDate = initDate.getTime()

@@ -169,11 +169,12 @@ export const routers: IRoute[] = [
     ],
   },
   {
-    path: "/login",
+    path: "login",
     element: <ChooseWalletModal />,
+    hiddenLayoutElements: true,
   },
   {
-    path: "/register",
+    path: "register",
     element: <RegistrationModal />,
   },
   {

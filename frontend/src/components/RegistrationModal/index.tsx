@@ -102,6 +102,7 @@ const RegistrationModal = () => {
           onClick={() => tryToLogin()}
           padding="8px 64px"
           fontSize="21px"
+          disabled={!Boolean(username.length)}
           isBlue
         />
       </div>

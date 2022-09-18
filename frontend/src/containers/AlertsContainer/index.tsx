@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 // import { ChromePicker } from "react-color";
 import { Col, Row, Switch, Slider } from "antd";
-
 import { useSelector } from "react-redux";
+import useSound from "use-sound";
+
 import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../commonComponents/PageTitle";
 import {
@@ -17,7 +18,8 @@ import BaseButton from "../../commonComponents/BaseButton";
 import LinkCopy from "../../components/LinkCopy";
 import SelectComponent from "../../components/SelectComponent";
 import { IAlertData, IFileInfo } from "../../types";
-import { soundsList, url } from "../../consts";
+import { url } from "../../consts";
+import { soundsList } from "../../assets/sounds";
 import "./styles.sass";
 
 const AlertsContainer = () => {
@@ -33,7 +35,7 @@ const AlertsContainer = () => {
     name_color: "#ffffff",
     sum_color: "#ffffff",
     duration: 5,
-    sound: soundsList[0],
+    sound: "sound_1",
     voice: false,
   });
 
@@ -45,7 +47,7 @@ const AlertsContainer = () => {
       console.log(data);
       const userData: IAlertData = {
         banner: {
-          preview:  data.banner_link ? `${url + data.banner_link}` : "",
+          preview: data.banner_link ? `${url + data.banner_link}` : "",
           file: formData.banner.file,
         },
         message_color: data.message_color,
@@ -98,7 +100,7 @@ const AlertsContainer = () => {
         title: "Error",
         message: `An error occurred while saving data`,
       });
-    }  finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -115,6 +117,14 @@ const AlertsContainer = () => {
 
   const { banner, message_color, name_color, sum_color, duration, sound } =
     formData;
+
+  const [play, { stop }] = useSound(soundsList[sound]);
+
+  // console.log(soundsList[sound]);
+  
+  useEffect(() => {
+    console.log(" stop();");
+  }, [sound]);
 
   return (
     <div className="alerts-container">
@@ -243,13 +253,15 @@ const AlertsContainer = () => {
                 <Col span={12}>
                   <span className="form-element__label">Alert sound:</span>
                 </Col>
-                <Col span={12}>
+                <Col span={4}>
                   <SelectComponent
                     title={sound}
-                    list={soundsList}
-                    selectItem={(selected) =>
-                      setFormData({ ...formData, sound: selected })
-                    }
+                    list={Object.keys(soundsList)}
+                    selectItem={(selected) => {
+                      setFormData({ ...formData, sound: selected });
+                      play();
+                    }}
+                    modificator="select-sound"
                   />
                 </Col>
               </Row>

@@ -127,7 +127,7 @@ create TABLE alerts (
     name_color  VARCHAR(10) DEFAULT '#ffffff',
     sum_color VARCHAR(10) DEFAULT '#ffffff',
     duration NUMERIC DEFAULT 5,
-    sound VARCHAR(255) DEFAULT '',
+    sound VARCHAR(255) DEFAULT 'sound_1',
     voice BOOLEAN DEFAULT 'false',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
