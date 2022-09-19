@@ -19,6 +19,11 @@ interface IWidgetGoalData {
   id?: number;
 }
 
+const initWidgetGoalData: IWidgetGoalData = {
+  widgetAmount: "0",
+  widgetDescription: "",
+};
+
 const DonationGoalsContainer = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
@@ -27,8 +32,7 @@ const DonationGoalsContainer = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<IWidgetGoalData>({
-    widgetAmount: "0",
-    widgetDescription: "",
+    ...initWidgetGoalData,
   });
 
   const openEditModal = (widget: IGoalData) => {
@@ -39,6 +43,13 @@ const DonationGoalsContainer = () => {
       widgetDescription: title,
     });
     setIsOpenModal(true);
+  };
+
+  const closeEditModal = () => {
+    setFormData({
+      ...initWidgetGoalData,
+    });
+    setIsOpenModal(false);
   };
 
   const sendData = async () => {
@@ -123,6 +134,7 @@ const DonationGoalsContainer = () => {
         visible={isOpenModal}
         title="New donation goal"
         setIsVisible={setIsOpenModal}
+        onCancel={closeEditModal}
         width={880}
       >
         <div className="goals-modal">
@@ -173,7 +185,7 @@ const DonationGoalsContainer = () => {
               <BaseButton
                 formatId="profile_form_cancel_button"
                 padding="6px 35px"
-                onClick={() => setIsOpenModal(false)}
+                onClick={closeEditModal}
                 fontSize="18px"
               />
             </div>

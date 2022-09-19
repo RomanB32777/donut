@@ -20,10 +20,10 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
     },
     name: "",
     description: "",
-    quantity: "",
+    blockchain: "",
   });
 
-  const { image, name, description, quantity } = formBadge;
+  const { image, name, description, blockchain } = formBadge;
 
   return (
     <div className="create_badges">
@@ -33,7 +33,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
             <LeftArrowIcon />
           </div>
           <div className="page-title">
-            <span>OG Fan - Badge</span>
+            <span>{name} - Badge</span>
           </div>
         </div>
         <Row
@@ -66,7 +66,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                         <p className="details__content_row_title">Name</p>
                       </Col>
                       <Col span={18}>
-                        <p className="details__content_row_value">OG Fan</p>
+                        <p className="details__content_row_value">{name}</p>
                       </Col>
                     </Row>
                   </div>
@@ -79,9 +79,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                       </Col>
                       <Col span={18}>
                         <p className="details__content_row_value">
-                          Designing for Readability: A Guide to Web Typography
-                          (with Infographic). There's a lot to consider when
-                          choosing a typeface for a digital design.
+                          {description}
                         </p>
                       </Col>
                     </Row>

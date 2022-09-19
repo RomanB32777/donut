@@ -10,6 +10,7 @@ import axiosClient, { baseURL } from "../../../axiosClient";
 import { getGoals } from "../../../store/types/Goals";
 import { IGoalData } from "../../../types";
 import { addNotification, addSuccessNotification } from "../../../utils";
+import clsx from "clsx";
 
 interface IEditGoalData {
   title_color: string;
@@ -102,7 +103,9 @@ const GoalItem = ({
   return (
     <>
       <div
-        className="goals-item"
+        className={clsx("goals-item", {
+          active: isActiveDetails
+        })}
         style={{
           cursor: !isArchive ? "pointer" : "auto",
         }}

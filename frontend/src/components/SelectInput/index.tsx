@@ -8,6 +8,7 @@ const SelectInput = ({
   value,
   list,
   label,
+  gutter,
   placeholder,
   modificator,
   labelCol,
@@ -19,6 +20,7 @@ const SelectInput = ({
   value: string | string[];
   list: string[];
   label?: string;
+  gutter?: number | [number, number];
   placeholder?: string;
   modificator?: string;
   labelCol?: number;
@@ -29,7 +31,7 @@ const SelectInput = ({
 }) => {
   return (
     <div className="selectInput">
-      <Row>
+      <Row gutter={gutter || 0}>
         <Col
           span={labelCol || (label ? 12 : 0)}
           className="selectInput__label_wrapper"
@@ -43,10 +45,10 @@ const SelectInput = ({
           })}
         >
           <Select
-            placeholder={placeholder || ""}
             value={
-              Array.isArray(value) ? (value as string[]) : (value as string)
+              Array.isArray(value) ? (value as string[]) : (value as string || null)
             }
+            placeholder={placeholder || ""}
             mode={isTags ? "tags" : undefined}
             onChange={setValue}
             // bordered={false}

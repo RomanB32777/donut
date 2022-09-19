@@ -1,4 +1,5 @@
 import type { ColumnsType } from "antd/es/table";
+import { DateFormatter, DateTimezoneFormatter } from "../../utils";
 
 interface ITableData {
   key: string;
@@ -26,6 +27,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     title: "Donation, USD",
     dataIndex: "donationUSD",
     align: "center",
+    render: (text) => text + ", USD",
     sorter: (a, b) => a.donationUSD - b.donationUSD,
     width: "15%",
   },
@@ -38,8 +40,8 @@ export const tableColumns: ColumnsType<ITableData> = [
     title: "Date and Time",
     dataIndex: "date",
     width: "25%",
-    // defaultSortOrder: "descend",
-    sorter: (a, b) => new Date(a.date).getDate() - new Date(b.date).getDate(),
+    render: (text) => DateFormatter(DateTimezoneFormatter(text)),
+    sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   },
 ];
 
@@ -59,70 +61,6 @@ export const data: ITableData[] = [
     donationUSD: 42,
     message:
       "London No. 1 Lake Park London No. 1 Lake Park London No. 1 Lake Park London No. 1 Lake Parkм London No. 1 Lake ParkLondon No. 1 Lake Park London No. 1 Lake Park London No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    donationToken: 32,
-    donationUSD: 30,
-    message: "Sidney No. 1 Lake Park",
     date: new Date().toString(),
   },
 ];

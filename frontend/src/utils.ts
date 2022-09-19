@@ -66,6 +66,13 @@ export const getNotificationMessage = (type: typeNotification, user: any, data?:
   }
 }
 
+export const DateTimezoneFormatter = (date: string) => {
+  const initDate = new Date(date)
+  const formatedDate = initDate.getTime()
+  const userOffset = initDate.getTimezoneOffset() * 60 * 1000
+  return new Date(formatedDate + userOffset).toISOString()
+}
+
 export const DateFormatter = (date:string, toFormat: string = "DD/MM/YYYY HH:mm") => {
     let dateFormat = moment(date).format(toFormat)
     if (dateFormat === 'Invalid Date') dateFormat = ''
@@ -142,3 +149,10 @@ export const copyStr = (str: string) => {
     });
   }
 }
+
+export const getUsdKoef = async (currency: string, setUsdtKoef: (price: number) => void) => {
+  const res: any = await axiosClient.get(
+    `https://www.binance.com/api/v3/ticker/price?symbol=${currency}USDT`
+  );
+  setUsdtKoef(+res.data.price);
+};

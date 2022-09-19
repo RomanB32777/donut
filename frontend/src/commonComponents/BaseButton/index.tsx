@@ -10,6 +10,7 @@ const BaseButton = (props: {
   icon?: React.ReactNode;
   isBlue?: boolean;
   disabled?: boolean;
+  color?: string,
   modificator?: string;
   onClick: () => void;
 }) => (
@@ -24,6 +25,8 @@ const BaseButton = (props: {
     style={{
       padding: props.padding,
       fontSize: props.fontSize,
+      background: props.color,
+      borderColor: props.color,
     }}
   >
     {props.formatId && <FormattedMessage id={props.formatId} />}

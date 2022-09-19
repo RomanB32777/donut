@@ -1,49 +1,35 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { FormattedMessage } from "react-intl";
-
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router";
-import axiosClient, { baseURL } from "../../axiosClient";
-import BlueButton from "../../commonComponents/BlueButton";
-import PageTitle from "../../commonComponents/PageTitle";
-import ContentCard from "../../components/ContentCard";
+import { useNavigate, useParams } from "react-router";
+import clsx from "clsx";
+
+import axiosClient from "../../axiosClient";
 import { url } from "../../consts";
-import { InfoIcon, LargeImageIcon, StarIcon } from "../../icons/icons";
-import routes from "../../routes";
+import { StarIcon } from "../../icons/icons";
 import SpaceImg from "../../space.png";
-import TestImg from "../../assets/4.jpg";
-import "./styles.sass";
 
 import {
-  openAuthMetamaskModal,
-  openAuthTronModal,
-} from "../../store/types/Modal";
-import getTronWallet, {
   getMetamaskWallet,
   metamaskWalletIsIntall,
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
-import {
-  getPersonInfoPage,
-  tryToGetPersonInfo,
-} from "../../store/types/PersonInfo";
-import SupportModal from "../../components/SupportModal";
-import ChooseWalletModal from "../../components/ChooseWalletModal";
+import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import { setMainWallet } from "../../store/types/Wallet";
 import {
   addNotification,
   addSuccessNotification,
-  checkIsExistUser,
+  getUsdKoef,
 } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
 import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import BaseButton from "../../commonComponents/BaseButton";
-import clsx from "clsx";
 import { getGoals } from "../../store/types/Goals";
 import { IGoalData } from "../../types";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
+
+import "./styles.sass";
 
 const maxlength = 120;
 
@@ -64,6 +50,7 @@ const initObj: IDonatForm = {
 const DonatContainer = () => {
   const dispatch = useDispatch();
   const { name } = useParams();
+  const navigate = useNavigate();
   const user = useSelector((state: any) => state.user);
   const personInfo = useSelector((state: any) => state.personInfo).main_info;
   const goals = useSelector((state: any) => state.goals);
@@ -79,13 +66,6 @@ const DonatContainer = () => {
   });
 
   const [loading, setLoading] = useState<boolean>(false);
-
-  const getUsdKoef = async (currency: string) => {
-    const res: any = await axiosClient.get(
-      `https://www.binance.com/api/v3/ticker/price?symbol=${currency}USDT`
-    );
-    setUsdtKoef(res.data.price);
-  };
 
   const onChangeRadio = (e: RadioChangeEvent) => {
     setForm({
@@ -124,7 +104,7 @@ const DonatContainer = () => {
       const { data, status } = await axiosClient.post("/api/donation/create/", {
         creator_token: personInfo.metamask_token,
         backer_token: user.metamask_token || newUser.metamask_token,
-        sum: amount,
+        sum: +amount,
         wallet: "metamask",
         donation_message: message,
       });
@@ -145,19 +125,13 @@ const DonatContainer = () => {
               sum: amount,
               donationID: data.donation.id,
             });
-          // dispatch(
-          //   getPersonInfoPage({
-          //     page: "supporters",
-          //     username: name,
-          //   })
-          // );
           addSuccessNotification("Good");
+          navigate("/donations");
           setForm({
             ...initObj,
             username,
           });
         } else {
-          console.log("error");
           addNotification({
             type: "danger",
             title: "Error",
@@ -178,7 +152,7 @@ const DonatContainer = () => {
   };
 
   useEffect(() => {
-    getUsdKoef("MATIC");
+    getUsdKoef("MATIC", setUsdtKoef);
     dispatch(
       tryToGetPersonInfo({
         username: name,
@@ -331,51 +305,54 @@ const DonatContainer = () => {
                   />
                 </div>
               </div>
-              <div className="donat-container__payment_goals">
-                <Row justify="space-between">
-                  <Col span={6}>
-                    <div
-                      className={clsx("donat-container__payment_goals_btn", {
-                        active: isOpenSelectGoal,
-                      })}
-                      onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
-                      style={{
-                        background: personInfo.main_color,
-                      }}
-                    >
-                      <StarIcon />
-                      <p>Participate in goal achievement</p>
-                    </div>
-                  </Col>
-                  {isOpenSelectGoal && (
-                    <Col span={17}>
-                      <div className="donat-container__payment_goals_list">
-                        <Radio.Group
-                          onChange={onChangeRadio}
-                          value={selectedGoal}
-                        >
-                          <Space direction="vertical">
-                            <Radio value={0}>Don’t participate</Radio>
-                            {goals.length &&
-                              goals
+              {Boolean(goals.length) && (
+                <div className="donat-container__payment_goals">
+                  <Row justify="space-between">
+                    <Col span={6}>
+                      <div
+                        className={clsx("donat-container__payment_goals_btn", {
+                          active: isOpenSelectGoal,
+                        })}
+                        onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
+                        style={{
+                          background: personInfo.main_color,
+                          // borderColor: personInfo.main_color,
+                        }}
+                      >
+                        <StarIcon />
+                        <p>Participate in goal achievement</p>
+                      </div>
+                    </Col>
+                    {isOpenSelectGoal && (
+                      <Col span={17}>
+                        <div className="donat-container__payment_goals_list">
+                          <Radio.Group
+                            onChange={onChangeRadio}
+                            value={selectedGoal}
+                          >
+                            <Space direction="vertical">
+                              <Radio value={0}>Don’t participate</Radio>
+                              {goals
                                 .filter((goal: IGoalData) => !goal.isArchive)
                                 .map((goal: IGoalData) => (
                                   <Radio key={goal.id} value={goal.id}>
                                     {goal.title}
                                   </Radio>
                                 ))}
-                          </Space>
-                        </Radio.Group>
-                      </div>
-                    </Col>
-                  )}
-                </Row>
-              </div>
+                            </Space>
+                          </Radio.Group>
+                        </div>
+                      </Col>
+                    )}
+                  </Row>
+                </div>
+              )}
               <BaseButton
                 title={personInfo.btn_text || "Donate"}
                 onClick={sendDonation}
                 padding="10px 25px"
                 fontSize="21px"
+                color={personInfo.main_color}
                 disabled={loading}
                 isBlue
               />

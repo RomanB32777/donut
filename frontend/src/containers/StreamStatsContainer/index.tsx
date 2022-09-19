@@ -191,7 +191,7 @@ const StreamStatsContainer = () => {
                   <div className="customDatesPicker">
                     <Row>
                       <Col offset={6}>
-                        <DatesPicker />
+                        {/* <DatesPicker /> */}
                       </Col>
                     </Row>
                   </div>

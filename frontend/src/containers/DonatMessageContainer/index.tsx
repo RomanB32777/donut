@@ -44,9 +44,9 @@ const DonatMessageContainer = () => {
   useEffect(() => {
     const { duration } = alertWidgetData;
     notifications.length && setLastNotif(notifications[0].donation);
-    // setTimeout(() => {
-    //   setLastNotif({});
-    // }, duration * 1000);
+    setTimeout(() => {
+      setLastNotif({});
+    }, duration * 1000);
   }, [notifications]);
 
   useEffect(() => {
@@ -106,7 +106,8 @@ const DonatMessageContainer = () => {
     getAlertsWidgetData(user);
   }, [user]);
 
-  const { banner, message_color, name_color, sum_color, sound } = alertWidgetData;
+  const { banner, message_color, name_color, sum_color, sound } =
+    alertWidgetData;
 
   const [play, { duration }] = useSound(soundsList[sound]);
 
@@ -140,7 +141,7 @@ const DonatMessageContainer = () => {
                   >
                     {lastNotif.sum_donation}{" "}
                     {lastNotif.wallet_type === "tron" && "TRX"}
-                    {lastNotif.wallet_type === "metamask" && "MATIC"}
+                    {lastNotif.wallet_type === "metamask" && "EVMOS"}
                   </span>
                 </>
               )}

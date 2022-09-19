@@ -162,7 +162,7 @@ const AlertsContainer = () => {
                       color: sum_color,
                     }}
                   >
-                    10 NEAR
+                    10 USD
                   </span>
                 </p>
               </div>
@@ -181,7 +181,7 @@ const AlertsContainer = () => {
               <UploadImage
                 label="Banner:"
                 formats={["PNG", "JPG", "JPEG", "GIF"]}
-                filePreview={banner.preview}
+                filePreview={banner.preview || donImg}
                 setFile={({ preview, file }) =>
                   setFormData({
                     ...formData,

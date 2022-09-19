@@ -43,7 +43,7 @@ create TABLE supporters(
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) DEFAULT '',
     backer_id INTEGER,
-    sum_donations VARCHAR(63) DEFAULT '',
+    sum_donations NUMERIC DEFAULT 0,
     creator_id INTEGER,
     amount_donations NUMERIC,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
@@ -55,7 +55,7 @@ create TABLE donations(
     donation_date VARCHAR(63) DEFAULT '',
     backer_id INTEGER,
     FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
-    sum_donation VARCHAR(63) DEFAULT '',
+    sum_donation NUMERIC DEFAULT 0,
     creator_username VARCHAR(63) DEFAULT '',
     donation_message VARCHAR(255) DEFAULT '',
     wallet_type VARCHAR(255) DEFAULT '',

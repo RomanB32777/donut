@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData, ChartOptions } from "chart.js";
@@ -6,6 +6,8 @@ import SelectComponent from "../../../../components/SelectComponent";
 import { filterItems } from "../../consts";
 
 import "./styles.sass";
+import axiosClient from "../../../../axiosClient";
+import { useSelector } from "react-redux";
 
 Chart.register(...registerables);
 
@@ -63,8 +65,28 @@ const dataChart: LineProps = {
   },
 };
 
-const WidgetStat = () => {
-  const [activeFilterItem, setActiveFilterItem] = useState(filterItems[1]);
+const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
+  const user: any = useSelector((state: any) => state.user);
+  const [activeFilterItem, setActiveFilterItem] = useState(
+    filterItems["7days"]
+  );
+  const [latestDonations, setLatestDonations] = useState<any[]>([]);
+
+  const getLatestDonations = async (timePeriod: string) => {
+    const { data } = await axiosClient.get(
+      `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}`
+    );
+    data.donations &&
+      data.donations.length &&
+      setLatestDonations(data.donations);
+  };
+
+  useEffect(() => {
+    const timePeriod = Object.keys(filterItems).find(
+      (key: string) => filterItems[key] === activeFilterItem
+    );
+    user.id && timePeriod && getLatestDonations(timePeriod);
+  }, [user, activeFilterItem]);
 
   return (
     <div className="widget widget-stat">
@@ -73,7 +95,7 @@ const WidgetStat = () => {
         <div className="widget_header__filter">
           <SelectComponent
             title={activeFilterItem}
-            list={filterItems}
+            list={Object.values(filterItems)}
             selectItem={(selected) => setActiveFilterItem(selected)}
           />
         </div>

@@ -3,16 +3,28 @@ import "./styles.sass";
 
 const { RangePicker } = DatePicker;
 
-const DatesPicker = ({}: // color,
-// setColor,
+const toFormat = 'DD/MM/YYYY'
+
+const DatesPicker = ({
+  setValue,
+}: // startDate,
+// endDate,
 {
-  // label: string;
-  // color: string;
-  // setColor: (color: string) => void;
+  setValue: (startDate: string, endDate: string) => void;
+  // startDate?: string;
+  // endDate?: string;
 }) => {
   return (
     <div className="colorPicker">
-      <RangePicker format={'DD/MM/YYYY'} bordered={false} />
+      <RangePicker
+        format={toFormat}
+        bordered={false}
+        onChange={(val) =>
+          val?.[0] && val?.[1]
+            ? setValue(val?.[0]?.format(toFormat), val?.[1]?.format(toFormat))
+            : setValue("", "")
+        }
+      />
     </div>
   );
 };

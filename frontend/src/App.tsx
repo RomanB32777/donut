@@ -17,6 +17,9 @@ import { setLoading } from "./store/types/Loading";
 import "antd/dist/antd.css";
 import LayoutApp from "./containers/LayoutContainer";
 
+// import moment from 'moment';
+// moment.locale();
+
 function App() {
   const dispatch = useDispatch();
   const locale = LOCALES.ENGLISH;

@@ -7,6 +7,8 @@ import FormInput from "../../../components/FormInput";
 import PageTitle from "../../../commonComponents/PageTitle";
 import { LeftArrowIcon } from "../../../icons/icons";
 import { IBadgeData, IFileInfo } from "../../../types";
+import SelectComponent from "../../../components/SelectComponent";
+import SelectInput from "../../../components/SelectInput";
 
 const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
   const [formBadge, setFormBadge] = useState<IBadgeData>({
@@ -16,10 +18,10 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
     },
     name: "",
     description: "",
-    quantity: "0",
+    blockchain: "",
   });
 
-  const { image, name, description, quantity } = formBadge;
+  const { image, name, description, blockchain } = formBadge;
 
   return (
     <div className="create_badges">
@@ -94,7 +96,19 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
               </Col>
               <Col span={24}>
                 <div className="form-element">
-                  <FormInput
+                  <SelectInput
+                    value={blockchain}
+                    list={["Blockchain"]}
+                    label="Blockchain"
+                    placeholder="Choose blockchain"
+                    setValue={(value) =>
+                      setFormBadge({ ...formBadge, blockchain: value as string })
+                    }
+                    labelCol={24}
+                    selectCol={24}
+                    gutter={[0, 18]}
+                  />
+                  {/* <FormInput
                     label="Quantity"
                     name="quantity"
                     value={quantity}
@@ -105,7 +119,7 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
                     labelCol={24}
                     InputCol={24}
                     gutter={[0, 18]}
-                  />
+                  /> */}
                 </div>
               </Col>
               <Col span={24}>

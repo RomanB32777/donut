@@ -15,25 +15,20 @@ const ModalComponent = ({
   setIsVisible,
   confirmLoading,
   topModal,
+  onCancel,
   children,
-}: IModalComponent) => {
-  const handleCancel = () => {
-    setIsVisible(false);
-  };
-
-  return (
-    <Modal
-      title={title}
-      visible={visible}
-      confirmLoading={confirmLoading || false}
-      onCancel={handleCancel}
-      width={width || 520}
-      style={{ top: topModal ? 20 : 100 }}
-      footer={null}
-    >
-      {children}
-    </Modal>
-  );
-};
+}: IModalComponent) => (
+  <Modal
+    title={title}
+    visible={visible}
+    confirmLoading={confirmLoading || false}
+    onCancel={onCancel}
+    width={width || 520}
+    style={{ top: topModal ? 20 : 100 }}
+    footer={null}
+  >
+    {children}
+  </Modal>
+);
 
 export default ModalComponent;

@@ -6,15 +6,22 @@ const getTronUsdKoef = async () => {
     const res = await axios.get(
         "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
     );
-    return res.data.price;
+    return +res.data.price;
 };
 
 const getMaticUsdKoef = async () => {
     const res = await axios.get(
         "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
     );
-    return res.data.price;
+    return +res.data.price;
 };
+
+const dateParams = {
+    'today': '1 day',
+    '7days': '7 day',
+    '30days': '30 day',
+    'year': '1 year',
+}
 
 class DonationController {
     async createDonation(req, res) {
@@ -48,11 +55,10 @@ class DonationController {
                 if (donation.rows[0]) {
                     res.status(200).json({ message: 'success', donation: donation.rows[0] });
                 }
+
                 if (supporter.rows && supporter.rows.length > 0) {
                     await db.query('UPDATE supporters SET sum_donations = $1, amount_donations = $2 WHERE backer_id = $3', [
-                        (parseFloat(supporter.rows[0].sum_donations) + Number(
-                            parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef))
-                        ).toString(),
+                        +supporter.rows[0].sum_donations + Number((sum * maticKoef).toFixed(2)),
                         +supporter.rows[0].amount_donations + 1,
                         backer.rows[0].id,
                     ])
@@ -60,7 +66,7 @@ class DonationController {
                     await db.query(`INSERT INTO supporters (username, backer_id, sum_donations, creator_id, amount_donations ) values ($1, $2, $3, $4, $5) RETURNING * `, [
                         backer.rows[0].username,
                         backer.rows[0].id,
-                        Number(parseFloat(sum) * (wallet === "tron" ? trxKoef : maticKoef)).toString(),
+                        (sum * (wallet === "tron" ? trxKoef : maticKoef)).toFixed(2),
                         creator.rows[0].id,
                         1
                     ])
@@ -101,11 +107,11 @@ class DonationController {
             const maticKoef = await getMaticUsdKoef();
 
             sumRows.rows.forEach((summ) =>
-                sum += Number((parseFloat(summ.sum_donation) * (summ.wallet_type === "tron" ? trxKoef : maticKoef)).toFixed(2))
+                sum += summ.sum_donation * (summ.wallet_type === "tron" ? trxKoef : maticKoef)
             )
 
             const allDonations = await db.query(`SELECT * FROM donations`)
-            const sums = allDonations.rows.map((sum) => (parseFloat(sum.sum_donation))).sort(function (a, b) {
+            const sums = allDonations.rows.map((sum) => sum.sum_donation).sort(function (a, b) {
                 return a - b;
             }).reverse().slice(0, 6)
 
@@ -125,7 +131,7 @@ class DonationController {
             Object.keys(donationsObj).forEach((elem) => (donations = [...donations, ...donationsObj[elem]]))
 
             const allSupporters = await db.query(`SELECT * FROM supporters`)
-            const supportersSums = allSupporters.rows.map((sum) => (parseFloat(sum.sum_donations))).sort(function (a, b) {
+            const supportersSums = allSupporters.rows.map((sum) => sum.sum_donations).sort(function (a, b) {
                 return a - b;
             }).reverse()
 
@@ -177,8 +183,16 @@ class DonationController {
 
     async getLatestDonations(req, res) {
         try {
-            const { creator_id, timePeriod } = req.params
-            const data = await db.query('SELECT * FROM donations WHERE creator_id = $1', [creator_id])
+            const { user_id } = req.params;
+            const { limit, timePeriod } = req.query;
+
+            const data = await db.query(`
+                SELECT * FROM donations
+                WHERE creator_id = $1 
+                AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
+                >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
+                ORDER BY donation_date DESC
+                ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json({ donations: data.rows })
             } else {
@@ -191,8 +205,16 @@ class DonationController {
 
     async getTopDonations(req, res) {
         try {
-            const { creator_id, timePeriod } = req.params
-            const data = await db.query('SELECT * FROM donations WHERE creator_id = $1 ORDER BY sum_donation', [creator_id])
+            const { user_id } = req.params; // timePeriod
+            const { limit, timePeriod } = req.query;
+
+            const data = await db.query(`
+                SELECT * FROM donations 
+                WHERE creator_id = $1 
+                AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
+                >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
+                ORDER BY sum_donation DESC
+                ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json({ donations: data.rows })
             } else {
@@ -202,6 +224,100 @@ class DonationController {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
     }
+
+    async getTopSupporters(req, res) {
+        try {
+            const { user_id } = req.params;
+            const { limit } = req.query; // timePeriod
+
+            const data = await db.query(`
+                SELECT id, username, sum_donations 
+                FROM supporters 
+                WHERE creator_id = $1
+                ORDER BY sum_donations DESC 
+                ${limit ? `LIMIT ${limit}` : ''}`, [user_id]);
+            // AND to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS') >= now() - interval '${dateParams[timePeriod]}'
+            if (data && data.rows && data.rows.length > 0) {
+                res.status(200).json({ supporters: data.rows })
+            } else {
+                res.status(200).json({ supporters: [] })
+            }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getStatsDonations(req, res) {
+        try {
+            const { user_id } = req.params;
+            const { limit, timePeriod } = req.query;
+
+            const data = await db.query(`
+                SELECT * FROM donations 
+                WHERE creator_id = $1 
+                AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
+                >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
+                ORDER BY sum_donation DESC
+                ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
+            if (data && data.rows && data.rows.length > 0) {
+                res.status(200).json({ donations: data.rows })
+            } else {
+                res.status(200).json({ donations: [] })
+            }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+
+    async getDonationsData(req, res) {
+        try {
+            const { user_id } = req.params;
+            const { roleplay, timePeriod, limit, offset, startDate, endDate, groupByName, searchStr } = req.query;
+
+            const isGroup = groupByName === "true";
+            const isCreator = roleplay === "creators";
+
+            // sum_donation, wallet_type, donation_message
+            const data = await db.query(`
+                SELECT ${isGroup ? `username,
+                SUM(sum_donation::numeric) AS sum_donation`
+                    : "*"}
+                FROM donations 
+                WHERE ${isCreator ? "creator_id" : "backer_id"} = $1 AND
+                ${startDate && endDate ?
+                    `to_timestamp(donation_date,'YYYY/MM/DD') 
+                    BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
+                    AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
+                    :
+                    `to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
+                    >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'}`
+                }
+                ${searchStr ?
+                    `AND username LIKE '%${searchStr.toLowerCase()}%'`
+                    : ""
+                }
+                ${isGroup ? "GROUP BY username" : ""}
+                ORDER BY donation_date DESC
+                LIMIT ${limit}
+                OFFSET ${offset}`, [user_id])
+            // GROUP BY donations.id COUNT(*), 
+
+            // AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
+            // >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
+            // ORDER BY sum_donation DESC
+            // const users = await db.query(`SELECT * FROM users WHERE roleplay = 'creators' AND username LIKE '%${username.toLowerCase()}%'`)
+
+            if (data && data.rows && data.rows.length > 0) {
+                res.status(200).json({ donations: data.rows })
+            } else {
+                res.status(200).json({ donations: [] })
+            }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
 }
 
 module.exports = new DonationController()

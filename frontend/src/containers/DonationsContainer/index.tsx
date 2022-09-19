@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Checkbox, Col, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -10,22 +10,89 @@ import TableComponent from "../../components/TableComponent";
 import BaseButton from "../../commonComponents/BaseButton";
 import { CalendarIcon, DownloadIcon } from "../../icons/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
-import { data, ITableData, tableColumns } from "./tableData";
+import { ITableData, tableColumns } from "./tableData";
+import { getUsdKoef } from "../../utils";
+import axiosClient from "../../axiosClient";
+import { filterItems } from "../MainContainer/consts";
 import "./styles.sass";
-import { userRoles } from "../../routes";
+
+interface IQueryForm {
+  timePeriod: string;
+  searchStr?: string;
+  groupByName?: boolean;
+  startDate?: string;
+  endDate?: string;
+}
+
+const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
   const user = useSelector((state: any) => state.user);
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
-  const onCheckbox = (e: CheckboxChangeEvent) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
+  const [queryForm, setQueryForm] = useState<IQueryForm>({
+    timePeriod: filterItems["7days"],
+    searchStr: "",
+    groupByName: false,
+    startDate: "",
+    endDate: "",
+  });
+  // const [activeFilterItem, setActiveFilterItem] = useState(filterItems["7days"]);
+
+  const [tableData, setTableData] = useState<ITableData[]>([]);
+  const [usdtKoef, setUsdtKoef] = useState<number>(0);
+
   const filterBtnClick = () => setVisibleDatesPicker(!visibleDatesPicker);
+
+  const getDonationsData = async () => {
+    const { timePeriod, searchStr, groupByName, startDate, endDate } =
+      queryForm;
+
+    const timePeriodQuery = Object.keys(filterItems).find(
+      (key: string) => filterItems[key] === timePeriod
+    );
+    // timePeriod: string
+    const { data } = await axiosClient.get(
+      `/api/donation/page/data/${
+        user.id
+      }?roleplay=${user.roleplay}&limit=${LIMIT_DONATS}&offset=${0}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}`
+    );
+    if (data.donations && data.donations.length) {
+      const forTableData: ITableData[] = data.donations.map(
+        (donat: any, key: number) => ({
+          key: donat.id || key,
+          name: donat.username,
+          donationToken: donat.sum_donation + ", EVMOS",
+          donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
+          message: donat.donation_message || "-",
+          date: donat.donation_date || "-",
+        })
+      );
+      setTableData(forTableData);
+    } else {
+      setTableData([]);
+    }
+  };
+
+  const sendQuery = async () => {
+    await getDonationsData();
+  };
+
+  useEffect(() => {
+    getUsdKoef("MATIC", setUsdtKoef);
+  }, []);
+
+  useEffect(() => {
+    user.id && usdtKoef && getDonationsData();
+  }, [user, usdtKoef]); // queryForm
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",
     [user]
   );
+
+  const { timePeriod, searchStr, groupByName } = queryForm;
+
+  console.log(queryForm);
 
   return (
     <>
@@ -39,7 +106,10 @@ const DonationsContainer = () => {
                   <Col span={14}>
                     <FormInput
                       name="widgetTitle"
-                      value={""}
+                      value={searchStr || ""}
+                      setValue={(value) =>
+                        setQueryForm({ ...queryForm, searchStr: value })
+                      }
                       placeholder="Search by name"
                       modificator={"donations-header__left_input"}
                       addonBefore={<SearchOutlined />}
@@ -48,10 +118,15 @@ const DonationsContainer = () => {
                 )}
                 <Col span={9}>
                   <SelectInput
-                    list={["Today", "Last 7 days", "Last 30 days", "This year"]}
-                    value={"Last 7 days"}
+                    value={timePeriod}
+                    list={Object.values(filterItems)}
                     modificator={"donations-header__left_select"}
-                    setValue={(value) => console.log(value)}
+                    setValue={(selected) =>
+                      setQueryForm({
+                        ...queryForm,
+                        timePeriod: selected as string,
+                      })
+                    }
                   />
                 </Col>
                 {!isCreator && (
@@ -71,7 +146,8 @@ const DonationsContainer = () => {
           {isCreator && (
             <Col span={7}>
               <div className="donations-header__right">
-                <Row justify="space-between">
+                <Row justify="end">
+                  {/* space-between */}
                   <Col span={11}>
                     <BaseButton
                       formatId="create_filter_button"
@@ -81,14 +157,14 @@ const DonationsContainer = () => {
                       isBlue={visibleDatesPicker}
                     />
                   </Col>
-                  <Col span={12}>
+                  {/* <Col span={12}>
                     <BaseButton
                       formatId="create_export_button"
                       onClick={() => console.log("true")}
                       modificator={"donations-header__right_btn"}
                       icon={<DownloadIcon />}
                     />
-                  </Col>
+                  </Col> */}
                 </Row>
               </div>
             </Col>
@@ -98,16 +174,34 @@ const DonationsContainer = () => {
       {visibleDatesPicker && (
         <div className="donations-selectDates">
           <p>Choose the exact time period</p>
-          <DatesPicker />
+          <DatesPicker
+            setValue={(startDate, endDate) =>
+              setQueryForm({ ...queryForm, startDate, endDate })
+            }
+          />
         </div>
       )}
       {isCreator && (
         <div className="donations-checkbox">
-          <Checkbox onChange={onCheckbox}>
+          <Checkbox
+            onChange={(e: CheckboxChangeEvent) =>
+              setQueryForm({ ...queryForm, groupByName: e.target.checked })
+            }
+            checked={groupByName}
+          >
             Group donations with the same sender name
           </Checkbox>
         </div>
       )}
+      <div>
+        <BaseButton
+          formatId="create_filter_button"
+          onClick={sendQuery}
+          padding="8px 64px"
+          fontSize="21px"
+          isBlue
+        />
+      </div>
       <div className="donations-results">
         {isCreator && (
           <div className="donations-results__title">
@@ -115,11 +209,11 @@ const DonationsContainer = () => {
           </div>
         )}
         <TableComponent
-          dataSource={data}
+          dataSource={tableData}
           columns={tableColumns}
           pagination={{
             current: 1,
-            pageSize: 5,
+            pageSize: LIMIT_DONATS,
             position: ["bottomCenter"],
           }}
         />

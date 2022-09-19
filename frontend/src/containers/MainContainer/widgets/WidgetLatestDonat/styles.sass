@@ -3,15 +3,26 @@
 .widget-latestDonat
     .widget    
         &__item
-            display: block !important
+            padding: 15px 15px 15px 30px
+            display: block
             
             &_header
                 display: flex
                 justify-content: space-between
                 align-items: center
 
+                &_name
+                    font-size: 17px
+                    line-height: 20px
+                    font-weight: 600
+
                 &_sum
                     color: variables.$white-color
+                    font-size: 15px
+
+                &_time
+                    line-height: 25px
+                    font-size: 10px
 
             &_message
                 margin: 0

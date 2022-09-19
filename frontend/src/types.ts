@@ -7,7 +7,7 @@ export interface IBadgeData {
   image: IFileInfo;
   name: string;
   description: string;
-  quantity: string;
+  blockchain: string;
 }
 
 export interface IGoalData {
