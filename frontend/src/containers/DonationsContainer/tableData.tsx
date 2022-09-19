@@ -27,7 +27,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     title: "Donation, USD",
     dataIndex: "donationUSD",
     align: "center",
-    render: (text) => text + ", USD",
+    render: (text) => text + " USD",
     sorter: (a, b) => a.donationUSD - b.donationUSD,
     width: "15%",
   },

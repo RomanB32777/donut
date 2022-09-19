@@ -31,3 +31,18 @@ export interface IAlertData {
   sound: string;
   voice: boolean;
 }
+
+declare type typeAligmnet = "Left" | "Center" | "Right";
+
+export interface IStatData {
+  id: number;
+  title: string;
+  stat_description: string;
+  template: string[];
+  data_type: string;
+  time_period: string;
+  title_color: string;
+  bar_color: string;
+  content_color: string;
+  aligment: typeAligmnet;
+}

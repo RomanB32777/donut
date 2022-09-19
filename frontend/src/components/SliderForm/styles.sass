@@ -1,0 +1,30 @@
+@use '../../commonStyles/variables'
+
+.slider
+    width: 100%
+
+    &-component
+        // max-width: 185px
+        width: 100%
+        display: flex
+        flex-direction: column
+        align-items: center
+
+        .ant-slider
+            width: 100%
+
+        span
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 15px
+            line-height: 20px
+            color: variables.$grey-color
+
+    &-label
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 400
+        font-size: 20px
+        line-height: 25px
+        color: variables.$white-color

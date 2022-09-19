@@ -61,7 +61,7 @@ const DonationsContainer = () => {
         (donat: any, key: number) => ({
           key: donat.id || key,
           name: donat.username,
-          donationToken: donat.sum_donation + ", EVMOS",
+          donationToken: donat.sum_donation + " EVMOS",
           donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
           message: donat.donation_message || "-",
           date: donat.donation_date || "-",
@@ -195,7 +195,7 @@ const DonationsContainer = () => {
       )}
       <div>
         <BaseButton
-          formatId="create_filter_button"
+          title="Show data"
           onClick={sendQuery}
           padding="8px 64px"
           fontSize="21px"

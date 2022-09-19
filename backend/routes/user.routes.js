@@ -35,11 +35,11 @@ router.put('/goals-widget', userController.editGoalWidget)
 router.delete('/goals-widget/:id', userController.deleteGoalWidget)
 
 // stats
-router.post('/stats-widget', userController.createGoalWidget)
-router.get('/stats-widgets/:creator_id', userController.getGoalWidgets)
-router.get('/stats-widget/:id', userController.getGoalWidget)
-router.put('/stats-widget', userController.editGoalWidget)
-router.delete('/stats-widget/:id', userController.deleteGoalWidget)
+router.post('/stats-widget', userController.createStatWidget)
+router.get('/stats-widgets/:creator_id', userController.getStatWidgets)
+router.get('/stats-widget/:id', userController.getStatWidget)
+router.put('/stats-widget', userController.editStatWidget)
+router.delete('/stats-widget/:id', userController.deleteStatWidget)
 
 
 module.exports = router

@@ -29,6 +29,7 @@ import ChooseWalletModal from "./components/ChooseWalletModal";
 import Loader from "./components/Loader";
 import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
+import DonatStatPage from "./pages/DonatStatPage";
 
 const routes = {
   main: "/",
@@ -190,6 +191,11 @@ export const routers: IRoute[] = [
   {
     path: "donat-goal/:name/:id",
     element: <DonatGoalPage />,
+    hiddenLayoutElements: true,
+  },
+  {
+    path: "donat-stat/:name/:id",
+    element: <DonatStatPage />,
     hiddenLayoutElements: true,
   },
 ];

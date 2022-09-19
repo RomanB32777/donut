@@ -297,18 +297,12 @@ class DonationController {
                     `AND username LIKE '%${searchStr.toLowerCase()}%'`
                     : ""
                 }
-                ${isGroup ? "GROUP BY username" : ""}
+                ${isGroup ? `GROUP BY ${isCreator ? "username" : "creator_username"}` : ""}
                 ORDER BY donation_date DESC
                 LIMIT ${limit}
                 OFFSET ${offset}`, [user_id])
-            // GROUP BY donations.id COUNT(*), 
 
-            // AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
-            // >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
-            // ORDER BY sum_donation DESC
-            // const users = await db.query(`SELECT * FROM users WHERE roleplay = 'creators' AND username LIKE '%${username.toLowerCase()}%'`)
-
-            if (data && data.rows && data.rows.length > 0) {
+                if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json({ donations: data.rows })
             } else {
                 res.status(200).json({ donations: [] })

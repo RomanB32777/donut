@@ -121,7 +121,7 @@ create TABLE notifications (
 );
 
 create TABLE alerts (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(20) DEFAULT '' PRIMARY KEY,
     banner_link VARCHAR(255) DEFAULT '',
     message_color  VARCHAR(10) DEFAULT '#ffffff',
     name_color  VARCHAR(10) DEFAULT '#ffffff',
@@ -134,7 +134,7 @@ create TABLE alerts (
 );
 
 create TABLE goals (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(20) DEFAULT '' PRIMARY KEY,
     title VARCHAR(255) DEFAULT '',
     amount_goal NUMERIC DEFAULT 1,
     amount_raised NUMERIC DEFAULT 0,
@@ -145,4 +145,19 @@ create TABLE goals (
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
     CHECK (amount_goal >= amount_raised)
+);
+
+create TABLE stats (
+    id VARCHAR(20) DEFAULT '' PRIMARY KEY,
+    title VARCHAR(255) DEFAULT '',
+    stat_description VARCHAR(255) DEFAULT '',
+    template VARCHAR(255) DEFAULT '',
+    data_type VARCHAR(255) DEFAULT '',
+    time_period VARCHAR(255) DEFAULT '',
+    title_color VARCHAR(10) DEFAULT '#ffffff',
+    bar_color VARCHAR(10) DEFAULT '#1D14FF',
+    content_color VARCHAR(10) DEFAULT '#212127',
+    aligment VARCHAR(10) DEFAULT 'Center',
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );

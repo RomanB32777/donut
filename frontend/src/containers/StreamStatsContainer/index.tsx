@@ -1,51 +1,118 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Col, Row } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BaseButton from "../../commonComponents/BaseButton";
 import PageTitle from "../../commonComponents/PageTitle";
-import DatesPicker from "../../components/DatesPicker";
 import FormInput from "../../components/FormInput";
-import LinkCopy from "../../components/LinkCopy";
 import ModalComponent from "../../components/ModalComponent";
 import SelectInput from "../../components/SelectInput";
-import ConfirmPopup from "../../components/ConfirmPopup";
-import { PencilIcon, TrashBinIcon } from "../../icons/icons";
+import { IStatData } from "../../types";
+import StatsItem from "./StatsItem";
 import "./styles.sass";
+import axiosClient from "../../axiosClient";
+import { addNotification, addSuccessNotification } from "../../utils";
+import { getStats } from "../../store/types/Stats";
 
-interface IWidgetData {
-  widgetTitle: string;
-  widgetDescription: string;
-  widgetTemplate: string[];
-  widgetDataType: string;
-  widgetTimePeriod: string;
+interface IWidgetStatData {
+  title: string;
+  stat_description: string;
+  template: string | string[];
+  data_type: string;
+  time_period: string;
+  id?: number;
 }
+
+const initWidgetStatData: IWidgetStatData = {
+  id: 0,
+  title: "",
+  stat_description: "",
+  template: [],
+  data_type: "Top donations",
+  time_period: "Today",
+};
 
 const templateList = ["{username}", "{sum}", "{message}"];
 
 const StreamStatsContainer = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
+  const stats = useSelector((state: any) => state.stats);
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [formData, setFormData] = useState<IWidgetData>({
-    widgetTitle: "",
-    widgetDescription: "",
-    widgetTemplate: [],
-    widgetDataType: "Top donations",
-    widgetTimePeriod: "Today",
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<IWidgetStatData>({
+    ...initWidgetStatData,
   });
 
-  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
+  const openEditModal = (widget: IWidgetStatData) => {
+    const { id, title, stat_description, template, data_type, time_period } =
+      widget;
+    setFormData({
+      id,
+      title,
+      stat_description,
+      template: (template as string).split(" "),
+      data_type,
+      time_period,
+    });
     setIsOpenModal(true);
   };
 
-  const {
-    widgetTitle,
-    widgetDescription,
-    widgetTemplate,
-    widgetDataType,
-    widgetTimePeriod,
-  } = formData;
+  const closeEditModal = () => {
+    setFormData({
+      ...initWidgetStatData,
+    });
+    setIsOpenModal(false);
+  };
+
+  const sendData = async () => {
+    try {
+      setLoading(true);
+      const { id, title, stat_description, template, data_type, time_period } =
+        formData;
+
+      id
+        ? await axiosClient.put("/api/user/stats-widget/", {
+            statData: {
+              title,
+              stat_description,
+              template: (template as string[]).join(" "),
+              data_type,
+              time_period,
+            },
+            id,
+          })
+        : await axiosClient.post("/api/user/stats-widget/", {
+            title,
+            stat_description,
+            template: (template as string[]).join(" "),
+            data_type,
+            time_period,
+            creator_id: user.id,
+          });
+      dispatch(getStats(user.id));
+      setIsOpenModal(false);
+      setFormData({
+        ...initWidgetStatData,
+      });
+      addSuccessNotification("Data created successfully");
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: `An error occurred while creating data`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    user.id && dispatch(getStats(user.id));
+  }, [user]);
+
+  const { title, stat_description, template, data_type, time_period } =
+    formData;
 
   return (
     <div className="streamStatsPage-container stats">
@@ -63,56 +130,20 @@ const StreamStatsContainer = () => {
         />
       </div>
       <div className="stats-wrapper">
-        <div className="stats-item">
-          <Row>
-            <Col span={11}>
-              <div className="stats-item__mainInfo">
-                <p className="stats-item__mainInfo_title">
-                  My top donations all time
-                </p>
-                <p className="stats-item__mainInfo_description">
-                  I need this widget to display in the right corner of my stream
-                </p>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div className="stats-item__parameters">
-                <p>Date period: 01/08/2022 - 31/08/2022</p>
-                <p>Date type: Top supporters</p>
-                <p>Template: username - donation</p>
-                <LinkCopy
-                  link={
-                    "http://localhost:5000/donat-message/undefined/undefined"
-                  }
-                  isSimple
-                />
-              </div>
-            </Col>
-            <Col span={1}>
-              <div className="stats-item__btns">
-                <div
-                  style={{
-                    marginRight: 5,
-                  }}
-                  onClick={clickEditBtn}
-                >
-                  <PencilIcon />
-                </div>
-                <ConfirmPopup confirm={() => console.log()}>
-                  <div style={{ marginLeft: 5 }}>
-                    <TrashBinIcon />
-                  </div>
-                </ConfirmPopup>
-              </div>
-            </Col>
-          </Row>
-        </div>
+        {Boolean(stats.length) &&
+          stats.map((widget: IStatData) => (
+            <StatsItem
+              key={widget.id}
+              statData={widget}
+              openEditModal={openEditModal}
+            />
+          ))}
       </div>
-
       <ModalComponent
         visible={isOpenModal}
         title="New widget creation"
         setIsVisible={setIsOpenModal}
+        onCancel={closeEditModal}
         width={880}
         topModal
       >
@@ -123,9 +154,9 @@ const StreamStatsContainer = () => {
                 <FormInput
                   label="Widget title:"
                   name="widgetTitle"
-                  value={widgetTitle}
+                  value={title}
                   setValue={(value) =>
-                    setFormData({ ...formData, widgetTitle: value })
+                    setFormData({ ...formData, title: value })
                   }
                   labelCol={6}
                   InputCol={16}
@@ -136,10 +167,10 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <FormInput
                   label="Widget description:"
-                  name="widgetDescription"
-                  value={widgetDescription}
+                  name="stat_description"
+                  value={stat_description}
                   setValue={(value) =>
-                    setFormData({ ...formData, widgetDescription: value })
+                    setFormData({ ...formData, stat_description: value })
                   }
                   labelCol={6}
                   InputCol={16}
@@ -152,11 +183,11 @@ const StreamStatsContainer = () => {
                 <SelectInput
                   label="Data type:"
                   list={["Top donations", "Top supporters", "Recent donations"]}
-                  value={widgetDataType}
+                  value={data_type}
                   setValue={(value) =>
                     setFormData({
                       ...formData,
-                      widgetDataType: value as string,
+                      data_type: value as string,
                     })
                   }
                   labelCol={6}
@@ -177,22 +208,20 @@ const StreamStatsContainer = () => {
                     "All time",
                     "Custom date",
                   ]}
-                  value={widgetTimePeriod}
+                  value={time_period}
                   setValue={(value) =>
                     setFormData({
                       ...formData,
-                      widgetTimePeriod: value as string,
+                      time_period: value as string,
                     })
                   }
                   labelCol={6}
                   selectCol={16}
                 />
-                {widgetTimePeriod === "Custom date" && (
+                {time_period === "Custom date" && (
                   <div className="customDatesPicker">
                     <Row>
-                      <Col offset={6}>
-                        {/* <DatesPicker /> */}
-                      </Col>
+                      <Col offset={6}>{/* <DatesPicker /> */}</Col>
                     </Row>
                   </div>
                 )}
@@ -203,11 +232,11 @@ const StreamStatsContainer = () => {
                 <SelectInput
                   label="Template:"
                   list={templateList}
-                  value={widgetTemplate}
+                  value={template}
                   setValue={(value) =>
                     setFormData({
                       ...formData,
-                      widgetTemplate: value as string[],
+                      template: value as string[],
                     })
                   }
                   descriptionSelect={templateList.join(", ")}
@@ -223,7 +252,8 @@ const StreamStatsContainer = () => {
               <BaseButton
                 formatId="profile_form_save_widget_button"
                 padding="6px 35px"
-                onClick={() => console.log("dd")}
+                onClick={sendData}
+                disabled={loading}
                 fontSize="18px"
                 isBlue
               />
@@ -232,7 +262,7 @@ const StreamStatsContainer = () => {
               <BaseButton
                 formatId="profile_form_cancel_button"
                 padding="6px 35px"
-                onClick={() => setIsOpenModal(false)}
+                onClick={closeEditModal}
                 fontSize="18px"
               />
             </div>

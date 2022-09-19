@@ -72,8 +72,7 @@ const DonationGoalsContainer = () => {
       dispatch(getGoals(user.id));
       setIsOpenModal(false);
       setFormData({
-        widgetAmount: "0",
-        widgetDescription: "",
+        ...initWidgetGoalData,
       });
       addSuccessNotification("Data created successfully");
     } catch (error) {
@@ -128,7 +127,6 @@ const DonationGoalsContainer = () => {
             .map((goal: IGoalData) => (
               <GoalItem key={goal.id} goalData={goal} />
             ))}
-        {/* <GoalItem goalData={testData} isArchive /> */}
       </div>
       <ModalComponent
         visible={isOpenModal}

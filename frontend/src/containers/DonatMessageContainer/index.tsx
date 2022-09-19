@@ -12,6 +12,7 @@ import axiosClient from "../../axiosClient";
 import { IAlertData } from "../../types";
 import { url } from "../../consts";
 import { soundsList } from "../../assets/sounds";
+import EvmosIMG from '../../assets/evmos.png'
 import "./styles.sass";
 
 const DonatMessageContainer = () => {
@@ -21,11 +22,11 @@ const DonatMessageContainer = () => {
   const notifications = useSelector((state: any) => state.notifications);
 
   const [lastNotif, setLastNotif] = useState<any>({
-    // wallet_type: "tron",
-    // sum_donation: 50,
-    // username: "tester",
-    // donation_message:
-    //   "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
+    wallet_type: "metamask",
+    sum_donation: 50,
+    username: "tester",
+    donation_message:
+      "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
   });
 
   const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({
@@ -44,9 +45,9 @@ const DonatMessageContainer = () => {
   useEffect(() => {
     const { duration } = alertWidgetData;
     notifications.length && setLastNotif(notifications[0].donation);
-    setTimeout(() => {
-      setLastNotif({});
-    }, duration * 1000);
+    // setTimeout(() => {
+    //   setLastNotif({});
+    // }, duration * 1000);
   }, [notifications]);
 
   useEffect(() => {
@@ -118,7 +119,7 @@ const DonatMessageContainer = () => {
           <img
             src={banner.preview || bigImg}
             alt="banner"
-            className={clsx({
+            className={clsx("donat-messsage-container_banner", {
               rotate: !Boolean(banner.preview),
             })}
           />
@@ -146,8 +147,7 @@ const DonatMessageContainer = () => {
                 </>
               )}
             </span>
-            {lastNotif.wallet_type === "tron" && <TronIcon />}
-            {lastNotif.wallet_type === "metamask" && <MaticIcon />}
+            {lastNotif.wallet_type === "metamask" && <img src={EvmosIMG} alt="evmos" />}
           </div>
           <p
             className="donat-messsage-container_message"

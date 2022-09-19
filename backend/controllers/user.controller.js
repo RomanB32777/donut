@@ -18,7 +18,7 @@ const getMaticUsdKoef = async () => {
     return res.data.price;
 };
 
-const getImageName = (length) => {
+const getRandomStr = (length) => {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -86,9 +86,10 @@ class UserController {
             const date = new Date()
             const newUser = await db.query(`INSERT INTO users (${typeWallet}_token, username, roleplay) values ($1, $2, $3) RETURNING *;`, [token, username.toLowerCase(), role])
             if (role === 'creators') {
-                const security_string = getImageName(10)
+                const security_string = getRandomStr(10)
                 await db.query(`INSERT INTO creators (username, user_id, creation_date, security_string) values ($1, $2, $3, $4) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date, security_string])
-                await db.query(`INSERT INTO alerts (creator_id) values ($1) RETURNING *`, [newUser.rows[0].id]);
+                const alertID = getRandomStr(6)
+                await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, newUser.rows[0].id]);
                 res.status(200).json({ message: 'Creator created!' })
             } else {
                 await db.query(`INSERT INTO backers (username, user_id, creation_date) values ($1, $2, $3) RETURNING *`, [username.toLowerCase(), newUser.rows[0].id, date])
@@ -269,7 +270,7 @@ class UserController {
         try {
             const user_id = req.params.user_id
             const file = req.files.file;
-            const filename = getImageName(32)
+            const filename = getRandomStr(32)
             file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
             const user = await db.query(`SELECT * FROM users WHERE id = $1`, [user_id])
             let table = 'backers'
@@ -287,7 +288,7 @@ class UserController {
         try {
             const user_id = req.params.user_id
             const file = req.files.file;
-            const filename = getImageName(32)
+            const filename = getRandomStr(32)
             file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
             const user = await db.query(`SELECT * FROM users WHERE id = $1`, [user_id])
             let table = 'backers'
@@ -419,7 +420,6 @@ class UserController {
         try {
             const { alertData, creator_id } = req.body
             let updatedWidget = {}
-            // console.log(req.body, req.files);
 
             const parseData = JSON.parse(alertData)
             const updatedDBWidget = await db.query(`UPDATE alerts SET 
@@ -437,7 +437,7 @@ class UserController {
 
             if (req.files) {
                 const file = req.files.file;
-                const filename = getImageName(32) + file.name.slice(file.name.lastIndexOf('.'));
+                const filename = getRandomStr(32) + file.name.slice(file.name.lastIndexOf('.'));
                 file.mv(`images/${filename}`, (err) => { })
                 const updatedBannerWidget = await db.query(`UPDATE alerts SET 
                     banner_link = $1
@@ -464,10 +464,15 @@ class UserController {
     }
 
 
+    // goals
     async createGoalWidget(req, res) {
         try {
             const { title, amount_goal, creator_id } = req.body
-            const newGoalWidget = await db.query(`INSERT INTO goals (title, amount_goal, creator_id) values ($1, $2, $3) RETURNING *;`, [title, amount_goal, creator_id])
+            const id = getRandomStr(6)
+            const newGoalWidget = await db.query(
+                `INSERT INTO goals (id, title, amount_goal, creator_id) values ($1, $2, $3, $4) RETURNING *;`, [
+                id, title, amount_goal, creator_id
+            ])
             res.status(200).json(newGoalWidget.rows[0])
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
@@ -538,6 +543,98 @@ class UserController {
             const id = req.params.id
             const deletedGoalWidget = await db.query(`DELETE FROM goals WHERE id = $1 RETURNING *;`, [id])
             res.status(200).json(deletedGoalWidget.rows[0])
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+
+    // stats
+    async createStatWidget(req, res) {
+        try {
+            const {
+                title,
+                stat_description,
+                template,
+                data_type,
+                time_period,
+                creator_id
+            } = req.body
+            const id = getRandomStr(6)
+            const newStatWidget = await db.query(`INSERT INTO stats (id, title, stat_description, template, data_type, time_period, creator_id) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`, [
+                id,
+                title,
+                stat_description,
+                template,
+                data_type,
+                time_period,
+                creator_id
+            ])
+            res.status(200).json(newStatWidget.rows[0])
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getStatWidgets(req, res) {
+        try {
+            const creator_id = req.params.creator_id;
+            const data = await db.query('SELECT * FROM stats WHERE creator_id = $1', [creator_id])
+            res.status(200).json(data.rows)
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getStatWidget(req, res) {
+        try {
+            const id = req.params.id;
+            const data = await db.query('SELECT * FROM stats WHERE id = $1', [id])
+            res.status(200).json(data.rows[0])
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async editStatWidget(req, res) {
+        try {
+            const { statData, id } = req.body
+
+            if (statData.title) {
+                const updatedStatWidget = await db.query(`UPDATE stats SET 
+                        title = $1,
+                        stat_description = $2,
+                        template = $3,
+                        data_type = $4,
+                        time_period = $5
+                        WHERE id = $6 RETURNING *;`, [
+                    ...Object.values(statData),
+                    id
+                ]);
+                res.status(200).json(updatedStatWidget.rows[0])
+
+            } else {
+                const updatedStatWidget = await db.query(`UPDATE stats SET 
+                        title_color = $1,
+                        bar_color = $2,
+                        content_color = $3,
+                        aligment = $4
+                        WHERE id = $5 RETURNING *;`, [
+                    ...Object.values(statData),
+                    id
+                ]);
+                res.status(200).json(updatedStatWidget.rows[0])
+            }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async deleteStatWidget(req, res) {
+        try {
+            const id = req.params.id
+            const deletedStatWidget = await db.query(`DELETE FROM stats WHERE id = $1 RETURNING *;`, [id])
+            res.status(200).json(deletedStatWidget.rows[0])
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
