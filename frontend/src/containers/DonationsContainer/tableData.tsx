@@ -37,7 +37,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     width: "30%",
   },
   {
-    title: "Date and Time",
+    title: "Date and Time, UTM",
     dataIndex: "date",
     width: "25%",
     render: (text) =>

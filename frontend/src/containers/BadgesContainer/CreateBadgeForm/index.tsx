@@ -21,6 +21,47 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
     blockchain: "",
   });
 
+  console.log(formBadge);
+
+  // const changeNetwork = () => {
+  //   if (window.ethereum) {
+  //     window.ethereum.request({method: "wallet_addEthereumChain",
+  //     params: [{
+  //       chainId: `0x${Number(9000).toString(16)}`,
+  //       chainName: "Evmos Testnet",
+  //       nativeCurrency: {
+  //         name: "test-Evmos",
+  //         symbol: "tEVMOS",
+  //         decimals: 18
+  //       },
+  //       rpcUrls: ["https://eth.bd.evmos.dev:8545"],
+  //       blockExplorerUrls: ["https://evm.evmos.dev"]
+  //     }]
+  //   })} else {
+  //     alert("install metamask extension!!")
+  //   }
+  // }
+
+  // const createContract = async () => {
+  //   // console.log(networks.evmos_testnet)
+  //   await changeNetwork("evmos_testnet")
+  //   const _uri = await uploadToIpfs()
+  //   const provider = await new ethers.providers.Web3Provider(window.ethereum);
+  //   const signer = provider.getSigner(0);
+  //   const Badge = new ethers.ContractFactory(abi, bytecode, signer);
+  //   // deploy contracts
+  //   const badgeContract = await Badge.deploy(_uri)  
+  //   setContractAddress(badgeContract.address)
+  // }
+
+  // const mintBadge = async () => {
+  //   const provider = await new ethers.providers.Web3Provider(window.ethereum);
+  //   const signer = provider.getSigner(0);
+  //   let currentContract = new ethers.Contract(contractAddress, abi, signer);
+  //   await currentContract.mint(mintDetails.receiver, mintDetails.tokenId, mintDetails.quantity)  
+  // }
+  
+
   const { image, name, description, blockchain } = formBadge;
 
   return (

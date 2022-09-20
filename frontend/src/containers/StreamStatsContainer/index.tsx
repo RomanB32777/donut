@@ -73,10 +73,6 @@ const StreamStatsContainer = () => {
       const { id, title, stat_description, template, data_type, time_period } =
         formData;
 
-      // const timeCurrentPeriod = Object.keys(filterCurrentPeriodItems).find(
-      //   (key: string) => filterCurrentPeriodItems[key] === time_period
-      // );
-
       id
         ? await axiosClient.put("/api/user/stats-widget/", {
             statData: {

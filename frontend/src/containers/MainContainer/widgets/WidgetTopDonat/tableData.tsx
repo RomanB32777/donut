@@ -20,7 +20,6 @@ export const tableColums: ColumnsType<ITableData> = [
     dataIndex: "donationToken",
     width: "20%",
     align: "center",
-    // sorter: (a, b) => a.donationToken - b.donationToken,
   },
   {
     title: "Message",
@@ -28,10 +27,9 @@ export const tableColums: ColumnsType<ITableData> = [
     width: "40%",
   },
   {
-    title: "Date and Time",
+    title: "Date and Time, UTM",
     dataIndex: "date",
     width: "25%",
-    // sorter: (a, b) => new Date(a.date).getDate() - new Date(b.date).getDate(),
   },
 ];
 

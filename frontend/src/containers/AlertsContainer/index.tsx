@@ -16,7 +16,7 @@ import donImg from "../../assets/big_don.png";
 import BaseButton from "../../commonComponents/BaseButton";
 import LinkCopy from "../../components/LinkCopy";
 import SelectComponent from "../../components/SelectComponent";
-import { IAlertData, IFileInfo } from "../../types";
+import { IAlertData, initAlertData } from "../../types";
 import { url } from "../../consts";
 import { soundsList } from "../../assets/sounds";
 import "./styles.sass";
@@ -25,18 +25,7 @@ const AlertsContainer = () => {
   const user = useSelector((state: any) => state.user);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState<IAlertData>({
-    banner: {
-      preview: "",
-      file: null,
-    },
-    message_color: "#ffffff",
-    name_color: "#ffffff",
-    sum_color: "#ffffff",
-    duration: 5,
-    sound: "sound_1",
-    voice: false,
-  });
+  const [formData, setFormData] = useState<IAlertData>({...initAlertData});
 
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {

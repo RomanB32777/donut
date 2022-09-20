@@ -1,25 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import axiosClient, { baseURL } from "../../axiosClient";
 import { alignItemsList, IGoalData, IStatData } from "../../types";
+import { filterCurrentPeriodItems } from "../../consts";
 import "./styles.sass";
 
 const DonatStatContainer = () => {
-  const dispatch = useDispatch();
   const { id, name } = useParams();
-  // const notifications = useSelector((state: any) => state.notifications);
+  const notifications = useSelector((state: any) => state.notifications);
 
-  // const [lastNotif, setLastNotif] = useState<any>({
-  //   wallet_type: "tron",
-  //   sum_donation: 50,
-  //   username: "tester",
-  //   donation_message:
-  //     "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
-  // });
-
+  const [lastNotif, setLastNotif] = useState<any>({});
   const [statData, setStatData] = useState<IStatData>({
     id: 0,
     title: "",
@@ -33,22 +25,28 @@ const DonatStatContainer = () => {
     template: [],
   });
 
-  // useEffect(() => {
-  //   notifications.length && setLastNotif(notifications[0].donation);
-  // }, [notifications]);
+  const getStatData = async () => {
+    const response = await axiosClient.get(
+      baseURL + "/api/user/stats-widget/" + id
+    );
+    response.status === 200 && setStatData(response.data);
+  };
 
   useEffect(() => {
-    const getStatData = async () => {
-      const response = await axiosClient.get(
-        baseURL + "/api/user/stats-widget/" + id
-      );
-      response.status === 200 && setStatData(response.data);
-    };
+    notifications.length && setLastNotif(notifications[0].donation);
+  }, [notifications]);
+
+  // useEffect(() => {
+  //   if (lastNotif.goal_id && lastNotif.goal_id === id) {
+  //     getStatData();
+  //   }
+  // }, [lastNotif]);
+
+  useEffect(() => {
     getStatData();
   }, []);
 
   const {
-    title,
     title_color,
     template,
     data_type,
@@ -58,37 +56,43 @@ const DonatStatContainer = () => {
     aligment,
   } = statData;
 
+  const timeCurrentPeriod = Object.keys(filterCurrentPeriodItems).find(
+    (key: string) => filterCurrentPeriodItems[key] === time_period
+  );
+
+  // console.log(timeCurrentPeriod);
+
   return (
     <div className="donat-stat">
-      <div
-        className="donat-stat_container"
-        style={{
-          alignItems: alignItemsList[aligment],
-        }}
-      >
-        <div
-          className="donat-stat_title"
-          style={{
-            background: bar_color,
-          }}
-        >
+      <div className="donat-stat_container">
+        <div>
           <span
+            className="donat-stat_title"
             style={{
+              background: bar_color,
               color: title_color,
             }}
           >
             {data_type} {time_period.toLowerCase()}
           </span>
-        </div>
-        <div className="donat-stat_list">
-          <p
-            className="donat-stat_list-item"
+          <div
+            className="donat-stat_list__wrapper"
             style={{
-              color: content_color,
+              justifyContent: alignItemsList[aligment],
             }}
           >
-            Jordan - 30 USD
-          </p>
+            <div className="donat-stat_list">
+              <p
+                className="donat-stat_list-item"
+                style={{
+                  color: content_color,
+                }}
+              >
+                {template}
+                {/* Jordan - 30 USD */}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -49,9 +49,14 @@
                 font-weight: 600
 
             &_description
+                overflow: hidden
+                text-overflow: ellipsis
+                display: -webkit-box
+                -webkit-box-orient: vertical
                 margin-top: 20px
                 margin-bottom: 0
                 font-weight: 400
+                // -webkit-line-clamp: 2
 
         &__parameters
             // padding-left: 25px
@@ -101,6 +106,9 @@
                     padding: 12px 40px
                     border-radius: 10px
                 &_stat
+                    display: flex
+                    width: 100%
+
                     &__list
                         margin-top: 15px
                         p

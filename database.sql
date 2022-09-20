@@ -60,7 +60,9 @@ create TABLE donations(
     donation_message VARCHAR(255) DEFAULT '',
     wallet_type VARCHAR(255) DEFAULT '',
     creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    goal_id VARCHAR(20) DEFAULT '',
+    FOREIGN KEY (goal_id) REFERENCES goals(id)
 );
 
 create TABLE badges(

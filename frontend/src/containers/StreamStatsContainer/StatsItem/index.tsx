@@ -15,7 +15,7 @@ import { SliderMarks } from "antd/lib/slider";
 import SliderForm from "../../../components/SliderForm";
 
 const marksSlider: { [key: number]: typeAligmnet } = {
-  0:  "Left",
+  0: "Left",
   1: "Center",
   2: "Right",
 };
@@ -174,27 +174,23 @@ const StatsItem = ({
             justify="space-between"
           >
             <Col span={10}>
-              <div
-                className="preview-block"
-                style={{
-                  alignItems: alignItemsList[aligment],
-                }}
-              >
-                <div
-                  className="preview-block_title"
-                  style={{
-                    background: bar_color,
-                  }}
-                >
+              <div className="preview-block">
+                <div>
                   <span
+                    className="preview-block_title"
                     style={{
+                      background: bar_color,
                       color: title_color,
                     }}
                   >
                     {data_type} {time_period.toLowerCase()}
                   </span>
-                </div>
-                <div className="preview-block_stat">
+                <div
+                  className="preview-block_stat"
+                  style={{
+                    justifyContent: alignItemsList[aligment],
+                  }}
+                >
                   <div className="preview-block_stat__list">
                     <p
                       className="preview-block_stat__list-item"
@@ -213,6 +209,7 @@ const StatsItem = ({
                       Nate - 50 USD
                     </p>
                   </div>
+                </div>
                 </div>
               </div>
             </Col>

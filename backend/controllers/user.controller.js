@@ -491,9 +491,12 @@ class UserController {
 
     async getGoalWidget(req, res) {
         try {
-            const id = req.params.id;
-            const data = await db.query('SELECT * FROM goals WHERE id = $1', [id])
-            res.status(200).json(data.rows[0])
+            const {username, id} = req.params;
+            const user = await db.query('SELECT id FROM users WHERE username = $1', [username])
+            if (user.rows[0]) {
+                const data = await db.query('SELECT * FROM goals WHERE creator_id = $1 AND id = $2', [user.rows[0].id, id])
+                res.status(200).json(data.rows[0])
+            } else res.status(200).json({})
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }

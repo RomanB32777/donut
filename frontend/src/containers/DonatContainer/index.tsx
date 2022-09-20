@@ -107,6 +107,7 @@ const DonatContainer = () => {
         sum: +amount,
         wallet: "metamask",
         donation_message: message,
+        goal_id: selectedGoal !== "0" ? selectedGoal : null,
       });
 
       if (status === 200) {
@@ -183,6 +184,14 @@ const DonatContainer = () => {
   //   () => !metamaskWalletIsIntall() && !tronWalletIsIntall(),
   //   []
   // );
+
+  const goalsActive = useMemo(
+    () =>
+      Array.isArray(goals) &&
+      goals.length &&
+      goals.filter((goal: IGoalData) => !goal.isarchive),
+    [goals]
+  );
 
   const { username, message, amount, selectedGoal } = form;
 
@@ -305,7 +314,7 @@ const DonatContainer = () => {
                   />
                 </div>
               </div>
-              {Boolean(goals.length) && (
+              {goalsActive && Boolean(goalsActive.length) && (
                 <div className="donat-container__payment_goals">
                   <Row justify="space-between">
                     <Col span={6}>
@@ -332,13 +341,11 @@ const DonatContainer = () => {
                           >
                             <Space direction="vertical">
                               <Radio value={"0"}>Don’t participate</Radio>
-                              {goals
-                                .filter((goal: IGoalData) => !goal.isarchive)
-                                .map((goal: IGoalData) => (
-                                  <Radio key={goal.id} value={goal.id}>
-                                    {goal.title}
-                                  </Radio>
-                                ))}
+                              {goalsActive && goalsActive.map((goal: IGoalData) => (
+                                <Radio key={goal.id} value={goal.id}>
+                                  {goal.title}
+                                </Radio>
+                              ))}
                             </Space>
                           </Radio.Group>
                         </div>

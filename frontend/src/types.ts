@@ -32,6 +32,19 @@ export interface IAlertData {
   voice: boolean;
 }
 
+export const initAlertData: IAlertData = {
+  banner: {
+    preview: "",
+    file: null,
+  },
+  message_color: "#ffffff",
+  name_color: "#ffffff",
+  sum_color: "#ffffff",
+  duration: 5,
+  sound: "sound_1",
+  voice: false,
+}
+
 export declare type typeAligmnet = "Left" | "Center" | "Right";
 
 export interface IStatData {

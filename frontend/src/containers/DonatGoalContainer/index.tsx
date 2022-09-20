@@ -2,27 +2,17 @@ import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { MaticIcon, TronIcon } from "../../icons/icons";
-import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 
-import bigImg from "../../assets/big_don.png";
-import "./styles.sass";
 import { Progress } from "antd";
 import axiosClient, { baseURL } from "../../axiosClient";
 import { IGoalData } from "../../types";
+import "./styles.sass";
 
 const DonatGoalContainer = () => {
-  const dispatch = useDispatch();
-  const { id } = useParams();
-  // const notifications = useSelector((state: any) => state.notifications);
+  const { id, name } = useParams();
+  const notifications = useSelector((state: any) => state.notifications);
 
-  // const [lastNotif, setLastNotif] = useState<any>({
-  //   wallet_type: "tron",
-  //   sum_donation: 50,
-  //   username: "tester",
-  //   donation_message:
-  //     "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
-  // });
+  const [lastNotif, setLastNotif] = useState<any>({});
 
   const [goalData, setGoalData] = useState<IGoalData>({
     id: 0,
@@ -36,17 +26,24 @@ const DonatGoalContainer = () => {
     creator_id: "0",
   });
 
-  // useEffect(() => {
-  //   notifications.length && setLastNotif(notifications[0].donation);
-  // }, [notifications]);
+  const getGoalData = async () => {
+    const response = await axiosClient.get(
+      `${baseURL}/api/user/goals-widget/${name}/${id}`
+    );
+    response.status === 200 && setGoalData(response.data);
+  };
 
   useEffect(() => {
-    const getGoalData = async () => {
-      const response = await axiosClient.get(
-        baseURL + "/api/user/goals-widget/" + id
-      );
-      response.status === 200 && setGoalData(response.data);
-    };
+    notifications.length && setLastNotif(notifications[0].donation);
+  }, [notifications]);
+
+  useEffect(() => {
+    if (lastNotif.goal_id && lastNotif.goal_id === id) {
+      getGoalData();
+    }
+  }, [lastNotif]);
+
+  useEffect(() => {
     getGoalData();
   }, []);
 

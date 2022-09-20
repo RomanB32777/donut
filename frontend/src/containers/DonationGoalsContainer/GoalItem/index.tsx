@@ -222,7 +222,7 @@ const GoalItem = ({
                   />
 
                   <p>
-                    {amount_raised} / {amount_goal} USD
+                    75 / 100 USD
                   </p>
                 </div>
               </div>

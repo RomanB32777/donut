@@ -3,17 +3,24 @@ import useSound from "use-sound";
 import clsx from "clsx";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router";
-import { MaticIcon, TronIcon } from "../../icons/icons";
+import { useParams } from "react-router";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 
 import bigImg from "../../assets/big_don.png";
 import axiosClient from "../../axiosClient";
-import { IAlertData } from "../../types";
+import { IAlertData, initAlertData } from "../../types";
 import { url } from "../../consts";
 import { soundsList } from "../../assets/sounds";
-import EvmosIMG from '../../assets/evmos.png'
+import EvmosIMG from "../../assets/evmos.png";
 import "./styles.sass";
+
+const testDonat = {
+  wallet_type: "metamask",
+  sum_donation: 50,
+  username: "tester",
+  donation_message:
+    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
+};
 
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
@@ -22,42 +29,27 @@ const DonatMessageContainer = () => {
   const notifications = useSelector((state: any) => state.notifications);
 
   const [lastNotif, setLastNotif] = useState<any>({
-    wallet_type: "metamask",
-    sum_donation: 50,
-    username: "tester",
-    donation_message:
-      "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
+    // ...testDonat
   });
 
-  const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({
-    banner: {
-      preview: "",
-      file: null,
-    },
-    message_color: "#ffffff",
-    name_color: "#ffffff",
-    sum_color: "#ffffff",
-    duration: 5,
-    sound: "sound_1",
-    voice: false,
-  });
+  const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({...initAlertData});
 
   useEffect(() => {
     const { duration } = alertWidgetData;
     notifications.length && setLastNotif(notifications[0].donation);
-    // setTimeout(() => {
-    //   setLastNotif({});
-    // }, duration * 1000);
+    setTimeout(() => {
+      setLastNotif({});
+    }, duration * 1000);
   }, [notifications]);
 
   useEffect(() => {
     const { voice, sound } = alertWidgetData;
+
     if (lastNotif.donation_message) {
       sound && play();
       if (voice && duration) {
         const timeout = setTimeout(() => {
           const speech = new SpeechSynthesisUtterance();
-          // speech.lang = "ru-RU";
           speech.rate = 1.5;
           speech.pitch = 2;
           speech.volume = 1;
@@ -147,7 +139,9 @@ const DonatMessageContainer = () => {
                 </>
               )}
             </span>
-            {lastNotif.wallet_type === "metamask" && <img src={EvmosIMG} alt="evmos" />}
+            {lastNotif.wallet_type === "metamask" && (
+              <img src={EvmosIMG} alt="evmos" />
+            )}
           </div>
           <p
             className="donat-messsage-container_message"

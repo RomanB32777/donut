@@ -30,7 +30,7 @@ router.put('/edit-alerts-widget', userController.editAlertsWidget)
 // goals
 router.post('/goals-widget', userController.createGoalWidget)
 router.get('/goals-widgets/:creator_id', userController.getGoalWidgets)
-router.get('/goals-widget/:id', userController.getGoalWidget)
+router.get('/goals-widget/:username/:id', userController.getGoalWidget)
 router.put('/goals-widget', userController.editGoalWidget)
 router.delete('/goals-widget/:id', userController.deleteGoalWidget)
 

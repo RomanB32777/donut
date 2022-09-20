@@ -50,7 +50,7 @@ const getTimeCurrentPeriod = (period) => `date_trunc('${dateTrancCurrentParams[p
 class DonationController {
     async createDonation(req, res) {
         try {
-            const { creator_token, backer_token, donation_message, sum, wallet } = req.body
+            const { creator_token, backer_token, donation_message, goal_id, sum, wallet } = req.body
 
             const initDate = new Date()
             // initDate.setDate(initDate.getDate() - 4);
@@ -64,7 +64,7 @@ class DonationController {
             if (backer_token && creator_token) {
                 const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [creator_token])
                 const backer = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [backer_token])
-                const donation = await db.query(`INSERT INTO donations (username, creator_username, donation_date, backer_id, sum_donation, donation_message, wallet_type, creator_id) values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`, [
+                const donation = await db.query(`INSERT INTO donations (username, creator_username, donation_date, backer_id, sum_donation, donation_message, wallet_type, goal_id, creator_id) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`, [
                     backer.rows[0].username,
                     creator.rows[0].username,
                     date,
@@ -72,6 +72,7 @@ class DonationController {
                     sum,
                     donation_message,
                     wallet,
+                    goal_id,
                     creator.rows[0].id
                 ])
 
