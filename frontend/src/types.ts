@@ -5,9 +5,12 @@ export interface IFileInfo {
 
 export interface IBadgeData {
   image: IFileInfo;
-  name: string;
+  title: string;
   description: string;
   blockchain: string;
+  contract_address: string;
+  URI?: string;
+  quantity?: number;
 }
 
 export interface IGoalData {
@@ -65,3 +68,8 @@ export const alignItemsList: { [key in typeAligmnet]: string } = {
   Center: "center",
   Right: "flex-end",
 };
+
+export interface IBadge {
+  id: number;
+  contract_address: string;
+}

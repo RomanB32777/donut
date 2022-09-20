@@ -134,7 +134,7 @@ const DonatMessageContainer = () => {
                   >
                     {lastNotif.sum_donation}{" "}
                     {lastNotif.wallet_type === "tron" && "TRX"}
-                    {lastNotif.wallet_type === "metamask" && "EVMOS"}
+                    {lastNotif.wallet_type === "metamask" && "tEVMOS"}
                   </span>
                 </>
               )}

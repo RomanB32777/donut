@@ -116,7 +116,7 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
             <FormattedMessage id="mainpage_main_button_metamask" />
           </div>
           <div className="donat-popup__registration_wallets-descr">
-            Working on EVMOS Testnet
+            Working on tEVMOS Testnet
           </div>
         </div>
       </div>

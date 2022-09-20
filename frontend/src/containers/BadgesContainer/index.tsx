@@ -15,39 +15,23 @@ import "./styles.sass";
 import testIMG from "../../assets/person.png";
 import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
-
-const tableHeaderTitles = ["icon", "badge", "qnt", "info", "delete"];
+import { IBadge } from "../../types";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
 
-  const [badgesList, setBadgesList] = useState<any[]>([
-    {
-      id: "1",
-      badge_name: "test",
-      badge_desc: "test",
-      badge_image: testIMG,
-      owner_user_id: "1",
-      link: "google",
-    },
-  ]);
-  const [showedPopupId, setShowedPopupId] = useState<number | null>(null);
-
+  const [badgesList, setBadgesList] = useState<IBadge[]>([]);
+  const [activeBadge, setActiveBadge] = useState<IBadge>({
+    id: 0,
+    contract_address: "",
+  });
   const [isOpenCreateForm, setIsOpenCreateForm] = useState<boolean>(false);
   const [isOpenBadgePage, setIsOpenBadgePage] = useState<boolean>(false);
 
-  const getBadges = async (id: string) => {
-    const res = await fetch(
-      baseURL +
-        `/api/badge/get-badges-by-${
-          user.roleplay === "creators"
-            ? "creator/" + user.id
-            : "backer/" + user.id
-        }`
-    );
-    if (res.status === 200) {
-      const result = await res.json();
-      // setBadgesList(result.badges);
+  const getBadges = async (id: number) => {
+    const { data } = await axiosClient.get(`${baseURL}/api/badge/${id}`);
+    if (Array.isArray(data) && data.length) {
+      setBadgesList(data);
     }
   };
 
@@ -55,41 +39,23 @@ const BadgesContainer = () => {
     if (user.id) {
       getBadges(user.id);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const deleteBadge = async (id: number) => {
-    const res = await axiosClient.post("/api/badge/delete-badge/", {
-      badge_id: id,
-    });
+    const res = await axiosClient.delete(`/api/badge/${id}`);
     res.status === 200 && user.id && getBadges(user.id);
   };
-
-  useEffect(() => {
-    const clickHandler = (event: any) => {
-      if (
-        event.target &&
-        event.target.className &&
-        (!event.target.className.includes("badge-panel") ||
-          !event.target.className.includes("content-panel"))
-      ) {
-        setShowedPopupId(null);
-      }
-    };
-    document.addEventListener("click", clickHandler);
-
-    return () => {
-      document.removeEventListener("click", clickHandler);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (isOpenCreateForm)
     return <CreateBadgeForm backBtn={() => setIsOpenCreateForm(false)} />;
 
   if (isOpenBadgePage)
-    return <BadgePage backBtn={() => setIsOpenBadgePage(false)} />;
+    return (
+      <BadgePage
+        activeBadge={activeBadge}
+        backBtn={() => setIsOpenBadgePage(false)}
+      />
+    );
 
   return (
     <div className="badges-container">
@@ -101,7 +67,7 @@ const BadgesContainer = () => {
             <FormattedMessage id="badges_page_new_title" />
           </span>
           <BaseButton
-            formatId="badges_page_new_button"
+            formatId="create_badge_form_button"
             padding="6px 43px"
             fontSize="18px"
             onClick={() => setIsOpenCreateForm(true)}
@@ -113,68 +79,28 @@ const BadgesContainer = () => {
       <div className="badges-container__list">
         {badgesList &&
           badgesList.length > 0 &&
-          badgesList.map(
-            (
-              { id, badge_name, badge_desc, badge_image, owner_user_id, link },
-              rowIndex
-            ) => (
-              <div
-                key={"badge-panel" + rowIndex}
-                className="badge-panel"
-                style={{
-                  marginRight:
-                    rowIndex % 4 !== 3 ? (1170 - 220 * 4) / 3 + "px" : "0px",
-                  position: "relative",
+          badgesList.map(({ id, contract_address }, rowIndex) => (
+            <div
+              key={"badge-panel" + rowIndex}
+              className="badge-panel"
+              style={{
+                marginRight:
+                  rowIndex % 4 !== 3 ? (1170 - 220 * 4) / 3 + "px" : "0px",
+                position: "relative",
+              }}
+              onClick={() => {
+                setActiveBadge({ id, contract_address });
+                setIsOpenBadgePage(true);
+              }}
+            >
+              <ContentCard
+                data={{
+                  id,
                 }}
-                onClick={() => {
-                  setIsOpenBadgePage(true);
-                }}
-              >
-                <ContentCard
-                  data={{
-                    name: badge_name,
-                    image: badge_image,
-                    creator_id: owner_user_id,
-                  }}
-                  onClick={() => deleteBadge(id)}
-                />
-
-                {showedPopupId === rowIndex ? (
-                  <div
-                    className="badges-container__table__main__row__popup"
-                    style={{
-                      [(rowIndex + 1) % 4 === 0 ? "right" : "left"]: "230px",
-                    }}
-                  >
-                    {/* <div className="row-popup__image">
-                      {badge_image ? (
-                        <img
-                          src={
-                            testIMG
-                            // url + badge_image
-                          }
-                          alt={badge_name}
-                        />
-                      ) : (
-                        <LargeImageIcon />
-                      )}
-                    </div> */}
-                    <div className="row-popup__text">
-                      <div className="title">{badge_name}</div>
-                      <div className="desc">{badge_desc}</div>
-                      {link && (
-                        <a className="link" href={link}>
-                          {link}
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <></>
-                )}
-              </div>
-            )
-          )}
+                onClick={() => deleteBadge(id)}
+              />
+            </div>
+          ))}
       </div>
     </div>
   );

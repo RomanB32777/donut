@@ -8,22 +8,176 @@ import LinkCopy from "../../../components/LinkCopy";
 import { UserOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import SelectInput from "../../../components/SelectInput";
-import { IBadgeData } from "../../../types";
+import { IBadge, IBadgeData } from "../../../types";
+import { abi } from "../consts";
+import { ethers } from "ethers";
+import axiosClient, { baseURL } from "../../../axiosClient";
+import { makeStorageClient } from "../utils";
+import { useSelector } from "react-redux";
 
-const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
-  const [imgPreview, setImgPreview] = useState<any>("");
+const BadgePage = ({
+  activeBadge,
+  backBtn,
+}: {
+  activeBadge: IBadge;
+  backBtn: () => void;
+}) => {
+  const user = useSelector((state: any) => state.user);
 
   const [formBadge, setFormBadge] = useState<IBadgeData>({
     image: {
       preview: "",
       file: null,
     },
-    name: "",
+    title: "",
     description: "",
     blockchain: "",
+    URI: "",
+    contract_address: "",
+    quantity: 0,
   });
+  const [supporters, setSupporters] = useState<any[]>([]);
+  const [holders, setHolders] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>("");
 
-  const { image, name, description, blockchain } = formBadge;
+  const getBadgeNFTData = async (badge: IBadge) => {
+    try {
+      const { contract_address } = badge;
+
+      const provider = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      );
+      let currentContract = new ethers.Contract(
+        contract_address,
+        abi,
+        provider
+      );
+      const currentToken = await currentContract.uri(1);
+      const quantityBadge = await currentContract.totalSupply(1);
+
+      const rootCid = currentToken.split("//")[1];
+      const dataBadgeJSON = await axiosClient.get(
+        `https://${rootCid}.ipfs.w3s.link/metadata.json`
+      );
+
+      if (dataBadgeJSON.status == 200) {
+        const client = makeStorageClient();
+        const imgCid = dataBadgeJSON.data.URI.split("//")[1];
+        const res = await client.get(imgCid); // Web3Response
+
+        if (res) {
+          const files = await res.files(); // Web3File[]
+
+          // new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(files[0]);
+          reader.onload = () =>
+            setFormBadge({
+              ...formBadge,
+              ...dataBadgeJSON.data,
+              image: {
+                ...formBadge.image,
+                preview: (reader.result as string) || "",
+              },
+              contract_address,
+              quantity: quantityBadge.toNumber(),
+            });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // console.log(formBadge);
+  const getBadge = async (activeBadge: IBadge) => {
+    try {
+      const { id, contract_address } = activeBadge;
+      const { data } = await axiosClient.get(
+        `${baseURL}/api/badge/${id}/${contract_address}`
+      );
+      data && (await getBadgeNFTData(data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getHolders = async (activeBadge: IBadge) => {
+    try {
+      const { id, contract_address } = activeBadge;
+      const { data } = await axiosClient.get(
+        `${baseURL}/api/badge/holders/${id}/${contract_address}`
+      );
+      data && setHolders(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSupporters = async (user_id: number) => {
+    try {
+      const { data } = await axiosClient.get(
+        `${baseURL}/api/donation/supporters/${user_id}`
+      );
+      data && setSupporters(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const assignBadge = async (contributor_id: number) => {
+    try {
+      const { id, contract_address } = activeBadge;
+      await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
+        id,
+        contract_address,
+        contributor_id,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const mintBadge = async () => {
+    try {
+      const { contract_address, id } = activeBadge;
+      const selectedUserObj: any = supporters.find(
+        (s: any) => s.username === selectedUser
+      );
+      if (selectedUserObj) {
+        const selectedUserAddress = selectedUserObj.metamask_token;
+        const provider = new ethers.providers.Web3Provider(
+          (window as any).ethereum
+        );
+        const signer = provider.getSigner(0);
+        let currentContract = new ethers.Contract(
+          contract_address,
+          abi,
+          signer
+        );
+        await currentContract.mint(selectedUserAddress, 1, 1);
+        await assignBadge(selectedUserObj.id);
+        await getBadgeNFTData(activeBadge);
+        await getHolders(activeBadge);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const { id, contract_address } = activeBadge;
+    if (id && contract_address) {
+      getBadge(activeBadge);
+      getHolders(activeBadge);
+    }
+  }, [activeBadge]);
+
+  useEffect(() => {
+    user.id && getSupporters(user.id);
+  }, [user]);
+
+  const { image, title, description, contract_address, quantity } = formBadge;
 
   return (
     <div className="create_badges">
@@ -33,7 +187,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
             <LeftArrowIcon />
           </div>
           <div className="page-title">
-            <span>{name} - Badge</span>
+            <span>{title} - Badge</span>
           </div>
         </div>
         <Row
@@ -66,7 +220,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                         <p className="details__content_row_title">Name</p>
                       </Col>
                       <Col span={18}>
-                        <p className="details__content_row_value">{name}</p>
+                        <p className="details__content_row_value">{title}</p>
                       </Col>
                     </Row>
                   </div>
@@ -90,7 +244,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                         <p className="details__content_row_title">Quantity</p>
                       </Col>
                       <Col span={18}>
-                        <p className="details__content_row_value">10 left</p>
+                        <p className="details__content_row_value">{quantity}</p>
                       </Col>
                     </Row>
                   </div>
@@ -101,7 +255,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                       </Col>
                       <Col span={18}>
                         <p className="details__content_row_value">
-                          <LinkCopy link="0x123.......fh6" isSimple />
+                          <LinkCopy link={contract_address} isSimple />
                         </p>
                       </Col>
                     </Row>
@@ -131,19 +285,14 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                           cursor: "pointer",
                         }}
                       >
-                        <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                        <Avatar style={{ backgroundColor: "#f56a00" }}>
-                          K
-                        </Avatar>
-                        <Avatar style={{ backgroundColor: "#f56a00" }}>
-                          K
-                        </Avatar>
-                        <Tooltip title="Ant User" placement="top">
-                          <Avatar
-                            style={{ backgroundColor: "#87d068" }}
-                            icon={<UserOutlined />}
-                          />
-                        </Tooltip>
+                        {holders.length &&
+                          holders.map((holder: any) => (
+                            <Tooltip title={holder.username} placement="top">
+                              <Avatar style={{ backgroundColor: "#1D14FF" }}>
+                                {holder.username[1]}
+                              </Avatar>
+                            </Tooltip>
+                          ))}
                       </Avatar.Group>
                     </div>
                   </Col>
@@ -156,8 +305,13 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                 <p className="details__title">Assign badge</p>
                 <div className="form-element">
                   <SelectInput
-                    list={["quantity"]}
-                    value="quantity"
+                    list={
+                      supporters.length
+                        ? supporters.map((s) => s.username)
+                        : [""]
+                    }
+                    value={selectedUser}
+                    setValue={(selected) => setSelectedUser(selected as string)}
                     placeholder="Choose your donator address"
                     modificator="details__select_user"
                   />
@@ -168,7 +322,7 @@ const BadgePage = ({ backBtn }: { backBtn: () => void }) => {
                   <BaseButton
                     formatId="badges_page_assign_button"
                     padding="6px 35px"
-                    onClick={() => console.log("dd")}
+                    onClick={mintBadge}
                     fontSize="18px"
                     isBlue
                   />

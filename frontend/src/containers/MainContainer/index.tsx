@@ -18,7 +18,7 @@ const MainContainer = () => {
   const [usdtKoef, setUsdtKoef] = useState<number>(0)
 
   useEffect(() => {
-    getUsdKoef("MATIC", setUsdtKoef);
+    getUsdKoef("evmos", setUsdtKoef);
   }, [])
 
   return (

@@ -153,7 +153,7 @@ const DonatContainer = () => {
   };
 
   useEffect(() => {
-    getUsdKoef("MATIC", setUsdtKoef);
+    getUsdKoef("evmos", setUsdtKoef);
     dispatch(
       tryToGetPersonInfo({
         username: name,
@@ -300,8 +300,8 @@ const DonatContainer = () => {
                     typeInput="number"
                     addonAfter={
                       <SelectComponent
-                        title="EVMOS"
-                        list={["EVMOS"]}
+                        title="tEVMOS"
+                        list={["tEVMOS"]}
                         selectItem={(selected) => console.log(selected)}
                         modificator="donat-container__payment_inputs-select"
                       />

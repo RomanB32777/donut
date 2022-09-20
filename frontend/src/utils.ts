@@ -150,9 +150,11 @@ export const copyStr = (str: string) => {
   }
 }
 
-export const getUsdKoef = async (currency: string, setUsdtKoef: (price: number) => void) => {
-  const res: any = await axiosClient.get(
-    `https://www.binance.com/api/v3/ticker/price?symbol=${currency}USDT`
+declare type currencyTypes = "evmos"
+
+export const getUsdKoef = async (currency: currencyTypes, setUsdtKoef: (price: number) => void) => {
+  const { data } = await axiosClient.get(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
   );
-  setUsdtKoef(+res.data.price);
+  setUsdtKoef(+data[currency].usd);
 };

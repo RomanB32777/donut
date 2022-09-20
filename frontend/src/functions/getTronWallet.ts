@@ -28,23 +28,22 @@ export const getMetamaskData = async () => {
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
 
-        if (chainId !== '0x13881') {
+        if (chainId !== '0x2328') {
             await (window as any).ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                  {
-                    chainId: '0x13881',
+                method: "wallet_addEthereumChain",
+                params: [{
+                    chainId: `0x${Number(9000).toString(16)}`,
+                    chainName: "Evmos Testnet",
                     nativeCurrency: {
-                        name: 'MATIC',
-                        symbol: 'MATIC',
-                        decimals: 18,
-                      },
-                    chainName: 'Mumbai',
-                    rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-                  },
-                ],
-              });
-            }
+                        name: "test-Evmos",
+                        symbol: "tEVMOS",
+                        decimals: 18
+                    },
+                    rpcUrls: ["https://eth.bd.evmos.dev:8545"],
+                    blockExplorerUrls: ["https://evm.evmos.dev"]
+                }]
+            })
+        }
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const address = await signer.getAddress()

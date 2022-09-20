@@ -1,68 +1,97 @@
 import { Col, Row } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { ethers } from "ethers";
 import BaseButton from "../../../commonComponents/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import FormInput from "../../../components/FormInput";
 
 import PageTitle from "../../../commonComponents/PageTitle";
 import { LeftArrowIcon } from "../../../icons/icons";
-import { IBadgeData, IFileInfo } from "../../../types";
+import { IBadgeData } from "../../../types";
 import SelectComponent from "../../../components/SelectComponent";
 import SelectInput from "../../../components/SelectInput";
+import { abi, bytecode } from "../consts.js";
+import axiosClient from "../../../axiosClient";
+import { useSelector } from "react-redux";
+import { makeStorageClient } from "../utils";
 
 const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
+  const user = useSelector((state: any) => state.user);
+  const [loading, setLoading] = useState<boolean>(false);
   const [formBadge, setFormBadge] = useState<IBadgeData>({
     image: {
       preview: "",
       file: null,
     },
-    name: "",
+    title: "",
     description: "",
     blockchain: "",
+    contract_address: "",
   });
 
-  console.log(formBadge);
+  // const [mintDetails, setMintDetails] = useState({
+  //   receiver: "",
+  //   tokenId: 1,
+  //   quantity: 1,
+  //   gaslimit: { gasLimit: 1000000000 },
+  // });
 
-  // const changeNetwork = () => {
-  //   if (window.ethereum) {
-  //     window.ethereum.request({method: "wallet_addEthereumChain",
-  //     params: [{
-  //       chainId: `0x${Number(9000).toString(16)}`,
-  //       chainName: "Evmos Testnet",
-  //       nativeCurrency: {
-  //         name: "test-Evmos",
-  //         symbol: "tEVMOS",
-  //         decimals: 18
-  //       },
-  //       rpcUrls: ["https://eth.bd.evmos.dev:8545"],
-  //       blockExplorerUrls: ["https://evm.evmos.dev"]
-  //     }]
-  //   })} else {
-  //     alert("install metamask extension!!")
-  //   }
-  // }
+  const createJSON = (_title: string, _description: string, _uri: string) => {
+    const dict = { title: _title, description: _description, URI: _uri };
+    const jsonDict = JSON.stringify(dict);
+    const file = new File([jsonDict], "metadata.json", {
+      type: "text/plain;charset=utf-8",
+    });
+    return [file];
+  };
 
-  // const createContract = async () => {
-  //   // console.log(networks.evmos_testnet)
-  //   await changeNetwork("evmos_testnet")
-  //   const _uri = await uploadToIpfs()
-  //   const provider = await new ethers.providers.Web3Provider(window.ethereum);
-  //   const signer = provider.getSigner(0);
-  //   const Badge = new ethers.ContractFactory(abi, bytecode, signer);
-  //   // deploy contracts
-  //   const badgeContract = await Badge.deploy(_uri)  
-  //   setContractAddress(badgeContract.address)
-  // }
+  const storeFiles = async (_files: any) => {
+    const client = makeStorageClient();
+    const cid = await client.put(_files);
+    console.log("stored files with cid:", cid);
+    const ipfsLink = "ipfs://" + cid;
+    console.log(ipfsLink);
+    return ipfsLink;
+  };
 
-  // const mintBadge = async () => {
-  //   const provider = await new ethers.providers.Web3Provider(window.ethereum);
-  //   const signer = provider.getSigner(0);
-  //   let currentContract = new ethers.Contract(contractAddress, abi, signer);
-  //   await currentContract.mint(mintDetails.receiver, mintDetails.tokenId, mintDetails.quantity)  
-  // }
-  
+  const uploadToIpfs = async () => {
+    const { image, title, description } = formBadge;
+    if (image.file && title && description) {
+      const _uri = await storeFiles([image.file]);
+      const badgeDict = createJSON(title, description, _uri);
+      const new_uri = await storeFiles(badgeDict);
+      return new_uri;
+    }
+  };
 
-  const { image, name, description, blockchain } = formBadge;
+  const createContract = async () => {
+    try {
+      setLoading(true);
+      // await changeNetwork("evmos_testnet") CHECK !!!
+      const _uri = await uploadToIpfs();
+      const provider = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      );
+      const signer = provider.getSigner(0);
+      const Badge = new ethers.ContractFactory(abi, bytecode, signer);
+      // deploy contracts
+      const badgeContract = await Badge.deploy(_uri);
+
+      if (badgeContract) {
+        await axiosClient.post("/api/badge/", {
+          creator_id: user.id,
+          contract_address: badgeContract.address,
+        });
+        backBtn();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const { image, title, description, blockchain } = formBadge;
 
   return (
     <div className="create_badges">
@@ -107,9 +136,9 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
                   <FormInput
                     label="Name"
                     name="name"
-                    value={name}
+                    value={title}
                     setValue={(value) =>
-                      setFormBadge({ ...formBadge, name: value })
+                      setFormBadge({ ...formBadge, title: value })
                     }
                     placeholder="Your badge name..."
                     labelCol={24}
@@ -139,11 +168,14 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
                 <div className="form-element">
                   <SelectInput
                     value={blockchain}
-                    list={["EVMOS"]}
+                    list={["tEVMOS"]}
                     label="Blockchain"
                     placeholder="Choose blockchain"
                     setValue={(value) =>
-                      setFormBadge({ ...formBadge, blockchain: value as string })
+                      setFormBadge({
+                        ...formBadge,
+                        blockchain: value as string,
+                      })
                     }
                     labelCol={24}
                     selectCol={24}
@@ -166,10 +198,11 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
               <Col span={24}>
                 <div className="saveBottom">
                   <BaseButton
-                    formatId="badges_page_new_button"
+                    title="Create contract"
                     padding="6px 35px"
-                    onClick={() => console.log("dd")}
+                    onClick={createContract}
                     fontSize="18px"
+                    disabled={loading}
                     isBlue
                   />
                 </div>

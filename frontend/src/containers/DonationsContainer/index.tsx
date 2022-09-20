@@ -62,7 +62,7 @@ const DonationsContainer = () => {
           (donat: any, key: number) => ({
             key: donat.id || key,
             name: donat.username,
-            donationToken: donat.sum_donation + " EVMOS",
+            donationToken: donat.sum_donation + " tEVMOS",
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
             date: donat.donation_date || "-",
@@ -88,7 +88,7 @@ const DonationsContainer = () => {
   );
 
   useEffect(() => {
-    getUsdKoef("MATIC", setUsdtKoef);
+    getUsdKoef("evmos", setUsdtKoef);
   }, []);
 
   useEffect(() => {

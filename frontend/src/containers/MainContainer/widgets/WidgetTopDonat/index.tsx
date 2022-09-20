@@ -26,7 +26,7 @@ const WidgetTopDonat = () => {
         const forTableData: ITableData[] = data.donations.map((donat: any) => ({
           key: donat.id,
           name: donat.username,
-          donationToken: donat.sum_donation + " EVMOS",
+          donationToken: donat.sum_donation + " tEVMOS",
           message: donat.donation_message,
           date: DateFormatter(DateTimezoneFormatter(donat.donation_date)),
         }));
