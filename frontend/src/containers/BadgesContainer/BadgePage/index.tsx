@@ -8,7 +8,7 @@ import LinkCopy from "../../../components/LinkCopy";
 import { UserOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import SelectInput from "../../../components/SelectInput";
-import { IBadge, IBadgeData } from "../../../types";
+import { IBadge, IBadgeData, initBadgeData } from "../../../types";
 import { abi } from "../consts";
 import { ethers } from "ethers";
 import axiosClient, { baseURL } from "../../../axiosClient";
@@ -24,18 +24,7 @@ const BadgePage = ({
 }) => {
   const user = useSelector((state: any) => state.user);
 
-  const [formBadge, setFormBadge] = useState<IBadgeData>({
-    image: {
-      preview: "",
-      file: null,
-    },
-    title: "",
-    description: "",
-    blockchain: "",
-    URI: "",
-    contract_address: "",
-    quantity: 0,
-  });
+  const [formBadge, setFormBadge] = useState<IBadgeData>({...initBadgeData});
   const [supporters, setSupporters] = useState<any[]>([]);
   const [holders, setHolders] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");

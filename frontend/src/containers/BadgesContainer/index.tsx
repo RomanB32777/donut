@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../commonComponents/PageTitle";
-import ContentCard from "../../components/ContentCard";
+import ContentCard from "./ContentCard";
 import BaseButton from "../../commonComponents/BaseButton";
 import { url } from "../../consts";
 import { InfoIcon, LargeImageIcon } from "../../icons/icons";
@@ -96,6 +96,7 @@ const BadgesContainer = () => {
               <ContentCard
                 data={{
                   id,
+                  contract_address
                 }}
                 onClick={() => deleteBadge(id)}
               />

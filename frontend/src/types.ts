@@ -13,6 +13,19 @@ export interface IBadgeData {
   quantity?: number;
 }
 
+export const initBadgeData: IBadgeData = {
+  image: {
+    preview: "",
+    file: null,
+  },
+  title: "",
+  description: "",
+  blockchain: "",
+  URI: "",
+  contract_address: "",
+  quantity: 0,
+}
+
 export interface IGoalData {
   id: number;
   title: string;

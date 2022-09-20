@@ -49,33 +49,12 @@ create TABLE supporters(
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-create TABLE donations(
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(255) DEFAULT '',
-    donation_date VARCHAR(63) DEFAULT '',
-    backer_id INTEGER,
-    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
-    sum_donation NUMERIC DEFAULT 0,
-    creator_username VARCHAR(63) DEFAULT '',
-    donation_message VARCHAR(255) DEFAULT '',
-    wallet_type VARCHAR(255) DEFAULT '',
-    creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
-    goal_id VARCHAR(20) DEFAULT '',
-    FOREIGN KEY (goal_id) REFERENCES goals(id)
-);
-
 create TABLE badges(
     id SERIAL PRIMARY KEY,
-    owner_user_id INTEGER,
-    FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    contract_address VARCHAR(255) DEFAULT '',
     contributor_user_id_list VARCHAR(2047) DEFAULT '',
-    badge_name VARCHAR(255) DEFAULT '',
-    badge_desc VARCHAR(1023) DEFAULT '',
-    badge_image VARCHAR(255) DEFAULT '',
-    link VARCHAR(512) DEFAULT '',
-    quantity INTEGER,
-    owners_quantity INTEGER
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 create TABLE collections(
@@ -103,23 +82,6 @@ create TABLE nft(
     nft_image VARCHAR(255) DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-create TABLE notifications (
-    id SERIAL PRIMARY KEY,
-    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    recipientName VARCHAR(255) DEFAULT '',
-    senderName VARCHAR(255) DEFAULT '',
-    sender INTEGER,
-    FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
-    recipient INTEGER,
-    FOREIGN KEY (recipient) REFERENCES users(id) ON DELETE CASCADE,
-	donation INTEGER,
-	FOREIGN KEY (donation) REFERENCES donations(id) ON DELETE CASCADE,
-    follow INTEGER,
-	FOREIGN KEY (follow) REFERENCES follows(id) ON DELETE CASCADE,
-    badge INTEGER,
-	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE
 );
 
 create TABLE alerts (
@@ -162,4 +124,37 @@ create TABLE stats (
     aligment VARCHAR(10) DEFAULT 'Center',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+create TABLE donations(
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) DEFAULT '',
+    donation_date VARCHAR(63) DEFAULT '',
+    backer_id INTEGER,
+    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
+    sum_donation NUMERIC DEFAULT 0,
+    creator_username VARCHAR(63) DEFAULT '',
+    donation_message VARCHAR(255) DEFAULT '',
+    wallet_type VARCHAR(255) DEFAULT '',
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    goal_id VARCHAR(20) DEFAULT '',
+    FOREIGN KEY (goal_id) REFERENCES goals(id)
+);
+
+create TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    recipientName VARCHAR(255) DEFAULT '',
+    senderName VARCHAR(255) DEFAULT '',
+    sender INTEGER,
+    FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
+    recipient INTEGER,
+    FOREIGN KEY (recipient) REFERENCES users(id) ON DELETE CASCADE,
+	donation INTEGER,
+	FOREIGN KEY (donation) REFERENCES donations(id) ON DELETE CASCADE,
+    follow INTEGER,
+	FOREIGN KEY (follow) REFERENCES follows(id) ON DELETE CASCADE,
+    badge INTEGER,
+	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE
 );

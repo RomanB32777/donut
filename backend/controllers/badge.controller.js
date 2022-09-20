@@ -15,12 +15,32 @@ const getImageName = () => {
 class BadgeController {
     async createBadge(req, res) {
         try {
-            const { token, badge_name, badge_desc, link, quantity } = req.body
-            const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
+            const { creator_id, contract_address } = req.body
+            const creator = await db.query('SELECT * FROM users WHERE id = $1', [creator_id])
             if (creator) {
-                const newBadge = await db.query(`INSERT INTO badges (owner_user_id, badge_name, badge_desc, link, quantity) values ($1, $2, $3, $4, $5) RETURNING *`, [creator.rows[0].id, badge_name, badge_desc, link, quantity])
-                res.status(200).json({ badge: newBadge.rows[0] })
+                const newBadge = await db.query(`INSERT INTO badges (creator_id, contract_address) values ($1, $2) RETURNING *`, [creator.rows[0].id, contract_address])
+                res.status(200).json(newBadge.rows[0])
             }
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getBadges(req, res) {
+        try {
+            const { creator_id } = req.params
+            const badges = await db.query(`SELECT * FROM badges WHERE creator_id = $1`, [creator_id])
+            res.status(200).json(badges.rows)
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getBadge(req, res) {
+        try {
+            const { badge_id, contract_address } = req.params
+            const badges = await db.query(`SELECT * FROM badges WHERE id = $1 AND contract_address= $2`, [badge_id, contract_address])
+            res.status(200).json(badges.rows[0])
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
@@ -28,39 +48,51 @@ class BadgeController {
 
     async deleteBadge(req, res) {
         try {
-            const { badge_id } = req.body
-            const deletedBadge = await db.query(`DELETE FROM badges WHERE id = $1 RETURNING *;`, [badge_id])
-            res.status(200).json({ deletedBadge: deletedBadge.rows[0] })
+            const { badge_id, contract_address } = req.body
+            const deletedBadge = await db.query(`DELETE FROM badges WHERE id = $1 AND contract_address= $2 RETURNING *;`, [badge_id, contract_address])
+            res.status(200).json(deletedBadge.rows[0])
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
     }
 
-    async createBadgeImage(req, res) {
-        try {
-            const badge_id = req.params.badge_id
-            const file = req.files.file;
-            const filename = getImageName()
-            file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
-            await db.query(`UPDATE badges SET badge_image = $1 WHERE id = $2`, [filename + file.name.slice(file.name.lastIndexOf('.')), badge_id])
-            res.status(200).json({ message: 'success' })
-        } catch (error) {
-            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
-        }
-    }
+    // async createBadgeImage(req, res) {
+    //     try {
+    //         const badge_id = req.params.badge_id
+    //         const file = req.files.file;
+    //         const filename = getImageName()
+    //         file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
+    //         await db.query(`UPDATE badges SET badge_image = $1 WHERE id = $2`, [filename + file.name.slice(file.name.lastIndexOf('.')), badge_id])
+    //         res.status(200).json({ message: 'success' })
+    //     } catch (error) {
+    //         res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+    //     }
+    // }
 
     async assignBadge(req, res) {
         try {
-            const { badge_id, quantity, contributor_id } = req.body
-            const existingBadge = await db.query('SELECT contributor_user_id_list, owners_quantity FROM badges WHERE id = $1', [badge_id])
+            const { id, contract_address, contributor_id } = req.body
+            const existingBadge = await db.query('SELECT contributor_user_id_list FROM badges WHERE id = $1 AND contract_address= $2', [id, contract_address])
             const contributor_user_id_list = existingBadge.rows[0].contributor_user_id_list
-            const owners_quantity = existingBadge.rows[0].owners_quantity
-            if (owners_quantity < quantity) {
-                const assignedBadge = await db.query('UPDATE badges SET owners_quantity = $1, contributor_user_id_list = $2 WHERE id = $3 RETURNING *', [owners_quantity + 1, contributor_user_id_list + contributor_id + ' ', badge_id])
-                res.json({ assignedBadge: assignedBadge.rows[0] })
-            } else {
-                res.json({ success: false })
+            const assignedBadge = await db.query('UPDATE badges SET contributor_user_id_list = $1 WHERE id = $2 AND contract_address = $3 RETURNING *', [
+                contributor_user_id_list + contributor_id + ' ', id, contract_address
+            ])
+            res.status(200).json(assignedBadge.rows[0])
+        } catch (error) {
+            res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async getBadgesHolders(req, res) {
+        try {
+            const { badge_id, contract_address } = req.params
+            const users = await db.query(`SELECT contributor_user_id_list FROM badges WHERE id = $1 AND contract_address= $2`, [badge_id, contract_address])
+            if (users.rows) {
+                const usersIDs = users.rows[0].contributor_user_id_list.split(' ').filter(Boolean).join(',');
+                const holders = await db.query(`SELECT id, username FROM users WHERE id IN (${usersIDs})`)
+                return res.status(200).json(holders.rows)
             }
+            res.status(200).json([])
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }

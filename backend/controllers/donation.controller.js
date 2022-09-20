@@ -10,10 +10,17 @@ const getTronUsdKoef = async () => {
 };
 
 const getMaticUsdKoef = async () => {
-    const res = await axios.get(
+    const { res } = await axios.get(
         "https://www.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
     );
     return +res.data.price;
+};
+
+const getUsdKoef = async (currency) => {
+    const { data } = await axiosClient.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
+    );
+    return +data[currency].usd
 };
 
 const dateParams = {
@@ -59,7 +66,7 @@ class DonationController {
             const date = new Date(formatedDate + userOffset).toISOString()
 
             const trxKoef = await getTronUsdKoef();
-            const maticKoef = await getMaticUsdKoef();
+            const maticKoef = await getUsdKoef();
 
             if (backer_token && creator_token) {
                 const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [creator_token])
@@ -104,21 +111,14 @@ class DonationController {
 
     async getSupporters(req, res) {
         try {
-            const user_id = req.params.user_id
-            const supporters = await db.query('SELECT * FROM supporters WHERE creator_id = $1', [user_id])
-            const donations = await db.query('SELECT * FROM donations WHERE creator_id = $1', [user_id])
-
-            // const donations = await db.query(`
-            //     SELECT username, SUM(sum_donation::integer) AS sum_donations
-            //     FROM donations
-            //     WHERE creator_id = $1
-            //     GROUP BY username
-            //     ORDER BY sum_donations DESC`, [user.rows[0].id])
-
-            res.status(200).json({
-                supporters: supporters.rows,
-                donations: donations.rows,
-            })
+            const { user_id } = req.params
+            const supporters = await db.query(`
+                SELECT users.username, users.metamask_token, users.id FROM supporters
+                LEFT JOIN users
+                ON supporters.backer_id = users.id
+                WHERE supporters.creator_id = $1 AND users.metamask_token IS NOT NULL`, [user_id])
+            // const donations = await db.query('SELECT * FROM donations WHERE creator_id = $1', [user_id])
+            res.status(200).json(supporters.rows)
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
@@ -129,7 +129,7 @@ class DonationController {
             const sumRows = await db.query(`SELECT sum_donation, wallet_type FROM donations`)
             let sum = 0;
             const trxKoef = await getTronUsdKoef();
-            const maticKoef = await getMaticUsdKoef();
+            const maticKoef = await getUsdKoef();
 
             sumRows.rows.forEach((summ) =>
                 sum += summ.sum_donation * (summ.wallet_type === "tron" ? trxKoef : maticKoef)
@@ -323,7 +323,7 @@ class DonationController {
                 OFFSET ${offset}`, [user_id])
 
             if (data && data.rows && data.rows.length > 0) {
-                res.status(200).json({ donations: data.rows, length: data.rowCount  })
+                res.status(200).json({ donations: data.rows, length: data.rowCount })
             } else {
                 res.status(200).json({ donations: [] })
             }
