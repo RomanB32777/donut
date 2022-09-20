@@ -73,32 +73,29 @@ const StreamStatsContainer = () => {
       const { id, title, stat_description, template, data_type, time_period } =
         formData;
 
-      const timeCurrentPeriod = Object.keys(filterCurrentPeriodItems).find(
-        (key: string) => filterCurrentPeriodItems[key] === time_period
-      );
+      // const timeCurrentPeriod = Object.keys(filterCurrentPeriodItems).find(
+      //   (key: string) => filterCurrentPeriodItems[key] === time_period
+      // );
 
-      console.log(timeCurrentPeriod);
-      
-
-      // id
-      //   ? await axiosClient.put("/api/user/stats-widget/", {
-      //       statData: {
-      //         title,
-      //         stat_description,
-      //         template: (template as string[]).join(" "),
-      //         data_type,
-      //         time_period,
-      //       },
-      //       id,
-      //     })
-      //   : await axiosClient.post("/api/user/stats-widget/", {
-      //       title,
-      //       stat_description,
-      //       template: (template as string[]).join(" "),
-      //       data_type,
-      //       time_period,
-      //       creator_id: user.id,
-      //     });
+      id
+        ? await axiosClient.put("/api/user/stats-widget/", {
+            statData: {
+              title,
+              stat_description,
+              template: (template as string[]).join(" "),
+              data_type,
+              time_period,
+            },
+            id,
+          })
+        : await axiosClient.post("/api/user/stats-widget/", {
+            title,
+            stat_description,
+            template: (template as string[]).join(" "),
+            data_type,
+            time_period,
+            creator_id: user.id,
+          });
       dispatch(getStats(user.id));
       setIsOpenModal(false);
       setFormData({
