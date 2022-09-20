@@ -35,4 +35,21 @@ export const abiOfContract = [
     }
 ]
 
+export const filterPeriodItems: { [key: string]: string } = { 
+    "today": "Today" ,
+    "7days": "Last 7 days" , 
+    "30days": "Last 30 days" ,
+    "year": "This year" 
+}
+
+export const filterCurrentPeriodItems: { [key: string]: string } = { 
+    "yesterday": "Yesterday",
+    "today": "Today" ,
+    "7days": "Current week" , 
+    "30days": "Current month" ,
+    "year": "Current year",
+    "all": "All time",
+    "custom": "Custom date",
+}
+
 export const url = '/images/'

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
@@ -8,14 +8,14 @@ import ColorPicker from "../../../components/ColorPicker";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import BaseButton from "../../../commonComponents/BaseButton";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { IStatData } from "../../../types";
+import { alignItemsList, IStatData, typeAligmnet } from "../../../types";
 import { addNotification, addSuccessNotification } from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
 import { SliderMarks } from "antd/lib/slider";
 import SliderForm from "../../../components/SliderForm";
 
-const marksSlider: { [key: number]: string } = {
-  0: "Left",
+const marksSlider: { [key: number]: typeAligmnet } = {
+  0:  "Left",
   1: "Center",
   2: "Right",
 };
@@ -24,7 +24,7 @@ interface IEditStatData {
   title_color: string;
   bar_color: string;
   content_color: string;
-  aligment: string;
+  aligment: typeAligmnet;
 }
 
 const StatsItem = ({
@@ -112,6 +112,12 @@ const StatsItem = ({
     statData;
   const { title_color, bar_color, content_color, aligment } = editStatData;
 
+  const valueSlider = useMemo(
+    () =>
+      Object.keys(marksSlider).find((key) => marksSlider[+key] === aligment),
+    [aligment]
+  );
+
   return (
     <>
       <div
@@ -168,34 +174,45 @@ const StatsItem = ({
             justify="space-between"
           >
             <Col span={10}>
-              <div className="preview-block">
-                <div className="preview-block_title">
-                  <p>
-                    <span
+              <div
+                className="preview-block"
+                style={{
+                  alignItems: alignItemsList[aligment],
+                }}
+              >
+                <div
+                  className="preview-block_title"
+                  style={{
+                    background: bar_color,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: title_color,
+                    }}
+                  >
+                    {data_type} {time_period.toLowerCase()}
+                  </span>
+                </div>
+                <div className="preview-block_stat">
+                  <div className="preview-block_stat__list">
+                    <p
+                      className="preview-block_stat__list-item"
                       style={{
-                        color: title_color,
+                        color: content_color,
                       }}
                     >
-                      {title}
-                    </span>
-                  </p>
-                </div>
-                <div
-                  className="preview-block_stat"
-                  style={
-                    {
-                      // background: background_color,
-                    }
-                  }
-                >
-                  {/* <Progress
-                    type="circle"
-                    percent={75}
-                    width={46}
-                    strokeColor={progress_color}
-                  /> */}
-
-                  <p>{/* {amount_raised} / {amount_goal} USD */}</p>
+                      Jordan - 30 USD
+                    </p>
+                    <p
+                      className="preview-block_stat__list-item"
+                      style={{
+                        color: content_color,
+                      }}
+                    >
+                      Nate - 50 USD
+                    </p>
+                  </div>
                 </div>
               </div>
             </Col>
@@ -246,6 +263,7 @@ const StatsItem = ({
                       aligment: marksSlider[value],
                     })
                   }
+                  defaultValue={valueSlider ? +valueSlider : 1}
                   maxWidth={185}
                   tooltipVisible={false}
                   labelCol={10}

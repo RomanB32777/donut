@@ -19,9 +19,33 @@ const getMaticUsdKoef = async () => {
 const dateParams = {
     'today': '1 day',
     '7days': '7 day',
-    '30days': '30 day',
+    '30days': '1 month',
     'year': '1 year',
 }
+
+const dateTrancSelectParams = {
+    'today': 'hour',
+    '7days': 'week',
+    '30days': 'day',
+    'year': 'month',
+}
+
+const dateTrancCurrentParams = {
+    'yesterday': 'day',
+    'today': 'day',
+    '7days': 'week',
+    '30days': 'month',
+    'year': 'year',
+}
+
+const getTimePeriod = (period) => `
+    to_timestamp(donation_date,'YYYY/MM/DD${period !== 'today' ? ' T HH24:MI:SS' : ''} ')
+    >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} `
+
+const getTimeCurrentPeriod = (period) => `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS'))
+    = date_trunc('${dateTrancCurrentParams[period]}', current_date${period === "yesterday" ? " - 1" : ""})`
+
+// date_trunc('${}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS')) AS date_group
 
 class DonationController {
     async createDonation(req, res) {
@@ -189,8 +213,7 @@ class DonationController {
             const data = await db.query(`
                 SELECT * FROM donations
                 WHERE creator_id = $1 
-                AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
-                >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
+                AND ${getTimePeriod(timePeriod)} 
                 ORDER BY donation_date DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
@@ -206,13 +229,12 @@ class DonationController {
     async getTopDonations(req, res) {
         try {
             const { user_id } = req.params; // timePeriod
-            const { limit, timePeriod } = req.query;
+            const { limit, timePeriod, isStat } = req.query;
 
             const data = await db.query(`
                 SELECT * FROM donations 
                 WHERE creator_id = $1 
-                AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
-                >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
+                AND ${isStat ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
                 ORDER BY sum_donation DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
@@ -250,15 +272,15 @@ class DonationController {
     async getStatsDonations(req, res) {
         try {
             const { user_id } = req.params;
-            const { limit, timePeriod } = req.query;
+            const { timePeriod } = req.query;
 
             const data = await db.query(`
-                SELECT * FROM donations 
-                WHERE creator_id = $1 
-                AND to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
-                >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'} 
-                ORDER BY sum_donation DESC
-                ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
+                SELECT date_trunc('${dateTrancSelectParams[timePeriod]}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS')) AS date_group,
+                       SUM(sum_donation::numeric) AS sum_donation 
+                FROM donations
+                WHERE creator_id = $1 AND ${getTimePeriod(timePeriod)}
+                GROUP BY date_group
+                ORDER BY date_group ASC`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json({ donations: data.rows })
             } else {
@@ -281,8 +303,7 @@ class DonationController {
             // sum_donation, wallet_type, donation_message
             const data = await db.query(`
                 SELECT ${isGroup ? `username,
-                SUM(sum_donation::numeric) AS sum_donation`
-                    : "*"}
+                SUM(sum_donation::numeric) AS sum_donation` : "*"}
                 FROM donations 
                 WHERE ${isCreator ? "creator_id" : "backer_id"} = $1 AND
                 ${startDate && endDate ?
@@ -290,20 +311,18 @@ class DonationController {
                     BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
                     AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
                     :
-                    `to_timestamp(donation_date,'YYYY/MM/DD${timePeriod !== 'today' ? ' T HH24:MI:SS' : ''} ')
-                    >= ${timePeriod !== 'today' ? `now() - interval '${dateParams[timePeriod]}'` : 'current_date'}`
+                    `${getTimePeriod(timePeriod)}`
                 }
                 ${searchStr ?
                     `AND username LIKE '%${searchStr.toLowerCase()}%'`
                     : ""
                 }
-                ${isGroup ? `GROUP BY ${isCreator ? "username" : "creator_username"}` : ""}
-                ORDER BY donation_date DESC
+                ${isGroup ? `GROUP BY ${isCreator ? "username" : "creator_username"}` : "ORDER BY donation_date DESC"}
                 LIMIT ${limit}
                 OFFSET ${offset}`, [user_id])
 
-                if (data && data.rows && data.rows.length > 0) {
-                res.status(200).json({ donations: data.rows })
+            if (data && data.rows && data.rows.length > 0) {
+                res.status(200).json({ donations: data.rows, length: data.rowCount  })
             } else {
                 res.status(200).json({ donations: [] })
             }

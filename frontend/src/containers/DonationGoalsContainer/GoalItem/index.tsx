@@ -37,7 +37,7 @@ const GoalItem = ({
   });
 
   const handleActiveDetails = () =>
-    !isArchive && setisActiveDetails(!isActiveDetails);
+    !isarchive && setisActiveDetails(!isActiveDetails);
 
   const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -55,6 +55,7 @@ const GoalItem = ({
           progress_color,
           background_color,
         },
+        creator_id: user.id,
         id,
       });
       dispatch(getGoals(user.id));
@@ -97,17 +98,17 @@ const GoalItem = ({
     });
   }, []);
 
-  const { id, title, amount_goal, amount_raised, isArchive } = goalData;
+  const { id, title, amount_goal, amount_raised, isarchive } = goalData;
   const { title_color, progress_color, background_color } = editGoalData;
 
   return (
     <>
       <div
         className={clsx("goals-item", {
-          active: isActiveDetails
+          active: isActiveDetails,
         })}
         style={{
-          cursor: !isArchive ? "pointer" : "auto",
+          cursor: !isarchive ? "pointer" : "auto",
         }}
         onClick={handleActiveDetails}
       >
@@ -118,6 +119,15 @@ const GoalItem = ({
               percent={Math.round((amount_raised / amount_goal) * 100)}
               width={83}
               strokeColor={progress_color}
+              format={(percent) => (
+                <span
+                  style={{
+                    color: "#fff",
+                  }}
+                >
+                  {percent}%
+                </span>
+              )}
             />
           </Col>
           <Col span={21}>
@@ -136,7 +146,7 @@ const GoalItem = ({
                 </div>
               </Col>
               <Col span={13}>
-                {!isArchive && (
+                {!isarchive && (
                   <div className="goals-item__link">
                     <LinkCopy
                       link={baseURL + "/donat-goal/" + user.username + "/" + id}
@@ -147,7 +157,7 @@ const GoalItem = ({
               </Col>
               <Col span={2}>
                 <div className="goals-item__btns">
-                  {!isArchive && (
+                  {!isarchive && (
                     <div onClick={clickEditBtn} style={{ marginRight: 10 }}>
                       <PencilIcon />
                     </div>
@@ -200,6 +210,15 @@ const GoalItem = ({
                     percent={75}
                     width={46}
                     strokeColor={progress_color}
+                    format={(percent) => (
+                      <span
+                        style={{
+                          color: "#fff",
+                        }}
+                      >
+                        {percent}%
+                      </span>
+                    )}
                   />
 
                   <p>

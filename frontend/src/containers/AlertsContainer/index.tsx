@@ -9,7 +9,6 @@ import PageTitle from "../../commonComponents/PageTitle";
 import {
   addNotification,
   addSuccessNotification,
-  DateFormatter,
 } from "../../utils";
 import ColorPicker from "../../components/ColorPicker";
 import UploadImage from "../../components/UploadImage";

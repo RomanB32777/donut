@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
-import { filterItems } from "../../consts";
+import { filterPeriodItems } from "../../../../consts";
 import { ITableData, tableColums } from "./tableData";
 import "./styles.sass";
 import { useSelector } from "react-redux";
@@ -13,27 +13,33 @@ const LIMIT_DONATS = 6;
 const WidgetTopDonat = () => {
   const user: any = useSelector((state: any) => state.user);
   const [tableData, setTableData] = useState<ITableData[]>([]);
-  const [activeFilterItem, setActiveFilterItem] = useState(filterItems["7days"]);
+  const [activeFilterItem, setActiveFilterItem] = useState(
+    filterPeriodItems["7days"]
+  );
 
   const getTopDonations = async (timePeriod: string) => {
-    const { data } = await axiosClient.get(
-      `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}`
-    );
-    if (data.donations && data.donations.length) {
-      const forTableData: ITableData[] = data.donations.map((donat: any) => ({
-        key: donat.id,
-        name: donat.username,
-        donationToken: donat.sum_donation + " EVMOS",
-        message: donat.donation_message,
-        date: DateFormatter(DateTimezoneFormatter(donat.donation_date))
-      }));
-      setTableData(forTableData)
+    try {
+      const { data } = await axiosClient.get(
+        `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}`
+      );
+      if (data.donations && data.donations.length) {
+        const forTableData: ITableData[] = data.donations.map((donat: any) => ({
+          key: donat.id,
+          name: donat.username,
+          donationToken: donat.sum_donation + " EVMOS",
+          message: donat.donation_message,
+          date: DateFormatter(DateTimezoneFormatter(donat.donation_date)),
+        }));
+        setTableData(forTableData);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    const timePeriod = Object.keys(filterItems).find(
-      (key: string) => filterItems[key] === activeFilterItem
+    const timePeriod = Object.keys(filterPeriodItems).find(
+      (key: string) => filterPeriodItems[key] === activeFilterItem
     );
     user.id && timePeriod && getTopDonations(timePeriod);
   }, [user, activeFilterItem]);
@@ -45,7 +51,7 @@ const WidgetTopDonat = () => {
         <div className="widget_header__filter">
           <SelectComponent
             title={activeFilterItem}
-            list={Object.values(filterItems)}
+            list={Object.values(filterPeriodItems)}
             selectItem={(selected) => setActiveFilterItem(selected)}
           />
         </div>

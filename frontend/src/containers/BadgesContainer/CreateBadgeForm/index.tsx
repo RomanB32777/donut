@@ -99,7 +99,7 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
                   <SelectInput
                     value={blockchain}
                     list={["EVMOS"]}
-                    label="EVMOS"
+                    label="Blockchain"
                     placeholder="Choose blockchain"
                     setValue={(value) =>
                       setFormBadge({ ...formBadge, blockchain: value as string })

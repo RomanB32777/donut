@@ -501,23 +501,32 @@ class UserController {
 
     async editGoalWidget(req, res) {
         try {
-            const { goalData, id } = req.body
+            const { goalData, creator_id, id } = req.body
 
             if (goalData.donat) {
-                const goalWidget = await db.query('SELECT amount_raised FROM goals WHERE id = $1', [id])
-                const updatedGoalWidget = await db.query(`UPDATE goals SET 
-                amount_raised = $1
-                WHERE id = $2 RETURNING *;`, [
-                    goalWidget.rows[0].amount_goal + goalData.donat,
-                    id
-                ]);
-                res.status(200).json(updatedGoalWidget.rows[0])
+                const goalWidget = await db.query('SELECT id, amount_raised, amount_goal FROM goals WHERE creator_id = $1 AND id = $2', [creator_id, id])
+                if (goalWidget.rows[0]) {
+                    const { amount_raised, amount_goal, id } = goalWidget.rows[0];
+                    const updated_amount_raised = Number(amount_raised) + goalData.donat <= Number(amount_goal)
+                    ? Number(amount_raised) + goalData.donat : Number(amount_goal)
+                    let updatedGoalWidget = await db.query(`UPDATE goals SET 
+                        amount_raised = $1
+                        WHERE id = $2 RETURNING *;`, [Number(updated_amount_raised.toFixed(2)), id]);
+
+                    if (updated_amount_raised === Number(amount_goal))
+                        updatedGoalWidget = await db.query(`UPDATE goals SET 
+                        isArchive = $1
+                        WHERE id = $2 RETURNING *;`, [true, id]);
+
+                    res.status(200).json(updatedGoalWidget.rows[0])
+                }
             } else if (goalData.title) {
                 const updatedGoalWidget = await db.query(`UPDATE goals SET 
                     title = $1,
                     amount_goal = $2
-                    WHERE id = $3 RETURNING *;`, [
+                    WHERE creator_id = $3 AND id = $4 RETURNING *;`, [
                     ...Object.values(goalData),
+                    creator_id,
                     id
                 ]);
                 res.status(200).json(updatedGoalWidget.rows[0])
@@ -527,8 +536,9 @@ class UserController {
                     title_color = $1,
                     progress_color = $2,
                     background_color = $3
-                    WHERE id = $4 RETURNING *;`, [
+                    WHERE creator_id = $4 AND id = $5 RETURNING *;`, [
                     ...Object.values(goalData),
+                    creator_id,
                     id
                 ]);
                 res.status(200).json(updatedGoalWidget.rows[0])

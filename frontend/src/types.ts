@@ -15,7 +15,7 @@ export interface IGoalData {
   title: string;
   amount_goal: number;
   amount_raised: number;
-  isArchive: boolean;
+  isarchive: boolean;
   title_color: string;
   progress_color: string;
   background_color: string;
@@ -32,7 +32,7 @@ export interface IAlertData {
   voice: boolean;
 }
 
-declare type typeAligmnet = "Left" | "Center" | "Right";
+export declare type typeAligmnet = "Left" | "Center" | "Right";
 
 export interface IStatData {
   id: number;
@@ -46,3 +46,9 @@ export interface IStatData {
   content_color: string;
   aligment: typeAligmnet;
 }
+
+export const alignItemsList: { [key in typeAligmnet]: string } = {
+  Left: "flex-start",
+  Center: "center",
+  Right: "flex-end",
+};

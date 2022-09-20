@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Col, Row } from "antd";
 import moment from "moment";
 import SelectComponent from "../../../../components/SelectComponent";
-import { filterItems } from "../../consts";
+import { filterPeriodItems } from "../../../../consts";
 import axiosClient from "../../../../axiosClient";
 import { DateTimezoneFormatter } from "../../../../utils";
 import "./styles.sass";
@@ -13,22 +13,26 @@ const LIMIT_LATEST = 6;
 const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);
   const [activeFilterItem, setActiveFilterItem] = useState(
-    filterItems["7days"]
+    filterPeriodItems["7days"]
   );
   const [latestDonations, setLatestDonations] = useState<any[]>([]);
 
   const getLatestDonations = async (timePeriod: string) => {
-    const { data } = await axiosClient.get(
-      `/api/donation/widgets/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}`
-    );
-    data.donations &&
-      data.donations.length &&
-      setLatestDonations(data.donations);
+    try {
+      const { data } = await axiosClient.get(
+        `/api/donation/widgets/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}`
+      );
+      data.donations &&
+        data.donations.length &&
+        setLatestDonations(data.donations);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    const timePeriod = Object.keys(filterItems).find(
-      (key: string) => filterItems[key] === activeFilterItem
+    const timePeriod = Object.keys(filterPeriodItems).find(
+      (key: string) => filterPeriodItems[key] === activeFilterItem
     );
     user.id && timePeriod && getLatestDonations(timePeriod);
   }, [user, activeFilterItem]);
@@ -40,7 +44,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
         <div className="widget_header__filter">
           <SelectComponent
             title={activeFilterItem}
-            list={Object.values(filterItems)}
+            list={Object.values(filterPeriodItems)}
             selectItem={(selected) => setActiveFilterItem(selected)}
           />
         </div>

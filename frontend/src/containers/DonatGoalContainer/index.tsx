@@ -29,7 +29,7 @@ const DonatGoalContainer = () => {
     title: "",
     amount_goal: 0,
     amount_raised: 0,
-    isArchive: false,
+    isarchive: false,
     title_color: "#ffffff",
     progress_color: "#1D14FF",
     background_color: "#212127",
@@ -84,6 +84,15 @@ const DonatGoalContainer = () => {
             percent={Math.round((amount_raised / amount_goal) * 100)}
             width={150}
             strokeColor={progress_color}
+            format={(percent) => (
+              <span
+                style={{
+                  color: "#fff",
+                }}
+              >
+                {percent}%
+              </span>
+            )}
           />
           <p>
             {amount_raised} / {amount_goal} USD

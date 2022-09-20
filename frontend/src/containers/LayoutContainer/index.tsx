@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { MouseEventHandler, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { BackTop, Layout, Menu } from "antd";
@@ -66,7 +66,7 @@ const HeaderSelect = ({
   title: string;
   user?: any;
   isOpenSelect?: boolean;
-  handlerHeaderSelect?: () => void;
+  handlerHeaderSelect?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ const HeaderSelect = ({
         className={clsx("header-select__info", {
           withoutArrow: isOpenSelect === undefined,
         })}
-        onClick={() => handlerHeaderSelect && handlerHeaderSelect()}
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => handlerHeaderSelect && handlerHeaderSelect(e)}
       >
         <span className="header-select__info__name">{title}</span>
         {isOpenSelect !== undefined && (
@@ -100,8 +100,8 @@ const HeaderSelect = ({
           <div className="header-select__info-item">
             <div
               className="header-select__info-item__content"
-              onClick={() => {
-                handlerHeaderSelect && handlerHeaderSelect();
+              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                handlerHeaderSelect && handlerHeaderSelect(e);
                 dispatch(setUser(""));
                 localStorage.removeItem("main_wallet");
                 navigate("/");
@@ -223,14 +223,21 @@ const LayoutApp = () => {
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
 
-  const handlerHeaderSelect = () => {
+  const handlerHeaderSelect = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     setIsOpenHeaderSelect(!isOpenHeaderSelect);
     setNotificationPopupOpened(false);
   };
 
-  const handlerNotificationPopup = () => {
+  const handlerNotificationPopup = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     setNotificationPopupOpened(!isNotificationPopupOpened);
     setIsOpenHeaderSelect(false);
+  };
+
+  const closeAllHeaderPopups = () => {
+    isOpenHeaderSelect && setIsOpenHeaderSelect(false);
+    isNotificationPopupOpened && setNotificationPopupOpened(false);
   };
 
   const menuItems: IRoute[] = useMemo(
@@ -291,11 +298,15 @@ const LayoutApp = () => {
       return route.path === activeRoute;
     });
 
-    return currRoute ? currRoute.name : "/";
+    return currRoute ? currRoute.name : "";
   }, [menuItems, activeRoute]);
 
   return (
-    <DocumentTitle title={`Crypto Donutz - ${titleApp}`}>
+    <DocumentTitle
+      title={`Crypto Donutz${
+        Boolean(titleApp?.length) ? ` - ${titleApp}` : ""
+      }`}
+    >
       <Layout
         style={{
           minHeight: "100vh",
@@ -312,6 +323,7 @@ const LayoutApp = () => {
             bottom: 0,
           }}
           width="240"
+          onClick={() => closeAllHeaderPopups()}
         >
           <div className="sidebar-logo">
             <span>Crypto Donutz</span>
@@ -365,6 +377,7 @@ const LayoutApp = () => {
           <Header
             className="site-layout-background"
             hidden={hiddenLayoutElements}
+            onClick={() => closeAllHeaderPopups()}
           >
             <div className="navbar__right-side">
               {user.id && (
@@ -398,7 +411,7 @@ const LayoutApp = () => {
               )}
             </div>
           </Header>
-          <Content>
+          <Content onClick={() => closeAllHeaderPopups()}>
             <div
               className={clsx("main-container", {
                 noPadding: noPaddingMainConteiner,

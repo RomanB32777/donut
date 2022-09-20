@@ -62,6 +62,7 @@ const DonationGoalsContainer = () => {
               title: widgetDescription,
               amount_goal: +widgetAmount,
             },
+            creator_id: user.id,
             id,
           })
         : await axiosClient.post("/api/user/goals-widget/", {
@@ -110,7 +111,8 @@ const DonationGoalsContainer = () => {
       <div className="goals-wrapper">
         {Boolean(goals.length) &&
           goals
-            .filter((goal: IGoalData) => !goal.isArchive)
+            .filter((goal: IGoalData) => !goal.isarchive)
+            .reverse()
             .map((goal: IGoalData) => (
               <GoalItem
                 key={goal.id}
@@ -123,7 +125,8 @@ const DonationGoalsContainer = () => {
       <div className="goals-archiveWrapper">
         {Boolean(goals.length) &&
           goals
-            .filter((goal: IGoalData) => goal.isArchive)
+            .filter((goal: IGoalData) => goal.isarchive)
+            .reverse()
             .map((goal: IGoalData) => (
               <GoalItem key={goal.id} goalData={goal} />
             ))}

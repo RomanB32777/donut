@@ -40,8 +40,12 @@ export const tableColumns: ColumnsType<ITableData> = [
     title: "Date and Time",
     dataIndex: "date",
     width: "25%",
-    render: (text) => DateFormatter(DateTimezoneFormatter(text)),
-    sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    render: (text) =>
+      Date.parse(text) ? DateFormatter(DateTimezoneFormatter(text)) : "-",
+    sorter: (a, b) =>
+      Date.parse(a.date) &&
+      Date.parse(b.date) &&
+      new Date(a.date).getTime() - new Date(b.date).getTime(),
   },
 ];
 

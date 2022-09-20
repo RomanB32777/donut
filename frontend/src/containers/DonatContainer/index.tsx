@@ -37,14 +37,14 @@ interface IDonatForm {
   message: string;
   username: string;
   amount: string;
-  selectedGoal: number;
+  selectedGoal: string;
 }
 
 const initObj: IDonatForm = {
   message: "",
   username: "",
   amount: "0",
-  selectedGoal: 0,
+  selectedGoal: "0",
 };
 
 const DonatContainer = () => {
@@ -110,34 +110,34 @@ const DonatContainer = () => {
       });
 
       if (status === 200) {
-        if (data.message === "success") {
-          socket &&
-            user &&
-            data.donation &&
-            socket.emit("new_donat", {
-              supporter: {
-                username: user.username || newUser.username,
-                id: user.user_id || newUser.user_id,
-              },
-              wallet: "metamask",
-              creator_id: data.donation.creator_id,
-              creator_username: data.donation.creator_username,
-              sum: amount,
-              donationID: data.donation.id,
-            });
-          addSuccessNotification("Good");
-          navigate("/donations");
-          setForm({
-            ...initObj,
-            username,
+        socket &&
+          user &&
+          data.donation &&
+          socket.emit("new_donat", {
+            supporter: {
+              username: user.username || newUser.username,
+              id: user.user_id || newUser.user_id,
+            },
+            wallet: "metamask",
+            creator_id: data.donation.creator_id,
+            creator_username: data.donation.creator_username,
+            sum: amount,
+            donationID: data.donation.id,
           });
-        } else {
-          addNotification({
-            type: "danger",
-            title: "Error",
-            message: `An error occurred while sending data`,
-          });
-        }
+        selectedGoal !== "0" &&
+          (await axiosClient.put("/api/user/goals-widget/", {
+            goalData: {
+              donat: +amount * usdtKoef,
+            },
+            creator_id: data.donation.creator_id,
+            id: selectedGoal,
+          }));
+        addSuccessNotification("Good");
+        navigate("/donations");
+        setForm({
+          ...initObj,
+          username,
+        });
       }
     } catch (error) {
       console.log("error", error);
@@ -179,10 +179,10 @@ const DonatContainer = () => {
     personInfo.user_id && dispatch(getGoals(personInfo.user_id));
   }, [personInfo]);
 
-  const isNotRegisterWallet = useMemo(
-    () => !metamaskWalletIsIntall() && !tronWalletIsIntall(),
-    []
-  );
+  // const isNotRegisterWallet = useMemo(
+  //   () => !metamaskWalletIsIntall() && !tronWalletIsIntall(),
+  //   []
+  // );
 
   const { username, message, amount, selectedGoal } = form;
 
@@ -331,9 +331,9 @@ const DonatContainer = () => {
                             value={selectedGoal}
                           >
                             <Space direction="vertical">
-                              <Radio value={0}>Don’t participate</Radio>
+                              <Radio value={"0"}>Don’t participate</Radio>
                               {goals
-                                .filter((goal: IGoalData) => !goal.isArchive)
+                                .filter((goal: IGoalData) => !goal.isarchive)
                                 .map((goal: IGoalData) => (
                                   <Radio key={goal.id} value={goal.id}>
                                     {goal.title}

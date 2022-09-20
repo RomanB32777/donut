@@ -156,7 +156,7 @@ create TABLE stats (
     time_period VARCHAR(255) DEFAULT '',
     title_color VARCHAR(10) DEFAULT '#ffffff',
     bar_color VARCHAR(10) DEFAULT '#1D14FF',
-    content_color VARCHAR(10) DEFAULT '#212127',
+    content_color VARCHAR(10) DEFAULT '#ffffff',
     aligment VARCHAR(10) DEFAULT 'Center',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE

@@ -8,10 +8,12 @@ import ModalComponent from "../../components/ModalComponent";
 import SelectInput from "../../components/SelectInput";
 import { IStatData } from "../../types";
 import StatsItem from "./StatsItem";
-import "./styles.sass";
+import DatesPicker from "../../components/DatesPicker";
 import axiosClient from "../../axiosClient";
 import { addNotification, addSuccessNotification } from "../../utils";
 import { getStats } from "../../store/types/Stats";
+import "./styles.sass";
+import { filterCurrentPeriodItems } from "../../consts";
 
 interface IWidgetStatData {
   title: string;
@@ -71,25 +73,32 @@ const StreamStatsContainer = () => {
       const { id, title, stat_description, template, data_type, time_period } =
         formData;
 
-      id
-        ? await axiosClient.put("/api/user/stats-widget/", {
-            statData: {
-              title,
-              stat_description,
-              template: (template as string[]).join(" "),
-              data_type,
-              time_period,
-            },
-            id,
-          })
-        : await axiosClient.post("/api/user/stats-widget/", {
-            title,
-            stat_description,
-            template: (template as string[]).join(" "),
-            data_type,
-            time_period,
-            creator_id: user.id,
-          });
+      const timeCurrentPeriod = Object.keys(filterCurrentPeriodItems).find(
+        (key: string) => filterCurrentPeriodItems[key] === time_period
+      );
+
+      console.log(timeCurrentPeriod);
+      
+
+      // id
+      //   ? await axiosClient.put("/api/user/stats-widget/", {
+      //       statData: {
+      //         title,
+      //         stat_description,
+      //         template: (template as string[]).join(" "),
+      //         data_type,
+      //         time_period,
+      //       },
+      //       id,
+      //     })
+      //   : await axiosClient.post("/api/user/stats-widget/", {
+      //       title,
+      //       stat_description,
+      //       template: (template as string[]).join(" "),
+      //       data_type,
+      //       time_period,
+      //       creator_id: user.id,
+      //     });
       dispatch(getStats(user.id));
       setIsOpenModal(false);
       setFormData({
@@ -131,13 +140,15 @@ const StreamStatsContainer = () => {
       </div>
       <div className="stats-wrapper">
         {Boolean(stats.length) &&
-          stats.map((widget: IStatData) => (
-            <StatsItem
-              key={widget.id}
-              statData={widget}
-              openEditModal={openEditModal}
-            />
-          ))}
+          stats
+            .reverse()
+            .map((widget: IStatData) => (
+              <StatsItem
+                key={widget.id}
+                statData={widget}
+                openEditModal={openEditModal}
+              />
+            ))}
       </div>
       <ModalComponent
         visible={isOpenModal}
@@ -182,7 +193,8 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <SelectInput
                   label="Data type:"
-                  list={["Top donations", "Top supporters", "Recent donations"]}
+                  list={["Top donations", "Recent donations"]}
+                  // , "Top supporters"
                   value={data_type}
                   setValue={(value) =>
                     setFormData({
@@ -199,15 +211,16 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <SelectInput
                   label="Time period:"
-                  list={[
-                    "Today",
-                    "Yesterday",
-                    "Current week",
-                    "Current month",
-                    "Current year",
-                    "All time",
-                    "Custom date",
-                  ]}
+                  list={Object.values(filterCurrentPeriodItems)}
+                  // list={[
+                  //   "Today",
+                  //   "Yesterday",
+                  //   "Current week",
+                  //   "Current month",
+                  //   "Current year",
+                  //   "All time",
+                  //   "Custom date",
+                  // ]}
                   value={time_period}
                   setValue={(value) =>
                     setFormData({
@@ -221,7 +234,16 @@ const StreamStatsContainer = () => {
                 {time_period === "Custom date" && (
                   <div className="customDatesPicker">
                     <Row>
-                      <Col offset={6}>{/* <DatesPicker /> */}</Col>
+                      <Col offset={6}>
+                        <DatesPicker
+                          setValue={(startDate, endDate) =>
+                            setFormData({
+                              ...formData,
+                              time_period: `${startDate}-${endDate}`,
+                            })
+                          }
+                        />
+                      </Col>
                     </Row>
                   </div>
                 )}

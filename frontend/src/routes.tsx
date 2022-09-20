@@ -23,7 +23,6 @@ import StreamStatsPage from "./pages/StreamStatsPage";
 import DonationGoalsPage from "./pages/DonationGoalsPage";
 import SettingsPage from "./pages/SettingsPage";
 import RegistrationModal from "./components/RegistrationModal";
-// import AuthModal from "./components/AuthModal";
 import { useSelector } from "react-redux";
 import ChooseWalletModal from "./components/ChooseWalletModal";
 import Loader from "./components/Loader";

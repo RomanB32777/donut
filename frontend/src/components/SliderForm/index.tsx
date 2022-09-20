@@ -4,6 +4,7 @@ import "./styles.sass";
 
 interface ISliderProps extends SliderBaseProps {
   label: string;
+  defaultValue?: number;
   value?: number;
   InputCol?: number;
   labelCol?: number;
@@ -11,11 +12,9 @@ interface ISliderProps extends SliderBaseProps {
   setValue: (value: number) => void;
 }
 
-const formatter = (value: number) => `${value}%`;
-
 const SliderForm = ({
-  value,
   label,
+  defaultValue,
   step,
   max,
   min,
@@ -50,7 +49,7 @@ const SliderForm = ({
             }}
           >
             <Slider
-              value={value}
+              defaultValue={defaultValue}
               onChange={setValue}
               marks={marks}
               step={step}

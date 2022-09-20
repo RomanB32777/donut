@@ -2,107 +2,147 @@ import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData, ChartOptions } from "chart.js";
+import { Skeleton } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
-import { filterItems } from "../../consts";
-
-import "./styles.sass";
+import { filterPeriodItems } from "../../../../consts";
 import axiosClient from "../../../../axiosClient";
 import { useSelector } from "react-redux";
+import { DateFormatter } from "../../../../utils";
+import "./styles.sass";
 
 Chart.register(...registerables);
 
-interface LineProps {
-  data: ChartData<"line">;
-  options?: ChartOptions<"line">;
-}
+const options: ChartOptions<"line"> = {
+  scales: {
+    y: {
+      beginAtZero: true,
+      
+      ticks: {
+        color: "rgb(255, 255, 255)",
+        callback: (value) => value + " USD",
+      },
+      grid: {
+        color: "#353535",
+      },
+    },
+    x: {
+      ticks: {
+        color: "rgb(255, 255, 255)",
+      },
+      grid: {
+        color: "#353535",
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        color: "rgb(255, 255, 255)",
+      },
+      onClick: (e, legendItem, legend) => null,
+    },
 
-const dataChart: LineProps = {
-  data: {
-    labels: ["2016", "2017", "2018", "2019", "2020", "2021"],
+    tooltip: {
+      callbacks: {
+        label: ({ formattedValue }) => formattedValue + " USD",
+      },
+    },
+  },
+};
 
+const dateFormat: { [key: string]: string } = {
+  Today: "HH:mm",
+  "Last 7 days": "dddd",
+  "Last 30 days": "DD/MM/YYYY",
+  "This year": "MMMM",
+};
+
+const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
+  const user: any = useSelector((state: any) => state.user);
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [dataChart, setDataChart] = useState<ChartData<"line">>({
+    labels: [],
     datasets: [
       {
-        label: "Кол-во спорткомплексов",
-        data: [2, 5, 5, 6, 2, 7],
+        label: "Donation sum",
+        data: [],
         fill: true,
         pointBackgroundColor: "rgba(29, 20, 255, 1)",
         backgroundColor: "rgba(29, 20, 255, 0.2)",
         borderColor: "rgba(29, 20, 255, 0.5)",
       },
     ],
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          color: "rgb(255, 255, 255)",
-        },
-        grid: {
-          color: "#353535"
-        }
-      },
-      x: {
-        ticks: {
-          color: "rgb(255, 255, 255)",
-        },
-        grid: {
-          color: "#353535"
-        }
-      },
-    },
-    plugins: {
-      legend: {
-        display: true,
+  });
 
-        labels: {
-          color: "rgb(255, 255, 255)",
-        },
-
-        onClick: (e, legendItem, legend) => null,
-      },
-    },
-  },
-};
-
-const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
-  const user: any = useSelector((state: any) => state.user);
   const [activeFilterItem, setActiveFilterItem] = useState(
-    filterItems["7days"]
+    filterPeriodItems["7days"]
   );
-  const [latestDonations, setLatestDonations] = useState<any[]>([]);
-
   const getLatestDonations = async (timePeriod: string) => {
-    const { data } = await axiosClient.get(
-      `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}`
-    );
-    data.donations &&
-      data.donations.length &&
-      setLatestDonations(data.donations);
+    try {
+      setLoading(true);
+      const { data } = await axiosClient.get(
+        `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}`
+      );
+      if (data.donations && data.donations.length) {
+        const { donations } = data;
+
+        const labels = donations.map((donat: any) =>
+          DateFormatter(donat.date_group, dateFormat[activeFilterItem])
+        );
+        const values = donations.map(
+          (donat: any) => +(+donat.sum_donation * usdtKoef).toFixed(0)
+        );
+
+        setDataChart({
+          ...dataChart,
+          labels,
+          datasets: [
+            {
+              ...dataChart.datasets[0],
+              data: values,
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const timePeriod = Object.keys(filterItems).find(
-      (key: string) => filterItems[key] === activeFilterItem
+    const timePeriod = Object.keys(filterPeriodItems).find(
+      (key: string) => filterPeriodItems[key] === activeFilterItem
     );
-    user.id && timePeriod && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem]);
+    user.id && timePeriod && usdtKoef && getLatestDonations(timePeriod);
+  }, [user, activeFilterItem, usdtKoef]);
 
   return (
     <div className="widget widget-stat">
-      <div className="widget_header">
-        <span className="widget_header__title">Stats</span>
-        <div className="widget_header__filter">
-          <SelectComponent
-            title={activeFilterItem}
-            list={Object.values(filterItems)}
-            selectItem={(selected) => setActiveFilterItem(selected)}
-          />
+      {loading ? (
+        <div className="widget_loading">
+          <Skeleton active paragraph={{ rows: 7 }} />
         </div>
-      </div>
-      <div>
-        <Line data={dataChart.data} options={dataChart.options} />
-      </div>
+      ) : (
+        <>
+          <div className="widget_header">
+            <span className="widget_header__title">Stats</span>
+            <div className="widget_header__filter">
+              <SelectComponent
+                title={activeFilterItem}
+                list={Object.values(filterPeriodItems)}
+                selectItem={(selected) => setActiveFilterItem(selected)}
+              />
+            </div>
+          </div>
+          <div className="widget_graph">
+            <Line data={dataChart} options={options} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

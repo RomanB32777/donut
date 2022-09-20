@@ -2,18 +2,14 @@ import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { MaticIcon, TronIcon } from "../../icons/icons";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
-
-import bigImg from "../../assets/big_don.png";
-import "./styles.sass";
-import { Progress } from "antd";
 import axiosClient, { baseURL } from "../../axiosClient";
-import { IGoalData } from "../../types";
+import { alignItemsList, IGoalData, IStatData } from "../../types";
+import "./styles.sass";
 
 const DonatStatContainer = () => {
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const { id, name } = useParams();
   // const notifications = useSelector((state: any) => state.notifications);
 
   // const [lastNotif, setLastNotif] = useState<any>({
@@ -24,16 +20,17 @@ const DonatStatContainer = () => {
   //     "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
   // });
 
-  const [goalData, setGoalData] = useState<IGoalData>({
+  const [statData, setStatData] = useState<IStatData>({
     id: 0,
     title: "",
-    amount_goal: 0,
-    amount_raised: 0,
-    isArchive: false,
+    stat_description: "",
     title_color: "#ffffff",
-    progress_color: "#1D14FF",
-    background_color: "#212127",
-    creator_id: "0",
+    bar_color: "#1D14FF",
+    content_color: "#212127",
+    aligment: "Center",
+    data_type: "string",
+    time_period: "string",
+    template: [],
   });
 
   // useEffect(() => {
@@ -41,55 +38,58 @@ const DonatStatContainer = () => {
   // }, [notifications]);
 
   useEffect(() => {
-    const getGoalData = async () => {
+    const getStatData = async () => {
       const response = await axiosClient.get(
-        baseURL + "/api/user/goals-widget/" + id
+        baseURL + "/api/user/stats-widget/" + id
       );
-      response.status === 200 && setGoalData(response.data);
+      response.status === 200 && setStatData(response.data);
     };
-    getGoalData();
+    getStatData();
   }, []);
 
   const {
     title,
     title_color,
-    progress_color,
-    background_color,
-    amount_goal,
-    amount_raised,
-  } = goalData;
+    template,
+    data_type,
+    time_period,
+    bar_color,
+    content_color,
+    aligment,
+  } = statData;
 
   return (
     <div className="donat-stat">
-      <div className="donat-stat_container">
-        <div className="donat-stat_title">
-          <p>
-            <span
-              style={{
-                color: title_color,
-              }}
-            >
-              {/* {title} */}
-              develop
-            </span>
-          </p>
-        </div>
-        {/* <div
-          className="donat-stat_progress"
+      <div
+        className="donat-stat_container"
+        style={{
+          alignItems: alignItemsList[aligment],
+        }}
+      >
+        <div
+          className="donat-stat_title"
           style={{
-            background: background_color,
+            background: bar_color,
           }}
         >
-          <Progress
-            type="circle"
-            percent={Math.round((amount_raised / amount_goal) * 100)}
-            width={150}
-            strokeColor={progress_color}
-          />
-          <p>
-            {amount_raised} / {amount_goal} USD
+          <span
+            style={{
+              color: title_color,
+            }}
+          >
+            {data_type} {time_period.toLowerCase()}
+          </span>
+        </div>
+        <div className="donat-stat_list">
+          <p
+            className="donat-stat_list-item"
+            style={{
+              color: content_color,
+            }}
+          >
+            Jordan - 30 USD
           </p>
-        </div> */}
+        </div>
       </div>
     </div>
   );
