@@ -22,8 +22,8 @@ const WidgetTopDonat = () => {
       const { data } = await axiosClient.get(
         `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}`
       );
-      if (data.donations && data.donations.length) {
-        const forTableData: ITableData[] = data.donations.map((donat: any) => ({
+      if (data.length) {
+        const forTableData: ITableData[] = data.map((donat: any) => ({
           key: donat.id,
           name: donat.username,
           donationToken: donat.sum_donation + " tEVMOS",

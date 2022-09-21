@@ -20,9 +20,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
       const { data } = await axiosClient.get(
         `/api/donation/widgets/top-supporters/${user.id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`
       );
-      data.supporters &&
-        data.supporters.length &&
-        setTopSupporters(data.supporters);
+      data.length && setTopSupporters(data);
     } catch (error) {
       console.log(error);
     }
@@ -34,7 +32,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   }, [user, activeFilterItem]);
 
   console.log(topSupporters);
-  
+
   return (
     <div className="widget widget-topSup">
       <div className="widget_header">

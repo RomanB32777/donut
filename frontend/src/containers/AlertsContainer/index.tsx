@@ -103,13 +103,13 @@ const AlertsContainer = () => {
     [user]
   );
 
-  const { banner, message_color, name_color, sum_color, duration, sound } =
+  const { banner, message_color, name_color, sum_color, duration, sound, voice } =
     formData;
 
   const [play, { stop }] = useSound(soundsList[sound]);
 
   // console.log(soundsList[sound]);
-  
+
   useEffect(() => {
     console.log(" stop();");
   }, [sound]);
@@ -267,10 +267,11 @@ const AlertsContainer = () => {
                   <div className="voiceSwitch-wrapper">
                     <span>Disabled</span>
                     <Switch
-                      id="voiceSwitch"
+                      checked={voice}
                       onChange={(flag) =>
                         setFormData({ ...formData, voice: flag })
                       }
+                      id="voiceSwitch"
                     />
                     <span>Abled</span>
                   </div>

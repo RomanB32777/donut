@@ -8,7 +8,13 @@ import ColorPicker from "../../../components/ColorPicker";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import BaseButton from "../../../commonComponents/BaseButton";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { alignFlextItemsList, alignItemsList, IStatData, typeAligmnet } from "../../../types";
+import {
+  alignFlextItemsList,
+  alignItemsList,
+  AlignText,
+  IStatData,
+  typeAligmnet,
+} from "../../../types";
 import { addNotification, addSuccessNotification } from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
 import { SliderMarks } from "antd/lib/slider";
@@ -185,31 +191,35 @@ const StatsItem = ({
                   >
                     {data_type} {time_period.toLowerCase()}
                   </span>
-                <div
-                  className="preview-block_stat"
-                  style={{
-                    justifyContent: alignFlextItemsList[aligment],
-                  }}
-                >
-                  <div className="preview-block_stat__list">
-                    <p
-                      className="preview-block_stat__list-item"
-                      style={{
-                        color: content_color,
-                      }}
-                    >
-                      Jordan - 30 USD
-                    </p>
-                    <p
-                      className="preview-block_stat__list-item"
-                      style={{
-                        color: content_color,
-                      }}
-                    >
-                      Nate - 50 USD
-                    </p>
+                  <div
+                    className="preview-block_stat"
+                    style={{
+                      justifyContent: alignFlextItemsList[aligment],
+                    }}
+                  >
+                    <div className="preview-block_stat__list">
+                      <p
+                        className="preview-block_stat__list-item"
+                        style={{
+                          color: content_color,
+                          textAlign:
+                            (alignItemsList[aligment] as AlignText) || "center",
+                        }}
+                      >
+                        Jordan - 30 USD
+                      </p>
+                      <p
+                        className="preview-block_stat__list-item"
+                        style={{
+                          color: content_color,
+                          textAlign:
+                            (alignItemsList[aligment] as AlignText) || "center",
+                        }}
+                      >
+                        Nate - 50 USD
+                      </p>
+                    </div>
                   </div>
-                </div>
                 </div>
               </div>
             </Col>
