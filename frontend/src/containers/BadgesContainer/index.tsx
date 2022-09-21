@@ -2,17 +2,12 @@ import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../commonComponents/PageTitle";
 import ContentCard from "./ContentCard";
 import BaseButton from "../../commonComponents/BaseButton";
-import { url } from "../../consts";
-import { InfoIcon, LargeImageIcon } from "../../icons/icons";
-import routes from "../../routes";
 import "./styles.sass";
 
-import testIMG from "../../assets/person.png";
 import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
 import { IBadge } from "../../types";
@@ -29,14 +24,19 @@ const BadgesContainer = () => {
   const [isOpenBadgePage, setIsOpenBadgePage] = useState<boolean>(false);
 
   const getBadges = async (id: number) => {
-    const { data } = await axiosClient.get(`${baseURL}/api/badge/${id}`);
+    const url =
+      user.roleplay === "creators"
+        ? `${baseURL}/api/badge/${id}`
+        : `${baseURL}/api/badge/badges-backer/${id}`;
+
+    const { data } = await axiosClient.get(url);
     if (Array.isArray(data) && data.length) {
       setBadgesList(data);
     }
   };
 
   useEffect(() => {
-    if (user.id) {
+    if (user.id && user.roleplay) {
       getBadges(user.id);
     }
   }, [user]);
@@ -46,14 +46,20 @@ const BadgesContainer = () => {
     res.status === 200 && user.id && getBadges(user.id);
   };
 
-  if (isOpenCreateForm)
-    return <CreateBadgeForm backBtn={() => setIsOpenCreateForm(false)} />;
-
   if (isOpenBadgePage)
+  return (
+    <BadgePage
+      activeBadge={activeBadge}
+      backBtn={() => setIsOpenBadgePage(false)}
+    />
+  );
+
+  if (isOpenCreateForm)
     return (
-      <BadgePage
-        activeBadge={activeBadge}
-        backBtn={() => setIsOpenBadgePage(false)}
+      <CreateBadgeForm
+        backBtn={() => setIsOpenCreateForm(false)}
+        setActiveBadge={(activeBadge: IBadge) => setActiveBadge(activeBadge)}
+        openBadgePage={() => setIsOpenBadgePage(true)}
       />
     );
 
@@ -96,7 +102,7 @@ const BadgesContainer = () => {
               <ContentCard
                 data={{
                   id,
-                  contract_address
+                  contract_address,
                 }}
                 onClick={() => deleteBadge(id)}
               />

@@ -224,8 +224,8 @@ const AlertsContainer = () => {
                         setFormData({ ...formData, duration: num })
                       }
                       value={duration}
-                      max={15}
-                      min={3}
+                      max={25}
+                      min={15}
                     />
                     <span>{duration} sec</span>
                   </div>

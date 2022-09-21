@@ -82,7 +82,9 @@ const HeaderSelect = ({
         className={clsx("header-select__info", {
           withoutArrow: isOpenSelect === undefined,
         })}
-        onClick={(e: React.MouseEvent<HTMLDivElement>) => handlerHeaderSelect && handlerHeaderSelect(e)}
+        onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+          handlerHeaderSelect && handlerHeaderSelect(e)
+        }
       >
         <span className="header-select__info__name">{title}</span>
         {isOpenSelect !== undefined && (
@@ -120,9 +122,8 @@ const HeaderSelect = ({
 };
 
 const NotificationsPopup = ({ user }: { user: number }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const notifications = useSelector((state: any) => state.notifications);
+  const notifications: any[] = useSelector((state: any) => state.notifications);
   const [moreVisibleList, setMoreVisibleList] = useState(false);
 
   useEffect(() => {
@@ -168,26 +169,39 @@ const NotificationsPopup = ({ user }: { user: number }) => {
       }}
     >
       <div className="notifications-popup__content">
-        <div
-          className="notifications-popup__content-list"
-          style={{
-            overflowY: notifications.length >= 9 ? "scroll" : "auto",
-          }}
-        >
-          {notifications &&
-            Boolean(notifications.length) &&
-            notifications.slice(0, 9).map(renderNotifList)}
-          {moreVisibleList &&
-            Boolean(notifications.length) &&
-            notifications.slice(10).length &&
-            notifications.slice(10).map(renderNotifList)}
-        </div>
-        <div
-          className="notifications-popup__content-link"
-          onClick={() => setMoreVisibleList(true)}
-        >
-          Load more
-        </div>
+        {Boolean(notifications.length) ? (
+          <div
+            className="notifications-popup__content-list"
+            style={{
+              overflowY: notifications.length >= 9 ? "scroll" : "auto",
+            }}
+          >
+            {notifications &&
+              Boolean(notifications.length) &&
+              notifications.slice(0, 9).map(renderNotifList)}
+            {moreVisibleList &&
+              Boolean(notifications.length) &&
+              notifications.slice(10).length &&
+              notifications.slice(10).map(renderNotifList)}
+          </div>
+        ) : (
+          <div
+            className="notifications-popup__content-item"
+            style={{
+              textAlign: "center",
+            }}
+          >
+            No notifications
+          </div>
+        )}
+        {notifications.length >= 9 && (
+          <div
+            className="notifications-popup__content-link"
+            onClick={() => setMoreVisibleList(true)}
+          >
+            Load more
+          </div>
+        )}
       </div>
     </div>
   );

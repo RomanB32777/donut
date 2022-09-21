@@ -146,7 +146,6 @@ const StreamStatsContainer = () => {
       <ModalComponent
         visible={isOpenModal}
         title="New widget creation"
-        setIsVisible={setIsOpenModal}
         onCancel={closeEditModal}
         width={880}
         topModal

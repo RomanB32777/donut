@@ -1,13 +1,11 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import getTronWallet, {
-  getMetamaskWallet,
+  getMetamaskData,
   metamaskWalletIsIntall,
   tronWalletIsIntall,
 } from "../../functions/getTronWallet";
 import MetaMaskFoxBig from "../../assets/MetaMask_Fox_big.png";
-import TronlinkBig from "../../assets/tronlink_big.png";
 import {
-  openAuthMetamaskModal,
   openAuthTronModal,
   openRegistrationModal,
   closeModal,
@@ -15,8 +13,7 @@ import {
 import { FormattedMessage } from "react-intl";
 import { setMainWallet } from "../../store/types/Wallet";
 import { useNavigate } from "react-router";
-import routes from "../../routes";
-import { addNotification, checkIsExistUser } from "../../utils";
+import { checkIsExistUser, installWalletNotification } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 
 import "./styles.sass";
@@ -24,54 +21,35 @@ import "./styles.sass";
 const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const data = useSelector((state: any) => state.personInfo).main_info;
-  // const user = useSelector((state: any) => state.user);
 
   const registrationWalletClick = async (walletType: string) => {
     if (walletType === "metamask") {
       if (metamaskWalletIsIntall()) {
-        const walletToken = await getMetamaskWallet();
-        if (walletToken) {
-          const walletData = {
+        const walletData = await getMetamaskData();
+        
+        if (walletData?.address) {
+          const walletObj = {
             wallet: "metamask",
-            token: walletToken,
+            token: walletData.address,
           };
-          dispatch(setMainWallet(walletData));
+          dispatch(setMainWallet(walletObj));
           !withoutLogin &&
-            localStorage.setItem("main_wallet", JSON.stringify(walletData));
-          const isExist = await checkIsExistUser(walletToken);
+            localStorage.setItem("main_wallet", JSON.stringify(walletObj));
+          const isExist = await checkIsExistUser(walletData.address);
           if (!isExist) {
             !withoutLogin && navigate("/register");
-            // dispatch(openRegistrationModal());
           } else {
-            dispatch(tryToGetUser(walletToken));
+            dispatch(tryToGetUser(walletData.address));
             if (!withoutLogin) {
               navigate("/");
-              // dispatch(closeModal());
             }
           }
         }
       } else {
-        addNotification({
-          type: "warning",
-          title: "You don't have the Metamask wallet extension installed",
-          message: (
-            <a
-              href={
-                "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
-              }
-              target="_blank"
-              className="auth-modal__link"
-              rel="noreferrer"
-              style={{
-                color: "#fff",
-                textDecoration: "underline",
-              }}
-            >
-              Install Metamask
-            </a>
-          ),
-        });
+        installWalletNotification(
+          "Metamask",
+          "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+        );
       }
     } else {
       if (tronWalletIsIntall()) {

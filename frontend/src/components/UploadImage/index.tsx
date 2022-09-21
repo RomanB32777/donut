@@ -95,6 +95,7 @@ const UploadImage = ({
             className={clsx("file-input__row", {
               banner: isBanner,
               bigSize: bigSize,
+              transparent: Boolean(filePreview?.length)
             })}
             onMouseEnter={() => !disabled && setIsMouseOnAvatar(true)}
             onMouseLeave={() => !disabled && setIsMouseOnAvatar(false)}

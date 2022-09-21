@@ -6,6 +6,7 @@ import BaseButton from "../../commonComponents/BaseButton";
 import postData from "../../functions/postData";
 import { closeModal } from "../../store/types/Modal";
 import getTronWallet, {
+  getMetamaskData,
   getMetamaskWallet,
   metamaskWalletIsIntall,
   tronWalletIsIntall,
@@ -31,14 +32,12 @@ const RegistrationModal = () => {
         if (res.error) {
           setIsUsernameError(true);
         } else {
-          let wallet: string = "";
+          let wallet: string | undefined = "";
 
           if (mainWallet.wallet === "metamask") {
-            const metaMaskWallet =
-              metamaskWalletIsIntall() && (await getMetamaskWallet());
-            wallet = metaMaskWallet;
-          } else if (mainWallet.wallet === "tron") {
-            wallet = getTronWallet();
+            const metaMaskWallet = await getMetamaskData();
+
+            wallet = metaMaskWallet?.address;
           }
 
           wallet
@@ -50,7 +49,7 @@ const RegistrationModal = () => {
                   mainWallet.wallet ||
                   (tronWalletIsIntall() ? "tron" : "metamask"),
               }).then((res) => {
-                dispatch(tryToGetUser(wallet));
+                dispatch(tryToGetUser(wallet as string));
                 navigate("/");
               })
             : addNotification({

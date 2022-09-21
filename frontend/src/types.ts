@@ -56,7 +56,7 @@ export const initAlertData: IAlertData = {
   message_color: "#ffffff",
   name_color: "#ffffff",
   sum_color: "#ffffff",
-  duration: 5,
+  duration: 15,
   sound: "sound_1",
   voice: false,
 }

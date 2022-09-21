@@ -90,7 +90,7 @@ create TABLE alerts (
     message_color  VARCHAR(10) DEFAULT '#ffffff',
     name_color  VARCHAR(10) DEFAULT '#ffffff',
     sum_color VARCHAR(10) DEFAULT '#ffffff',
-    duration NUMERIC DEFAULT 5,
+    duration NUMERIC DEFAULT 15,
     sound VARCHAR(255) DEFAULT 'sound_1',
     voice BOOLEAN DEFAULT 'false',
     creator_id INTEGER,

@@ -134,7 +134,6 @@ const DonationGoalsContainer = () => {
       <ModalComponent
         visible={isOpenModal}
         title="New donation goal"
-        setIsVisible={setIsOpenModal}
         onCancel={closeEditModal}
         width={880}
       >

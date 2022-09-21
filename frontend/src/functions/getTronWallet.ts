@@ -45,7 +45,8 @@ export const getMetamaskData = async () => {
             })
         }
         await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
+        // (window as any).ethereum.request({ method: 'eth_requestAccounts' })
+        const signer = provider.getSigner(0);
         const address = await signer.getAddress()
         return {
             signer,

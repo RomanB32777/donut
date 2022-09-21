@@ -17,7 +17,7 @@ const getMaticUsdKoef = async () => {
 };
 
 const getUsdKoef = async (currency) => {
-    const { data } = await axiosClient.get(
+    const { data } = await axios.get(
         `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
     );
     return +data[currency].usd
@@ -66,7 +66,7 @@ class DonationController {
             const date = new Date(formatedDate + userOffset).toISOString()
 
             const trxKoef = await getTronUsdKoef();
-            const maticKoef = await getUsdKoef();
+            const maticKoef = await getUsdKoef("evmos");
 
             if (backer_token && creator_token) {
                 const creator = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [creator_token])
@@ -129,7 +129,7 @@ class DonationController {
             const sumRows = await db.query(`SELECT sum_donation, wallet_type FROM donations`)
             let sum = 0;
             const trxKoef = await getTronUsdKoef();
-            const maticKoef = await getUsdKoef();
+            const maticKoef = await getUsdKoef("evmos");
 
             sumRows.rows.forEach((summ) =>
                 sum += summ.sum_donation * (summ.wallet_type === "tron" ? trxKoef : maticKoef)

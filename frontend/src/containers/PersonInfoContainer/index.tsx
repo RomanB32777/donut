@@ -8,7 +8,6 @@ import LinksPanel from "../../components/PersonInfoComponents/LinksPanel";
 import NavigatingPanel from "../../components/PersonInfoComponents/NavigatingPanel";
 import PersonMainInfo from "../../components/PersonInfoComponents/PersonMainInfo";
 import { url } from "../../consts";
-import { openSupportModal } from "../../store/types/Modal";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 
 import Space from "../../space.png";

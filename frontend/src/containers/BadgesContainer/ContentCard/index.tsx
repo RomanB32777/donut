@@ -1,12 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
-import { url } from "../../../consts";
+import { abi, url } from "../../../consts";
 import { LargeImageIcon, TrashBinIcon } from "../../../icons/icons";
 import "./styles.sass";
 
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
-import { abi } from "../consts";
 import { ethers } from "ethers";
 import axiosClient from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
@@ -15,6 +14,7 @@ import testIMG from "../../../assets/person.png";
 const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
   const user = useSelector((state: any) => state.user);
   const [badgeData, setBadgeData] = useState<IBadgeData>({ ...initBadgeData });
+  
   // const ableToDelete = useMemo(
   //   () => user && user.id && user.id === prop.data.creator_id,
   //   [user, prop]
@@ -34,6 +34,12 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
       );
 
       const currentToken = await currentContract.uri(1);
+
+      const balance = await currentContract.balanceOf(user.metamask_token, 1);
+      if (user.roleplay === "backers" && balance.toNumber() < 1) return;
+
+      const quantityBadge = await currentContract.totalSupply(1);
+
       const rootCid = currentToken.split("//")[1];
       const dataBadgeJSON = await axiosClient.get(
         `https://${rootCid}.ipfs.w3s.link/metadata.json`
@@ -47,7 +53,6 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
         if (res) {
           const files = await res.files(); // Web3File[]
 
-          // new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(files[0]);
           reader.onload = () =>
@@ -59,6 +64,7 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
                 preview: (reader.result as string) || "",
               },
               contract_address,
+              quantity: quantityBadge,
             });
         }
       }
@@ -68,12 +74,10 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
   };
 
   useEffect(() => {
-    getBadgeNFTData(prop.data);
-  }, [prop.data]);
+    user.metamask_token && getBadgeNFTData(prop.data);
+  }, [user, prop.data]);
 
   const { image, title, description } = badgeData;
-
-  console.log(badgeData);
 
   return (
     <div

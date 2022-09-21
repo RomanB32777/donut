@@ -14,8 +14,8 @@ const CreatorsListContainer = () => {
   const [usersList, setUsersList] = useState<any[]>([]);
 
   const getUsers = async (name: string) => {
-    const res = await fetch(baseURL +  `/api/user/users/${name}`);
-    
+    const res = await fetch(baseURL + `/api/user/users/${name}`);
+
     const result = await res.json();
     setUsersList(result);
   };
@@ -51,6 +51,7 @@ const CreatorsListContainer = () => {
         ) : (
           usersList.map((user, userIndex) => (
             <div
+              key={userIndex}
               className="creators-list-container__list__panel"
               style={{
                 marginLeft: userIndex % 2 === 1 ? "90px" : "0px",

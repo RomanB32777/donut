@@ -9,11 +9,11 @@ import { UserOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import SelectInput from "../../../components/SelectInput";
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
-import { abi } from "../consts";
 import { ethers } from "ethers";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
 import { useSelector } from "react-redux";
+import { abi } from "../../../consts";
 
 const BadgePage = ({
   activeBadge,
@@ -24,7 +24,8 @@ const BadgePage = ({
 }) => {
   const user = useSelector((state: any) => state.user);
 
-  const [formBadge, setFormBadge] = useState<IBadgeData>({...initBadgeData});
+  const [formBadge, setFormBadge] = useState<IBadgeData>({ ...initBadgeData });
+  const [loading, setLoading] = useState<boolean>(false);
   const [supporters, setSupporters] = useState<any[]>([]);
   const [holders, setHolders] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
@@ -129,6 +130,7 @@ const BadgePage = ({
 
   const mintBadge = async () => {
     try {
+      setLoading(true);
       const { contract_address, id } = activeBadge;
       const selectedUserObj: any = supporters.find(
         (s: any) => s.username === selectedUser
@@ -151,6 +153,8 @@ const BadgePage = ({
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -158,12 +162,15 @@ const BadgePage = ({
     const { id, contract_address } = activeBadge;
     if (id && contract_address) {
       getBadge(activeBadge);
-      getHolders(activeBadge);
+      user.roleplay && user.roleplay === "creators" && getHolders(activeBadge);
     }
   }, [activeBadge]);
 
   useEffect(() => {
-    user.id && getSupporters(user.id);
+    user.id &&
+      user.roleplay &&
+      user.roleplay === "creators" &&
+      getSupporters(user.id);
   }, [user]);
 
   const { image, title, description, contract_address, quantity } = formBadge;
@@ -243,81 +250,95 @@ const BadgePage = ({
                         <p className="details__content_row_title">Address</p>
                       </Col>
                       <Col span={18}>
-                        <p className="details__content_row_value">
-                          <LinkCopy link={contract_address} isSimple />
-                        </p>
+                        <div className="details__content_row_value">
+                          <LinkCopy
+                            link={contract_address}
+                            linkLength={15}
+                            isSimple
+                          />
+                        </div>
                       </Col>
                     </Row>
                   </div>
                 </div>
               </Col>
             </Row>
-            <Row>
-              <Col span={24}>
-                <Row justify="space-between" align="middle">
-                  <Col span={8}>
-                    <p className="details__title">Badge holders</p>
+            {user.roleplay && user.roleplay === "creators" && (
+              <Row>
+                {Boolean(holders.length) && (
+                  <Col span={24}>
+                    <Row justify="space-between" align="middle">
+                      <Col span={8}>
+                        <p className="details__title">Badge holders</p>
+                      </Col>
+                      <Col span={15}>
+                        <div
+                          className={clsx("details__users", {
+                            center: false,
+                          })}
+                        >
+                          <Avatar.Group
+                            maxCount={7}
+                            maxPopoverTrigger="click"
+                            size="large"
+                            maxStyle={{
+                              color: "#f56a00",
+                              backgroundColor: "#fde3cf",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {holders.map((holder: any) => (
+                              <Tooltip
+                                key={holder.username}
+                                title={holder.username}
+                                placement="top"
+                              >
+                                <Avatar style={{ backgroundColor: "#1D14FF" }}>
+                                  {holder.username[1]}
+                                </Avatar>
+                              </Tooltip>
+                            ))}
+                          </Avatar.Group>
+                        </div>
+                      </Col>
+                    </Row>
                   </Col>
-                  <Col span={15}>
-                    <div
-                      className={clsx("details__users", {
-                        center: false,
-                      })}
-                    >
-                      <Avatar.Group
-                        maxCount={7}
-                        maxPopoverTrigger="click"
-                        size="large"
-                        maxStyle={{
-                          color: "#f56a00",
-                          backgroundColor: "#fde3cf",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {holders.length &&
-                          holders.map((holder: any) => (
-                            <Tooltip title={holder.username} placement="top">
-                              <Avatar style={{ backgroundColor: "#1D14FF" }}>
-                                {holder.username[1]}
-                              </Avatar>
-                            </Tooltip>
-                          ))}
-                      </Avatar.Group>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Divider className="line" />
-              </Col>
-              <Col span={24}>
-                <p className="details__title">Assign badge</p>
-                <div className="form-element">
-                  <SelectInput
-                    list={
-                      supporters.length
-                        ? supporters.map((s) => s.username)
-                        : [""]
-                    }
-                    value={selectedUser}
-                    setValue={(selected) => setSelectedUser(selected as string)}
-                    placeholder="Choose your donator address"
-                    modificator="details__select_user"
-                  />
-                </div>
-              </Col>
-              <Col span={24}>
-                <div className="saveBottom">
-                  <BaseButton
-                    formatId="badges_page_assign_button"
-                    padding="6px 35px"
-                    onClick={mintBadge}
-                    fontSize="18px"
-                    isBlue
-                  />
-                </div>
-              </Col>
-            </Row>
+                )}
+                <Col span={24}>
+                  <Divider className="line" />
+                </Col>
+                <Col span={24}>
+                  <p className="details__title">Assign badge</p>
+                  <div className="form-element">
+                    <SelectInput
+                      list={
+                        supporters.length
+                          ? supporters.map((s) => s.username)
+                          : [""]
+                      }
+                      value={selectedUser}
+                      setValue={(selected) =>
+                        setSelectedUser(selected as string)
+                      }
+                      placeholder="Choose your donator address"
+                      modificator="details__select_user"
+                    />
+                  </div>
+                </Col>
+                <Col span={24}>
+                  <div className="saveBottom">
+                    <BaseButton
+                      formatId="badges_page_assign_button"
+                      padding="6px 35px"
+                      onClick={mintBadge}
+                      fontSize="18px"
+                      disabled={loading}
+                      isBlue
+                    />
+                  </div>
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       </div>

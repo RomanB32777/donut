@@ -4,11 +4,12 @@ import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 
 import axiosClient from "../../axiosClient";
-import { url } from "../../consts";
+import { abi_transfer, contractMetaAddress, url } from "../../consts";
 import { StarIcon } from "../../icons/icons";
 import SpaceImg from "../../space.png";
 
 import {
+  getMetamaskData,
   getMetamaskWallet,
   metamaskWalletIsIntall,
   tronWalletIsIntall,
@@ -19,6 +20,7 @@ import {
   addNotification,
   addSuccessNotification,
   getUsdKoef,
+  installWalletNotification,
 } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 import FormInput from "../../components/FormInput";
@@ -30,6 +32,8 @@ import { IGoalData } from "../../types";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 
 import "./styles.sass";
+import { ethers } from "ethers";
+import Loader from "../../components/Loader";
 
 const maxlength = 120;
 
@@ -74,81 +78,116 @@ const DonatContainer = () => {
     });
   };
 
-  // const tryToLogin = async () => {};
-  const sendDonation = async () => {
-    let newUser: any = {};
-    try {
-      setLoading(true);
-      if (!user.id) {
-        const { data } = await axiosClient.post("/api/user/check-username", {
-          username,
-        });
-        if (data.error) {
-          console.log(data.error);
-        } else {
-          const { data, status } =
-            mainWallet.token &&
-            (await axiosClient.post("/api/user/create-user", {
-              role: "backers",
-              username: username,
-              token: mainWallet.token,
-              typeWallet: mainWallet.wallet || "metamask",
-            }));
-
-          if (status === 200) {
-            newUser = data.newUser;
-            dispatch(tryToGetUser(mainWallet.token));
-          }
-        }
-      }
-      const { data, status } = await axiosClient.post("/api/donation/create/", {
-        creator_token: personInfo.metamask_token,
-        backer_token: user.metamask_token || newUser.metamask_token,
-        sum: +amount,
-        wallet: "metamask",
-        donation_message: message,
-        goal_id: selectedGoal !== "0" ? selectedGoal : null,
-      });
+  const registerSupporter = async () => {
+    const { data } = await axiosClient.post("/api/user/check-username", {
+      username,
+    });
+    if (data.error) {
+      console.log(data.error);
+      return;
+    } else {
+      const { data, status } =
+        mainWallet.token &&
+        (await axiosClient.post("/api/user/create-user", {
+          role: "backers",
+          username: username,
+          token: mainWallet.token,
+          typeWallet: mainWallet.wallet || "metamask",
+        }));
 
       if (status === 200) {
-        socket &&
-          user &&
-          data.donation &&
-          socket.emit("new_donat", {
-            supporter: {
-              username: user.username || newUser.username,
-              id: user.user_id || newUser.user_id,
-            },
-            wallet: "metamask",
-            creator_id: data.donation.creator_id,
-            creator_username: data.donation.creator_username,
-            sum: amount,
-            donationID: data.donation.id,
-          });
-        selectedGoal !== "0" &&
-          (await axiosClient.put("/api/user/goals-widget/", {
-            goalData: {
-              donat: +amount * usdtKoef,
-            },
-            creator_id: data.donation.creator_id,
-            id: selectedGoal,
-          }));
-        addSuccessNotification("Good");
-        navigate("/donations");
-        setForm({
-          ...initObj,
-          username,
-        });
+        const newUser = data.newUser;
+        dispatch(tryToGetUser(mainWallet.token));
+        return newUser;
       }
-    } catch (error) {
-      console.log("error", error);
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message: `An error occurred while sending data`,
+    }
+    return;
+  };
+
+  const sendDonation = async () => {
+    // setLoading(true);
+    let newUser: any = {};
+    if (!user.id) {
+      newUser = await registerSupporter();
+    }
+    const { data, status } = await axiosClient.post("/api/donation/create/", {
+      creator_token: personInfo.metamask_token,
+      backer_token: user.metamask_token || newUser.metamask_token,
+      sum: +amount,
+      wallet: "metamask",
+      donation_message: message,
+      goal_id: selectedGoal !== "0" ? selectedGoal : null,
+    });
+
+    if (status === 200) {
+      socket &&
+        user &&
+        data.donation &&
+        socket.emit("new_donat", {
+          supporter: {
+            username: user.username || newUser.username,
+            id: user.user_id || newUser.user_id,
+          },
+          wallet: "metamask",
+          creator_id: data.donation.creator_id,
+          creator_username: data.donation.creator_username,
+          sum: amount,
+          donationID: data.donation.id,
+        });
+      selectedGoal !== "0" &&
+        (await axiosClient.put("/api/user/goals-widget/", {
+          goalData: {
+            donat: +amount * usdtKoef,
+          },
+          creator_id: data.donation.creator_id,
+          id: selectedGoal,
+        }));
+      addSuccessNotification(
+        `You’ve successfully sent ${amount} tEVMOS to ${data.donation.creator_username}`
+      );
+      navigate("/donations");
+      setForm({
+        ...initObj,
+        username,
       });
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const triggerContract = async () => {
+    if (metamaskWalletIsIntall()) {
+      try {
+        setLoading(true);
+        const metamaskData = await getMetamaskData();
+        if (metamaskData) {
+          const { amount } = form;
+          const { signer } = metamaskData;
+          const smartContract = new ethers.Contract(
+            contractMetaAddress,
+            abi_transfer,
+            signer
+          );
+          const tx = await smartContract.transferMoney(
+            personInfo.metamask_token,
+            { value: ethers.utils.parseEther(amount) }
+          );
+          await tx.wait();
+          await sendDonation();
+        }
+      } catch (error) {
+        console.log("error", error);
+        addNotification({
+          type: "danger",
+          title: "Error",
+          message: `An error occurred while sending data`,
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      installWalletNotification(
+        "Metamask",
+        "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+      );
     }
   };
 
@@ -165,12 +204,14 @@ const DonatContainer = () => {
     const setUser = async () => {
       if (user.id) setForm({ ...form, username: user.username });
       else {
-        const address = await getMetamaskWallet();
-        const wallet = {
-          wallet: "metamask",
-          token: address,
-        };
-        dispatch(setMainWallet(wallet));
+        const walletData = await getMetamaskData();
+        if (walletData) {
+          const wallet = {
+            wallet: "metamask",
+            token: walletData.address,
+          };
+          dispatch(setMainWallet(wallet));
+        }
       }
     };
     setUser();
@@ -314,7 +355,7 @@ const DonatContainer = () => {
                   />
                 </div>
               </div>
-              {goalsActive && Boolean(goalsActive.length) && (
+              {Array.isArray(goalsActive) && Boolean(goalsActive.length) && (
                 <div className="donat-container__payment_goals">
                   <Row justify="space-between">
                     <Col span={6}>
@@ -341,11 +382,12 @@ const DonatContainer = () => {
                           >
                             <Space direction="vertical">
                               <Radio value={"0"}>Don’t participate</Radio>
-                              {goalsActive && goalsActive.map((goal: IGoalData) => (
-                                <Radio key={goal.id} value={goal.id}>
-                                  {goal.title}
-                                </Radio>
-                              ))}
+                              {goalsActive &&
+                                goalsActive.map((goal: IGoalData) => (
+                                  <Radio key={goal.id} value={goal.id}>
+                                    {goal.title}
+                                  </Radio>
+                                ))}
                             </Space>
                           </Radio.Group>
                         </div>
@@ -354,21 +396,26 @@ const DonatContainer = () => {
                   </Row>
                 </div>
               )}
-              <BaseButton
-                title={personInfo.btn_text || "Donate"}
-                onClick={sendDonation}
-                padding="10px 25px"
-                fontSize="21px"
-                color={personInfo.main_color}
-                disabled={loading}
-                isBlue
-              />
-              {/* <SupportModal
-                additionalFields={form}
-                setForm={setForm}
-                notTitle
-                modificator="donat-page"
-              /> */}
+              <div className="donat-container__payment_bottom">
+                <BaseButton
+                  title={personInfo.btn_text || "Donate"}
+                  onClick={triggerContract}
+                  padding="10px 25px"
+                  fontSize="21px"
+                  color={personInfo.main_color}
+                  disabled={loading}
+                  isBlue
+                />
+                {loading && (
+                  <div
+                    style={{
+                      marginLeft: 10,
+                    }}
+                  >
+                    <Loader size="small" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

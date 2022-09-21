@@ -1,4 +1,4 @@
-import { Col, Row } from "antd";
+import { Col, Popover, Row, StepProps, Steps, StepsProps } from "antd";
 import { useState } from "react";
 import { ethers } from "ethers";
 import BaseButton from "../../../commonComponents/BaseButton";
@@ -7,17 +7,78 @@ import FormInput from "../../../components/FormInput";
 
 import PageTitle from "../../../commonComponents/PageTitle";
 import { LeftArrowIcon } from "../../../icons/icons";
-import { IBadgeData } from "../../../types";
-import SelectComponent from "../../../components/SelectComponent";
+import { IBadge, IBadgeData } from "../../../types";
 import SelectInput from "../../../components/SelectInput";
-import { abi, bytecode } from "../consts.js";
 import axiosClient from "../../../axiosClient";
 import { useSelector } from "react-redux";
 import { makeStorageClient } from "../utils";
+import { abi, bytecode } from "../../../consts";
+import { getMetamaskData } from "../../../functions/getTronWallet";
+import ModalComponent from "../../../components/ModalComponent";
+import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
+import { addNotification, addSuccessNotification } from "../../../utils";
+import { useNavigate } from "react-router";
 
-const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
+const { Step } = Steps;
+
+const customDot: StepsProps["progressDot"] = (dot, { status }) => {
+  if (status === "finish")
+    return (
+      <CheckOutlined
+        style={{
+          color: "#25EC39",
+          position: "absolute",
+          right: "-3px",
+          top: "-5px",
+        }}
+      />
+    );
+  if (status === "process")
+    return (
+      <LoadingOutlined
+        style={{
+          color: "#1D14FF",
+          position: "absolute",
+          right: "-6px",
+          top: "-2px",
+        }}
+      />
+    );
+  return dot;
+};
+
+const initLoadingSteps: StepProps[] = [
+  {
+    status: "wait",
+    title: "Loading files to IPFS",
+  },
+  {
+    status: "wait",
+    title: "Creating ERC 1155 collection",
+  },
+  {
+    status: "wait",
+    title: "Verification",
+  },
+];
+
+const CreateBadgeForm = ({
+  backBtn,
+  setActiveBadge,
+  openBadgePage,
+}: {
+  backBtn: () => void;
+  setActiveBadge: (activeBadge: IBadge) => void;
+  openBadgePage: () => void;
+}) => {
+  const navigate = useNavigate();
   const user = useSelector((state: any) => state.user);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingSteps, setLoadingSteps] = useState<StepProps[]>([
+    ...initLoadingSteps,
+  ]);
+
+  // const [isOpenModal, setIsOpenModal] = useState(true);
   const [formBadge, setFormBadge] = useState<IBadgeData>({
     image: {
       preview: "",
@@ -28,13 +89,6 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
     blockchain: "",
     contract_address: "",
   });
-
-  // const [mintDetails, setMintDetails] = useState({
-  //   receiver: "",
-  //   tokenId: 1,
-  //   quantity: 1,
-  //   gaslimit: { gasLimit: 1000000000 },
-  // });
 
   const createJSON = (_title: string, _description: string, _uri: string) => {
     const dict = { title: _title, description: _description, URI: _uri };
@@ -64,30 +118,116 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
     }
   };
 
-  const createContract = async () => {
-    try {
-      setLoading(true);
-      // await changeNetwork("evmos_testnet") CHECK !!!
-      const _uri = await uploadToIpfs();
-      const provider = new ethers.providers.Web3Provider(
-        (window as any).ethereum
-      );
-      const signer = provider.getSigner(0);
-      const Badge = new ethers.ContractFactory(abi, bytecode, signer);
-      // deploy contracts
-      const badgeContract = await Badge.deploy(_uri);
+  const setLoadingCurrStep = ({
+    loadingStep,
+    finishedStep,
+  }: {
+    loadingStep?: number;
+    finishedStep?: number;
+  }) => {
+    // const loadingItem = loadingSteps.find((_, key) => key === loadingStep);
+    // const finishedItem = loadingSteps.find((_, key) => key === finishedStep);
+    // // console.log("load status", loadingItem, finishedItem);
 
-      if (badgeContract) {
-        await axiosClient.post("/api/badge/", {
-          creator_id: user.id,
-          contract_address: badgeContract.address,
-        });
-        backBtn();
+    // // const res = loadingSteps.reduce((acc, currStep) => {
+    // //   return [...acc, currStep];
+    // // }, [] as StepProps[]);
+
+    // // console.log(res);
+
+    if (loadingStep === 0) {
+      setLoadingSteps([
+        {
+          status: "process",
+          title: "Loading files to IPFS",
+        },
+        ...loadingSteps.slice(1, 3),
+      ]);
+    } else if (finishedStep === 0 && loadingStep === 1) {
+      setLoadingSteps((prev) => [
+        {
+          status: "finish",
+          title: "Loading files to IPFS",
+        },
+        {
+          status: "process",
+          title: "Creating ERC 1155 collection",
+        },
+        ...prev.slice(2, 3),
+      ]);
+    } else if (finishedStep === 1 && loadingStep === 2) {
+      setLoadingSteps((prev) => [
+        ...prev.slice(0, 1),
+        {
+          status: "finish",
+          title: "Creating ERC 1155 collection",
+        },
+        {
+          status: "process",
+          title: "Verification",
+        },
+      ]);
+    } else if (finishedStep === 2) {
+      setLoadingSteps((prev) => [
+        ...prev.slice(0, 2),
+        {
+          status: "finish",
+          title: "Verification",
+        },
+      ]);
+    }
+  };
+
+  const createContract = async () => {
+    const { image, title, description, blockchain } = formBadge;
+    if (
+      image.preview.length &&
+      title.length &&
+      description.length &&
+      blockchain.length
+    ) {
+      try {
+        setLoading(true);
+        setLoadingCurrStep({ loadingStep: 0 });
+        const walletData = await getMetamaskData();
+        if (walletData?.address) {
+          const _uri = await uploadToIpfs();
+          setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 });
+          const provider = new ethers.providers.Web3Provider(
+            (window as any).ethereum
+          );
+          const signer = provider.getSigner(0);
+          setLoadingCurrStep({ finishedStep: 1, loadingStep: 2 });
+          const Badge = new ethers.ContractFactory(abi, bytecode, signer);
+          const badgeContract = await Badge.deploy(_uri); // deploy contracts
+          setLoadingCurrStep({ finishedStep: 2 });
+
+          if (badgeContract) {
+            const newBadge = await axiosClient.post("/api/badge/", {
+              creator_id: user.id,
+              contract_address: badgeContract.address,
+            });
+            navigate("/");
+            // setActiveBadge({
+            //   contract_address: badgeContract.address,
+            //   id: newBadge.data.id,
+            // });
+            // backBtn();
+            // openBadgePage();
+            addSuccessNotification("Badge saved successfully");
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+        setLoadingSteps([...initLoadingSteps]);
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+    } else {
+      addNotification({
+        type: "danger",
+        title: "Not all fields are filled",
+      });
     }
   };
 
@@ -181,18 +321,6 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
                     selectCol={24}
                     gutter={[0, 18]}
                   />
-                  {/* <FormInput
-                    label="Quantity"
-                    name="quantity"
-                    value={quantity}
-                    typeInput="number"
-                    setValue={(value) =>
-                      setFormBadge({ ...formBadge, quantity: value })
-                    }
-                    labelCol={24}
-                    InputCol={24}
-                    gutter={[0, 18]}
-                  /> */}
                 </div>
               </Col>
               <Col span={24}>
@@ -211,6 +339,24 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
           </Col>
         </Row>
       </div>
+      <ModalComponent
+        visible={loading}
+        title="Follow steps"
+        closable={false}
+        width={550}
+      >
+        <div className="goals-modal">
+          <Row gutter={[0, 18]} className="goals-modal__form" justify="center">
+            <Col span={24}>
+              <Steps direction="vertical" progressDot={customDot}>
+                {loadingSteps.map((step, key) => (
+                  <Step key={key} status={step.status} title={step.title} />
+                ))}
+              </Steps>
+            </Col>
+          </Row>
+        </div>
+      </ModalComponent>
     </div>
   );
 };

@@ -143,7 +143,7 @@
             &.rotated
                 svg
                     transform: rotate(180deg)
-    
+
         &-popup
             display: flex
             flex-direction: column
@@ -211,7 +211,7 @@
             &-list
                 max-height: 250px
             &-item
-                margin-bottom: 5px 
+                margin-bottom: 5px
             &-link
                 margin-top: 15px
                 text-align: center
@@ -245,6 +245,17 @@
 .ant-btn-primary:hover
     border-color: variables.$blue-color
     background-color: variables.$blue-color
+
+.ant-steps
+    .ant-steps-item
+        .ant-steps-item-title
+            color: variables.$white-color !important
+            font-family: variables.$inter-font !important
+            font-size: 20px !important
+
+.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot
+    background: variables.$white-color !important
+
 
 .line
     color: variables.$white-color

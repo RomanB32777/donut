@@ -18,7 +18,7 @@ class BadgeController {
             const { creator_id, contract_address } = req.body
             const creator = await db.query('SELECT * FROM users WHERE id = $1', [creator_id])
             if (creator) {
-                const newBadge = await db.query(`INSERT INTO badges (creator_id, contract_address) values ($1, $2) RETURNING *`, [creator.rows[0].id, contract_address])
+                const newBadge = await db.query(`INSERT INTO badges (creator_id, contract_address) values ($1, $2) RETURNING id`, [creator.rows[0].id, contract_address])
                 res.status(200).json(newBadge.rows[0])
             }
         } catch (error) {
@@ -87,7 +87,7 @@ class BadgeController {
         try {
             const { badge_id, contract_address } = req.params
             const users = await db.query(`SELECT contributor_user_id_list FROM badges WHERE id = $1 AND contract_address= $2`, [badge_id, contract_address])
-            if (users.rows) {
+            if (users.rows && users.rows[0].contributor_user_id_list.length) {
                 const usersIDs = users.rows[0].contributor_user_id_list.split(' ').filter(Boolean).join(',');
                 const holders = await db.query(`SELECT id, username FROM users WHERE id IN (${usersIDs})`)
                 return res.status(200).json(holders.rows)
@@ -100,9 +100,9 @@ class BadgeController {
 
     async getBadgesByBacker(req, res) {
         try {
-            const user_id = req.params.user_id
+            const { user_id } = req.params
             const badges = await db.query(`SELECT * FROM badges WHERE contributor_user_id_list LIKE '%${user_id}%'`)
-            res.status(200).json({ badges: badges.rows })
+            res.status(200).json(badges.rows)
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
