@@ -135,7 +135,7 @@ export const DateFormatter = (
 export const checkIsExistUser = async (token: string) => {
   const data = await postData("/api/user/check-user-exist/", { token });
   console.log(data);
-  
+
   if (data.notExist) return false;
   return true;
 };
@@ -201,6 +201,33 @@ export const copyStr = (str: string) => {
     });
   }
 };
+
+interface IReplaceObj {
+  re: RegExp;
+  to: string;
+}
+
+export const renderStrWithTokens = (
+  template: string | string[],
+  replaceObj: IReplaceObj[]
+) => {
+  const str = Array.isArray(template) ? template.join(" ") : template;
+  return replaceObj.reduce((acc, { re, to }) => {
+    return acc.replace(re, to);
+  }, str);
+};
+
+// export const renderStrWithTokens = (
+//   template: string | string[],
+//   objToRender: any,
+//   fields: string[]
+// ) => {
+//   const str = Array.isArray(template) ? template.join(" ") : template;
+//   return fields.reduce((acc, field) => {
+//     const expStr = `{${field}}`;
+//     return acc.replace(new RegExp(expStr, "gi"), objToRender[field]);
+//   }, str);
+// };
 
 declare type currencyTypes = "evmos";
 

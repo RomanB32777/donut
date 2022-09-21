@@ -43,14 +43,14 @@ const dateTrancCurrentParams = {
     '7days': 'week',
     '30days': 'month',
     'year': 'year',
-    // 'all': 'all'
+    'all': 'all'
 }
 
 const getTimePeriod = (period) => `
     to_timestamp(donation_date,'YYYY/MM/DD${period !== 'today' ? ' T HH24:MI:SS' : ''} ')
     >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} `
 
-const getTimeCurrentPeriod = (period) => `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS'))
+const getTimeCurrentPeriod = (period) => period === 'all' ? "true" : `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS'))
     = date_trunc('${dateTrancCurrentParams[period]}', current_date${period === "yesterday" ? " - 1" : ""})`
 
 // date_trunc('${}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS')) AS date_group
@@ -258,12 +258,12 @@ class DonationController {
             const { limit, timePeriod, isStatPage } = req.query;
 
             const data = await db.query(`
-                SELECT username, SUM(sum_donation::numeric) AS sum 
+                SELECT username, SUM(sum_donation::numeric) AS sum_donation 
                 FROM donations
                 WHERE creator_id = $1
                 AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
                 GROUP BY username
-                ORDER BY sum DESC 
+                ORDER BY SUM(sum_donation::numeric) DESC 
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id]);
             if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json(data.rows)

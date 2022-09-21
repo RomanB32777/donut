@@ -85,13 +85,11 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
       const { data } = await axiosClient.get(
         `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}`
       );
-      if (data.donations && data.donations.length) {
-        const { donations } = data;
-
-        const labels = donations.map((donat: any) =>
+      if (data.length) {
+        const labels = data.map((donat: any) =>
           DateFormatter(donat.date_group, dateFormat[activeFilterItem])
         );
-        const values = donations.map(
+        const values = data.map(
           (donat: any) => +(+donat.sum_donation * usdtKoef).toFixed(0)
         );
 

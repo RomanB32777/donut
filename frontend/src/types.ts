@@ -78,11 +78,12 @@ export interface IStatData {
   aligment: typeAligmnet;
 }
 
+export declare type AlignText = "left" | "center" | "right";
+
 export const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
   Center: "center",
   Right: "end",
-  // tart | end | left | right | center | justify | match-parent
 };
 
 export const alignFlextItemsList: { [key in typeAligmnet]: string } = {

@@ -22,9 +22,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
       const { data } = await axiosClient.get(
         `/api/donation/widgets/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}`
       );
-      data.donations &&
-        data.donations.length &&
-        setLatestDonations(data.donations);
+      data.length && setLatestDonations(data);
     } catch (error) {
       console.log(error);
     }
