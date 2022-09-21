@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
-import { filterPeriodItems } from "../../../../consts";
+import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import { ITableData, tableColums } from "./tableData";
-import "./styles.sass";
 import { useSelector } from "react-redux";
 import axiosClient from "../../../../axiosClient";
 import { DateFormatter, DateTimezoneFormatter } from "../../../../utils";
+import "./styles.sass";
 
 const LIMIT_DONATS = 6;
 
@@ -38,9 +38,7 @@ const WidgetTopDonat = () => {
   };
 
   useEffect(() => {
-    const timePeriod = Object.keys(filterPeriodItems).find(
-      (key: string) => filterPeriodItems[key] === activeFilterItem
-    );
+    const timePeriod = getTimePeriodQuery(activeFilterItem);
     user.id && timePeriod && getTopDonations(timePeriod);
   }, [user, activeFilterItem]);
 

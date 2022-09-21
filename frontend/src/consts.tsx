@@ -503,21 +503,84 @@ export const abi = [
   },
 ];
 
-export const filterPeriodItems: { [key: string]: string } = {
+// period-time
+export declare type periodItemsTypes = "today" | "7days" | "30days" | "year";
+
+export type IFilterPeriodItems = {
+  [key in periodItemsTypes]: string;
+};
+
+export const filterPeriodItems: IFilterPeriodItems = {
   today: "Today",
   "7days": "Last 7 days",
   "30days": "Last 30 days",
   year: "This year",
 };
 
-export const filterCurrentPeriodItems: { [key: string]: string } = {
+export const getTimePeriodQuery: (timePeriod: string) => periodItemsTypes = (
+  timePeriod
+) => {
+  const findKey = Object.keys(filterPeriodItems).find(
+    (key) => filterPeriodItems[key as periodItemsTypes] === timePeriod
+  );
+  return findKey ? (findKey as periodItemsTypes) : "7days"; // : keyof IFilterPeriodItems
+};
+
+// period-current-time
+export declare type currentPeriodItemsTypes = "yesterday" | "all" | "custom";
+
+export declare type allPeriodItemsTypes =
+  | periodItemsTypes
+  | currentPeriodItemsTypes;
+
+declare type ICurrentPeriodItemsTypes = {
+  [key in allPeriodItemsTypes]: string;
+};
+
+export type IFilterCurrentPeriodItems = ICurrentPeriodItemsTypes;
+
+export const filterCurrentPeriodItems: IFilterCurrentPeriodItems = {
   yesterday: "Yesterday",
   today: "Today",
-  "7days": "Current week",
-  "30days": "Current month",
+  "7days": "Last 7 days",
+  "30days": "Last 30 days",
   year: "Current year",
   all: "All time",
   custom: "Custom date",
+};
+
+export const getCurrentTimePeriodQuery: (
+  timePeriod: string
+) => allPeriodItemsTypes = (timePeriod) => {
+  const findKey = Object.keys(filterCurrentPeriodItems).find(
+    (key) => filterCurrentPeriodItems[key as allPeriodItemsTypes] === timePeriod
+  );
+  return findKey ? (findKey as allPeriodItemsTypes) : "7days";
+};
+
+// stats-data
+export declare type statsDataTypes =
+  | "top-donations"
+  | "latest-donations"
+  | "top-supporters"
+
+export type IStatsDataType = {
+  [key in statsDataTypes]: string;
+};
+
+export const filterDataTypeItems: IStatsDataType = {
+  "top-donations": "Top donations",
+  "latest-donations": "Recent donations",
+  "top-supporters": "Top supporters",
+};
+
+export const getStstsDataTypeQuery: (dataType: string) => statsDataTypes = (
+  dataType
+) => {
+  const findKey = Object.keys(filterDataTypeItems).find(
+    (key) => filterDataTypeItems[key as statsDataTypes] === dataType
+  );
+  return findKey ? (findKey as statsDataTypes) : "latest-donations";
 };
 
 export const url = "/images/";

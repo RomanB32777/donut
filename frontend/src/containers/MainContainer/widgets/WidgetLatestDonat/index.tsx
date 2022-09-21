@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Col, Row } from "antd";
 import moment from "moment";
 import SelectComponent from "../../../../components/SelectComponent";
-import { filterPeriodItems } from "../../../../consts";
+import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import axiosClient from "../../../../axiosClient";
 import { DateTimezoneFormatter } from "../../../../utils";
 import "./styles.sass";
@@ -31,9 +31,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   };
 
   useEffect(() => {
-    const timePeriod = Object.keys(filterPeriodItems).find(
-      (key: string) => filterPeriodItems[key] === activeFilterItem
-    );
+    const timePeriod = getTimePeriodQuery(activeFilterItem);
     user.id && timePeriod && getLatestDonations(timePeriod);
   }, [user, activeFilterItem]);
 

@@ -8,7 +8,7 @@ import ColorPicker from "../../../components/ColorPicker";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import BaseButton from "../../../commonComponents/BaseButton";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { alignItemsList, IStatData, typeAligmnet } from "../../../types";
+import { alignFlextItemsList, alignItemsList, IStatData, typeAligmnet } from "../../../types";
 import { addNotification, addSuccessNotification } from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
 import { SliderMarks } from "antd/lib/slider";
@@ -188,7 +188,7 @@ const StatsItem = ({
                 <div
                   className="preview-block_stat"
                   style={{
-                    justifyContent: alignItemsList[aligment],
+                    justifyContent: alignFlextItemsList[aligment],
                   }}
                 >
                   <div className="preview-block_stat__list">

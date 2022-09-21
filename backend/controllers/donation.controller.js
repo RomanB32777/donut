@@ -43,6 +43,7 @@ const dateTrancCurrentParams = {
     '7days': 'week',
     '30days': 'month',
     'year': 'year',
+    // 'all': 'all'
 }
 
 const getTimePeriod = (period) => `
@@ -209,18 +210,18 @@ class DonationController {
     async getLatestDonations(req, res) {
         try {
             const { user_id } = req.params;
-            const { limit, timePeriod } = req.query;
+            const { limit, timePeriod, isStatPage } = req.query;
 
             const data = await db.query(`
                 SELECT * FROM donations
                 WHERE creator_id = $1 
-                AND ${getTimePeriod(timePeriod)} 
+                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
                 ORDER BY donation_date DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
-                res.status(200).json({ donations: data.rows })
+                res.status(200).json(data.rows)
             } else {
-                res.status(200).json({ donations: [] })
+                res.status(200).json([])
             }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
@@ -230,40 +231,44 @@ class DonationController {
     async getTopDonations(req, res) {
         try {
             const { user_id } = req.params; // timePeriod
-            const { limit, timePeriod, isStat } = req.query;
+            const { limit, timePeriod, isStatPage } = req.query;
 
             const data = await db.query(`
                 SELECT * FROM donations 
                 WHERE creator_id = $1 
-                AND ${isStat ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
+                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
                 ORDER BY sum_donation DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
-                res.status(200).json({ donations: data.rows })
+                res.status(200).json(data.rows)
             } else {
-                res.status(200).json({ donations: [] })
+                res.status(200).json([])
             }
         } catch (error) {
+
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
     }
 
+
+
     async getTopSupporters(req, res) {
         try {
             const { user_id } = req.params;
-            const { limit } = req.query; // timePeriod
+            const { limit, timePeriod, isStatPage } = req.query;
 
             const data = await db.query(`
-                SELECT id, username, sum_donations 
-                FROM supporters 
+                SELECT username, SUM(sum_donation::numeric) AS sum 
+                FROM donations
                 WHERE creator_id = $1
-                ORDER BY sum_donations DESC 
+                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
+                GROUP BY username
+                ORDER BY sum DESC 
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id]);
-            // AND to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS') >= now() - interval '${dateParams[timePeriod]}'
             if (data && data.rows && data.rows.length > 0) {
-                res.status(200).json({ supporters: data.rows })
+                res.status(200).json(data.rows)
             } else {
-                res.status(200).json({ supporters: [] })
+                res.status(200).json([])
             }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
@@ -283,9 +288,9 @@ class DonationController {
                 GROUP BY date_group
                 ORDER BY date_group ASC`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
-                res.status(200).json({ donations: data.rows })
+                res.status(200).json(data.rows)
             } else {
-                res.status(200).json({ donations: [] })
+                res.status(200).json([])
             }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })

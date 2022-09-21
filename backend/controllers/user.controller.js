@@ -4,6 +4,18 @@ const db = require('../db')
 
 const fs = require('fs')
 
+const util = require('util');
+
+// import { PassThrough } from "stream";
+
+const stream = require("stream")
+
+// Imports the Google Cloud client library
+const textToSpeech = require('@google-cloud/text-to-speech');
+require('dotenv').config();
+
+const client = new textToSpeech.TextToSpeechClient();
+
 const getTronUsdKoef = async () => {
     const res = await axios.get(
         "https://www.binance.com/api/v3/ticker/price?symbol=TRXUSDT"
@@ -491,7 +503,7 @@ class UserController {
 
     async getGoalWidget(req, res) {
         try {
-            const {username, id} = req.params;
+            const { username, id } = req.params;
             const user = await db.query('SELECT id FROM users WHERE username = $1', [username])
             if (user.rows[0]) {
                 const data = await db.query('SELECT * FROM goals WHERE creator_id = $1 AND id = $2', [user.rows[0].id, id])
@@ -511,7 +523,7 @@ class UserController {
                 if (goalWidget.rows[0]) {
                     const { amount_raised, amount_goal, id } = goalWidget.rows[0];
                     const updated_amount_raised = Number(amount_raised) + goalData.donat <= Number(amount_goal)
-                    ? Number(amount_raised) + goalData.donat : Number(amount_goal)
+                        ? Number(amount_raised) + goalData.donat : Number(amount_goal)
                     let updatedGoalWidget = await db.query(`UPDATE goals SET 
                         amount_raised = $1
                         WHERE id = $2 RETURNING *;`, [Number(updated_amount_raised.toFixed(2)), id]);
@@ -650,6 +662,41 @@ class UserController {
             res.status(200).json(deletedStatWidget.rows[0])
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
+        }
+    }
+
+    async generateSound(req, res) {
+        try {
+            const { text } = req.body
+
+            const request = {
+                input: { text },
+                voice: { languageCode: 'en-US', ssmlGender: 'NEUTRAL' },
+                audioConfig: { audioEncoding: 'MP3' },
+            }
+
+            res.set({
+                'Content-Type': 'audio/mpeg',
+                'Transfer-Encoding': 'chunked'
+            })
+
+            
+
+            const [response] = await client.synthesizeSpeech(request)
+            const bufferStream = new stream.PassThrough()
+            bufferStream.end(Buffer.from(response.audioContent))
+            bufferStream.pipe(res)
+            console.log("success");
+
+            // const [response] = await client.synthesizeSpeech(request);
+            // Write the binary audio content to a local file
+            // const writeFile = util.promisify(fs.writeFile);
+            // await writeFile('output.mp3', response.audioContent, 'binary');
+            // console.log('Audio content written to file: output.mp3', response);
+
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
         }
     }
 }

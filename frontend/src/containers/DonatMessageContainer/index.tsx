@@ -12,7 +12,10 @@ import { IAlertData, initAlertData } from "../../types";
 import { url } from "../../consts";
 import { soundsList } from "../../assets/sounds";
 import EvmosIMG from "../../assets/evmos.png";
+// import textToSpeech from "@google-cloud/text-to-speech";
 import "./styles.sass";
+
+// const client = new textToSpeech.TextToSpeechClient();
 
 const testDonat = {
   wallet_type: "metamask",
@@ -24,15 +27,29 @@ const testDonat = {
 
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
-  const { name } = useParams();
   const user = useSelector((state: any) => state.user);
+  const { name } = useParams();
   const notifications = useSelector((state: any) => state.notifications);
 
   const [lastNotif, setLastNotif] = useState<any>({
     // ...testDonat
   });
 
-  const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({...initAlertData});
+  const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({
+    ...initAlertData,
+  });
+
+  const generateSound = async () => {
+    try {
+      const data = await axiosClient.post("/api/user/generate/sound", {
+        text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore minus doloribus omnis fugit, amet dignissimos, laudantium quaerat voluptate corporis dolores ipsa iste labore cumque facilis quasi distinctio eum esse ut.",
+      });
+      console.log("fgdg", data);
+      
+    } catch (e) {
+      console.log(`api, ${e}`);
+    }
+  };
 
   useEffect(() => {
     const { duration } = alertWidgetData;

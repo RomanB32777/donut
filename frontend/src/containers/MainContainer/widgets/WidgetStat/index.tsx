@@ -4,7 +4,7 @@ import { Chart, registerables } from "chart.js";
 import type { ChartData, ChartOptions } from "chart.js";
 import { Skeleton } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
-import { filterPeriodItems } from "../../../../consts";
+import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import axiosClient from "../../../../axiosClient";
 import { useSelector } from "react-redux";
 import { DateFormatter } from "../../../../utils";
@@ -16,7 +16,7 @@ const options: ChartOptions<"line"> = {
   scales: {
     y: {
       beginAtZero: true,
-      
+
       ticks: {
         color: "rgb(255, 255, 255)",
         callback: (value) => value + " USD",
@@ -114,9 +114,7 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
   };
 
   useEffect(() => {
-    const timePeriod = Object.keys(filterPeriodItems).find(
-      (key: string) => filterPeriodItems[key] === activeFilterItem
-    );
+    const timePeriod = getTimePeriodQuery(activeFilterItem);
     user.id && timePeriod && usdtKoef && getLatestDonations(timePeriod);
   }, [user, activeFilterItem, usdtKoef]);
 

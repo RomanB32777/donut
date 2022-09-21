@@ -13,7 +13,7 @@ import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { ITableData, tableColumns } from "./tableData";
 import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
-import { filterPeriodItems } from "../../consts";
+import { filterPeriodItems, getTimePeriodQuery } from "../../consts";
 import "./styles.sass";
 
 interface IQueryForm {
@@ -48,9 +48,8 @@ const DonationsContainer = () => {
       const { timePeriod, searchStr, groupByName, startDate, endDate } =
         queryForm;
 
-      const timePeriodQuery = Object.keys(filterPeriodItems).find(
-        (key: string) => filterPeriodItems[key] === timePeriod
-      );
+      const timePeriodQuery = getTimePeriodQuery(timePeriod);
+
       // timePeriod: string
       const { data } = await axiosClient.get(
         `/api/donation/page/data/${user.id}?roleplay=${
@@ -74,7 +73,6 @@ const DonationsContainer = () => {
       }
     } catch (error) {
       console.log(error);
-      
     }
   };
 
@@ -189,7 +187,7 @@ const DonationsContainer = () => {
           />
         </div>
       )}
-      
+
       {isCreator && (
         <div className="donations-checkbox">
           <Checkbox

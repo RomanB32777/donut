@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import BaseButton from "../../commonComponents/BaseButton";
@@ -12,24 +12,23 @@ import DatesPicker from "../../components/DatesPicker";
 import axiosClient from "../../axiosClient";
 import { addNotification, addSuccessNotification } from "../../utils";
 import { getStats } from "../../store/types/Stats";
+import { filterCurrentPeriodItems, filterDataTypeItems } from "../../consts";
 import "./styles.sass";
-import { filterCurrentPeriodItems } from "../../consts";
 
 interface IWidgetStatData {
   title: string;
   stat_description: string;
   template: string | string[];
-  data_type: string;
+  data_type: string; // value of statsDataTypes ???
   time_period: string;
   id?: number;
 }
-
 const initWidgetStatData: IWidgetStatData = {
   id: 0,
   title: "",
   stat_description: "",
   template: [],
-  data_type: "Top donations",
+  data_type: filterDataTypeItems["top-donations"],
   time_period: "Today",
 };
 
@@ -116,6 +115,22 @@ const StreamStatsContainer = () => {
   const { title, stat_description, template, data_type, time_period } =
     formData;
 
+  const currTemplateList = useMemo(
+    () =>
+      data_type === filterDataTypeItems["top-supporters"]
+        ? templateList.filter((t) => t !== "{message}")
+        : templateList,
+    [data_type]
+  );
+
+  const currTemplate = useMemo(
+    () =>
+      data_type === filterDataTypeItems["top-supporters"]
+        ? (template as string[]).filter((t) => t !== "{message}")
+        : template,
+    [data_type, template]
+  );
+
   return (
     <div className="streamStatsPage-container stats">
       <PageTitle formatId="page_title_stream_stats" />
@@ -185,8 +200,7 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <SelectInput
                   label="Data type:"
-                  list={["Top donations", "Recent donations"]}
-                  // , "Top supporters"
+                  list={Object.values(filterDataTypeItems)}
                   value={data_type}
                   setValue={(value) =>
                     setFormData({
@@ -204,15 +218,6 @@ const StreamStatsContainer = () => {
                 <SelectInput
                   label="Time period:"
                   list={Object.values(filterCurrentPeriodItems)}
-                  // list={[
-                  //   "Today",
-                  //   "Yesterday",
-                  //   "Current week",
-                  //   "Current month",
-                  //   "Current year",
-                  //   "All time",
-                  //   "Custom date",
-                  // ]}
                   value={time_period}
                   setValue={(value) =>
                     setFormData({
@@ -245,15 +250,15 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <SelectInput
                   label="Template:"
-                  list={templateList}
-                  value={template}
+                  list={currTemplateList}
+                  value={currTemplate} // 
                   setValue={(value) =>
                     setFormData({
                       ...formData,
                       template: value as string[],
                     })
                   }
-                  descriptionSelect={templateList.join(", ")}
+                  descriptionSelect={currTemplateList.join(", ")}
                   selectCol={16}
                   labelCol={6}
                   isTags

@@ -1,3 +1,5 @@
+import { allPeriodItemsTypes, statsDataTypes } from "./consts";
+
 export interface IFileInfo {
     preview: string;
     file: File | null;
@@ -68,8 +70,8 @@ export interface IStatData {
   title: string;
   stat_description: string;
   template: string[];
-  data_type: string;
-  time_period: string;
+  data_type: statsDataTypes;
+  time_period: allPeriodItemsTypes;
   title_color: string;
   bar_color: string;
   content_color: string;
@@ -77,6 +79,13 @@ export interface IStatData {
 }
 
 export const alignItemsList: { [key in typeAligmnet]: string } = {
+  Left: "start",
+  Center: "center",
+  Right: "end",
+  // tart | end | left | right | center | justify | match-parent
+};
+
+export const alignFlextItemsList: { [key in typeAligmnet]: string } = {
   Left: "flex-start",
   Center: "center",
   Right: "flex-end",
