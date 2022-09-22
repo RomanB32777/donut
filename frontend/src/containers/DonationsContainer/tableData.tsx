@@ -12,7 +12,7 @@ interface ITableData {
 
 export const tableColumns: ColumnsType<ITableData> = [
   {
-    title: "Name",
+    title: "Username",
     dataIndex: "name",
     width: "15%",
     align: "center",

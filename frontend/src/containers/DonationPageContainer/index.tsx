@@ -1,6 +1,6 @@
 import { Col, Row } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import QRCode from "react-qr-code";
 import clsx from "clsx";
 
@@ -14,6 +14,7 @@ import FormInput from "../../components/FormInput";
 import { SmallToggleListArrowIcon } from "../../icons/icons";
 import { IFileInfo } from "../../types";
 import { addNotification, addSuccessNotification, sendFile } from "../../utils";
+import { tryToGetUser } from "../../store/types/User";
 import { url } from "../../consts";
 import "./styles.sass";
 
@@ -27,6 +28,7 @@ interface IDonationInfoData {
 }
 
 const DonationPageContainer = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
   const [donationInfoData, setDonationInfoData] = useState<IDonationInfoData>({
     avatar: {
@@ -67,30 +69,6 @@ const DonationPageContainer = () => {
     }
   };
 
-  const getUser = async (token: string) => {
-    const { data } = await axiosClient.get("/api/user/" + token);
-
-    const userData: IDonationInfoData = {
-      avatar: {
-        preview: data.avatarlink ? `${url + data.avatarlink}` : "",
-        file: donationInfoData.avatar.file,
-      },
-      banner: {
-        preview: data.backgroundlink ? `${url + data.backgroundlink}` : "",
-        file: donationInfoData.banner.file,
-      },
-      welcome_text: data.welcome_text,
-      btn_text: data.btn_text,
-      main_color: data.main_color,
-      background_color: data.background_color,
-    };
-
-    setDonationInfoData({
-      ...donationInfoData,
-      ...userData,
-    });
-  };
-
   const sendData = async () => {
     try {
       setLoading(true);
@@ -113,8 +91,8 @@ const DonationPageContainer = () => {
         (await sendFile(avatar.file, user, "/api/user/edit-image/"));
       banner.file &&
         (await sendFile(banner.file, user, "/api/user/edit-background/"));
-      // await getUser(user.tron_token || user.metamask_token);
-      // dispatch(tryToGetUser(user.tron_token || user.metamask_token));
+
+      dispatch(tryToGetUser(user.metamask_token));
       setLoading(false);
       addSuccessNotification("Data saved successfully");
     } catch (error) {
@@ -127,7 +105,27 @@ const DonationPageContainer = () => {
   };
 
   useEffect(() => {
-    getUser(user.tron_token || user.metamask_token);
+    if (user.id) {
+      const userData: IDonationInfoData = {
+        avatar: {
+          preview: user.avatarlink ? `${url + user.avatarlink}` : "",
+          file: donationInfoData.avatar.file,
+        },
+        banner: {
+          preview: user.backgroundlink ? `${url + user.backgroundlink}` : "",
+          file: donationInfoData.banner.file,
+        },
+        welcome_text: user.welcome_text,
+        btn_text: user.btn_text,
+        main_color: user.main_color,
+        background_color: user.background_color,
+      };
+      
+      setDonationInfoData({
+        ...donationInfoData,
+        ...userData,
+      });
+    }
   }, [user]);
 
   const linkForSupport = useMemo(

@@ -4,35 +4,34 @@ import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 
 import axiosClient from "../../axiosClient";
-import { abi_transfer, contractMetaAddress, url } from "../../consts";
-import { StarIcon } from "../../icons/icons";
-import SpaceImg from "../../space.png";
+import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
+import { ethers } from "ethers";
 
-import {
-  getMetamaskData,
-  getMetamaskWallet,
-  metamaskWalletIsIntall,
-  tronWalletIsIntall,
-} from "../../functions/getTronWallet";
+import { getMetamaskData } from "../../functions/getTronWallet";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import { setMainWallet } from "../../store/types/Wallet";
 import {
   addNotification,
   addSuccessNotification,
+  copyStr,
   getUsdKoef,
+  shortStr,
 } from "../../utils";
-import { tryToGetUser } from "../../store/types/User";
+import HeaderSelect from "../LayoutContainer/components/HeaderSelect";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
-import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import BaseButton from "../../commonComponents/BaseButton";
-import { getGoals } from "../../store/types/Goals";
-import { IGoalData } from "../../types";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
-
-import "./styles.sass";
-import { ethers } from "ethers";
+import Logo from "../LayoutContainer/components/Logo";
 import Loader from "../../components/Loader";
+import { getGoals } from "../../store/types/Goals";
+import { tryToGetUser } from "../../store/types/User";
+import { StarIcon } from "../../icons/icons";
+import { IGoalData } from "../../types";
+import { abi_transfer, contractMetaAddress, url } from "../../consts";
+
+import SpaceImg from "../../space.png";
+import "./styles.sass";
 
 const maxlength = 120;
 
@@ -104,7 +103,6 @@ const DonatContainer = () => {
   };
 
   const sendDonation = async () => {
-    // setLoading(true);
     let newUser: any = {};
     if (!user.id) {
       newUser = await registerSupporter();
@@ -183,7 +181,8 @@ const DonatContainer = () => {
               addNotification({
                 type: "warning",
                 title: "Insufficient balance",
-                message: "Unfortunately, there are not enough funds on your balance to carry out the operation",
+                message:
+                  "Unfortunately, there are not enough funds on your balance to carry out the operation",
               });
             }
           }
@@ -252,12 +251,30 @@ const DonatContainer = () => {
   const { username, message, amount, selectedGoal } = form;
 
   return (
+    // <div className="donat-widget">
     <div
       className="donat-container"
       style={{
         background: personInfo.background_color,
       }}
     >
+      <div className="donat-header">
+        <Row justify="space-between" align="middle">
+          <Col span={8}>
+            <Logo navigateUrl="/donations" />
+          </Col>
+          <Col span={6}>
+            {mainWallet.token && (
+              <HeaderSelect
+                title={user.username || shortStr(mainWallet.token, 8)}
+                handlerHeaderSelect={() => {
+                  user.username ? navigate("/settings") : copyStr(mainWallet.token);
+                }}
+              />
+            )}
+          </Col>
+        </Row>
+      </div>
       <div className="donat-info-container">
         <div className="donat-info-container__background">
           <img
@@ -436,6 +453,7 @@ const DonatContainer = () => {
         </div>
       </div>
     </div>
+    // </div>
   );
 };
 

@@ -36,15 +36,16 @@ const DonationsContainer = () => {
     startDate: "",
     endDate: "",
   });
-  // const [activeFilterItem, setActiveFilterItem] = useState(filterPeriodItems["7days"]);
 
   const [tableData, setTableData] = useState<ITableData[]>([]);
   const [usdtKoef, setUsdtKoef] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const filterBtnClick = () => setVisibleDatesPicker(!visibleDatesPicker);
 
   const getDonationsData = async () => {
     try {
+      setLoading(true);
       const { timePeriod, searchStr, groupByName, startDate, endDate } =
         queryForm;
 
@@ -60,7 +61,10 @@ const DonationsContainer = () => {
         const forTableData: ITableData[] = data.donations.map(
           (donat: any, key: number) => ({
             key: donat.id || key,
-            name: donat.username,
+            name:
+              user.roleplay === "creators"
+                ? donat.username
+                : donat.creator_username,
             donationToken: donat.sum_donation + " tEVMOS",
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
@@ -73,6 +77,8 @@ const DonationsContainer = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -219,6 +225,7 @@ const DonationsContainer = () => {
           </div>
         )}
         <TableComponent
+          loading={loading}
           dataSource={tableData}
           columns={tableColumns}
           pagination={{

@@ -5,26 +5,14 @@ import { BackTop, Layout, Menu } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
+import HeaderSelect from "./components/HeaderSelect";
 import { IRoute, Pages, routers } from "../../routes";
-import DonutzLogo from "../../assets/DonutzLogo.png";
-import {
-  AlertIcon,
-  EmailIcon,
-  LogoutIcon,
-  SmallToggleListArrowIcon,
-} from "../../icons/icons";
-import { url } from "../../consts";
+import { AlertIcon, EmailIcon } from "../../icons/icons";
 
 import { getNotifications } from "../../store/types/Notifications";
-import {
-  addNotification,
-  copyStr,
-  getNotificationMessage,
-  shortStr,
-} from "../../utils";
+import { getNotificationMessage } from "../../utils";
 import "./styles.sass";
-import SelectComponent from "../../components/SelectComponent";
-import { setUser } from "../../store/types/User";
+import Logo from "./components/Logo";
 
 const { Header, Content, Sider } = Layout;
 
@@ -55,70 +43,6 @@ const scrollToPosition = (top = 0) => {
   } catch (_) {
     window.scrollTo(0, top);
   }
-};
-
-const HeaderSelect = ({
-  title,
-  user,
-  isOpenSelect,
-  handlerHeaderSelect,
-}: {
-  title: string;
-  user?: any;
-  isOpenSelect?: boolean;
-  handlerHeaderSelect?: (e: React.MouseEvent<HTMLDivElement>) => void;
-}) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  return (
-    <div className="header-select">
-      {user && (
-        <div className="header-select__image">
-          {user.avatarlink && <img src={url + user.avatarlink} alt="" />}
-        </div>
-      )}
-      <div
-        className={clsx("header-select__info", {
-          withoutArrow: isOpenSelect === undefined,
-        })}
-        onClick={(e: React.MouseEvent<HTMLDivElement>) =>
-          handlerHeaderSelect && handlerHeaderSelect(e)
-        }
-      >
-        <span className="header-select__info__name">{title}</span>
-        {isOpenSelect !== undefined && (
-          <div
-            className={clsx("icon", "header-select__info__icon", {
-              rotated: isOpenSelect,
-            })}
-          >
-            <SmallToggleListArrowIcon />
-          </div>
-        )}
-      </div>
-      {isOpenSelect && (
-        <div className="header-select__info-popup">
-          <div className="header-select__info-item">
-            <div
-              className="header-select__info-item__content"
-              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                handlerHeaderSelect && handlerHeaderSelect(e);
-                dispatch(setUser(""));
-                localStorage.removeItem("main_wallet");
-                navigate("/");
-              }}
-            >
-              <div className="header-select__info-item__img">
-                <LogoutIcon />
-              </div>
-              <span className="header-select__info-item__name">Sign-out</span>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 };
 
 const NotificationsPopup = ({ user }: { user: number }) => {
@@ -237,8 +161,8 @@ const LayoutApp = () => {
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
 
-  const handlerHeaderSelect = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
+  const handlerHeaderSelect = (e?: React.MouseEvent<HTMLDivElement>) => {
+    e && e.stopPropagation();
     setIsOpenHeaderSelect(!isOpenHeaderSelect);
     setNotificationPopupOpened(false);
   };
@@ -336,13 +260,10 @@ const LayoutApp = () => {
             top: 0,
             bottom: 0,
           }}
-          width="240"
+          width="250"
           onClick={() => closeAllHeaderPopups()}
         >
-          <div className="sidebar-logo">
-            <span>Crypto Donutz</span>
-            <img src={DonutzLogo} alt="donut logo" />
-          </div>
+          <Logo navigateUrl="/" />
           <div className="sidebar-content">
             <Menu
               theme="dark"
@@ -386,7 +307,7 @@ const LayoutApp = () => {
         <BackTop />
         <Layout
           className="site-layout"
-          style={{ marginLeft: hiddenLayoutElements ? 0 : 240 }}
+          style={{ marginLeft: hiddenLayoutElements ? 0 : 250 }}
         >
           <Header
             className="site-layout-background"
@@ -409,19 +330,10 @@ const LayoutApp = () => {
                   </div>
                   <HeaderSelect
                     title={user.username}
-                    user={user}
                     isOpenSelect={isOpenHeaderSelect}
                     handlerHeaderSelect={handlerHeaderSelect}
                   />
                 </>
-              )}
-              {!user.id && mainWallet && (
-                <HeaderSelect
-                  title={mainWallet.token && shortStr(mainWallet.token, 8)}
-                  handlerHeaderSelect={() => {
-                    mainWallet.token && copyStr(mainWallet.token);
-                  }}
-                />
               )}
             </div>
           </Header>

@@ -2,9 +2,9 @@ const axios = require("axios");
 
 const db = require('../db')
 
-const fs = require('fs')
+// const fs = require('fs')
 
-const util = require('util');
+// const util = require('util');
 
 // import { PassThrough } from "stream";
 
@@ -124,12 +124,24 @@ class UserController {
 
     async getUser(req, res) {
         try {
-            const token = req.params.token
+            const { token } = req.params
             const user = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
             if (user.rows[0] && user.rows[0].id) {
-                const subscriptions = await getSubscriptions(user.rows[0].username)
+                // const subscriptions = await getSubscriptions(user.rows[0].username)
                 const role = await db.query(`SELECT * FROM ${user.rows[0].roleplay} WHERE user_id = $1`, [user.rows[0].id])
-                res.status(200).json({ ...role.rows[0], ...user.rows[0], subscriptions })
+                if (user.rows[0].roleplay === 'creators') {
+                    const alert = await db.query(`SELECT
+                        banner_link,
+                        message_color,
+                        name_color,
+                        sum_color,
+                        duration,
+                        sound,
+                        voice 
+                    FROM alerts WHERE creator_id = $1`, [user.rows[0].id])
+                    return res.status(200).json({ ...role.rows[0], ...user.rows[0], ...alert.rows[0] })
+                }
+                res.status(200).json({ ...role.rows[0], ...user.rows[0] }) // subscriptions
             } else {
                 res.status(200).json({})
             }
@@ -280,7 +292,7 @@ class UserController {
 
     async editUserImage(req, res) {
         try {
-            const user_id = req.params.user_id
+            const { user_id } = req.params
             const file = req.files.file;
             const filename = getRandomStr(32)
             file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
@@ -680,7 +692,7 @@ class UserController {
                 'Transfer-Encoding': 'chunked'
             })
 
-            
+
 
             const [response] = await client.synthesizeSpeech(request)
             const bufferStream = new stream.PassThrough()

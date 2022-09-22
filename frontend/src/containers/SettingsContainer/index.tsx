@@ -7,10 +7,19 @@ import PageTitle from "../../commonComponents/PageTitle";
 import FormInput from "../../components/FormInput";
 import BaseButton from "../../commonComponents/BaseButton";
 import ConfirmPopup from "../../components/ConfirmPopup";
+import UploadImage from "../../components/UploadImage";
 import { setUser, tryToGetUser } from "../../store/types/User";
 import walletSmall from "../../assets/MetaMask_Fox.png";
-import { addNotification, addSuccessNotification, copyStr, shortStr } from "../../utils";
+import {
+  addNotification,
+  addSuccessNotification,
+  copyStr,
+  sendFile,
+  shortStr,
+} from "../../utils";
 import { setLoading } from "../../store/types/Loading";
+import { IFileInfo } from "../../types";
+import { url } from "../../consts";
 import "./styles.sass";
 
 const SettingsContainer = () => {
@@ -18,7 +27,15 @@ const SettingsContainer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [formSettings, setFormSettings] = useState<any>({
+  const [formSettings, setFormSettings] = useState<{
+    avatar: IFileInfo;
+    username: string;
+    wallet: string;
+  }>({
+    avatar: {
+      preview: "",
+      file: null,
+    },
     username: "",
     wallet: "",
   });
@@ -48,12 +65,37 @@ const SettingsContainer = () => {
     }
   };
 
+  const avatarBtnClick = async () => {
+    if (!loading) {
+      try {
+        setSettingsLoading(true);
+        const { avatar } = formSettings;
+        avatar.file &&
+          (await sendFile(avatar.file, user, "/api/user/edit-image/"));
+        dispatch(tryToGetUser(user.metamask_token));
+        addSuccessNotification("Data saved successfully");
+      } catch (error) {
+        addNotification({
+          type: "danger",
+          title: "Error",
+          message: `An error occurred while saving data`,
+        });
+      } finally {
+        setSettingsLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
-    const { id, username, metamask_token } = user;
+    const { id, username, avatarlink, metamask_token } = user;
     id &&
       setFormSettings({
         username: username,
         wallet: metamask_token,
+        avatar: {
+          ...formSettings.avatar,
+          preview: avatarlink ? `${url + user.avatarlink}` : "",
+        },
       });
   }, [user]);
 
@@ -67,15 +109,50 @@ const SettingsContainer = () => {
     navigate("/");
   };
 
-  const shortWalletToken = useMemo(() => user.metamask_token && shortStr(user.metamask_token, 22), [user]);
+  const shortWalletToken = useMemo(
+    () => user.metamask_token && shortStr(user.metamask_token, 22),
+    [user]
+  );
 
-  const { username, wallet } = formSettings;
+  const { username, wallet, avatar } = formSettings;
 
   return (
     <div className="settingsPage-container">
       <PageTitle formatId="page_title_settings" />
       <div className="stats-drawer__form">
         <Row gutter={[0, 18]} className="form">
+          <Col span={18}>
+            <div className="form-element">
+              <Row justify="space-between" align="middle">
+                <Col span={16}>
+                  <UploadImage
+                    label="Avatar:"
+                    formats={["PNG", "JPG", "JPEG", "GIF"]}
+                    filePreview={avatar.preview}
+                    setFile={({ preview, file }) =>
+                      setFormSettings({
+                        ...formSettings,
+                        avatar: {
+                          file,
+                          preview,
+                        },
+                      })
+                    }
+                    labelCol={8}
+                    InputCol={16}
+                  />
+                </Col>
+                <Col span={7}>
+                  <div
+                    className="form-element__action"
+                    onClick={avatarBtnClick}
+                  >
+                    Change
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </Col>
           <Col span={18}>
             <div className="form-element">
               <Row justify="space-between" align="middle">

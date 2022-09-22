@@ -24,6 +24,8 @@ router.post('/unfollow', userController.unfollow)
 router.get('/get-follows/:username', userController.getAllFollows)
 router.get('/get-followers/:username', userController.getAllFollowers)
 router.get('/get-transactions/:username', userController.getAllTransactions)
+
+// alerts
 router.get('/get-alerts-widget/:creator_id', userController.getAlertsWidgetData)
 router.put('/edit-alerts-widget', userController.editAlertsWidget)
 
