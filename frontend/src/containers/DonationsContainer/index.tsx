@@ -69,6 +69,7 @@ const DonationsContainer = () => {
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
             date: donat.donation_date || "-",
+            role: user.roleplay,
           })
         );
         setTableData(forTableData);

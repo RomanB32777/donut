@@ -43,6 +43,12 @@ export const addSuccessNotification = (message: string) =>
     type: "success",
   });
 
+export const addNotFoundUserNotification = () =>
+  addNotification({
+    type: "danger",
+    title: "User with this username not found!",
+  });
+
 export const addInstallWalletNotification = (
   walletName: string,
   installUrl: string

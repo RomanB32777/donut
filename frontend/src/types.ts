@@ -1,5 +1,7 @@
 import { allPeriodItemsTypes, statsDataTypes } from "./consts";
 
+export declare type roleUser = "creators" | "backers";
+
 export interface IFileInfo {
     preview: string;
     file: File | null;
@@ -13,6 +15,7 @@ export interface IBadgeData {
   contract_address: string;
   URI?: string;
   quantity?: number;
+  creator_id?: number;
 }
 
 export const initBadgeData: IBadgeData = {
@@ -95,4 +98,5 @@ export const alignFlextItemsList: { [key in typeAligmnet]: string } = {
 export interface IBadge {
   id: number;
   contract_address: string;
+  creator_id: number
 }

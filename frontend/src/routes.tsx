@@ -178,7 +178,7 @@ export const routers: IRoute[] = [
     element: <RegistrationModal />,
   },
   {
-    path: "support/:name/:token",
+    path: "support/:name",
     element: <DonatPage />,
     hiddenLayoutElements: true,
     // noPaddingMainConteiner: true,

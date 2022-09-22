@@ -120,7 +120,7 @@ const DonationPageContainer = () => {
         main_color: user.main_color,
         background_color: user.background_color,
       };
-      
+
       setDonationInfoData({
         ...donationInfoData,
         ...userData,
@@ -129,7 +129,7 @@ const DonationPageContainer = () => {
   }, [user]);
 
   const linkForSupport = useMemo(
-    () => baseURL + "/support/" + user.username + "/" + user.security_string,
+    () => baseURL + "/support/" + user.username, //+ "/" + user.security_string,
     [user]
   );
 

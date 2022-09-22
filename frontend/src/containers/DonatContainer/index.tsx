@@ -11,6 +11,7 @@ import { getMetamaskData } from "../../functions/getTronWallet";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import { setMainWallet } from "../../store/types/Wallet";
 import {
+  addNotFoundUserNotification,
   addNotification,
   addSuccessNotification,
   copyStr,
@@ -233,6 +234,7 @@ const DonatContainer = () => {
 
   useEffect(() => {
     personInfo.user_id && dispatch(getGoals(personInfo.user_id));
+    personInfo.error && addNotFoundUserNotification();
   }, [personInfo]);
 
   // const isNotRegisterWallet = useMemo(
@@ -249,6 +251,8 @@ const DonatContainer = () => {
   );
 
   const { username, message, amount, selectedGoal } = form;
+
+  if (personInfo.error) return null;
 
   return (
     <div
@@ -267,7 +271,9 @@ const DonatContainer = () => {
               <HeaderSelect
                 title={user.username || shortStr(mainWallet.token, 8)}
                 handlerHeaderSelect={() => {
-                  user.username ? navigate("/settings") : copyStr(mainWallet.token);
+                  user.username
+                    ? navigate("/settings")
+                    : copyStr(mainWallet.token);
                 }}
               />
             )}

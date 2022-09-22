@@ -1,4 +1,6 @@
 import type { ColumnsType } from "antd/es/table";
+import { Link } from "react-router-dom";
+import { roleUser } from "../../types";
 import { DateFormatter, DateTimezoneFormatter } from "../../utils";
 
 interface ITableData {
@@ -8,6 +10,7 @@ interface ITableData {
   donationUSD: number;
   message: string;
   date: string;
+  role?: roleUser;
 }
 
 export const tableColumns: ColumnsType<ITableData> = [
@@ -16,6 +19,10 @@ export const tableColumns: ColumnsType<ITableData> = [
     dataIndex: "name",
     width: "15%",
     align: "center",
+    render: (name, { role }) => {
+      if (role === "backers") return <Link to={`/support/${name}`}>{name}</Link>
+      return name;
+    },
   },
   {
     title: "Donation, Token",
@@ -46,26 +53,6 @@ export const tableColumns: ColumnsType<ITableData> = [
       Date.parse(a.date) &&
       Date.parse(b.date) &&
       new Date(a.date).getTime() - new Date(b.date).getTime(),
-  },
-];
-
-export const data: ITableData[] = [
-  {
-    key: "1",
-    name: "John Brown",
-    donationToken: 32,
-    donationUSD: 32,
-    message: "New York No. 1 Lake Park",
-    date: new Date().toString(),
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    donationToken: 42,
-    donationUSD: 42,
-    message:
-      "London No. 1 Lake Park London No. 1 Lake Park London No. 1 Lake Park London No. 1 Lake Parkм London No. 1 Lake ParkLondon No. 1 Lake Park London No. 1 Lake Park London No. 1 Lake Park",
-    date: new Date().toString(),
   },
 ];
 

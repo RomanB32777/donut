@@ -18,6 +18,7 @@ const BadgesContainer = () => {
   const [badgesList, setBadgesList] = useState<IBadge[]>([]);
   const [activeBadge, setActiveBadge] = useState<IBadge>({
     id: 0,
+    creator_id: 0,
     contract_address: "",
   });
   const [isOpenCreateForm, setIsOpenCreateForm] = useState<boolean>(false);
@@ -85,7 +86,7 @@ const BadgesContainer = () => {
       <div className="badges-container__list">
         {badgesList &&
           badgesList.length > 0 &&
-          badgesList.map(({ id, contract_address }, rowIndex) => (
+          badgesList.map(({ id, contract_address, creator_id }, rowIndex) => (
             <div
               key={"badge-panel" + rowIndex}
               className="badge-panel"
@@ -95,13 +96,14 @@ const BadgesContainer = () => {
                 position: "relative",
               }}
               onClick={() => {
-                setActiveBadge({ id, contract_address });
+                setActiveBadge({ id, creator_id, contract_address });
                 setIsOpenBadgePage(true);
               }}
             >
               <ContentCard
                 data={{
                   id,
+                  creator_id,
                   contract_address,
                 }}
                 onClick={() => deleteBadge(id)}

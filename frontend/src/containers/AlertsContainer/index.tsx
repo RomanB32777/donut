@@ -6,10 +6,7 @@ import useSound from "use-sound";
 
 import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../commonComponents/PageTitle";
-import {
-  addNotification,
-  addSuccessNotification,
-} from "../../utils";
+import { addNotification, addSuccessNotification } from "../../utils";
 import ColorPicker from "../../components/ColorPicker";
 import UploadImage from "../../components/UploadImage";
 import donImg from "../../assets/big_don.png";
@@ -25,7 +22,7 @@ const AlertsContainer = () => {
   const user = useSelector((state: any) => state.user);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState<IAlertData>({...initAlertData});
+  const [formData, setFormData] = useState<IAlertData>({ ...initAlertData });
 
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
@@ -103,8 +100,15 @@ const AlertsContainer = () => {
     [user]
   );
 
-  const { banner, message_color, name_color, sum_color, duration, sound, voice } =
-    formData;
+  const {
+    banner,
+    message_color,
+    name_color,
+    sum_color,
+    duration,
+    sound,
+    voice,
+  } = formData;
 
   const [play, { stop }] = useSound(soundsList[sound]);
 

@@ -1,18 +1,16 @@
 import { Avatar, Col, Divider, Row, Tooltip } from "antd";
 import { useEffect, useState } from "react";
+import clsx from "clsx";
+import { ethers } from "ethers";
+import { useSelector } from "react-redux";
 import BaseButton from "../../../commonComponents/BaseButton";
 import UploadImage from "../../../components/UploadImage";
-
-import { LeftArrowIcon } from "../../../icons/icons";
 import LinkCopy from "../../../components/LinkCopy";
-import { UserOutlined } from "@ant-design/icons";
-import clsx from "clsx";
 import SelectInput from "../../../components/SelectInput";
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
-import { ethers } from "ethers";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
-import { useSelector } from "react-redux";
+import { LeftArrowIcon } from "../../../icons/icons";
 import { abi, url } from "../../../consts";
 
 const BadgePage = ({
@@ -32,7 +30,7 @@ const BadgePage = ({
 
   const getBadgeNFTData = async (badge: IBadge) => {
     try {
-      const { contract_address } = badge;
+      const { contract_address, creator_id } = badge;
 
       const provider = new ethers.providers.Web3Provider(
         (window as any).ethereum
@@ -42,8 +40,13 @@ const BadgePage = ({
         abi,
         provider
       );
+      console.log(user.id === creator_id);
+
       const currentToken = await currentContract.uri(1);
-      const quantityBadge = await currentContract.totalSupply(1);
+      const quantityBadge =
+        user.id === creator_id
+          ? await currentContract.totalSupply(1)
+          : await currentContract.balanceOf(user.metamask_token, 1);
 
       const rootCid = currentToken.split("//")[1];
       const dataBadgeJSON = await axiosClient.get(
@@ -71,6 +74,7 @@ const BadgePage = ({
               },
               contract_address,
               quantity: quantityBadge.toNumber(),
+              creator_id,
             });
         }
       }
@@ -97,7 +101,7 @@ const BadgePage = ({
       const { id, contract_address } = activeBadge;
       const { data } = await axiosClient.get(
         `${baseURL}/api/badge/holders/${id}/${contract_address}`
-      );    
+      );
       data && setHolders(data);
     } catch (error) {
       console.log(error);
@@ -131,7 +135,7 @@ const BadgePage = ({
   const mintBadge = async () => {
     try {
       setLoading(true);
-      const { contract_address, id } = activeBadge;
+      const { contract_address } = activeBadge;
       const selectedUserObj: any = supporters.find(
         (s: any) => s.username === selectedUser
       );
@@ -141,6 +145,7 @@ const BadgePage = ({
           (window as any).ethereum
         );
         const signer = provider.getSigner(0);
+        console.log(provider, signer);
         let currentContract = new ethers.Contract(
           contract_address,
           abi,
@@ -173,7 +178,8 @@ const BadgePage = ({
       getSupporters(user.id);
   }, [user]);
 
-  const { image, title, description, contract_address, quantity } = formBadge;
+  const { image, title, description, contract_address, quantity, creator_id } =
+    formBadge;
 
   return (
     <div className="create_badges">
@@ -263,88 +269,89 @@ const BadgePage = ({
                 </div>
               </Col>
             </Row>
-            {user.roleplay && user.roleplay === "creators" && (
-              <Row>
-                {Boolean(holders.length) && (
-                  <Col span={24}>
-                    <Row justify="space-between" align="middle">
-                      <Col span={8}>
-                        <p className="details__title">Badge holders</p>
-                      </Col>
-                      <Col span={15}>
-                        <div
-                          className={clsx("details__users", {
-                            center: false,
-                          })}
-                        >
-                          <Avatar.Group
-                            maxCount={7}
-                            maxPopoverTrigger="click"
-                            size="large"
-                            maxStyle={{
-                              color: "#f56a00",
-                              backgroundColor: "#fde3cf",
-                              cursor: "pointer",
-                            }}
+            {creator_id &&
+              user.id === creator_id && ( // user.roleplay && user.roleplay === "creators"
+                <Row>
+                  {Boolean(holders.length) && (
+                    <Col span={24}>
+                      <Row justify="space-between" align="middle">
+                        <Col span={8}>
+                          <p className="details__title">Badge holders</p>
+                        </Col>
+                        <Col span={15}>
+                          <div
+                            className={clsx("details__users", {
+                              center: false,
+                            })}
                           >
-                            {holders.map((holder: any) => (
-                              <Tooltip
-                                key={holder.username}
-                                title={holder.username}
-                                placement="top"
-                              >
-                                {holder.avatarlink ? (
-                                  <Avatar src={url + holder.avatarlink} />
-                                ) : (
-                                  <Avatar
-                                    style={{ backgroundColor: "#1D14FF" }}
-                                  >
-                                    {holder.username[1]}
-                                  </Avatar>
-                                )}
-                              </Tooltip>
-                            ))}
-                          </Avatar.Group>
-                        </div>
-                      </Col>
-                    </Row>
+                            <Avatar.Group
+                              maxCount={7}
+                              maxPopoverTrigger="click"
+                              size="large"
+                              maxStyle={{
+                                color: "#f56a00",
+                                backgroundColor: "#fde3cf",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {holders.map((holder: any) => (
+                                <Tooltip
+                                  key={holder.username}
+                                  title={holder.username}
+                                  placement="top"
+                                >
+                                  {holder.avatarlink ? (
+                                    <Avatar src={url + holder.avatarlink} />
+                                  ) : (
+                                    <Avatar
+                                      style={{ backgroundColor: "#1D14FF" }}
+                                    >
+                                      {holder.username[1]}
+                                    </Avatar>
+                                  )}
+                                </Tooltip>
+                              ))}
+                            </Avatar.Group>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Col>
+                  )}
+                  <Col span={24}>
+                    <Divider className="line" />
                   </Col>
-                )}
-                <Col span={24}>
-                  <Divider className="line" />
-                </Col>
-                <Col span={24}>
-                  <p className="details__title">Assign badge</p>
-                  <div className="form-element">
-                    <SelectInput
-                      list={
-                        supporters.length
-                          ? supporters.map((s) => s.username)
-                          : [""]
-                      }
-                      value={selectedUser}
-                      setValue={(selected) =>
-                        setSelectedUser(selected as string)
-                      }
-                      placeholder="Choose your donator address"
-                      modificator="details__select_user"
-                    />
-                  </div>
-                </Col>
-                <Col span={24}>
-                  <div className="saveBottom">
-                    <BaseButton
-                      formatId="badges_page_assign_button"
-                      padding="6px 35px"
-                      onClick={mintBadge}
-                      fontSize="18px"
-                      disabled={loading}
-                      isBlue
-                    />
-                  </div>
-                </Col>
-              </Row>
-            )}
+                  <Col span={24}>
+                    <p className="details__title">Assign badge</p>
+                    <div className="form-element">
+                      <SelectInput
+                        list={
+                          supporters.length
+                            ? supporters.map((s) => s.username)
+                            : [""]
+                        }
+                        value={selectedUser}
+                        setValue={(selected) =>
+                          setSelectedUser(selected as string)
+                        }
+                        placeholder="Choose your donator address"
+                        modificator="details__select_user"
+                      />
+                    </div>
+                  </Col>
+                  <Col span={24}>
+                    <div className="saveBottom">
+                      <BaseButton
+                        formatId="badges_page_assign_button"
+                        padding="6px 35px"
+                        onClick={mintBadge}
+                        fontSize="18px"
+                        disabled={loading}
+                        isBlue
+                      />
+                    </div>
+                  </Col>
+                </Row>
+              )}
           </Col>
         </Row>
       </div>
