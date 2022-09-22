@@ -555,7 +555,7 @@ export const getCurrentTimePeriodQuery: (
   const findKey = Object.keys(filterCurrentPeriodItems).find(
     (key) => filterCurrentPeriodItems[key as allPeriodItemsTypes] === timePeriod
   );
-  return findKey ? (findKey as allPeriodItemsTypes) : "7days";
+  return findKey ? (findKey as allPeriodItemsTypes) : "custom";
 };
 
 // stats-data

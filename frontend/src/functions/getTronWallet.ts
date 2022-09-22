@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { addInstallWalletNotification } from '../utils';
 const getTronWallet = () => {
     if ((window as any).tronWeb && (window as any).tronWeb.defaultAddress.base58) {
         return (window as any).tronWeb.defaultAddress.base58
@@ -53,7 +54,12 @@ export const getMetamaskData = async () => {
             address,
             provider,
         }
-    } 
+    } else {
+        addInstallWalletNotification(
+            "Metamask",
+            "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+          );
+    }
 }
 
 export default getTronWallet

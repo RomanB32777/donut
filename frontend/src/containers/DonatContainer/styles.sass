@@ -1,71 +1,16 @@
 @use '../././../commonStyles/variables'
 
-.donat-info-container
-    position: relative
-    width: 100%
-    height: fit-content
-    display: flex
-    flex-direction: column
-    overflow: hidden
-
-    &__background
-        width: 100%
-        height: 192px
-        margin-bottom: 2px
-        background-size: cover
-        position: relative
-
-        img
-            position: absolute
-            width: 100%
-            height: 100%
-            object-fit: cover
-
-    &__information
-        &-wrapper
-            padding: 0 60px
-
-.donat-main-info
-    display: flex
-    margin-top: -50px
-    width: 100%
-    justify-content: space-between
-
-    &__picture
-        position: relative
-        height: 200px
-        width: 18%
-        border-radius: 10px
-        overflow: hidden
-        display: flex
-        justify-content: center
-        align-items: center
-        background: #D9D9D9 
-
-        img
-            width: 100%
-            heigth: 100%
-            object-fit: cover
-
-    &__personal
-        width: 80%
-        padding: 70px 0 0
-
-        .title
-            font-family: variables.$jakarta-font
-            font-style: normal
-            font-weight: 600
-            font-size: 30px
-            line-height: 30px
-            color: variables.$white-color
-
 .donat-container
+    max-width: 900px
     width: 100%
     display: flex
     flex-direction: column
     align-items: center
     background: variables.$grey-background-color
+    margin: 0 auto
     padding-bottom: 34px
+    border: 1px solid variables.$grey-color
+    border-radius: variables.$border-radius
 
     &__payment
         &_wrapper
@@ -85,7 +30,7 @@
         &-row
             display: flex
             justify-content: space-between
-            margin-top: 60px
+            margin-top: 30px
 
         &-column
             display: flex
@@ -195,3 +140,65 @@
 
             &-choose
                 margin-top: 20px
+
+
+.donat-info-container
+    position: relative
+    width: 100%
+    height: fit-content
+    display: flex
+    flex-direction: column
+    overflow: hidden
+
+    &__background
+        width: 100%
+        height: 192px
+        margin-bottom: 2px
+        background-size: cover
+        position: relative
+
+        img
+            position: absolute
+            width: 100%
+            height: 100%
+            object-fit: cover
+            border-top-right-radius: variables.$border-radius
+            border-top-left-radius: variables.$border-radius
+
+    &__information
+        &-wrapper
+            padding: 0 60px
+
+.donat-main-info
+    display: flex
+    margin-top: -50px
+    width: 100%
+    justify-content: space-between
+
+    &__picture
+        position: relative
+        height: 200px
+        width: 28%
+        border-radius: 10px
+        overflow: hidden
+        display: flex
+        justify-content: center
+        align-items: center
+        background: #D9D9D9 
+
+        img
+            width: 100%
+            heigth: 100%
+            object-fit: cover
+
+    &__personal
+        width: 70%
+        padding: 70px 0 0
+
+        .title
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 600
+            font-size: 30px
+            line-height: 30px
+            color: variables.$white-color

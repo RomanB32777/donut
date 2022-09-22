@@ -53,7 +53,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
                 <div className="widget__item">
                   <div className="widget__item_name">{donat.username}</div>
                   <div className="widget__item_sum">
-                    {(+donat.sum * usdtKoef).toFixed(2)} USD
+                    {(+donat.sum_donation * usdtKoef).toFixed(2)} USD
                   </div>
                 </div>
               </Col>

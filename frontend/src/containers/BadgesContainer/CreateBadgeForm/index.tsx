@@ -28,8 +28,9 @@ const customDot: StepsProps["progressDot"] = (dot, { status }) => {
         style={{
           color: "#25EC39",
           position: "absolute",
-          right: "-3px",
-          top: "-5px",
+          right: "-11px",
+          top: "-10px",
+          fontSize: 25
         }}
       />
     );
@@ -39,8 +40,9 @@ const customDot: StepsProps["progressDot"] = (dot, { status }) => {
         style={{
           color: "#1D14FF",
           position: "absolute",
-          right: "-6px",
-          top: "-2px",
+          right: "-11px",
+          top: "-5px",
+          fontSize: 25
         }}
       />
     );

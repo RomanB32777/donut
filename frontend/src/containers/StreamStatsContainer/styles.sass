@@ -26,7 +26,6 @@
         &.active
             border: 2px solid variables.$blue-color
 
-
         &:not(:last-child)
             margin-bottom: 25px
 
@@ -42,6 +41,7 @@
                 font-size: 20px
                 line-height: 25px
                 color: variables.$white-color
+                max-width: 75%
 
             &_title
                 margin: 0
@@ -95,6 +95,7 @@
                 align-items: center
                 justify-content: center
                 flex-direction: column
+                padding: 15px
 
                 &_title
                     font-family: variables.$jakarta-font
@@ -104,6 +105,8 @@
                     line-height: 22px
                     padding: 12px 40px
                     border-radius: 10px
+                    text-align: center
+
                 &_stat
                     display: flex
                     width: 100%
@@ -127,13 +130,12 @@
                 .btn-block
                     margin-top: 30px
 
-                
     &-modal
         display: flex
         flex-direction: column
         align-items: center
         justify-content: center
-        
+
         &__form
             .form-element
                 .customDatesPicker
@@ -146,7 +148,6 @@
 
             &_save
                 margin-right: 30px
-
 
 .ant-drawer-mask
     display: none

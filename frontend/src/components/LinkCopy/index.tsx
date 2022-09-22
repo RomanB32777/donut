@@ -34,7 +34,6 @@ const LinkCopy = ({
           <CopyIcon />
         </div>
       </div>
-      {link}
     </div>
   );
 };

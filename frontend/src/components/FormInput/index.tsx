@@ -84,6 +84,7 @@ const FormInput = ({
               type={typeInput || "text"}
               min={0}
               maxLength={maxLength || 524288}
+              onWheel={(e) => e.currentTarget.blur()}
               value={value}
               onChange={(e) => setValue && setValue(e.target.value)}
             />

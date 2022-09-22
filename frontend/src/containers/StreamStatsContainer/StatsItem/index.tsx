@@ -15,7 +15,11 @@ import {
   IStatData,
   typeAligmnet,
 } from "../../../types";
-import { addNotification, addSuccessNotification } from "../../../utils";
+import {
+  addNotification,
+  addSuccessNotification,
+  renderStatItem,
+} from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
 import { SliderMarks } from "antd/lib/slider";
 import SliderForm from "../../../components/SliderForm";
@@ -181,44 +185,58 @@ const StatsItem = ({
           >
             <Col span={10}>
               <div className="preview-block">
-                <div>
-                  <span
-                    className="preview-block_title"
-                    style={{
-                      background: bar_color,
-                      color: title_color,
-                    }}
-                  >
-                    {data_type} {time_period.toLowerCase()}
-                  </span>
-                  <div
-                    className="preview-block_stat"
-                    style={{
-                      justifyContent: alignFlextItemsList[aligment],
-                    }}
-                  >
-                    <div className="preview-block_stat__list">
-                      <p
-                        className="preview-block_stat__list-item"
-                        style={{
-                          color: content_color,
-                          textAlign:
-                            (alignItemsList[aligment] as AlignText) || "center",
-                        }}
-                      >
-                        Jordan - 30 USD
-                      </p>
-                      <p
-                        className="preview-block_stat__list-item"
-                        style={{
-                          color: content_color,
-                          textAlign:
-                            (alignItemsList[aligment] as AlignText) || "center",
-                        }}
-                      >
-                        Nate - 50 USD
-                      </p>
-                    </div>
+                <span
+                  className="preview-block_title"
+                  style={{
+                    background: bar_color,
+                    color: title_color,
+                  }}
+                >
+                  {data_type} {time_period.toLowerCase()}
+                </span>
+                <div
+                  className="preview-block_stat"
+                  style={{
+                    justifyContent: alignFlextItemsList[aligment],
+                  }}
+                >
+                  <div className="preview-block_stat__list">
+                    <p
+                      className="preview-block_stat__list-item"
+                      style={{
+                        color: content_color,
+                        textAlign:
+                          (alignItemsList[aligment] as AlignText) || "center",
+                      }}
+                    >
+                      {renderStatItem(
+                        template,
+                        {
+                          username: "Jordan",
+                          sum_donation: "30 USD",
+                          donation_message: "Hello! This is test message",
+                        },
+                        2.7
+                      )}
+                    </p>
+                    <p
+                      className="preview-block_stat__list-item"
+                      style={{
+                        color: content_color,
+                        textAlign:
+                          (alignItemsList[aligment] as AlignText) || "center",
+                      }}
+                    >
+                      {renderStatItem(
+                        template,
+                        {
+                          username: "Nate",
+                          sum_donation: "50 USD",
+                          donation_message: "How are you ?",
+                        },
+                        2.7
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

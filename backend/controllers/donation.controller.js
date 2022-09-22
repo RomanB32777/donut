@@ -43,16 +43,24 @@ const dateTrancCurrentParams = {
     '7days': 'week',
     '30days': 'month',
     'year': 'year',
-    'all': 'all'
+    'all': 'all',
+    'custom': 'custom',
 }
 
 const getTimePeriod = (period) => `
     to_timestamp(donation_date,'YYYY/MM/DD${period !== 'today' ? ' T HH24:MI:SS' : ''} ')
     >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} `
 
-const getTimeCurrentPeriod = (period) => period === 'all' ? "true" : `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS'))
+const getTimeCurrentPeriod = (period, startDate = "", endDate = "") => {
+    if (period === 'all') return "true";
+    if (period === 'custom' && startDate && endDate) {
+        return `to_timestamp(donation_date,'YYYY/MM/DD') 
+        BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
+        AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
+    }
+    return `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS'))
     = date_trunc('${dateTrancCurrentParams[period]}', current_date${period === "yesterday" ? " - 1" : ""})`
-
+}
 // date_trunc('${}', to_timestamp(donation_date, 'YYYY/MM/DD T HH24:MI:SS')) AS date_group
 
 class DonationController {
@@ -210,12 +218,13 @@ class DonationController {
     async getLatestDonations(req, res) {
         try {
             const { user_id } = req.params;
-            const { limit, timePeriod, isStatPage } = req.query;
+            const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
+
 
             const data = await db.query(`
                 SELECT * FROM donations
                 WHERE creator_id = $1 
-                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
+                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
                 ORDER BY donation_date DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
@@ -231,12 +240,12 @@ class DonationController {
     async getTopDonations(req, res) {
         try {
             const { user_id } = req.params; // timePeriod
-            const { limit, timePeriod, isStatPage } = req.query;
+            const { limit, timePeriod, startDate, endDate, isStatPage } = req.query;
 
             const data = await db.query(`
                 SELECT * FROM donations 
                 WHERE creator_id = $1 
-                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
+                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
                 ORDER BY sum_donation DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
             if (data && data.rows && data.rows.length > 0) {
@@ -255,13 +264,13 @@ class DonationController {
     async getTopSupporters(req, res) {
         try {
             const { user_id } = req.params;
-            const { limit, timePeriod, isStatPage } = req.query;
+            const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
 
             const data = await db.query(`
                 SELECT username, SUM(sum_donation::numeric) AS sum_donation 
                 FROM donations
                 WHERE creator_id = $1
-                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod) : getTimePeriod(timePeriod)} 
+                AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
                 GROUP BY username
                 ORDER BY SUM(sum_donation::numeric) DESC 
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id]);

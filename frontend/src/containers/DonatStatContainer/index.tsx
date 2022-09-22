@@ -12,7 +12,7 @@ import {
 import { getCurrentTimePeriodQuery, getStstsDataTypeQuery } from "../../consts";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import "./styles.sass";
-import { renderStrWithTokens } from "../../utils";
+import { getUsdKoef, renderStatItem, renderStrWithTokens } from "../../utils";
 
 const LIMIT = 3;
 
@@ -38,6 +38,7 @@ const DonatStatContainer = () => {
   const [lastNotif, setLastNotif] = useState<any>({});
   const [renderList, setRenderList] = useState<any[]>([]);
   const [statData, setStatData] = useState<IStatData | null>(null);
+  const [usdtKoef, setUsdtKoef] = useState<number>(0);
 
   const getDonations = async () => {
     if (statData) {
@@ -45,10 +46,17 @@ const DonatStatContainer = () => {
         const { time_period, data_type } = statData;
         const timePeriod = getCurrentTimePeriodQuery(time_period);
         const typeStatData = getStstsDataTypeQuery(data_type);
+        const customPeriod = time_period.split("-");
+
+        console.log(timePeriod, time_period);
 
         if (timePeriod && typeStatData) {
           const { data } = await axiosClient.get(
-            `/api/donation/widgets/${typeStatData}/${user.id}?limit=${LIMIT}&timePeriod=${timePeriod}&isStatPage=true`
+            `/api/donation/widgets/${typeStatData}/${user.id}?limit=${LIMIT}&${
+                  Boolean(customPeriod.length)
+                    ? `timePeriod=${timePeriod}&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
+                    : `timePeriod=${timePeriod}`
+                }&isStatPage=true`
           );
           data && data.length && setRenderList(data);
         }
@@ -68,34 +76,13 @@ const DonatStatContainer = () => {
     }
   };
 
-  const renderItem = (objToRender: any) => {
-    if (statData) {
-      const { template } = statData;
-      return renderStrWithTokens(template, [
-        {
-          re: /{username}/gi,
-          to: objToRender.username,
-        },
-        {
-          re: /{sum}/gi,
-          to: objToRender.sum_donation || objToRender.sum,
-        },
-        {
-          re: /{message}/gi,
-          to: objToRender.donation_message || "",
-        },
-      ]);
-      // return renderStrWithTokens(template, objToRender, ["username", "sum", "message"]);
-    }
-    return "";
-  };
-
   useEffect(() => {
     dispatch(
       tryToGetPersonInfo({
         username: name,
       })
     );
+    getUsdKoef("evmos", setUsdtKoef);
   }, []);
 
   useEffect(() => {
@@ -114,47 +101,46 @@ const DonatStatContainer = () => {
       bar_color,
       content_color,
       aligment,
+      template,
     } = statData;
 
     return (
       <div className="donat-stat">
         <div className="donat-stat_container">
-          <div>
-            <span
-              className="donat-stat_title"
-              style={{
-                background: bar_color,
-                color: title_color,
-              }}
-            >
-              {data_type} {time_period.toLowerCase()}
-            </span>
-            <div
-              className="donat-stat_list__wrapper"
-              style={{
-                justifyContent: alignFlextItemsList[aligment],
-              }}
-            >
-              <div className="donat-stat_list">
-                {Boolean(renderList) &&
-                  renderList.map((item) => {
-                    const renderStr = renderItem(item);
-                    return (
-                      <p
-                        key={renderStr}
-                        className="donat-stat_list-item"
-                        style={{
-                          color: content_color,
-                          textAlign:
-                            (alignItemsList[aligment] as AlignText) || "center",
-                          // aligment.toLowerCase()
-                        }}
-                      >
-                        {renderStr}
-                      </p>
-                    );
-                  })}
-              </div>
+          <span
+            className="donat-stat_title"
+            style={{
+              background: bar_color,
+              color: title_color,
+            }}
+          >
+            {data_type} {time_period.toLowerCase()}
+          </span>
+          <div
+            className="donat-stat_list__wrapper"
+            style={{
+              justifyContent: alignFlextItemsList[aligment],
+            }}
+          >
+            <div className="donat-stat_list">
+              {Boolean(renderList) &&
+                renderList.map((item) => {
+                  const renderStr = renderStatItem(template, item, usdtKoef);
+                  return (
+                    <p
+                      key={renderStr}
+                      className="donat-stat_list-item"
+                      style={{
+                        color: content_color,
+                        textAlign:
+                          (alignItemsList[aligment] as AlignText) || "center",
+                        // aligment.toLowerCase()
+                      }}
+                    >
+                      {renderStr}
+                    </p>
+                  );
+                })}
             </div>
           </div>
         </div>

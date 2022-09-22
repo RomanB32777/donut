@@ -180,7 +180,8 @@ export const routers: IRoute[] = [
   {
     path: "support/:name/:token",
     element: <DonatPage />,
-    noPaddingMainConteiner: true,
+    hiddenLayoutElements: true,
+    // noPaddingMainConteiner: true,
   },
   {
     path: "donat-message/:name/:token",

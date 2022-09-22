@@ -20,7 +20,6 @@ import {
   addNotification,
   addSuccessNotification,
   getUsdKoef,
-  installWalletNotification,
 } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 import FormInput from "../../components/FormInput";
@@ -47,7 +46,7 @@ interface IDonatForm {
 const initObj: IDonatForm = {
   message: "",
   username: "",
-  amount: "0",
+  amount: "",
   selectedGoal: "0",
 };
 
@@ -154,24 +153,40 @@ const DonatContainer = () => {
   };
 
   const triggerContract = async () => {
-    if (metamaskWalletIsIntall()) {
+    const { amount, username } = form;
+    if (Boolean(+amount) && username.length) {
       try {
         setLoading(true);
         const metamaskData = await getMetamaskData();
         if (metamaskData) {
-          const { amount } = form;
-          const { signer } = metamaskData;
-          const smartContract = new ethers.Contract(
-            contractMetaAddress,
-            abi_transfer,
-            signer
-          );
-          const tx = await smartContract.transferMoney(
-            personInfo.metamask_token,
-            { value: ethers.utils.parseEther(amount) }
-          );
-          await tx.wait();
-          await sendDonation();
+          const { signer, provider, address } = metamaskData;
+          const balance = await provider.getBalance(address);
+
+          if (balance) {
+            const intBalance = Number(
+              ethers.utils.formatEther(balance.toString())
+            );
+
+            if (intBalance >= Number(amount)) {
+              const smartContract = new ethers.Contract(
+                contractMetaAddress,
+                abi_transfer,
+                signer
+              );
+              const tx = await smartContract.transferMoney(
+                personInfo.metamask_token,
+                { value: ethers.utils.parseEther(amount) }
+              );
+              await tx.wait();
+              await sendDonation();
+            } else {
+              addNotification({
+                type: "warning",
+                title: "Insufficient balance",
+                message: "Unfortunately, there are not enough funds on your balance to carry out the operation",
+              });
+            }
+          }
         }
       } catch (error) {
         console.log("error", error);
@@ -184,10 +199,10 @@ const DonatContainer = () => {
         setLoading(false);
       }
     } else {
-      installWalletNotification(
-        "Metamask",
-        "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
-      );
+      addNotification({
+        type: "danger",
+        title: "Not all fields are filled",
+      });
     }
   };
 
@@ -358,7 +373,7 @@ const DonatContainer = () => {
               {Array.isArray(goalsActive) && Boolean(goalsActive.length) && (
                 <div className="donat-container__payment_goals">
                   <Row justify="space-between">
-                    <Col span={6}>
+                    <Col span={8}>
                       <div
                         className={clsx("donat-container__payment_goals_btn", {
                           active: isOpenSelectGoal,
@@ -374,7 +389,7 @@ const DonatContainer = () => {
                       </div>
                     </Col>
                     {isOpenSelectGoal && (
-                      <Col span={17}>
+                      <Col span={15}>
                         <div className="donat-container__payment_goals_list">
                           <Radio.Group
                             onChange={onChangeRadio}

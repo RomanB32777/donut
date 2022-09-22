@@ -43,7 +43,7 @@ export const addSuccessNotification = (message: string) =>
     type: "success",
   });
 
-export const installWalletNotification = (
+export const addInstallWalletNotification = (
   walletName: string,
   installUrl: string
 ) => {
@@ -202,6 +202,19 @@ export const copyStr = (str: string) => {
   }
 };
 
+declare type currencyTypes = "evmos";
+
+export const getUsdKoef = async (
+  currency: currencyTypes,
+  setUsdtKoef?: (price: number) => void
+) => {
+  const { data } = await axiosClient.get(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
+  );
+  setUsdtKoef && setUsdtKoef(+data[currency].usd);
+  return +data[currency].usd;
+};
+
 interface IReplaceObj {
   re: RegExp;
   to: string;
@@ -217,6 +230,28 @@ export const renderStrWithTokens = (
   }, str);
 };
 
+export const renderStatItem = (
+  template: string | string[],
+  objToRender: any,
+  usdtKoef: number
+) => {
+  return renderStrWithTokens(template, [
+    {
+      re: /{username}/gi,
+      to: objToRender.username,
+    },
+    {
+      re: /{sum}/gi,
+      to: `${(+objToRender.sum_donation * usdtKoef).toFixed(2)} USD`,
+    },
+    {
+      re: /{message}/gi,
+      to: objToRender.donation_message || "",
+    },
+  ]);
+};
+
+// return renderStrWithTokens(template, objToRender, ["username", "sum", "message"]);
 // export const renderStrWithTokens = (
 //   template: string | string[],
 //   objToRender: any,
@@ -228,15 +263,3 @@ export const renderStrWithTokens = (
 //     return acc.replace(new RegExp(expStr, "gi"), objToRender[field]);
 //   }, str);
 // };
-
-declare type currencyTypes = "evmos";
-
-export const getUsdKoef = async (
-  currency: currencyTypes,
-  setUsdtKoef: (price: number) => void
-) => {
-  const { data } = await axiosClient.get(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
-  );
-  setUsdtKoef(+data[currency].usd);
-};

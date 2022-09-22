@@ -13,7 +13,7 @@ import {
 import { FormattedMessage } from "react-intl";
 import { setMainWallet } from "../../store/types/Wallet";
 import { useNavigate } from "react-router";
-import { checkIsExistUser, installWalletNotification } from "../../utils";
+import { checkIsExistUser, addInstallWalletNotification } from "../../utils";
 import { tryToGetUser } from "../../store/types/User";
 
 import "./styles.sass";
@@ -46,7 +46,7 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
           }
         }
       } else {
-        installWalletNotification(
+        addInstallWalletNotification(
           "Metamask",
           "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
         );
