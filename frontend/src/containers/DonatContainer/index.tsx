@@ -251,7 +251,6 @@ const DonatContainer = () => {
   const { username, message, amount, selectedGoal } = form;
 
   return (
-    // <div className="donat-widget">
     <div
       className="donat-container"
       style={{
@@ -304,7 +303,6 @@ const DonatContainer = () => {
               </div>
               <div className="donat-main-info__personal">
                 <span className="title">{personInfo.welcome_text}</span>
-                {/* <span className="subtitle">{personInfo.username}</span> */}
               </div>
             </div>
           </div>
@@ -453,7 +451,6 @@ const DonatContainer = () => {
         </div>
       </div>
     </div>
-    // </div>
   );
 };
 

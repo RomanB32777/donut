@@ -214,20 +214,19 @@ class UserController {
 
     async getCreatorByName(req, res) {
         try {
-            const username = req.params.username
-            const id = req.params.id
+            const { username } = req.params
             const users = await db.query(`SELECT * FROM users WHERE roleplay = 'creators' AND username LIKE '%${username.toLowerCase()}%'`)
             const creator = await db.query(`SELECT * FROM creators WHERE username = $1`, [username.toLowerCase()])
-            let following = false
-            if (id && creator.rows[0]) {
-                const follow = await db.query(`SELECT * FROM follows WHERE creator_id = $1 AND backer_id = $2`, [creator.rows[0].id, id])
-                following = (follow.rows && follow.rows[0] && (follow.rows[0].backer_id === id)) ? true : false
-            }
+            // let following = false
+            // if (id && creator.rows[0]) {
+            //     const follow = await db.query(`SELECT * FROM follows WHERE creator_id = $1 AND backer_id = $2`, [creator.rows[0].id, id])
+            //     following = (follow.rows && follow.rows[0] && (follow.rows[0].backer_id === id)) ? true : false
+            // }
 
             res.status(200).json({
                 ...users.rows[0],
                 ...creator.rows[0],
-                following: following,
+                // following: following,
             })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })

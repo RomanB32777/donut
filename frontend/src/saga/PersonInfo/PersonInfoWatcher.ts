@@ -7,7 +7,7 @@ import { setLoading } from "../../store/types/Loading";
 
 const asyncGetMainData = async (username: any, id: any) => {
     const res:any = await fetch(
-        baseURL + '/api/user/creators/' + username + '/' + ( id ? id : 0)
+        baseURL + '/api/user/creators/' + username
     )
     const result = await res.json()
     return result

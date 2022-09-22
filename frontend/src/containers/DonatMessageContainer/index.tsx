@@ -27,9 +27,9 @@ const testDonat = {
 
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
-  const { name } = useParams();
+  const user = useSelector((state: any) => state.personInfo).main_info;
   const notifications = useSelector((state: any) => state.notifications);
+  const { name } = useParams();
 
   const [lastNotif, setLastNotif] = useState<any>({
     // ...testDonat
@@ -86,6 +86,9 @@ const DonatMessageContainer = () => {
       })
     );
   }, []);
+
+  console.log(user);
+  
 
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {

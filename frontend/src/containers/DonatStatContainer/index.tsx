@@ -32,7 +32,7 @@ const LIMIT = 3;
 const DonatStatContainer = () => {
   const dispatch = useDispatch();
   const { id, name } = useParams();
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: any) => state.personInfo).main_info;
   const notifications = useSelector((state: any) => state.notifications);
 
   const [lastNotif, setLastNotif] = useState<any>({});
