@@ -1,17 +1,5 @@
 const db = require('../db')
 
-const getImageName = () => {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < 32; i++) {
-        result += characters.charAt(Math.floor(Math.random() *
-            charactersLength));
-    }
-    return result
-}
-
-
 class BadgeController {
     async createBadge(req, res) {
         try {
@@ -56,19 +44,6 @@ class BadgeController {
         }
     }
 
-    // async createBadgeImage(req, res) {
-    //     try {
-    //         const badge_id = req.params.badge_id
-    //         const file = req.files.file;
-    //         const filename = getImageName()
-    //         file.mv(`images/${filename + file.name.slice(file.name.lastIndexOf('.'))}`, (err) => { })
-    //         await db.query(`UPDATE badges SET badge_image = $1 WHERE id = $2`, [filename + file.name.slice(file.name.lastIndexOf('.')), badge_id])
-    //         res.status(200).json({ message: 'success' })
-    //     } catch (error) {
-    //         res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
-    //     }
-    // }
-
     async assignBadge(req, res) {
         try {
             const { id, contract_address, contributor_id } = req.body
@@ -89,7 +64,7 @@ class BadgeController {
             const users = await db.query(`SELECT contributor_user_id_list FROM badges WHERE id = $1 AND contract_address= $2`, [badge_id, contract_address])
             if (users.rows && users.rows[0].contributor_user_id_list.length) {
                 const usersIDs = users.rows[0].contributor_user_id_list.split(' ').filter(Boolean).join(',');
-                const holders = await db.query(`SELECT id, username FROM users WHERE id IN (${usersIDs})`)
+                const holders = await db.query(`SELECT id, username, avatarlink FROM backers WHERE user_id IN (${usersIDs})`)
                 return res.status(200).json(holders.rows)
             }
             res.status(200).json([])

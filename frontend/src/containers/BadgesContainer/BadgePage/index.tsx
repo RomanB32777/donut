@@ -13,7 +13,7 @@ import { ethers } from "ethers";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
 import { useSelector } from "react-redux";
-import { abi } from "../../../consts";
+import { abi, url } from "../../../consts";
 
 const BadgePage = ({
   activeBadge,
@@ -97,7 +97,7 @@ const BadgePage = ({
       const { id, contract_address } = activeBadge;
       const { data } = await axiosClient.get(
         `${baseURL}/api/badge/holders/${id}/${contract_address}`
-      );
+      );    
       data && setHolders(data);
     } catch (error) {
       console.log(error);
@@ -293,9 +293,15 @@ const BadgePage = ({
                                 title={holder.username}
                                 placement="top"
                               >
-                                <Avatar style={{ backgroundColor: "#1D14FF" }}>
-                                  {holder.username[1]}
-                                </Avatar>
+                                {holder.avatarlink ? (
+                                  <Avatar src={url + holder.avatarlink} />
+                                ) : (
+                                  <Avatar
+                                    style={{ backgroundColor: "#1D14FF" }}
+                                  >
+                                    {holder.username[1]}
+                                  </Avatar>
+                                )}
                               </Tooltip>
                             ))}
                           </Avatar.Group>

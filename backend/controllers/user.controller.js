@@ -339,7 +339,7 @@ class UserController {
         }
     }
 
-    async getPersonInfoSupporters(req, res) { // неправильный подсчет суммы иногда !
+    async getPersonInfoSupporters(req, res) {
         try {
             const username = req.params.username
 
