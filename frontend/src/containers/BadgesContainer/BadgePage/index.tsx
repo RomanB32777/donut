@@ -325,7 +325,7 @@ const BadgePage = ({
       </div>
       <LoadingModalComponent
         visible={loading}
-        message="Please don’t close this window untill donation confirmation"
+        message="Please sign the transaction in your wallet"
       />
       <SuccessModalComponent
         visible={isOpenSuccessModal}

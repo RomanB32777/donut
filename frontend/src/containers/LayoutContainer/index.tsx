@@ -212,6 +212,16 @@ const LayoutApp = () => {
     );
   }, [pathname]);
 
+  const isTransparentMainConteiner: boolean = useMemo(() => {
+    const pathsWithTransparentBgLayoutElements = routers.filter(
+      (route) => route.transparet
+    );
+
+    return pathsWithTransparentBgLayoutElements.some(
+      (route) => pathname.split("/")[1] === route.path?.split("/")[0]
+    );
+  }, [pathname]);
+
   const noPaddingMainConteiner: boolean = useMemo(() => {
     const pathsWithoutPaddingMainConteiner = routers.filter(
       (route) => route.noPaddingMainConteiner
@@ -254,6 +264,9 @@ const LayoutApp = () => {
         style={{
           minHeight: "100vh",
         }}
+        className={clsx({
+          transparent: isTransparentMainConteiner,
+        })}
       >
         <Sider
           hidden={hiddenLayoutElements}
@@ -342,7 +355,12 @@ const LayoutApp = () => {
               )}
             </div>
           </Header>
-          <Content onClick={() => closeAllHeaderPopups()}>
+          <Content
+            onClick={() => closeAllHeaderPopups()}
+            style={{
+              background: isTransparentMainConteiner ? "rgba(0, 0, 0, 0)" : "#000000",
+            }}
+          >
             <div
               className={clsx("main-container", {
                 noPadding: noPaddingMainConteiner,

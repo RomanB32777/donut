@@ -695,8 +695,6 @@ class UserController {
                 'Transfer-Encoding': 'chunked'
             })
 
-
-
             const [response] = await client.synthesizeSpeech(request)
             const bufferStream = new stream.PassThrough()
             bufferStream.end(Buffer.from(response.audioContent))

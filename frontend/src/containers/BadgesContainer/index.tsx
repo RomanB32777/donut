@@ -35,10 +35,10 @@ const BadgesContainer = () => {
   };
 
   useEffect(() => {
-    if (user.id && user.roleplay) {
+    if (user.id && user.roleplay && !isOpenCreateForm) {
       getBadges(user.id);
     }
-  }, [user]);
+  }, [user, isOpenCreateForm]);
 
   const deleteBadge = async (id: number) => {
     const res = await axiosClient.delete(`/api/badge/${id}`);

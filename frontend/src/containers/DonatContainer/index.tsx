@@ -411,7 +411,6 @@ const DonatContainer = () => {
                         onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
                         style={{
                           background: personInfo.main_color,
-                          // borderColor: personInfo.main_color,
                         }}
                       >
                         <StarIcon />
@@ -449,7 +448,6 @@ const DonatContainer = () => {
                   fontSize="21px"
                   color={personInfo.main_color}
                   disabled={loading}
-                  isBlue
                 />
                 {loading && (
                   <div

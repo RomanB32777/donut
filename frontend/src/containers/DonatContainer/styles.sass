@@ -46,6 +46,11 @@
                 border-radius: 20px
                 cursor: pointer
                 border: 2px solid transparent
+                transition: all .4s ease
+                
+                &:hover
+                    -webkit-box-shadow: 0px 0px 4px 2px variables.$white-color
+                    box-shadow: 0px 0px 4px 2px variables.$white-color
 
                 p
                     margin-top: 20px
@@ -57,7 +62,7 @@
                     color: variables.$white-color
 
                 &.active
-                    border-color: variables.$blue-color
+                    border-color: variables.$white-color
 
             &_list
                 height: 100%

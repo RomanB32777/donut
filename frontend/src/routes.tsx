@@ -57,6 +57,7 @@ interface IRoute extends RouteObject {
   roleRequired?: string;
   protected?: boolean;
   menuOrder?: number;
+  transparet?: boolean;
   hiddenLayoutElements?: boolean;
   noPaddingMainConteiner?: boolean;
 }
@@ -155,7 +156,7 @@ export const routers: IRoute[] = [
         name: "Donations",
         icon: <PeopleIcon />,
         menu: true,
-        menuOrder: 2
+        menuOrder: 2,
       },
       {
         path: "badges",
@@ -163,7 +164,7 @@ export const routers: IRoute[] = [
         name: "Badges",
         icon: <ShieldMenuIcon />,
         menu: true,
-        menuOrder: 3
+        menuOrder: 3,
       },
       {
         path: "settings",
@@ -171,7 +172,7 @@ export const routers: IRoute[] = [
         name: "Settings",
         icon: <SettingOutlined />,
         menu: true,
-        menuOrder: 5
+        menuOrder: 5,
       },
     ],
   },
@@ -194,16 +195,19 @@ export const routers: IRoute[] = [
     path: "donat-message/:name/:token",
     element: <DonatMessagePage />,
     hiddenLayoutElements: true,
+    transparet: true,
   },
   {
     path: "donat-goal/:name/:id",
     element: <DonatGoalPage />,
     hiddenLayoutElements: true,
+    transparet: true,
   },
   {
     path: "donat-stat/:name/:id",
     element: <DonatStatPage />,
     hiddenLayoutElements: true,
+    transparet: true,
   },
 ];
 export const Pages = () => {
