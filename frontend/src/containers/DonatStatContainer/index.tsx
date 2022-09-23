@@ -48,15 +48,13 @@ const DonatStatContainer = () => {
         const typeStatData = getStstsDataTypeQuery(data_type);
         const customPeriod = time_period.split("-");
 
-        console.log(timePeriod, time_period);
-
         if (timePeriod && typeStatData) {
           const { data } = await axiosClient.get(
-            `/api/donation/widgets/${typeStatData}/${user.id}?limit=${LIMIT}&${
-                  Boolean(customPeriod.length)
-                    ? `timePeriod=${timePeriod}&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
-                    : `timePeriod=${timePeriod}`
-                }&isStatPage=true`
+            `/api/donation/widgets/${typeStatData}/${user.user_id}?limit=${LIMIT}&${
+              Boolean(customPeriod.length > 1)
+                ? `timePeriod=${timePeriod}&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
+                : `timePeriod=${timePeriod}`
+            }&isStatPage=true`
           );
           data && data.length && setRenderList(data);
         }
@@ -72,7 +70,6 @@ const DonatStatContainer = () => {
     );
     if (response.status === 200) {
       setStatData(response.data);
-      await getDonations();
     }
   };
 
@@ -86,8 +83,12 @@ const DonatStatContainer = () => {
   }, []);
 
   useEffect(() => {
-    lastNotif && user.id && getStatData();
-  }, [user, lastNotif]);
+    statData && user.user_id && getDonations();
+  }, [user, statData, lastNotif]);
+
+  useEffect(() => {
+    getStatData();
+  }, [user]);
 
   useEffect(() => {
     notifications.length && setLastNotif(notifications[0].donation);

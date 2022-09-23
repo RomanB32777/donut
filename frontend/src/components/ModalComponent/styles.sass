@@ -1,9 +1,15 @@
 @use '../../commonStyles/variables'
 
 .ant-modal-content
-    padding: 39px 52px 34px
     background: variables.$grey-background-color
     border-radius: 20px
+
+    .modal-content-wrapper
+        padding: 0 52px 34px
+
+        &.noPadding
+            padding: 0
+
 
 .ant-modal-close-x
     color: variables.$grey-color
@@ -11,6 +17,7 @@
 .ant-modal-header
     background: variables.$grey-background-color
     border: none
+    border-radius: 20px
 
     .ant-modal-title
         font-family: variables.$inter-font
@@ -20,3 +27,38 @@
         line-height: 30px
         color: variables.$white-color
         text-align: center
+        margin-top: 39px
+
+.modal-success
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    background: url('../../assets/modalBg.png')
+    background-repeat: no-repeat
+    background-size: cover
+    background-position-y: 45%
+    height: 93vh
+    border-radius: variables.$border-radius
+
+    &__message,
+    &__description
+        text-align: center
+        font-family: variables.$jakarta-font
+        font-style: normal
+
+    &__message
+        max-width: 70%
+        margin-bottom: 25px
+        font-weight: 600
+        font-size: 32px
+        line-height: 37px
+        color: variables.$green-color
+
+    &__description
+        max-width: 85%
+        margin-top: 75px
+        font-weight: 400
+        font-size: 25px
+        line-height: 30px
+        color: #F6F7F1

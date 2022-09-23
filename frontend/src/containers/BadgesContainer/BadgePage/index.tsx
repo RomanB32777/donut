@@ -12,23 +12,31 @@ import axiosClient, { baseURL } from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
 import { LeftArrowIcon } from "../../../icons/icons";
 import { abi, url } from "../../../consts";
+import {
+  LoadingModalComponent,
+  SuccessModalComponent,
+} from "../../../components/ModalComponent";
 
 const BadgePage = ({
   activeBadge,
   backBtn,
 }: {
-  activeBadge: IBadge;
+  activeBadge: IBadgeData;
   backBtn: () => void;
 }) => {
   const user = useSelector((state: any) => state.user);
 
-  const [formBadge, setFormBadge] = useState<IBadgeData>({ ...initBadgeData });
+  const [formBadge, setFormBadge] = useState<IBadgeData>({
+    ...initBadgeData,
+    ...activeBadge,
+  });
   const [loading, setLoading] = useState<boolean>(false);
+  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
   const [supporters, setSupporters] = useState<any[]>([]);
   const [holders, setHolders] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
 
-  const getBadgeNFTData = async (badge: IBadge) => {
+  const updateBadgeNFTData = async (badge: IBadgeData) => {
     try {
       const { contract_address, creator_id } = badge;
 
@@ -40,63 +48,23 @@ const BadgePage = ({
         abi,
         provider
       );
-      console.log(user.id === creator_id);
 
-      const currentToken = await currentContract.uri(1);
       const quantityBadge =
         user.id === creator_id
           ? await currentContract.totalSupply(1)
           : await currentContract.balanceOf(user.metamask_token, 1);
 
-      const rootCid = currentToken.split("//")[1];
-      const dataBadgeJSON = await axiosClient.get(
-        `https://${rootCid}.ipfs.w3s.link/metadata.json`
-      );
-
-      if (dataBadgeJSON.status == 200) {
-        const client = makeStorageClient();
-        const imgCid = dataBadgeJSON.data.URI.split("//")[1];
-        const res = await client.get(imgCid); // Web3Response
-
-        if (res) {
-          const files = await res.files(); // Web3File[]
-
-          // new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(files[0]);
-          reader.onload = () =>
-            setFormBadge({
-              ...formBadge,
-              ...dataBadgeJSON.data,
-              image: {
-                ...formBadge.image,
-                preview: (reader.result as string) || "",
-              },
-              contract_address,
-              quantity: quantityBadge.toNumber(),
-              creator_id,
-            });
-        }
-      }
+      quantityBadge &&
+        setFormBadge({
+          ...formBadge,
+          quantity: quantityBadge.toNumber(),
+        });
     } catch (error) {
       console.log(error);
     }
   };
 
-  // console.log(formBadge);
-  const getBadge = async (activeBadge: IBadge) => {
-    try {
-      const { id, contract_address } = activeBadge;
-      const { data } = await axiosClient.get(
-        `${baseURL}/api/badge/${id}/${contract_address}`
-      );
-      data && (await getBadgeNFTData(data));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getHolders = async (activeBadge: IBadge) => {
+  const getHolders = async (activeBadge: IBadgeData) => {
     try {
       const { id, contract_address } = activeBadge;
       const { data } = await axiosClient.get(
@@ -145,16 +113,17 @@ const BadgePage = ({
           (window as any).ethereum
         );
         const signer = provider.getSigner(0);
-        console.log(provider, signer);
         let currentContract = new ethers.Contract(
           contract_address,
           abi,
           signer
         );
-        await currentContract.mint(selectedUserAddress, 1, 1);
+        const tx = await currentContract.mint(selectedUserAddress, 1, 1);
+        await tx.wait();
         await assignBadge(selectedUserObj.id);
-        await getBadgeNFTData(activeBadge);
+        await updateBadgeNFTData(activeBadge);
         await getHolders(activeBadge);
+        setIsOpenSuccessModal(true);
       }
     } catch (error) {
       console.log(error);
@@ -166,7 +135,7 @@ const BadgePage = ({
   useEffect(() => {
     const { id, contract_address } = activeBadge;
     if (id && contract_address) {
-      getBadge(activeBadge);
+      // getBadge(activeBadge);
       user.roleplay && user.roleplay === "creators" && getHolders(activeBadge);
     }
   }, [activeBadge]);
@@ -269,92 +238,101 @@ const BadgePage = ({
                 </div>
               </Col>
             </Row>
-            {creator_id &&
-              user.id === creator_id && ( // user.roleplay && user.roleplay === "creators"
-                <Row>
-                  {Boolean(holders.length) && (
-                    <Col span={24}>
-                      <Row justify="space-between" align="middle">
-                        <Col span={8}>
-                          <p className="details__title">Badge holders</p>
-                        </Col>
-                        <Col span={15}>
-                          <div
-                            className={clsx("details__users", {
-                              center: false,
-                            })}
+            {user.id === creator_id && ( // user.roleplay && user.roleplay === "creators"
+              <Row>
+                {Boolean(holders.length) && (
+                  <Col span={24}>
+                    <Row justify="space-between" align="middle">
+                      <Col span={8}>
+                        <p className="details__title">Badge holders</p>
+                      </Col>
+                      <Col span={15}>
+                        <div
+                          className={clsx("details__users", {
+                            center: false,
+                          })}
+                        >
+                          <Avatar.Group
+                            maxCount={7}
+                            // maxPopoverTrigger="click"
+                            size="large"
+                            maxStyle={{
+                              color: "#FFFFFF",
+                              backgroundColor: "#1D14FF",
+                              cursor: "pointer",
+                            }}
                           >
-                            <Avatar.Group
-                              maxCount={7}
-                              maxPopoverTrigger="click"
-                              size="large"
-                              maxStyle={{
-                                color: "#f56a00",
-                                backgroundColor: "#fde3cf",
-                                cursor: "pointer",
-                              }}
-                            >
-                              {holders.map((holder: any) => (
-                                <Tooltip
-                                  key={holder.username}
-                                  title={holder.username}
-                                  placement="top"
-                                >
-                                  {holder.avatarlink ? (
-                                    <Avatar src={url + holder.avatarlink} />
-                                  ) : (
-                                    <Avatar
-                                      style={{ backgroundColor: "#1D14FF" }}
-                                    >
-                                      {holder.username[1]}
-                                    </Avatar>
-                                  )}
-                                </Tooltip>
-                              ))}
-                            </Avatar.Group>
-                          </div>
-                        </Col>
-                      </Row>
-                    </Col>
-                  )}
-                  <Col span={24}>
-                    <Divider className="line" />
+                            {holders.map((holder: any) => (
+                              <Tooltip
+                                key={holder.username}
+                                title={holder.username}
+                                placement="top"
+                              >
+                                {holder.avatarlink ? (
+                                  <Avatar src={url + holder.avatarlink} />
+                                ) : (
+                                  <Avatar
+                                    style={{ backgroundColor: "#1D14FF" }}
+                                  >
+                                    {holder.username[1]}
+                                  </Avatar>
+                                )}
+                              </Tooltip>
+                            ))}
+                          </Avatar.Group>
+                        </div>
+                      </Col>
+                    </Row>
                   </Col>
-                  <Col span={24}>
-                    <p className="details__title">Assign badge</p>
-                    <div className="form-element">
-                      <SelectInput
-                        list={
-                          supporters.length
-                            ? supporters.map((s) => s.username)
-                            : [""]
-                        }
-                        value={selectedUser}
-                        setValue={(selected) =>
-                          setSelectedUser(selected as string)
-                        }
-                        placeholder="Choose your donator address"
-                        modificator="details__select_user"
-                      />
-                    </div>
-                  </Col>
-                  <Col span={24}>
-                    <div className="saveBottom">
-                      <BaseButton
-                        formatId="badges_page_assign_button"
-                        padding="6px 35px"
-                        onClick={mintBadge}
-                        fontSize="18px"
-                        disabled={loading}
-                        isBlue
-                      />
-                    </div>
-                  </Col>
-                </Row>
-              )}
+                )}
+                <Col span={24}>
+                  <Divider className="line" />
+                </Col>
+                <Col span={24}>
+                  <p className="details__title">Assign badge</p>
+                  <div className="form-element">
+                    <SelectInput
+                      list={
+                        Boolean(supporters.length)
+                          ? supporters.map((s) => s.username)
+                          : [""]
+                      }
+                      value={selectedUser}
+                      setValue={(selected) =>
+                        setSelectedUser(selected as string)
+                      }
+                      placeholder="Choose your donator address"
+                      modificator="details__select_user"
+                    />
+                  </div>
+                </Col>
+                <Col span={24}>
+                  <div className="saveBottom">
+                    <BaseButton
+                      formatId="badges_page_assign_button"
+                      padding="6px 35px"
+                      onClick={mintBadge}
+                      fontSize="18px"
+                      disabled={loading}
+                      isBlue
+                    />
+                  </div>
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       </div>
+      <LoadingModalComponent
+        visible={loading}
+        message="Please don’t close this window untill donation confirmation"
+      />
+      <SuccessModalComponent
+        visible={isOpenSuccessModal}
+        onClose={() => setIsOpenSuccessModal(false)}
+        message={`Badge has been assigned successfully!`}
+        // Assign to ${selectedUser} successfully!
+      />
     </div>
   );
 };

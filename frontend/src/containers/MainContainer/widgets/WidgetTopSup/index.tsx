@@ -31,8 +31,6 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
     user.id && timePeriod && getLatestDonations(timePeriod);
   }, [user, activeFilterItem]);
 
-  console.log(topSupporters);
-
   return (
     <div className="widget widget-topSup">
       <div className="widget_header">

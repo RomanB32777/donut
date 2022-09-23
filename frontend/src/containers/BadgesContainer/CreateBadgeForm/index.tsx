@@ -1,4 +1,4 @@
-import { Col, Popover, Row, StepProps, Steps, StepsProps } from "antd";
+import { Col, Row, StepProps, Steps, StepsProps } from "antd";
 import { useState } from "react";
 import { ethers } from "ethers";
 import BaseButton from "../../../commonComponents/BaseButton";
@@ -7,16 +7,18 @@ import FormInput from "../../../components/FormInput";
 
 import PageTitle from "../../../commonComponents/PageTitle";
 import { LeftArrowIcon } from "../../../icons/icons";
-import { IBadge, IBadgeData } from "../../../types";
+import { IBadgeData, initBadgeData } from "../../../types";
 import SelectInput from "../../../components/SelectInput";
 import axiosClient from "../../../axiosClient";
 import { useSelector } from "react-redux";
 import { makeStorageClient } from "../utils";
 import { abi, bytecode } from "../../../consts";
 import { getMetamaskData } from "../../../functions/getTronWallet";
-import ModalComponent from "../../../components/ModalComponent";
+import ModalComponent, {
+  SuccessModalComponent,
+} from "../../../components/ModalComponent";
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
-import { addNotification, addSuccessNotification } from "../../../utils";
+import { addNotification } from "../../../utils";
 import { useNavigate } from "react-router";
 
 const { Step } = Steps;
@@ -30,7 +32,7 @@ const customDot: StepsProps["progressDot"] = (dot, { status }) => {
           position: "absolute",
           right: "-11px",
           top: "-10px",
-          fontSize: 25
+          fontSize: 25,
         }}
       />
     );
@@ -42,7 +44,7 @@ const customDot: StepsProps["progressDot"] = (dot, { status }) => {
           position: "absolute",
           right: "-11px",
           top: "-5px",
-          fontSize: 25
+          fontSize: 25,
         }}
       />
     );
@@ -66,30 +68,23 @@ const initLoadingSteps: StepProps[] = [
 
 const CreateBadgeForm = ({
   backBtn,
-  setActiveBadge,
-  openBadgePage,
-}: {
+}: // setActiveBadge,
+// openBadgePage,
+{
   backBtn: () => void;
-  setActiveBadge: (activeBadge: IBadge) => void;
-  openBadgePage: () => void;
+  setActiveBadge?: (activeBadge: IBadgeData) => void;
+  openBadgePage?: () => void;
 }) => {
   const navigate = useNavigate();
   const user = useSelector((state: any) => state.user);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
   const [loadingSteps, setLoadingSteps] = useState<StepProps[]>([
     ...initLoadingSteps,
   ]);
 
-  // const [isOpenModal, setIsOpenModal] = useState(true);
   const [formBadge, setFormBadge] = useState<IBadgeData>({
-    image: {
-      preview: "",
-      file: null,
-    },
-    title: "",
-    description: "",
-    blockchain: "",
-    contract_address: "",
+    ...initBadgeData,
   });
 
   const createJSON = (_title: string, _description: string, _uri: string) => {
@@ -180,6 +175,12 @@ const CreateBadgeForm = ({
     }
   };
 
+  const closeSuccessPopup = () => {
+    setIsOpenSuccessModal(false);
+    setFormBadge({ ...initBadgeData });
+    backBtn();
+  };
+
   const createContract = async () => {
     const { image, title, description, blockchain } = formBadge;
     if (
@@ -205,18 +206,18 @@ const CreateBadgeForm = ({
           setLoadingCurrStep({ finishedStep: 2 });
 
           if (badgeContract) {
-            const newBadge = await axiosClient.post("/api/badge/", {
+            // const newBadge =
+            await axiosClient.post("/api/badge/", {
               creator_id: user.id,
               contract_address: badgeContract.address,
             });
-            navigate("/");
+            setIsOpenSuccessModal(true);
             // setActiveBadge({
             //   contract_address: badgeContract.address,
             //   id: newBadge.data.id,
             // });
             // backBtn();
             // openBadgePage();
-            addSuccessNotification("Badge saved successfully");
           }
         }
       } catch (error) {
@@ -359,6 +360,12 @@ const CreateBadgeForm = ({
           </Row>
         </div>
       </ModalComponent>
+      <SuccessModalComponent
+        visible={isOpenSuccessModal}
+        onClose={closeSuccessPopup}
+        message={`Your ERC-1155 NFT Badge was created successfully!`}
+        description="Usually it takes around 30-60 seconds for it to be displayed in Badges section"
+      />
     </div>
   );
 };

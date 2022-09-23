@@ -239,7 +239,7 @@ class DonationController {
 
     async getTopDonations(req, res) {
         try {
-            const { user_id } = req.params; // timePeriod
+            const { user_id } = req.params;
             const { limit, timePeriod, startDate, endDate, isStatPage } = req.query;
 
             const data = await db.query(`
@@ -248,7 +248,7 @@ class DonationController {
                 AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
                 ORDER BY sum_donation DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
-            if (data && data.rows && data.rows.length > 0) {
+            if (data.rows.length) {
                 res.status(200).json(data.rows)
             } else {
                 res.status(200).json([])

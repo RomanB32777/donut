@@ -8,6 +8,8 @@ export interface IFileInfo {
 }
 
 export interface IBadgeData {
+  id: number;
+  creator_id: number;
   image: IFileInfo;
   title: string;
   description: string;
@@ -15,10 +17,11 @@ export interface IBadgeData {
   contract_address: string;
   URI?: string;
   quantity?: number;
-  creator_id?: number;
 }
 
 export const initBadgeData: IBadgeData = {
+  id: 0,
+  creator_id: 0,
   image: {
     preview: "",
     file: null,

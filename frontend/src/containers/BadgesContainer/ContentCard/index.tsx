@@ -1,8 +1,7 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import clsx from "clsx";
-import { abi, url } from "../../../consts";
-import { LargeImageIcon, TrashBinIcon } from "../../../icons/icons";
+import { abi } from "../../../consts";
+import { LargeImageIcon } from "../../../icons/icons";
 import "./styles.sass";
 
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
@@ -11,18 +10,26 @@ import axiosClient from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
 import testIMG from "../../../assets/person.png";
 
-const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
+const ContentCard = (prop: {
+  data: IBadge;
+  onClick: (badge: IBadgeData) => void;
+}) => {
   const user = useSelector((state: any) => state.user);
-  const [badgeData, setBadgeData] = useState<IBadgeData>({ ...initBadgeData });
-  
+  const [badgeData, setBadgeData] = useState<IBadgeData>({
+    ...initBadgeData,
+    ...prop.data,
+  });
+
   // const ableToDelete = useMemo(
   //   () => user && user.id && user.id === prop.data.creator_id,
   //   [user, prop]
   // );
 
+  // console.log(prop.data);
+
   const getBadgeNFTData = async (badge: IBadge) => {
     try {
-      const { contract_address } = badge;
+      const { contract_address, creator_id } = badge;
 
       const provider = new ethers.providers.Web3Provider(
         (window as any).ethereum
@@ -35,10 +42,14 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
 
       const currentToken = await currentContract.uri(1);
 
-      const balance = await currentContract.balanceOf(user.metamask_token, 1);
-      if (user.roleplay === "backers" && balance.toNumber() < 1) return;
+      const quantityBadge =
+        user.id === creator_id
+          ? await currentContract.totalSupply(1)
+          : await currentContract.balanceOf(user.metamask_token, 1);
 
-      const quantityBadge = await currentContract.totalSupply(1);
+      const quantityBadgeNum = quantityBadge.toNumber();
+      if (user.roleplay === "backers" && quantityBadgeNum < 1)
+        return;
 
       const rootCid = currentToken.split("//")[1];
       const dataBadgeJSON = await axiosClient.get(
@@ -64,7 +75,7 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
                 preview: (reader.result as string) || "",
               },
               contract_address,
-              quantity: quantityBadge,
+              quantity: quantityBadgeNum,
             });
         }
       }
@@ -81,11 +92,12 @@ const ContentCard = (prop: { data: IBadge; onClick?: () => void }) => {
 
   return (
     <div
-      className={clsx("content-panel")}
+      className="content-panel"
       // , { ableToDelete }
       style={{
-        cursor: "pointer",
+        cursor: title.length ? "pointer" : "auto",
       }}
+      onClick={() => title.length && prop.onClick(badgeData)}
     >
       <div className="content-panel__Link">
         <div className="content-panel__image">

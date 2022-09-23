@@ -13,7 +13,6 @@ import { setMainWallet } from "../../store/types/Wallet";
 import {
   addNotFoundUserNotification,
   addNotification,
-  addSuccessNotification,
   copyStr,
   getUsdKoef,
   shortStr,
@@ -23,6 +22,10 @@ import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
 import BaseButton from "../../commonComponents/BaseButton";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
+import ModalComponent, {
+  LoadingModalComponent,
+  SuccessModalComponent,
+} from "../../components/ModalComponent";
 import Logo from "../LayoutContainer/components/Logo";
 import Loader from "../../components/Loader";
 import { getGoals } from "../../store/types/Goals";
@@ -34,7 +37,7 @@ import { abi_transfer, contractMetaAddress, url } from "../../consts";
 import SpaceImg from "../../space.png";
 import "./styles.sass";
 
-const maxlength = 120;
+const maxLengthDescription = 120;
 
 interface IDonatForm {
   message: string;
@@ -69,6 +72,7 @@ const DonatContainer = () => {
   });
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
 
   const onChangeRadio = (e: RadioChangeEvent) => {
     setForm({
@@ -101,6 +105,15 @@ const DonatContainer = () => {
       }
     }
     return;
+  };
+
+  const closeSuccessPopup = () => {
+    setIsOpenSuccessModal(false);
+    setForm({
+      ...initObj,
+      username,
+    });
+    navigate("/donations");
   };
 
   const sendDonation = async () => {
@@ -140,14 +153,10 @@ const DonatContainer = () => {
           creator_id: data.donation.creator_id,
           id: selectedGoal,
         }));
-      addSuccessNotification(
-        `You’ve successfully sent ${amount} tEVMOS to ${data.donation.creator_username}`
-      );
-      navigate("/donations");
-      setForm({
-        ...initObj,
-        username,
-      });
+      // addSuccessNotification(
+      //   `You’ve successfully sent ${amount} tEVMOS to ${data.donation.creator_username}`
+      // );
+      setIsOpenSuccessModal(true);
     }
   };
 
@@ -155,11 +164,11 @@ const DonatContainer = () => {
     const { amount, username } = form;
     if (Boolean(+amount) && username.length) {
       try {
-        setLoading(true);
         const metamaskData = await getMetamaskData();
         if (metamaskData) {
           const { signer, provider, address } = metamaskData;
           const balance = await provider.getBalance(address);
+          setLoading(true);
 
           if (balance) {
             const intBalance = Number(
@@ -359,9 +368,9 @@ const DonatContainer = () => {
                     }}
                     modificator="donat-container__payment_inputs-message"
                     placeholder="Type your message here..."
-                    maxLength={maxlength}
+                    maxLength={maxLengthDescription}
                     descriptionInput={`Number of input characters - ${message.length} /
-                    ${maxlength}`}
+                    ${maxLengthDescription}`}
                     isTextarea
                   />
                 </div>
@@ -456,6 +465,15 @@ const DonatContainer = () => {
           </div>
         </div>
       </div>
+      <LoadingModalComponent
+        visible={loading}
+        message="Please don’t close this window untill donation confirmation"
+      />
+      <SuccessModalComponent
+        visible={isOpenSuccessModal}
+        onClose={closeSuccessPopup}
+        message={`You’ve successfully sent ${amount} tEVMOS to ${name}`}
+      />
     </div>
   );
 };

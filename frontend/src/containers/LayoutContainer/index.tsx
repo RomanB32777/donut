@@ -178,16 +178,21 @@ const LayoutApp = () => {
     isNotificationPopupOpened && setNotificationPopupOpened(false);
   };
 
-  const menuItems: IRoute[] = useMemo(
-    () =>
-      routers.reduce((acc, route) => {
-        route.protected
-          ? user.id && addToMenu(route, acc, user)
-          : addToMenu(route, acc, user);
-        return acc;
-      }, [] as IRoute[]),
-    [user]
-  );
+  const menuItems: IRoute[] = useMemo(() => {
+    const menuShowItems = routers.reduce((acc, route) => {
+      route.protected
+        ? user.id && addToMenu(route, acc, user)
+        : addToMenu(route, acc, user);
+      return acc;
+    }, [] as IRoute[]);
+    return menuShowItems.sort((n1, n2) => {
+      if (n1.menuOrder && n2.menuOrder) {
+        if (n1.menuOrder > n2.menuOrder) return 1;
+        if (n1.menuOrder < n2.menuOrder) return -1;
+      }
+      return 0;
+    });
+  }, [user]);
 
   const activeRoute: string = useMemo(
     () =>
@@ -226,11 +231,11 @@ const LayoutApp = () => {
     const allRouters: IRoute[] = menuItems.concat(
       ...(childRouters as IRoute[])
     );
+
     const currRoute = allRouters.find((route) => {
       // const currRouteWithChild = routersWithChild.find(
       //   (r) => r.path === route.path
       // );
-
       if (activeRoute.includes("widgets"))
         return route.path === activeRoute.split("widgets/")[1];
       return route.path === activeRoute;

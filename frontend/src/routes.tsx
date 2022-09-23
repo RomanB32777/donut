@@ -56,6 +56,7 @@ interface IRoute extends RouteObject {
   children?: IRoute[];
   roleRequired?: string;
   protected?: boolean;
+  menuOrder?: number;
   hiddenLayoutElements?: boolean;
   noPaddingMainConteiner?: boolean;
 }
@@ -108,6 +109,7 @@ export const routers: IRoute[] = [
             name: "Dashboard",
             icon: <PieChartOutlined />,
             menu: true,
+            menuOrder: 1,
           },
           {
             path: "donat", // /:name/:token
@@ -115,6 +117,7 @@ export const routers: IRoute[] = [
             name: "Donation page",
             icon: <DonationPageIcon />,
             menu: true,
+            menuOrder: 4,
           },
           {
             path: "widgets",
@@ -122,6 +125,7 @@ export const routers: IRoute[] = [
             name: "Widgets",
             icon: <AppstoreOutlined />,
             menu: true,
+            menuOrder: 6,
             children: [
               {
                 path: "alerts",
@@ -151,6 +155,7 @@ export const routers: IRoute[] = [
         name: "Donations",
         icon: <PeopleIcon />,
         menu: true,
+        menuOrder: 2
       },
       {
         path: "badges",
@@ -158,6 +163,7 @@ export const routers: IRoute[] = [
         name: "Badges",
         icon: <ShieldMenuIcon />,
         menu: true,
+        menuOrder: 3
       },
       {
         path: "settings",
@@ -165,6 +171,7 @@ export const routers: IRoute[] = [
         name: "Settings",
         icon: <SettingOutlined />,
         menu: true,
+        menuOrder: 5
       },
     ],
   },

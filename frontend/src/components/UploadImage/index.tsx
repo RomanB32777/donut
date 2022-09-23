@@ -95,7 +95,7 @@ const UploadImage = ({
             className={clsx("file-input__row", {
               banner: isBanner,
               bigSize: bigSize,
-              transparent: Boolean(filePreview?.length)
+              transparent: Boolean(filePreview?.length),
             })}
             onMouseEnter={() => !disabled && setIsMouseOnAvatar(true)}
             onMouseLeave={() => !disabled && setIsMouseOnAvatar(false)}
@@ -105,17 +105,17 @@ const UploadImage = ({
                 <img src={filePreview || url + imgName} alt={label} />
               )}
             </div>
-            <div className="file-input__row__button">
-              <input
-                type="file"
-                onChange={saveFile}
-                accept={
-                  formats?.map((f) => `image/${f.toLowerCase()}`).join(",") ||
-                  "image/jpeg,image/jpg,image/png"
-                }
-                disabled={disabled || false}
-              />
-              {!disabled && (
+            {!disabled && (
+              <div className="file-input__row__button">
+                <input
+                  type="file"
+                  onChange={saveFile}
+                  accept={
+                    formats?.map((f) => `image/${f.toLowerCase()}`).join(",") ||
+                    "image/jpeg,image/jpg,image/png"
+                  }
+                  // disabled={disabled || false}
+                />
                 <div
                   className="file-input__row__back"
                   style={{
@@ -124,8 +124,8 @@ const UploadImage = ({
                 >
                   <UploadIcon />
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </Col>
       </Row>

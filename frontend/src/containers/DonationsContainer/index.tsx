@@ -211,7 +211,7 @@ const DonationsContainer = () => {
         <BaseButton
           title="Show data"
           onClick={sendQuery}
-          padding="8px 32px"
+          padding="8px 24px"
           fontSize="21px"
           isBlue
         />

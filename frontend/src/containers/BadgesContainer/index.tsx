@@ -10,16 +10,14 @@ import "./styles.sass";
 
 import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
-import { IBadge } from "../../types";
+import { IBadge, IBadgeData, initBadgeData } from "../../types";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
 
-  const [badgesList, setBadgesList] = useState<IBadge[]>([]);
-  const [activeBadge, setActiveBadge] = useState<IBadge>({
-    id: 0,
-    creator_id: 0,
-    contract_address: "",
+  const [badgesList, setBadgesList] = useState<IBadgeData[]>([]);
+  const [activeBadge, setActiveBadge] = useState<IBadgeData>({
+    ...initBadgeData,
   });
   const [isOpenCreateForm, setIsOpenCreateForm] = useState<boolean>(false);
   const [isOpenBadgePage, setIsOpenBadgePage] = useState<boolean>(false);
@@ -48,18 +46,18 @@ const BadgesContainer = () => {
   };
 
   if (isOpenBadgePage)
-  return (
-    <BadgePage
-      activeBadge={activeBadge}
-      backBtn={() => setIsOpenBadgePage(false)}
-    />
-  );
+    return (
+      <BadgePage
+        activeBadge={activeBadge}
+        backBtn={() => setIsOpenBadgePage(false)}
+      />
+    );
 
   if (isOpenCreateForm)
     return (
       <CreateBadgeForm
         backBtn={() => setIsOpenCreateForm(false)}
-        setActiveBadge={(activeBadge: IBadge) => setActiveBadge(activeBadge)}
+        setActiveBadge={(activeBadge: IBadgeData) => setActiveBadge(activeBadge)}
         openBadgePage={() => setIsOpenBadgePage(true)}
       />
     );
@@ -95,10 +93,6 @@ const BadgesContainer = () => {
                   rowIndex % 4 !== 3 ? (1170 - 220 * 4) / 3 + "px" : "0px",
                 position: "relative",
               }}
-              onClick={() => {
-                setActiveBadge({ id, creator_id, contract_address });
-                setIsOpenBadgePage(true);
-              }}
             >
               <ContentCard
                 data={{
@@ -106,7 +100,11 @@ const BadgesContainer = () => {
                   creator_id,
                   contract_address,
                 }}
-                onClick={() => deleteBadge(id)}
+                onClick={(badgeData) => {
+                  setActiveBadge({ ...badgeData });
+                  setIsOpenBadgePage(true);
+                }}
+                // deleteBadge(id)
               />
             </div>
           ))}
