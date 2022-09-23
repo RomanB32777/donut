@@ -17,6 +17,7 @@ import {
   sendFile,
   shortStr,
 } from "../../utils";
+import { setMainWallet } from "../../store/types/Wallet";
 import { setLoading } from "../../store/types/Loading";
 import { IFileInfo } from "../../types";
 import { url } from "../../consts";
@@ -105,8 +106,9 @@ const SettingsContainer = () => {
     });
     dispatch(setUser(""));
     localStorage.removeItem("main_wallet");
+    dispatch(setMainWallet({}));
     dispatch(setLoading(false));
-    navigate("/");
+    navigate("/landing");
   };
 
   const shortWalletToken = useMemo(

@@ -29,6 +29,7 @@ import Loader from "./components/Loader";
 import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
 import DonatStatPage from "./pages/DonatStatPage";
+import LandingPage from "./pages/LandingPage";
 
 const routes = {
   main: "/",
@@ -84,10 +85,10 @@ const ProtectedRoutes = (props: ProtectedRouteType) => {
         <Navigate to="/donations" />
       )
     ) : (
-      <Navigate to="/login" />
+      <Navigate to="/landing" />
     );
   } else {
-    return user.id ? <Outlet /> : <Navigate to="/login" />;
+    return user.id ? <Outlet /> : <Navigate to="/landing" />;
   }
 };
 
@@ -175,6 +176,12 @@ export const routers: IRoute[] = [
         menuOrder: 5,
       },
     ],
+  },
+  {
+    path: "landing",
+    element: <LandingPage />,
+    hiddenLayoutElements: true,
+    noPaddingMainConteiner: true,
   },
   {
     path: "login",

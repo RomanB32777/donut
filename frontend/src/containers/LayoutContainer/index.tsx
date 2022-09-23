@@ -13,6 +13,7 @@ import { getNotifications } from "../../store/types/Notifications";
 import { getNotificationMessage } from "../../utils";
 import "./styles.sass";
 import Logo from "./components/Logo";
+import { HeaderComponent } from "./components/HeaderComponent";
 
 const { Header, Content, Sider } = Layout;
 
@@ -154,7 +155,6 @@ const LayoutApp = () => {
   const { pathname } = useLocation();
 
   const user = useSelector((state: any) => state.user);
-  const mainWallet = useSelector((state: any) => state.wallet);
 
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
     useState<boolean>(false);
@@ -226,6 +226,7 @@ const LayoutApp = () => {
     const pathsWithoutPaddingMainConteiner = routers.filter(
       (route) => route.noPaddingMainConteiner
     );
+
     return pathsWithoutPaddingMainConteiner.some(
       (route) => pathname.split("/")[1] === route.path?.split("/")[0]
     );
@@ -281,7 +282,7 @@ const LayoutApp = () => {
           width="250"
           onClick={() => closeAllHeaderPopups()}
         >
-          <Logo navigateUrl="/" />
+          <Logo navigateUrl="/landing" />
           <div className="sidebar-content">
             <Menu
               theme="dark"
@@ -327,38 +328,32 @@ const LayoutApp = () => {
           className="site-layout"
           style={{ marginLeft: hiddenLayoutElements ? 0 : 250 }}
         >
-          <Header
-            className="site-layout-background"
+          <HeaderComponent
             hidden={hiddenLayoutElements}
             onClick={() => closeAllHeaderPopups()}
+            isOpenHeaderSelect={isOpenHeaderSelect}
+            handlerHeaderSelect={handlerHeaderSelect}
           >
-            <div className="navbar__right-side">
-              {user.id && (
-                <>
-                  <div className="notifications">
-                    <div
-                      className="icon icon-notifications"
-                      onClick={handlerNotificationPopup}
-                    >
-                      <AlertIcon />
-                    </div>
-                    {isNotificationPopupOpened && user.id && (
-                      <NotificationsPopup user={user.id} />
-                    )}
-                  </div>
-                  <HeaderSelect
-                    title={user.username}
-                    isOpenSelect={isOpenHeaderSelect}
-                    handlerHeaderSelect={handlerHeaderSelect}
-                  />
-                </>
-              )}
-            </div>
-          </Header>
+            {user.id && (
+              <div className="notifications">
+                <div
+                  className="icon icon-notifications"
+                  onClick={handlerNotificationPopup}
+                >
+                  <AlertIcon />
+                </div>
+                {isNotificationPopupOpened && user.id && (
+                  <NotificationsPopup user={user.id} />
+                )}
+              </div>
+            )}
+          </HeaderComponent>
           <Content
             onClick={() => closeAllHeaderPopups()}
             style={{
-              background: isTransparentMainConteiner ? "rgba(0, 0, 0, 0)" : "#000000",
+              background: isTransparentMainConteiner
+                ? "rgba(0, 0, 0, 0)"
+                : "#000000",
             }}
           >
             <div

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { url } from "../../../consts";
 import { LogoutIcon, SmallToggleListArrowIcon } from "../../../icons/icons";
 import { setUser } from "../../../store/types/User";
+import { setMainWallet } from "../../../store/types/Wallet";
 
 const HeaderSelect = ({
   title,
@@ -21,7 +22,10 @@ const HeaderSelect = ({
   return (
     <div className="header-select">
       {user.id && (
-        <div className="header-select__image" onClick={() => navigate("/settings")}>
+        <div
+          className="header-select__image"
+          onClick={() => navigate("/settings")}
+        >
           {user.avatarlink && <img src={url + user.avatarlink} alt="" />}
         </div>
       )}
@@ -53,7 +57,8 @@ const HeaderSelect = ({
                 handlerHeaderSelect && handlerHeaderSelect(e);
                 dispatch(setUser(""));
                 localStorage.removeItem("main_wallet");
-                navigate("/");
+                dispatch(setMainWallet({}));
+                navigate("/landing");
               }}
             >
               <div className="header-select__info-item__img">

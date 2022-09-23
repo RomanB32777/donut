@@ -36,6 +36,7 @@ import { abi_transfer, contractMetaAddress, url } from "../../consts";
 
 import SpaceImg from "../../space.png";
 import "./styles.sass";
+import { HeaderComponent } from "../LayoutContainer/components/HeaderComponent";
 
 const maxLengthDescription = 120;
 
@@ -270,10 +271,17 @@ const DonatContainer = () => {
         background: personInfo.background_color,
       }}
     >
-      <div className="donat-header">
+      <HeaderComponent
+        visibleLogo
+        handlerHeaderSelect={() => {
+          user.username ? navigate("/settings") : copyStr(mainWallet.token);
+        }}
+        modificator="donat-header"
+      />
+      {/* <div className="donat-header">
         <Row justify="space-between" align="middle">
           <Col span={8}>
-            <Logo navigateUrl="/donations" />
+            <Logo navigateUrl={user.id ? "/donations" : "/landing"} />
           </Col>
           <Col span={6}>
             {mainWallet.token && (
@@ -288,7 +296,7 @@ const DonatContainer = () => {
             )}
           </Col>
         </Row>
-      </div>
+      </div> */}
       <div className="donat-info-container">
         <div className="donat-info-container__background">
           <img
