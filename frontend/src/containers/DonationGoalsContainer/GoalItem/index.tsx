@@ -64,7 +64,9 @@ const GoalItem = ({
       addNotification({
         type: "danger",
         title: "Error",
-        message: `An error occurred while saving data`,
+        message:
+          (error as any)?.response?.data?.message ||
+          `An error occurred while saving data`,
       });
     } finally {
       setLoading(false);
@@ -82,7 +84,9 @@ const GoalItem = ({
       addNotification({
         type: "danger",
         title: "Error",
-        message: `An error occurred while deleting data`,
+        message:
+          (error as any)?.response?.data?.message ||
+          `An error occurred while deleting data`,
       });
     } finally {
       setLoading(false);
@@ -221,9 +225,7 @@ const GoalItem = ({
                     )}
                   />
 
-                  <p>
-                    75 / 100 USD
-                  </p>
+                  <p>75 / 100 USD</p>
                 </div>
               </div>
             </Col>

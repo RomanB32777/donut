@@ -203,7 +203,9 @@ const DonatContainer = () => {
         addNotification({
           type: "danger",
           title: "Error",
-          message: `An error occurred while sending data`,
+          message:
+            (error as any)?.response?.data?.message ||
+            `An error occurred while sending data`,
         });
       } finally {
         setLoading(false);

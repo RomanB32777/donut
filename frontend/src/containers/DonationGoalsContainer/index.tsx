@@ -80,7 +80,9 @@ const DonationGoalsContainer = () => {
       addNotification({
         type: "danger",
         title: "Error",
-        message: `An error occurred while creating data`,
+        message:
+          (error as any)?.response?.data?.message ||
+          `An error occurred while creating data`,
       });
     } finally {
       setLoading(false);

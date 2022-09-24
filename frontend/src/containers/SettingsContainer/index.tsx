@@ -58,7 +58,9 @@ const SettingsContainer = () => {
         addNotification({
           type: "danger",
           title: "Error",
-          message: `An error occurred while saving data`,
+          message:
+            (error as any)?.response?.data?.message ||
+            `An error occurred while saving data`,
         });
       } finally {
         setSettingsLoading(false);
@@ -79,7 +81,9 @@ const SettingsContainer = () => {
         addNotification({
           type: "danger",
           title: "Error",
-          message: `An error occurred while saving data`,
+          message:
+            (error as any)?.response?.data?.message ||
+            `An error occurred while saving data`,
         });
       } finally {
         setSettingsLoading(false);
