@@ -220,7 +220,6 @@ class DonationController {
             const { user_id } = req.params;
             const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
 
-
             const data = await db.query(`
                 SELECT * FROM donations
                 WHERE creator_id = $1 

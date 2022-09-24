@@ -85,16 +85,19 @@
             line-height: 61px
             text-align: center
             color: variables.$white-color
+            
         & > div
             display: flex
             flex-direction: row
-            justify-content: space-between
+            justify-content: center
             width: 90%
+            flex-wrap: wrap
             @media (max-width: 640px)
                 display: flex
                 flex-direction: column
                 align-items: center
             & > div
+                min-width: 440px
                 max-width: 30%
                 display: flex
                 flex-direction: column

@@ -52,7 +52,7 @@ export interface IAlertData {
   name_color: string;
   sum_color: string;
   duration: number;
-  sound: string;
+  sound: any;
   voice: boolean;
 }
 

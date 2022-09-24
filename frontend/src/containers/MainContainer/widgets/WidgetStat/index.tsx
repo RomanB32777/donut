@@ -85,7 +85,7 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
       const { data } = await axiosClient.get(
         `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}`
       );
-      if (data.length) {
+      if (data) {
         const labels = data.map((donat: any) =>
           DateFormatter(donat.date_group, dateFormat[activeFilterItem])
         );

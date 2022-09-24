@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import clsx from "clsx";
+import ReactPlayer from "react-player";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
@@ -35,17 +36,117 @@ const DonatMessageContainer = () => {
     // ...testDonat
   });
 
+  const [isPlay, setIsPlay] = useState<boolean>(false);
+
   const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({
     ...initAlertData,
   });
 
+  const blobToBase64 = (blob: any) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise((resolve) => {
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+    });
+  };
+
   const generateSound = async () => {
     try {
-      const data = await axiosClient.post("/api/user/generate/sound", {
-        text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore minus doloribus omnis fugit, amet dignissimos, laudantium quaerat voluptate corporis dolores ipsa iste labore cumque facilis quasi distinctio eum esse ut.",
+      const { data } = await axiosClient.post(
+        "/api/user/generate/sound",
+        {
+          text: "HELLO",
+        }
+        // {
+        //   responseType: "arraybuffer",
+        //   headers: { Accept: "*/*", "Content-Type": "audio/wav" },
+        // }
+      );
+
+      const audioBlob = new Blob([data]);
+      const url = URL.createObjectURL(audioBlob);
+
+      setAlertWidgetData({
+        ...alertWidgetData,
+        sound: data,
       });
-      console.log("fgdg", data);
-      
+      setIsPlay(true);
+
+      // const audioBlob = new Blob([data]);
+      // blobToBase64(audioBlob).then((base64Data) => {
+      //   const file = "data:audio/webm;base64," + base64Data;
+      //   console.log(base64Data);
+      // // const audioUrl = URL.createObjectURL(audioBlob);
+
+      //   // const formData = new FormData();
+      //   // formData.append('file', file);
+      //   // return fetch(url, {
+      //   //     method: 'POST',
+      //   //     body: formData
+      //   // }).then(res => res.json())
+      //  })
+
+      // const audioBlob = new Blob([data]);
+      // const audioUrl = URL.createObjectURL(audioBlob);
+      // console.log(audioUrl);
+
+      // const audio = new Audio(audioUrl);
+      // console.log(audio);
+
+      // audio
+      //   .play()
+      //   .then((res) => console.log(res))
+      //   .catch(console.log);
+      // console.log("fgdg", data);
+
+      // const blob = new Blob([data], {
+      //   type: "audio/mp3",
+      // });
+      // const url = URL.createObjectURL(blob);
+
+      // console.log(url);
+
+      // fetch(url)
+      //   .then((res) => res.blob())
+      //   .then((blob) => {
+      //     const reader = new FileReader();
+      //     // reader.onload = function (e) {
+      //     //   const srcUrl = url;
+      //     //   audioNode.src = srcUrl;
+      //     // };
+      //     // reader.readAsDataURL(blob);
+      //   });
+
+      // var newSource = audioContext.createBufferSource();
+      // var newBuffer = audioContext.createBuffer(
+      //   2,
+      //   buffers[0].length,
+      //   audioContext.sampleRate
+      // );
+      // newBuffer.getChannelData(0).set(buffers[0]);
+      // newBuffer.getChannelData(1).set(buffers[1]);
+      // newSource.buffer = newBuffer;
+
+      // newSource.connect(audioContext.destination);
+      // newSource.start(0);
+
+      // setAlertWidgetData({
+      //   ...alertWidgetData,
+      //   sound: url,
+      // });
+      //   const  =  await axios.get(`http://api.url`,
+      // }).then(resp => resp);
+      // const blob = new Blob([data], {
+      //     type: 'audio/wav'
+      // })
+      // const url = URL.createObjectURL(blob);
+
+      // fetch(url)
+      //     .then(res => res.blob())
+      //     .then(blob => fileDownload(blob, 'your_filename'))
+      //     .catch(e => console.log('ERROR DOWNLOADING AUDIO FILE'));
     } catch (e) {
       console.log(`api, ${e}`);
     }
@@ -85,10 +186,8 @@ const DonatMessageContainer = () => {
         username: name,
       })
     );
+    // generateSound();
   }, []);
-
-  console.log(user);
-  
 
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
@@ -116,7 +215,7 @@ const DonatMessageContainer = () => {
   };
 
   useEffect(() => {
-    getAlertsWidgetData(user);
+    // getAlertsWidgetData(user);
   }, [user]);
 
   const { banner, message_color, name_color, sum_color, sound } =
@@ -126,6 +225,8 @@ const DonatMessageContainer = () => {
 
   return (
     <div className="donat-messsage-container">
+      {/* {isPlay && <ReactPlayer url={sound} />} */}
+
       {Boolean(Object.keys(lastNotif).length) && (
         <>
           <img

@@ -1,9 +1,11 @@
 import { FormattedMessage } from "react-intl";
 import BlueButton from "../../commonComponents/BlueButton";
 import {
-  ChartLineIcon,
-  LeftRightArrowsIcon,
-  PersonCardIcon,
+  DashboardLandingIcon,
+  DonationLandingIcon,
+  PencilLandingIcon,
+  ShieldLandingIcon,
+  WidgetsLandingIcon,
 } from "../../icons/icons";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
@@ -30,19 +32,29 @@ const cryptoSteps = [
 
 const features = [
   {
-    icon: <ChartLineIcon />,
+    icon: <DashboardLandingIcon />,
     title: "mainpage_feature_one_title",
     subtitle: "mainpage_feature_one_subtitle",
   },
   {
-    icon: <LeftRightArrowsIcon />,
+    icon: <WidgetsLandingIcon />,
     title: "mainpage_feature_two_title",
     subtitle: "mainpage_feature_two_subtitle",
   },
   {
-    icon: <PersonCardIcon />,
+    icon: <ShieldLandingIcon />,
     title: "mainpage_feature_three_title",
     subtitle: "mainpage_feature_three_subtitle",
+  },
+  {
+    icon: <PencilLandingIcon />,
+    title: "mainpage_feature_four_title",
+    subtitle: "mainpage_feature_four_subtitle",
+  },
+  {
+    icon: <DonationLandingIcon />,
+    title: "mainpage_feature_five_title",
+    subtitle: "mainpage_feature_five_subtitle",
   },
 ];
 
@@ -139,9 +151,9 @@ const LandingContainer = () => {
           <span>
             <FormattedMessage id="mainpage_features_title" />
           </span>
-          <div>
+          <div className="landing-container__row-panel-features">
             {features.map((feature) => (
-              <div key={"mainpage_features_" + feature.title}>
+              <div className="landing-container__row-panel-features_item" key={"mainpage_features_" + feature.title}>
                 <span className="icon" style={{ marginBottom: "-12px" }}>
                   {feature.icon}
                 </span>
@@ -155,7 +167,9 @@ const LandingContainer = () => {
             ))}
           </div>
 
-          <div className="landing-container__donut-panel">
+          <div className="landing-container__donut-panel" style={{
+            justifyContent: "space-between"
+          }}>
             <BlueDonut />
             <div>
               <span className="title">
