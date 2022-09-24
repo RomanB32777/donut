@@ -68,7 +68,7 @@ const messages = {
             create_badge_form_link_placeholder: 'Link',
             create_badge_form_quantity_title: 'Quantity',
             create_badge_form_quantity_placeholder: 'How many badges of this kind you want to create?',
-            create_badge_form_button: 'Create badge',
+            create_badge_form_button: 'Mint new badge',
 
         // page titles
             page_title_dashboard: 'Dashboard',

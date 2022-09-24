@@ -9,6 +9,7 @@ import Logo from "../Logo";
 interface IHeaderComponent {
   isOpenHeaderSelect?: boolean;
   visibleLogo?: boolean;
+  logoUrl?: string;
   hidden?: boolean;
   modificator?: string;
   children?: React.ReactNode;
@@ -21,6 +22,7 @@ export const HeaderComponent = ({
   handlerHeaderSelect,
   hidden,
   visibleLogo,
+  logoUrl,
   modificator,
   children,
   onClick,
@@ -46,11 +48,11 @@ export const HeaderComponent = ({
         {visibleLogo && (
           <Col span={8}>
             <div className="header__left">
-              <Logo navigateUrl={user.id ? "/donations" : "/landing"} />
+              <Logo navigateUrl={logoUrl || "/landing"} />
             </div>
           </Col>
         )}
-        <Col span={7} offset={!visibleLogo ? 17 : 0}>
+        <Col span={!visibleLogo ? 24 : 10}>
           <div className="header__right">
             {(user.id || mainWallet.token) && (
               <>

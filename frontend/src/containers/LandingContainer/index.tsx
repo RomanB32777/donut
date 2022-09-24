@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Col, Row } from "antd";
 import { FormattedMessage } from "react-intl";
 import BlueButton from "../../commonComponents/BlueButton";
 import {
@@ -13,8 +15,7 @@ import "./styles.sass";
 
 import { BlueDonut } from "../../assets/blueDonut";
 import { HeaderComponent } from "../LayoutContainer/components/HeaderComponent";
-import { useState } from "react";
-import { Col, Row } from "antd";
+import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 
 const cryptoSteps = [
   {
@@ -75,10 +76,12 @@ const LandingContainer = () => {
 
   return (
     <>
+      <HeaderBanner />
       <HeaderComponent
         visibleLogo
         isOpenHeaderSelect={isOpenHeaderSelect}
         handlerHeaderSelect={handlerHeaderSelect}
+        logoUrl={user.id ? "/" : "/landing"}
       />
       <div className="landing-container">
         <div

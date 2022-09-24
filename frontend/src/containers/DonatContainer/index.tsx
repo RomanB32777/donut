@@ -15,18 +15,16 @@ import {
   addNotification,
   copyStr,
   getUsdKoef,
-  shortStr,
 } from "../../utils";
-import HeaderSelect from "../LayoutContainer/components/HeaderSelect";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
 import BaseButton from "../../commonComponents/BaseButton";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
-import ModalComponent, {
+import {
   LoadingModalComponent,
   SuccessModalComponent,
 } from "../../components/ModalComponent";
-import Logo from "../LayoutContainer/components/Logo";
+import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import Loader from "../../components/Loader";
 import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
@@ -267,222 +265,211 @@ const DonatContainer = () => {
   if (personInfo.error) return null;
 
   return (
-    <div
-      className="donat-container"
-      style={{
-        background: personInfo.background_color,
-      }}
-    >
-      <HeaderComponent
-        visibleLogo
-        handlerHeaderSelect={() => {
-          user.username ? navigate("/settings") : copyStr(mainWallet.token);
+    <>
+      <HeaderBanner />
+      <div
+        className="donat-container"
+        style={{
+          background: personInfo.background_color,
         }}
-        modificator="donat-header"
-      />
-      {/* <div className="donat-header">
-        <Row justify="space-between" align="middle">
-          <Col span={8}>
-            <Logo navigateUrl={user.id ? "/donations" : "/landing"} />
-          </Col>
-          <Col span={6}>
-            {mainWallet.token && (
-              <HeaderSelect
-                title={user.username || shortStr(mainWallet.token, 8)}
-                handlerHeaderSelect={() => {
-                  user.username
-                    ? navigate("/settings")
-                    : copyStr(mainWallet.token);
-                }}
-              />
-            )}
-          </Col>
-        </Row>
-      </div> */}
-      <div className="donat-info-container">
-        <div className="donat-info-container__background">
-          <img
-            src={
-              personInfo.backgroundlink
-                ? `${url + personInfo.backgroundlink}`
-                : SpaceImg
-            }
-            alt="banner"
-          />
-        </div>
+      >
+        <HeaderComponent
+          visibleLogo
+          handlerHeaderSelect={() => {
+            user.username ? navigate("/settings") : copyStr(mainWallet.token);
+          }}
+          modificator="donat-header"
+          logoUrl={user.id ? "/donations" : "/landing"}
+        />
+        <div className="donat-info-container">
+          <div className="donat-info-container__background">
+            <img
+              src={
+                personInfo.backgroundlink
+                  ? `${url + personInfo.backgroundlink}`
+                  : SpaceImg
+              }
+              alt="banner"
+            />
+          </div>
 
-        <div className="donat-info-container__information-wrapper">
-          <div className="donat-info-container__information-wrapper__information">
-            <div className="donat-main-info">
-              <div className="donat-main-info__picture">
-                {personInfo.avatarlink && personInfo.avatarlink.length > 0 ? (
-                  <img
-                    src={
-                      personInfo.avatarlink && `${url + personInfo.avatarlink}`
-                    }
-                    alt="avatar"
-                  />
-                ) : (
-                  <div className="icon" />
-                )}
-              </div>
-              <div className="donat-main-info__personal">
-                <span className="title">{personInfo.welcome_text}</span>
+          <div className="donat-info-container__information-wrapper">
+            <div className="donat-info-container__information-wrapper__information">
+              <div className="donat-main-info">
+                <div className="donat-main-info__picture">
+                  {personInfo.avatarlink && personInfo.avatarlink.length > 0 ? (
+                    <img
+                      src={
+                        personInfo.avatarlink &&
+                        `${url + personInfo.avatarlink}`
+                      }
+                      alt="avatar"
+                    />
+                  ) : (
+                    <div className="icon" />
+                  )}
+                </div>
+                <div className="donat-main-info__personal">
+                  <span className="title">{personInfo.welcome_text}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="donat-container__payment_wrapper">
-        <div className="donat-container__payment">
-          <div className="donat-container__payment-row">
-            <div className="donat-container__payment-column">
-              <div className="donat-container__payment_inputs">
-                <div className="donat-container__payment_inputs-item">
-                  <FormInput
-                    value={username}
-                    setValue={(value) => {
-                      if (username.length === 0) {
+        <div className="donat-container__payment_wrapper">
+          <div className="donat-container__payment">
+            <div className="donat-container__payment-row">
+              <div className="donat-container__payment-column">
+                <div className="donat-container__payment_inputs">
+                  <div className="donat-container__payment_inputs-item">
+                    <FormInput
+                      value={username}
+                      setValue={(value) => {
+                        if (username.length === 0) {
+                          setForm({
+                            ...form,
+                            username: "@" + value,
+                          });
+                        } else if (
+                          value.length < username.length &&
+                          value.length === 2
+                        ) {
+                          setForm({
+                            ...form,
+                            username: "",
+                          });
+                        } else {
+                          setForm({
+                            ...form,
+                            username: value,
+                          });
+                        }
+                      }}
+                      disabled={Boolean(user.username)}
+                      modificator="donat-container__payment_inputs-name"
+                      placeholder="Your username"
+                    />
+                  </div>
+                  <div className="donat-container__payment_inputs-item">
+                    <FormInput
+                      value={message}
+                      setValue={(message) => {
                         setForm({
                           ...form,
-                          username: "@" + value,
+                          message,
                         });
-                      } else if (
-                        value.length < username.length &&
-                        value.length === 2
-                      ) {
-                        setForm({
-                          ...form,
-                          username: "",
-                        });
-                      } else {
-                        setForm({
-                          ...form,
-                          username: value,
-                        });
-                      }
-                    }}
-                    disabled={Boolean(user.username)}
-                    modificator="donat-container__payment_inputs-name"
-                    placeholder="Your username"
-                  />
-                </div>
-                <div className="donat-container__payment_inputs-item">
-                  <FormInput
-                    value={message}
-                    setValue={(message) => {
-                      setForm({
-                        ...form,
-                        message,
-                      });
-                    }}
-                    modificator="donat-container__payment_inputs-message"
-                    placeholder="Type your message here..."
-                    maxLength={maxLengthDescription}
-                    descriptionInput={`Number of input characters - ${message.length} /
+                      }}
+                      modificator="donat-container__payment_inputs-message"
+                      placeholder="Type your message here..."
+                      maxLength={maxLengthDescription}
+                      descriptionInput={`Number of input characters - ${message.length} /
                     ${maxLengthDescription}`}
-                    isTextarea
-                  />
+                      isTextarea
+                    />
+                  </div>
+                  <div className="donat-container__payment_inputs-item">
+                    <FormInput
+                      value={amount}
+                      setValue={(amount) => {
+                        setForm({
+                          ...form,
+                          amount,
+                        });
+                      }}
+                      typeInput="number"
+                      addonAfter={
+                        <SelectComponent
+                          title="tEVMOS"
+                          list={["tEVMOS"]}
+                          selectItem={(selected) => console.log(selected)}
+                          modificator="donat-container__payment_inputs-select"
+                        />
+                      }
+                      modificator="donat-container__payment_inputs-amount"
+                      placeholder="Donation amount"
+                      descriptionInput={`Equal to ${parseFloat(
+                        String(+amount * usdtKoef)
+                      ).toFixed(2)} USD`}
+                    />
+                  </div>
                 </div>
-                <div className="donat-container__payment_inputs-item">
-                  <FormInput
-                    value={amount}
-                    setValue={(amount) => {
-                      setForm({
-                        ...form,
-                        amount,
-                      });
-                    }}
-                    typeInput="number"
-                    addonAfter={
-                      <SelectComponent
-                        title="tEVMOS"
-                        list={["tEVMOS"]}
-                        selectItem={(selected) => console.log(selected)}
-                        modificator="donat-container__payment_inputs-select"
-                      />
-                    }
-                    modificator="donat-container__payment_inputs-amount"
-                    placeholder="Donation amount"
-                    descriptionInput={`Equal to ${parseFloat(
-                      String(+amount * usdtKoef)
-                    ).toFixed(2)} USD`}
-                  />
-                </div>
-              </div>
-              {Array.isArray(goalsActive) && Boolean(goalsActive.length) && (
-                <div className="donat-container__payment_goals">
-                  <Row justify="space-between">
-                    <Col span={8}>
-                      <div
-                        className={clsx("donat-container__payment_goals_btn", {
-                          active: isOpenSelectGoal,
-                        })}
-                        onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
-                        style={{
-                          background: personInfo.main_color,
-                        }}
-                      >
-                        <StarIcon />
-                        <p>Participate in goal achievement</p>
-                      </div>
-                    </Col>
-                    {isOpenSelectGoal && (
-                      <Col span={15}>
-                        <div className="donat-container__payment_goals_list">
-                          <Radio.Group
-                            onChange={onChangeRadio}
-                            value={selectedGoal}
-                          >
-                            <Space direction="vertical">
-                              <Radio value={"0"}>Don’t participate</Radio>
-                              {goalsActive &&
-                                goalsActive.map((goal: IGoalData) => (
-                                  <Radio key={goal.id} value={goal.id}>
-                                    {goal.title}
-                                  </Radio>
-                                ))}
-                            </Space>
-                          </Radio.Group>
+                {Array.isArray(goalsActive) && Boolean(goalsActive.length) && (
+                  <div className="donat-container__payment_goals">
+                    <Row justify="space-between">
+                      <Col span={8}>
+                        <div
+                          className={clsx(
+                            "donat-container__payment_goals_btn",
+                            {
+                              active: isOpenSelectGoal,
+                            }
+                          )}
+                          onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
+                          style={{
+                            background: personInfo.main_color,
+                          }}
+                        >
+                          <StarIcon />
+                          <p>Participate in goal achievement</p>
                         </div>
                       </Col>
-                    )}
-                  </Row>
-                </div>
-              )}
-              <div className="donat-container__payment_bottom">
-                <BaseButton
-                  title={personInfo.btn_text || "Donate"}
-                  onClick={triggerContract}
-                  padding="10px 25px"
-                  fontSize="21px"
-                  color={personInfo.main_color}
-                  disabled={loading}
-                />
-                {loading && (
-                  <div
-                    style={{
-                      marginLeft: 10,
-                    }}
-                  >
-                    <Loader size="small" />
+                      {isOpenSelectGoal && (
+                        <Col span={15}>
+                          <div className="donat-container__payment_goals_list">
+                            <Radio.Group
+                              onChange={onChangeRadio}
+                              value={selectedGoal}
+                            >
+                              <Space direction="vertical">
+                                <Radio value={"0"}>Don’t participate</Radio>
+                                {goalsActive &&
+                                  goalsActive.map((goal: IGoalData) => (
+                                    <Radio key={goal.id} value={goal.id}>
+                                      {goal.title}
+                                    </Radio>
+                                  ))}
+                              </Space>
+                            </Radio.Group>
+                          </div>
+                        </Col>
+                      )}
+                    </Row>
                   </div>
                 )}
+                <div className="donat-container__payment_bottom">
+                  <BaseButton
+                    title={personInfo.btn_text || "Donate"}
+                    onClick={triggerContract}
+                    padding="10px 25px"
+                    fontSize="21px"
+                    color={personInfo.main_color}
+                    disabled={loading}
+                  />
+                  {loading && (
+                    <div
+                      style={{
+                        marginLeft: 10,
+                      }}
+                    >
+                      <Loader size="small" />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <LoadingModalComponent
+          visible={loading}
+          message="Please don’t close this window untill donation confirmation"
+        />
+        <SuccessModalComponent
+          visible={isOpenSuccessModal}
+          onClose={closeSuccessPopup}
+          message={`You’ve successfully sent ${amount} tEVMOS to ${name}`}
+        />
       </div>
-      <LoadingModalComponent
-        visible={loading}
-        message="Please don’t close this window untill donation confirmation"
-      />
-      <SuccessModalComponent
-        visible={isOpenSuccessModal}
-        onClose={closeSuccessPopup}
-        message={`You’ve successfully sent ${amount} tEVMOS to ${name}`}
-      />
-    </div>
+    </>
   );
 };
 

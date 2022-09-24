@@ -5,17 +5,16 @@ import { BackTop, Layout, Menu } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
-import HeaderSelect from "./components/HeaderSelect";
 import { IRoute, Pages, routers } from "../../routes";
 import { AlertIcon, EmailIcon } from "../../icons/icons";
 
 import { getNotifications } from "../../store/types/Notifications";
 import { getNotificationMessage } from "../../utils";
-import "./styles.sass";
 import Logo from "./components/Logo";
 import { HeaderComponent } from "./components/HeaderComponent";
+import "./styles.sass";
 
-const { Header, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 const getItem = ({
   label,

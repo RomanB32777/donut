@@ -9,7 +9,7 @@
 
 .ant-layout
     background: rgba(0, 0, 0, 0)
-    
+
     &.transparent
         padding-bottom: 0
         overflow: hidden
@@ -110,7 +110,7 @@
         align-items: center
         overflow: hidden
         cursor: pointer
-        
+
         img
             object-fit: cover
             width: 100%
@@ -166,7 +166,7 @@
             display: flex
             justify-content: space-between
             align-items: center
-            padding: 9px 20px
+            padding: 0 20px
             font-family: variables.$inter-font
             font-style: normal
             font-weight: 700
@@ -175,24 +175,26 @@
             color: variables.$white-color
             cursor: pointer
 
+            &__name
+                font-size: 18px
+                line-height: 24px
+
             &__content
                 display: flex
+                align-items: center
                 span
                     margin-left: 10px
 
             &:not(:last-child)
                 border-bottom: 1px solid #19191F
 
-            &:first-child
-                padding: 0px 20px 9px 20px
-
-            &:last-child
-                padding: 9px 20px 0 20px
+            // &:last-child
+            //     padding: 9px 20px 0 20px
 
 .notifications
     position: relative
     margin-right: 37px
-    
+
     &-popup-wrapper
         display: flex
         flex-direction: column

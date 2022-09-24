@@ -36,7 +36,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   return (
     <div className="widget widget-latestDonat">
       <div className="widget_header">
-        <span className="widget_header__title">Latest donations</span>
+        <span className="widget_header__title">Recent donations</span>
         <div className="widget_header__filter">
           <SelectComponent
             title={activeFilterItem}

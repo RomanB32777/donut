@@ -61,7 +61,7 @@ const HeaderSelect = ({
                 navigate("/landing");
               }}
             >
-              <div className="header-select__info-item__img">
+              <div className="header-select__info-item__img icon">
                 <LogoutIcon />
               </div>
               <span className="header-select__info-item__name">Sign-out</span>
