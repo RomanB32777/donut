@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Empty, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import BaseButton from "../../commonComponents/BaseButton";
 import PageTitle from "../../commonComponents/PageTitle";
@@ -149,7 +149,7 @@ const StreamStatsContainer = () => {
         />
       </div>
       <div className="stats-wrapper">
-        {Boolean(stats.length) &&
+        {Boolean(stats.length) ? (
           stats
             .reverse()
             .map((widget: IStatData) => (
@@ -158,7 +158,10 @@ const StreamStatsContainer = () => {
                 statData={widget}
                 openEditModal={openEditModal}
               />
-            ))}
+            ))
+        ) : (
+          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </div>
       <ModalComponent
         visible={isOpenModal}

@@ -1,4 +1,4 @@
-import { Col, Row } from "antd";
+import { Col, Empty, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axiosClient from "../../axiosClient";
@@ -111,7 +111,7 @@ const DonationGoalsContainer = () => {
         />
       </div>
       <div className="goals-wrapper">
-        {Boolean(goals.length) &&
+        {Boolean(goals.length) ? (
           goals
             .filter((goal: IGoalData) => !goal.isarchive)
             .reverse()
@@ -121,17 +121,23 @@ const DonationGoalsContainer = () => {
                 goalData={goal}
                 openEditModal={openEditModal}
               />
-            ))}
+            ))
+        ) : (
+          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </div>
       <PageTitle formatId="page_title_donation_history" />
       <div className="goals-archiveWrapper">
-        {Boolean(goals.length) &&
+        {Boolean(goals.filter((goal: IGoalData) => goal.isarchive).length) ? (
           goals
             .filter((goal: IGoalData) => goal.isarchive)
             .reverse()
             .map((goal: IGoalData) => (
               <GoalItem key={goal.id} goalData={goal} />
-            ))}
+            ))
+        ) : (
+          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </div>
       <ModalComponent
         visible={isOpenModal}

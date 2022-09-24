@@ -12,6 +12,7 @@ import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
 import { IBadge, IBadgeData, initBadgeData } from "../../types";
 import { addNotification } from "../../utils";
+import { Empty } from "antd";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
@@ -119,8 +120,7 @@ const BadgesContainer = () => {
       )}
 
       <div className="badges-container__list">
-        {badgesList &&
-          badgesList.length > 0 &&
+        {badgesList && badgesList.length > 0 ? (
           badgesList.map(({ id, contract_address, creator_id }, rowIndex) => (
             <div
               key={"badge-panel" + rowIndex}
@@ -144,7 +144,10 @@ const BadgesContainer = () => {
                 deleteBadge={deleteBadge}
               />
             </div>
-          ))}
+          ))
+        ) : (
+          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </div>
     </div>
   );

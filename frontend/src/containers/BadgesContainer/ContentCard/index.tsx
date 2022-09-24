@@ -94,7 +94,7 @@ const ContentCard = (prop: {
 
   const ableToDelete = useMemo(
     () => user.id && title && user.id === creator_id,
-    [user, creator_id]
+    [user, title, creator_id]
   );
 
   return (

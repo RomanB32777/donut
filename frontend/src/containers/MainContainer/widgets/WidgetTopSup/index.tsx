@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Col, Row } from "antd";
+import { Col, Empty, Row } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
 import axiosClient from "../../../../axiosClient";
 import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
@@ -43,7 +43,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
           />
         </div>
       </div>
-      {Boolean(topSupporters.length) &&
+      {Boolean(topSupporters.length) ? (
         topSupporters.map((donat: any) => (
           <div className="widget__items" key={donat.username}>
             <Row gutter={[48, 16]}>
@@ -57,7 +57,10 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
               </Col>
             </Row>
           </div>
-        ))}
+        ))
+      ) : (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      )}
     </div>
   );
 };

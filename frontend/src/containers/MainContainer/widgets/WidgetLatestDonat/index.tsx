@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Col, Row } from "antd";
+import { Col, Row, Empty } from "antd";
 import moment from "moment";
 import SelectComponent from "../../../../components/SelectComponent";
 import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
@@ -45,7 +45,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
           />
         </div>
       </div>
-      {Boolean(latestDonations.length) &&
+      {Boolean(latestDonations.length) ? (
         latestDonations.map((donat: any) => (
           <div className="widget__items" key={donat.id}>
             <Row gutter={[32, 0]}>
@@ -77,7 +77,10 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
               </Col>
             </Row>
           </div>
-        ))}
+        ))
+      ) : (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      )}
     </div>
   );
 };
