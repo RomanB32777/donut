@@ -14,6 +14,7 @@ import "./styles.sass";
 import { BlueDonut } from "../../assets/blueDonut";
 import { HeaderComponent } from "../LayoutContainer/components/HeaderComponent";
 import { useState } from "react";
+import { Col, Row } from "antd";
 
 const cryptoSteps = [
   {
@@ -126,9 +127,14 @@ const LandingContainer = () => {
           <span>
             <FormattedMessage id="mainpage_crypto_steps_title" />
           </span>
-          <div>
+          <Row
+            justify="space-around"
+            style={{
+              width: "90%",
+            }}
+          >
             {cryptoSteps.map((cryptoStep, cryptoStepIndex) => (
-              <div key={"mainpage_crypto_steps_" + cryptoStepIndex}>
+              <Col key={"mainpage_crypto_steps_" + cryptoStepIndex}>
                 <span className="icon">{cryptoStepIndex + 1}</span>
                 <span className="title">
                   <FormattedMessage id={cryptoStep.title} />
@@ -136,9 +142,9 @@ const LandingContainer = () => {
                 <span className="sub-title">
                   <FormattedMessage id={cryptoStep.subtitle} />
                 </span>
-              </div>
+              </Col>
             ))}
-          </div>
+          </Row>
         </div>
 
         <div className="landing-container__big-mocup">
@@ -151,9 +157,19 @@ const LandingContainer = () => {
           <span>
             <FormattedMessage id="mainpage_features_title" />
           </span>
-          <div className="landing-container__row-panel-features">
+          <Row
+            justify="center"
+            className="landing-container__row-panel-features"
+            style={{
+              width: "90%",
+            }}
+          >
             {features.map((feature) => (
-              <div className="landing-container__row-panel-features_item" key={"mainpage_features_" + feature.title}>
+              <Col
+                span={8}
+                className="landing-container__row-panel-features_item"
+                key={"mainpage_features_" + feature.title}
+              >
                 <span className="icon" style={{ marginBottom: "-12px" }}>
                   {feature.icon}
                 </span>
@@ -163,13 +179,16 @@ const LandingContainer = () => {
                 <span className="sub-title">
                   <FormattedMessage id={feature.subtitle} />
                 </span>
-              </div>
+              </Col>
             ))}
-          </div>
+          </Row>
 
-          <div className="landing-container__donut-panel" style={{
-            justifyContent: "space-between"
-          }}>
+          <div
+            className="landing-container__donut-panel"
+            style={{
+              justifyContent: "space-between",
+            }}
+          >
             <BlueDonut />
             <div>
               <span className="title">
