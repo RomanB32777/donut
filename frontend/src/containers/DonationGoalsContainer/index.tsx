@@ -128,7 +128,8 @@ const DonationGoalsContainer = () => {
       </div>
       <PageTitle formatId="page_title_donation_history" />
       <div className="goals-archiveWrapper">
-        {Boolean(goals.filter((goal: IGoalData) => goal.isarchive).length) ? (
+        {Boolean(goals.length) &&
+        Boolean(goals.filter((goal: IGoalData) => goal.isarchive).length) ? (
           goals
             .filter((goal: IGoalData) => goal.isarchive)
             .reverse()
