@@ -16,13 +16,16 @@ import {
   LoadingModalComponent,
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
+import ConfirmPopup from "../../../components/ConfirmPopup";
 
 const BadgePage = ({
   activeBadge,
   backBtn,
+  deleteBadge,
 }: {
   activeBadge: IBadgeData;
   backBtn: () => void;
+  deleteBadge: (badge: IBadgeData) => Promise<boolean | undefined>;
 }) => {
   const user = useSelector((state: any) => state.user);
 
@@ -31,6 +34,7 @@ const BadgePage = ({
     ...activeBadge,
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
   const [supporters, setSupporters] = useState<any[]>([]);
   const [holders, setHolders] = useState<any[]>([]);
@@ -130,6 +134,16 @@ const BadgePage = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const deleteBadgeInPage = async () => {
+    setDeleteLoading(true);
+    const res = await deleteBadge(activeBadge);
+    if (res) {
+      backBtn();
+      setFormBadge({ ...initBadgeData });
+    }
+    setDeleteLoading(false);
   };
 
   useEffect(() => {
@@ -307,7 +321,18 @@ const BadgePage = ({
                   </div>
                 </Col>
                 <Col span={24}>
-                  <div className="saveBottom">
+                  <div className="btns-bottom">
+                    <ConfirmPopup confirm={deleteBadgeInPage}>
+                      <BaseButton
+                        title="Delete badge"
+                        padding="6px 35px"
+                        onClick={() => {}}
+                        fontSize="18px"
+                        disabled={deleteLoading || loading}
+                        modificator="delete-btn"
+                        isRed
+                      />
+                    </ConfirmPopup>
                     <BaseButton
                       formatId="badges_page_assign_button"
                       padding="6px 35px"

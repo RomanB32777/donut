@@ -11,6 +11,7 @@ import "./styles.sass";
 import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
 import { IBadge, IBadgeData, initBadgeData } from "../../types";
+import { addNotification } from "../../utils";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
@@ -34,21 +35,55 @@ const BadgesContainer = () => {
     }
   };
 
+  const deleteBadge = async (badge: IBadgeData) => {
+    try {
+      const { id, contract_address, title, quantity } = badge;
+      if (title && quantity < 1) {
+        const res = await axiosClient.delete(
+          `/api/badge/${id}/${contract_address}`
+        );
+        if (res.status === 200 && user.id) {
+          await getBadges(user.id);
+          return true;
+        }
+      } else if (title && quantity > 0) {
+        addNotification({
+          type: "warning",
+          title: "Badge removal is not possible",
+          message: "Badge removal is not possible (contributor users > 0)",
+        });
+        return false;
+      } else {
+        addNotification({
+          type: "warning",
+          title: "Badge removal is not possible",
+          message: `Deleting a badge is not possible until its content is loaded`,
+        });
+        return false;
+      }
+    } catch (error) {
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message:
+          (error as any)?.response?.data?.message ||
+          `An error occurred while deleting data`,
+      });
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (user.id && user.roleplay && !isOpenCreateForm) {
       getBadges(user.id);
     }
   }, [user, isOpenCreateForm]);
 
-  const deleteBadge = async (id: number) => {
-    const res = await axiosClient.delete(`/api/badge/${id}`);
-    res.status === 200 && user.id && getBadges(user.id);
-  };
-
   if (isOpenBadgePage)
     return (
       <BadgePage
         activeBadge={activeBadge}
+        deleteBadge={deleteBadge}
         backBtn={() => setIsOpenBadgePage(false)}
       />
     );
@@ -57,7 +92,9 @@ const BadgesContainer = () => {
     return (
       <CreateBadgeForm
         backBtn={() => setIsOpenCreateForm(false)}
-        setActiveBadge={(activeBadge: IBadgeData) => setActiveBadge(activeBadge)}
+        setActiveBadge={(activeBadge: IBadgeData) =>
+          setActiveBadge(activeBadge)
+        }
         openBadgePage={() => setIsOpenBadgePage(true)}
       />
     );
@@ -104,7 +141,7 @@ const BadgesContainer = () => {
                   setActiveBadge({ ...badgeData });
                   setIsOpenBadgePage(true);
                 }}
-                // deleteBadge(id)
+                deleteBadge={deleteBadge}
               />
             </div>
           ))}

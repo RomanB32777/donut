@@ -1,31 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { ethers } from "ethers";
+import clsx from "clsx";
 import { abi } from "../../../consts";
-import { LargeImageIcon } from "../../../icons/icons";
-import "./styles.sass";
+import { LargeImageIcon, TrashBinIcon } from "../../../icons/icons";
 
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
-import { ethers } from "ethers";
 import axiosClient from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
 import testIMG from "../../../assets/person.png";
+import "./styles.sass";
+import { addNotification } from "../../../utils";
+import ConfirmPopup from "../../../components/ConfirmPopup";
 
 const ContentCard = (prop: {
   data: IBadge;
   onClick: (badge: IBadgeData) => void;
+  deleteBadge: (badge: IBadgeData) => void;
 }) => {
   const user = useSelector((state: any) => state.user);
   const [badgeData, setBadgeData] = useState<IBadgeData>({
     ...initBadgeData,
     ...prop.data,
   });
-
-  // const ableToDelete = useMemo(
-  //   () => user && user.id && user.id === prop.data.creator_id,
-  //   [user, prop]
-  // );
-
-  // console.log(prop.data);
 
   const getBadgeNFTData = async (badge: IBadge) => {
     try {
@@ -48,8 +45,7 @@ const ContentCard = (prop: {
           : await currentContract.balanceOf(user.metamask_token, 1);
 
       const quantityBadgeNum = quantityBadge.toNumber();
-      if (user.roleplay === "backers" && quantityBadgeNum < 1)
-        return;
+      if (user.roleplay === "backers" && quantityBadgeNum < 1) return;
 
       const rootCid = currentToken.split("//")[1];
       const dataBadgeJSON = await axiosClient.get(
@@ -81,6 +77,12 @@ const ContentCard = (prop: {
       }
     } catch (error) {
       console.log(error);
+      // addNotification({
+      //   type: "danger",
+      //   title: "Error",
+      //   message:
+      //     (error as Error).message || `An error occurred while saving data`,
+      // });
     }
   };
 
@@ -88,12 +90,18 @@ const ContentCard = (prop: {
     user.metamask_token && getBadgeNFTData(prop.data);
   }, [user, prop.data]);
 
-  const { image, title, description } = badgeData;
+  const { image, title, description, creator_id } = badgeData;
+
+  const ableToDelete = useMemo(
+    () => user.id && title && user.id === creator_id,
+    [user, creator_id]
+  );
 
   return (
     <div
-      className="content-panel"
-      // , { ableToDelete }
+      className={clsx("content-panel", {
+        // ableToDelete,
+      })}
       style={{
         cursor: title.length ? "pointer" : "auto",
       }}
@@ -112,11 +120,18 @@ const ContentCard = (prop: {
           <span className="content-panel__info-subtitle">{description}</span>
         </div>
       </div>
-      {/* {ableToDelete && (
-        <div className="content-panel__delete-icon" onClick={prop.onClick}>
-          <TrashBinIcon />
+      {ableToDelete && (
+        <div
+          className="content-panel__delete-icon"
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+        >
+          <ConfirmPopup confirm={() => prop.deleteBadge(badgeData)}>
+            <div>
+              <TrashBinIcon />
+            </div>
+          </ConfirmPopup>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

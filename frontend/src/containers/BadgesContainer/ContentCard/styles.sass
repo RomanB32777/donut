@@ -72,21 +72,25 @@
             text-overflow: ellipsis
 
     &__delete-icon
-        opacity: 0
         transition: all .6s ease-in-out
         position: absolute
         box-sizing: border-box
-        padding: 8px
+        padding: 8px 8px 4px
         border-radius: 5px
         cursor: pointer
         right: 24px
         top: 24px
         background: variables.$grey-background-color
-        z-index: 100
+        color: variables.$white-color
+        z-index: 1
+        // opacity: 0
 
-.ableToDelete
-    &:hover
-        img
-            opacity: 0.6
-        .delete-icon
-            opacity: 1
+// .ableToDelete
+//     &:hover
+//         .content-panel
+//             &__delete-icon
+//                 opacity: 1
+
+//             &__image
+//                 img
+//                     opacity: 0.6

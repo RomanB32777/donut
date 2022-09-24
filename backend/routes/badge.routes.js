@@ -10,6 +10,6 @@ router.get('/holders/:badge_id/:contract_address', badgeController.getBadgesHold
 router.get('/:creator_id', badgeController.getBadges)
 router.get('/:badge_id/:contract_address', badgeController.getBadge)
 router.post('/', badgeController.createBadge)
-router.delete('/', badgeController.deleteBadge)
+router.delete('/:badge_id/:contract_address', badgeController.deleteBadge)
 
 module.exports = router

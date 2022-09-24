@@ -15,8 +15,9 @@ export interface IBadgeData {
   description: string;
   blockchain: string;
   contract_address: string;
+  quantity: number;
   URI?: string;
-  quantity?: number;
+  contributor_user_id_list?: string;
 }
 
 export const initBadgeData: IBadgeData = {
@@ -101,5 +102,6 @@ export const alignFlextItemsList: { [key in typeAligmnet]: string } = {
 export interface IBadge {
   id: number;
   contract_address: string;
-  creator_id: number
+  creator_id: number;
+  contributor_user_id_list?: string;
 }

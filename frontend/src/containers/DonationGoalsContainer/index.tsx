@@ -100,7 +100,7 @@ const DonationGoalsContainer = () => {
       <PageTitle formatId="page_title_donation_goals" />
       <div className="goals-header">
         <p className="subtitle">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Start fundraising for a specific purchase or goal.
         </p>
         <BaseButton
           formatId="create_new_form_button"

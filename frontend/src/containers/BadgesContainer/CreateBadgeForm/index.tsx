@@ -243,7 +243,7 @@ const CreateBadgeForm = ({
           <div className="arrow_icon icon" onClick={backBtn}>
             <LeftArrowIcon />
           </div>
-          <PageTitle formatId="badges_page_create_title" notMarginBottom />
+          <PageTitle formatId="create_badge_form_button" notMarginBottom />
         </div>
         <Row
           gutter={[4, 4]}

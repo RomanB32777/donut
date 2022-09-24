@@ -36,7 +36,7 @@ class BadgeController {
 
     async deleteBadge(req, res) {
         try {
-            const { badge_id, contract_address } = req.body
+            const { badge_id, contract_address } = req.params
             const deletedBadge = await db.query(`DELETE FROM badges WHERE id = $1 AND contract_address= $2 RETURNING *;`, [badge_id, contract_address])
             res.status(200).json(deletedBadge.rows[0])
         } catch (error) {
