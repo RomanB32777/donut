@@ -4,7 +4,6 @@ import { roleUser } from "../../types";
 import { DateFormatter, DateTimezoneFormatter } from "../../utils";
 
 interface ITableData {
-  key: string;
   name: string;
   donationToken: number;
   donationUSD: number;
@@ -13,10 +12,19 @@ interface ITableData {
   role?: roleUser;
 }
 
+export const initTableDataItem: ITableData = {
+  name: "",
+  donationToken: 0,
+  donationUSD: 0,
+  message: "",
+  date: "",
+}
+
 export const tableColumns: ColumnsType<ITableData> = [
   {
     title: "Username",
     dataIndex: "name",
+    key: "name",
     width: "15%",
     align: "center",
     render: (name, { role }) => {
@@ -27,12 +35,15 @@ export const tableColumns: ColumnsType<ITableData> = [
   {
     title: "Donation, Token",
     dataIndex: "donationToken",
+    key: "donationToken",
     width: "15%",
     align: "center",
+    render: (text) => text + " tEVMOS",
   },
   {
     title: "Donation, USD",
     dataIndex: "donationUSD",
+    key: "donationUSD",
     align: "center",
     render: (text) => text + " USD",
     sorter: (a, b) => a.donationUSD - b.donationUSD,
@@ -41,11 +52,13 @@ export const tableColumns: ColumnsType<ITableData> = [
   {
     title: "Message",
     dataIndex: "message",
+    key: "message",
     width: "30%",
   },
   {
     title: "Date and Time, UTM",
     dataIndex: "date",
+    key: "date",
     width: "25%",
     render: (text) =>
       Date.parse(text) ? DateFormatter(DateTimezoneFormatter(text)) : "-",

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Checkbox, Col, Row } from "antd";
+import FileSaver from "file-saver";
+import { utils, write } from "xlsx";
 import { SearchOutlined } from "@ant-design/icons";
 import PageTitle from "../../commonComponents/PageTitle";
 import FormInput from "../../components/FormInput";
@@ -10,7 +12,7 @@ import TableComponent from "../../components/TableComponent";
 import BaseButton from "../../commonComponents/BaseButton";
 import { CalendarIcon, DownloadIcon } from "../../icons/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
-import { ITableData, tableColumns } from "./tableData";
+import { initTableDataItem, ITableData, tableColumns } from "./tableData";
 import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
 import { filterPeriodItems, getTimePeriodQuery } from "../../consts";
@@ -65,7 +67,7 @@ const DonationsContainer = () => {
               user.roleplay === "creators"
                 ? donat.username
                 : donat.creator_username,
-            donationToken: donat.sum_donation + " tEVMOS",
+            donationToken: donat.sum_donation,
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
             date: donat.donation_date || "-",
@@ -106,6 +108,55 @@ const DonationsContainer = () => {
   );
 
   const { timePeriod, searchStr, groupByName } = queryForm;
+
+  const exportToExel = () => {
+    const heading = tableColumns.reduce(
+      (acc, curr) => ({ ...acc, [curr.key as string]: curr.title as string }),
+      {}
+    );
+
+    const exelData: ITableData[] = tableData.map((d) => {
+      console.log(Object.keys(d).filter((d) => d !== "role"));
+
+      return Object.keys(d)
+        .filter((d) => d !== "role" && d !== "key")
+        .reduce(
+          (acc, key) => ({ ...acc, [key]: d[key as keyof ITableData] }),
+          initTableDataItem
+        );
+    });
+
+    const wsColsData = Object.keys(heading)
+      .filter((col) => col !== "role")
+      .map((col) => ({
+        wch: Math.max(
+          ...exelData.map((d) => String(d[col as keyof ITableData]).length)
+        ),
+      }));
+
+    // const wsColsHeader = Object.keys(heading)
+    //   .filter((col) => col !== "role")
+    //   .map((col) => ({ wch: col.length }));
+    // console.log(heading, exelData, wscols);
+
+    const ws = utils.json_to_sheet([heading], {
+      header: tableColumns.map(({ key }) => key) as string[],
+      skipHeader: true,
+      // origin: 0, //ok
+    });
+    ws["!cols"] = wsColsData;
+    utils.sheet_add_json(ws, exelData, {
+      header: tableColumns.map(({ key }) => key) as string[],
+      skipHeader: true,
+      origin: -1, //ok
+    });
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+    FileSaver.saveAs(data, "donations" + ".xlsx");
+  };
 
   return (
     <>
@@ -170,14 +221,14 @@ const DonationsContainer = () => {
                       isBlue={visibleDatesPicker}
                     />
                   </Col>
-                  {/* <Col span={12}>
+                  <Col span={12}>
                     <BaseButton
                       formatId="create_export_button"
-                      onClick={() => console.log("true")}
+                      onClick={exportToExel}
                       modificator={"donations-header__right_btn"}
                       icon={<DownloadIcon />}
                     />
-                  </Col> */}
+                  </Col>
                 </Row>
               </div>
             </Col>
