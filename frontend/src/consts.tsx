@@ -574,7 +574,7 @@ export const filterDataTypeItems: IStatsDataType = {
   "top-supporters": "Top supporters",
 };
 
-export const getStstsDataTypeQuery: (dataType: string) => statsDataTypes = (
+export const getStatsDataTypeQuery: (dataType: string) => statsDataTypes = (
   dataType
 ) => {
   const findKey = Object.keys(filterDataTypeItems).find(

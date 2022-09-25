@@ -11,14 +11,15 @@ interface ITableData<T> extends TableProps<T> {}
 const TableComponent = <T extends object>({
   dataSource,
   columns,
-  pagination
+  pagination,
+  loading
 }: React.PropsWithChildren<ITableData<T>>): React.ReactElement => {
   return (
     <Table
       columns={columns}
       dataSource={dataSource}
       pagination={pagination}
-      // onChange={onChange}
+      loading={loading}
     />
   );
 };

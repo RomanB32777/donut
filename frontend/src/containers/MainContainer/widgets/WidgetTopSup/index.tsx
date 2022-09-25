@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Col, Empty, Row } from "antd";
+import Loader from "../../../../components/Loader";
 import SelectComponent from "../../../../components/SelectComponent";
 import axiosClient from "../../../../axiosClient";
 import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
@@ -10,6 +11,7 @@ const LIMIT_SUPPORTERS = 6;
 
 const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);
+  const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
@@ -17,12 +19,15 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
 
   const getLatestDonations = async (timePeriod: string) => {
     try {
+      setLoading(true);
       const { data } = await axiosClient.get(
         `/api/donation/widgets/top-supporters/${user.id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`
       );
       data && setTopSupporters(data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,6 +48,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
           />
         </div>
       </div>
+      {/* {loading && <Loader size="small" />} */}
       {Boolean(topSupporters.length) ? (
         topSupporters.map((donat: any) => (
           <div className="widget__items" key={donat.username}>

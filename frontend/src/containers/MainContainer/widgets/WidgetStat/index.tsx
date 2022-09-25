@@ -1,62 +1,17 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
-import type { ChartData, ChartOptions } from "chart.js";
+import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
 import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import axiosClient from "../../../../axiosClient";
-import { useSelector } from "react-redux";
 import { DateFormatter } from "../../../../utils";
+import { dateFormat, options } from "./graphData";
 import "./styles.sass";
 
 Chart.register(...registerables);
-
-const options: ChartOptions<"line"> = {
-  scales: {
-    y: {
-      beginAtZero: true,
-
-      ticks: {
-        color: "rgb(255, 255, 255)",
-        callback: (value) => value + " USD",
-      },
-      grid: {
-        color: "#353535",
-      },
-    },
-    x: {
-      ticks: {
-        color: "rgb(255, 255, 255)",
-      },
-      grid: {
-        color: "#353535",
-      },
-    },
-  },
-  plugins: {
-    legend: {
-      display: true,
-      labels: {
-        color: "rgb(255, 255, 255)",
-      },
-      onClick: (e, legendItem, legend) => null,
-    },
-
-    tooltip: {
-      callbacks: {
-        label: ({ formattedValue }) => formattedValue + " USD",
-      },
-    },
-  },
-};
-
-const dateFormat: { [key: string]: string } = {
-  Today: "HH:mm",
-  "Last 7 days": "dddd",
-  "Last 30 days": "DD/MM/YYYY",
-  "This year": "MMMM",
-};
 
 const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);

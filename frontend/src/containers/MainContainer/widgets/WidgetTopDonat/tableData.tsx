@@ -20,6 +20,7 @@ export const tableColums: ColumnsType<ITableData> = [
     dataIndex: "donationToken",
     width: "20%",
     align: "center",
+    render: (text) => text + " tEVMOS",
   },
   {
     title: "Message",

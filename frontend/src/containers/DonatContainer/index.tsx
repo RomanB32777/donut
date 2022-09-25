@@ -163,39 +163,41 @@ const DonatContainer = () => {
     const { amount, username } = form;
     if (Boolean(+amount) && username.length) {
       try {
+        await sendDonation();
         const metamaskData = await getMetamaskData();
-        if (metamaskData) {
-          const { signer, provider, address } = metamaskData;
-          const balance = await provider.getBalance(address);
-          setLoading(true);
 
-          if (balance) {
-            const intBalance = Number(
-              ethers.utils.formatEther(balance.toString())
-            );
+        // if (metamaskData) {
+        //   const { signer, provider, address } = metamaskData;
+        //   const balance = await provider.getBalance(address);
+        //   setLoading(true);
 
-            if (intBalance >= Number(amount)) {
-              const smartContract = new ethers.Contract(
-                contractMetaAddress,
-                abi_transfer,
-                signer
-              );
-              const tx = await smartContract.transferMoney(
-                personInfo.metamask_token,
-                { value: ethers.utils.parseEther(amount) }
-              );
-              await tx.wait();
-              await sendDonation();
-            } else {
-              addNotification({
-                type: "warning",
-                title: "Insufficient balance",
-                message:
-                  "Unfortunately, there are not enough funds on your balance to carry out the operation",
-              });
-            }
-          }
-        }
+        //   if (balance) {
+        //     const intBalance = Number(
+        //       ethers.utils.formatEther(balance.toString())
+        //     );
+
+        //     if (intBalance >= Number(amount)) {
+        //       const smartContract = new ethers.Contract(
+        //         contractMetaAddress,
+        //         abi_transfer,
+        //         signer
+        //       );
+        //       const tx = await smartContract.transferMoney(
+        //         personInfo.metamask_token,
+        //         { value: ethers.utils.parseEther(amount) }
+        //       );
+        //       await tx.wait();
+        //       await sendDonation();
+        //     } else {
+        //       addNotification({
+        //         type: "warning",
+        //         title: "Insufficient balance",
+        //         message:
+        //           "Unfortunately, there are not enough funds on your balance to carry out the operation",
+        //       });
+        //     }
+        //   }
+        // }
       } catch (error) {
         console.log("error", error);
         addNotification({

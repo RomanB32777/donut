@@ -63,10 +63,7 @@ const DonationsContainer = () => {
         const forTableData: ITableData[] = data.donations.map(
           (donat: any, key: number) => ({
             key: donat.id || key,
-            name:
-              user.roleplay === "creators"
-                ? donat.username
-                : donat.creator_username,
+            name: donat.username,
             donationToken: donat.sum_donation,
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
@@ -88,26 +85,6 @@ const DonationsContainer = () => {
   const sendQuery = async () => {
     await getDonationsData();
   };
-
-  const allAmountUSD = useMemo(
-    () => tableData.reduce((acc, donat) => acc + Number(donat.donationUSD), 0),
-    [tableData]
-  );
-
-  useEffect(() => {
-    getUsdKoef("evmos", setUsdtKoef);
-  }, []);
-
-  useEffect(() => {
-    user.id && usdtKoef && getDonationsData();
-  }, [user, usdtKoef]); // queryForm
-
-  const isCreator = useMemo(
-    () => user.roleplay && user.roleplay === "creators",
-    [user]
-  );
-
-  const { timePeriod, searchStr, groupByName } = queryForm;
 
   const exportToExel = () => {
     const heading = tableColumns.reduce(
@@ -158,6 +135,26 @@ const DonationsContainer = () => {
     });
     FileSaver.saveAs(data, "donations" + ".xlsx");
   };
+
+  const allAmountUSD = useMemo(
+    () => tableData.reduce((acc, donat) => acc + Number(donat.donationUSD), 0),
+    [tableData]
+  );
+  
+  useEffect(() => {
+    getUsdKoef("evmos", setUsdtKoef);
+  }, []);
+
+  useEffect(() => {
+    user.id && usdtKoef && getDonationsData();
+  }, [user, usdtKoef]); // queryForm
+
+  const isCreator = useMemo(
+    () => user.roleplay && user.roleplay === "creators",
+    [user]
+  );
+
+  const { timePeriod, searchStr, groupByName } = queryForm;
 
   return (
     <>

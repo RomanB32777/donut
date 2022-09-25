@@ -29,7 +29,6 @@ const AlertsContainer = () => {
       const { data } = await axiosClient.get(
         "/api/user/get-alerts-widget/" + user.id
       );
-      console.log(data);
       const userData: IAlertData = {
         banner: {
           preview: data.banner_link ? `${url + data.banner_link}` : "",

@@ -13,12 +13,14 @@ const LIMIT_DONATS = 6;
 const WidgetTopDonat = () => {
   const user: any = useSelector((state: any) => state.user);
   const [tableData, setTableData] = useState<ITableData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
 
   const getTopDonations = async (timePeriod: string) => {
     try {
+      setLoading(true);
       const { data } = await axiosClient.get(
         `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}`
       );
@@ -26,7 +28,7 @@ const WidgetTopDonat = () => {
         const forTableData: ITableData[] = data.map((donat: any) => ({
           key: donat.id,
           name: donat.username,
-          donationToken: donat.sum_donation + " tEVMOS",
+          donationToken: donat.sum_donation,
           message: donat.donation_message,
           date: DateFormatter(DateTimezoneFormatter(donat.donation_date)),
         }));
@@ -34,6 +36,8 @@ const WidgetTopDonat = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,6 +62,7 @@ const WidgetTopDonat = () => {
         <TableComponent
           dataSource={tableData}
           columns={tableColums}
+          loading={loading}
           pagination={false}
         />
       </div>

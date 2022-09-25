@@ -221,7 +221,14 @@ class DonationController {
             const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
 
             const data = await db.query(`
-                SELECT * FROM donations
+                SELECT  users.username,
+                        donations.id,
+                        donation_message, 
+                        donation_date, 
+                        sum_donation 
+                FROM donations 
+                LEFT JOIN users
+                ON backer_id = users.id 
                 WHERE creator_id = $1 
                 AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
                 ORDER BY donation_date DESC
@@ -242,8 +249,15 @@ class DonationController {
             const { limit, timePeriod, startDate, endDate, isStatPage } = req.query;
 
             const data = await db.query(`
-                SELECT * FROM donations 
-                WHERE creator_id = $1 
+                SELECT  users.username,
+                        donations.id,
+                        donation_message, 
+                        donation_date, 
+                        sum_donation 
+                FROM donations 
+                LEFT JOIN users
+                ON backer_id = users.id 
+                WHERE creator_id = $1
                 AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
                 ORDER BY sum_donation DESC
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id])
@@ -266,12 +280,15 @@ class DonationController {
             const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
 
             const data = await db.query(`
-                SELECT username, SUM(sum_donation::numeric) AS sum_donation 
-                FROM donations
+                SELECT  users.username,
+                        SUM(sum_donation::numeric) AS sum_donation 
+                FROM donations 
+                LEFT JOIN users
+                ON backer_id = users.id 
                 WHERE creator_id = $1
                 AND ${isStatPage ? getTimeCurrentPeriod(timePeriod, startDate, endDate) : getTimePeriod(timePeriod)} 
-                GROUP BY username
-                ORDER BY SUM(sum_donation::numeric) DESC 
+                GROUP BY users.username
+                ORDER BY sum_donation DESC 
                 ${limit ? `LIMIT ${limit}` : ''}`, [user_id]);
             if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json(data.rows)
@@ -314,11 +331,25 @@ class DonationController {
             const isGroup = groupByName === "true";
             const isCreator = roleplay === "creators";
 
+            // const supporters = await db.query(`
+            // SELECT users.username, users.metamask_token, users.id FROM supporters
+            // LEFT JOIN users
+            // ON supporters.backer_id = users.id
+            // WHERE supporters.creator_id = $1 AND users.metamask_token IS NOT NULL`, [user_id])
+
             // sum_donation, wallet_type, donation_message
             const data = await db.query(`
-                SELECT ${isGroup ? `username,
-                SUM(sum_donation::numeric) AS sum_donation` : "*"}
-                FROM donations 
+                SELECT users.username,
+                       ${isGroup ? `SUM(sum_donation::numeric) AS sum_donation`
+                    :
+                    `donations.id,
+                    donation_message, 
+                    donation_date, 
+                    sum_donation`
+                }
+                FROM donations
+                LEFT JOIN users
+                ON  ${isCreator ? "backer_id" : "creator_id"} = users.id 
                 WHERE ${isCreator ? "creator_id" : "backer_id"} = $1 AND
                 ${startDate && endDate ?
                     `to_timestamp(donation_date,'YYYY/MM/DD') 
@@ -328,10 +359,14 @@ class DonationController {
                     `${getTimePeriod(timePeriod)}`
                 }
                 ${searchStr ?
-                    `AND username LIKE '%${searchStr.toLowerCase()}%'`
+                    `AND users.username LIKE '%${searchStr.toLowerCase()}%'`
                     : ""
                 }
-                ${isGroup ? `GROUP BY ${isCreator ? "username" : "creator_username"}` : "ORDER BY donation_date DESC"}
+                ${isGroup ?
+                    `GROUP BY users.username ORDER BY sum_donation DESC`
+                    :
+                    "ORDER BY donation_date DESC"
+                }
                 LIMIT ${limit}
                 OFFSET ${offset}`, [user_id])
 

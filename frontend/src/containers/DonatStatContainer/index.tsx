@@ -9,25 +9,12 @@ import {
   AlignText,
   IStatData,
 } from "../../types";
-import { getCurrentTimePeriodQuery, getStstsDataTypeQuery } from "../../consts";
+import { getCurrentTimePeriodQuery, getStatsDataTypeQuery } from "../../consts";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import "./styles.sass";
 import { getUsdKoef, renderStatItem, renderStrWithTokens } from "../../utils";
 
 const LIMIT = 3;
-
-// const initStatData: IStatData = {
-//   id: 0,
-//   title: "",
-//   stat_description: "",
-//   title_color: "#ffffff",
-//   bar_color: "#1D14FF",
-//   content_color: "#212127",
-//   aligment: "Center",
-//   data_type: "latest-donations",
-//   time_period: "today",
-//   template: [],
-// };
 
 const DonatStatContainer = () => {
   const dispatch = useDispatch();
@@ -45,7 +32,7 @@ const DonatStatContainer = () => {
       try {
         const { time_period, data_type } = statData;
         const timePeriod = getCurrentTimePeriodQuery(time_period);
-        const typeStatData = getStstsDataTypeQuery(data_type);
+        const typeStatData = getStatsDataTypeQuery(data_type);
         const customPeriod = time_period.split("-");
 
         if (timePeriod && typeStatData) {
