@@ -115,36 +115,37 @@ const DonationsContainer = () => {
       {}
     );
 
-    const exelData: ITableData[] = tableData.map((d) => {
-      console.log(Object.keys(d).filter((d) => d !== "role"));
-
-      return Object.keys(d)
+    const exelData: ITableData[] = tableData.map((d) =>
+      Object.keys(d)
         .filter((d) => d !== "role" && d !== "key")
         .reduce(
           (acc, key) => ({ ...acc, [key]: d[key as keyof ITableData] }),
           initTableDataItem
-        );
-    });
+        )
+    );
 
     const wsColsData = Object.keys(heading)
       .filter((col) => col !== "role")
       .map((col) => ({
         wch: Math.max(
-          ...exelData.map((d) => String(d[col as keyof ITableData]).length)
+          ...exelData.map((d) => String(d[col as keyof ITableData]).length + 2)
         ),
       }));
 
-    // const wsColsHeader = Object.keys(heading)
-    //   .filter((col) => col !== "role")
-    //   .map((col) => ({ wch: col.length }));
-    // console.log(heading, exelData, wscols);
+    const wsColsHeader = Object.keys(heading)
+      .filter((col) => col !== "role")
+      .map((col) => ({ wch: col.length + 2 }));
+
+    const wscols = wsColsData.map(({ wch }, key) =>
+      wch >= wsColsHeader[key].wch ? { wch } : { wch: wsColsHeader[key].wch }
+    );
 
     const ws = utils.json_to_sheet([heading], {
       header: tableColumns.map(({ key }) => key) as string[],
       skipHeader: true,
       // origin: 0, //ok
     });
-    ws["!cols"] = wsColsData;
+    ws["!cols"] = wscols;
     utils.sheet_add_json(ws, exelData, {
       header: tableColumns.map(({ key }) => key) as string[],
       skipHeader: true,
