@@ -12,6 +12,7 @@ interface IHeaderComponent {
   logoUrl?: string;
   hidden?: boolean;
   modificator?: string;
+  backgroundColor?: string;
   children?: React.ReactNode;
   handlerHeaderSelect?: () => void;
   onClick?: () => void;
@@ -24,6 +25,7 @@ export const HeaderComponent = ({
   visibleLogo,
   logoUrl,
   modificator,
+  backgroundColor,
   children,
   onClick,
 }: IHeaderComponent) => {
@@ -37,6 +39,9 @@ export const HeaderComponent = ({
       })}
       hidden={hidden}
       onClick={onClick}
+      style={{
+        background: backgroundColor,
+      }}
     >
       <Row
         justify="space-between"

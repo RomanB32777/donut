@@ -44,7 +44,7 @@ router.put('/stats-widget', userController.editStatWidget)
 router.delete('/stats-widget/:id', userController.deleteStatWidget)
 
 // get sound
-router.post('/generate/sound', userController.generateSound)
+router.get('/generate/sound', userController.generateSound)
 
 
 module.exports = router

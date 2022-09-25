@@ -35,6 +35,7 @@ Thumbs.db
 .svn
 bower_components
 images/
+subdomain/
 
 # Node.JS
 node_modules

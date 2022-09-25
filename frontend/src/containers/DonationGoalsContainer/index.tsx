@@ -111,7 +111,8 @@ const DonationGoalsContainer = () => {
         />
       </div>
       <div className="goals-wrapper">
-        {Boolean(goals.length) ? (
+        {Boolean(goals.length) &&
+        Boolean(goals.filter((goal: IGoalData) => !goal.isarchive).length) ? (
           goals
             .filter((goal: IGoalData) => !goal.isarchive)
             .reverse()

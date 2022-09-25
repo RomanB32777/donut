@@ -2,12 +2,6 @@ const axios = require("axios");
 
 const db = require('../db')
 
-// const fs = require('fs')
-
-// const util = require('util');
-
-// import { PassThrough } from "stream";
-
 const stream = require("stream")
 
 // Imports the Google Cloud client library
@@ -667,7 +661,7 @@ class UserController {
 
     async generateSound(req, res) {
         try {
-            const { text } = req.body
+            const { text } = req.query
 
             const request = {
                 input: { text },
@@ -684,10 +678,9 @@ class UserController {
             const bufferStream = new stream.PassThrough()
             bufferStream.end(Buffer.from(response.audioContent))
             bufferStream.pipe(res)
-            console.log("success");
-
+            
             // const [response] = await client.synthesizeSpeech(request);
-            // Write the binary audio content to a local file
+            // // Write the binary audio content to a local file
             // const writeFile = util.promisify(fs.writeFile);
             // await writeFile('output.mp3', response.audioContent, 'binary');
             // console.log('Audio content written to file: output.mp3', response);

@@ -1,22 +1,18 @@
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import clsx from "clsx";
-import ReactPlayer from "react-player";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 
 import bigImg from "../../assets/big_don.png";
-import axiosClient from "../../axiosClient";
+import axiosClient, { baseURL } from "../../axiosClient";
 import { IAlertData, initAlertData } from "../../types";
 import { url } from "../../consts";
 import { soundsList } from "../../assets/sounds";
 import EvmosIMG from "../../assets/evmos.png";
-// import textToSpeech from "@google-cloud/text-to-speech";
 import "./styles.sass";
-
-// const client = new textToSpeech.TextToSpeechClient();
 
 const testDonat = {
   wallet_type: "metamask",
@@ -33,160 +29,56 @@ const DonatMessageContainer = () => {
   const { name } = useParams();
 
   const [lastNotif, setLastNotif] = useState<any>({
-    // ...testDonat
+    // ...testDonat,
   });
-
-  const [isPlay, setIsPlay] = useState<boolean>(false);
 
   const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({
     ...initAlertData,
   });
 
-  const blobToBase64 = (blob: any) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    return new Promise((resolve) => {
-      reader.onloadend = () => {
-        resolve(reader.result);
-      };
-    });
-  };
-
-  const generateSound = async () => {
-    try {
-      const { data } = await axiosClient.post(
-        "/api/user/generate/sound",
-        {
-          text: "HELLO",
-        }
-        // {
-        //   responseType: "arraybuffer",
-        //   headers: { Accept: "*/*", "Content-Type": "audio/wav" },
-        // }
-      );
-
-      const audioBlob = new Blob([data]);
-      const url = URL.createObjectURL(audioBlob);
-
-      setAlertWidgetData({
-        ...alertWidgetData,
-        sound: data,
-      });
-      setIsPlay(true);
-
-      // const audioBlob = new Blob([data]);
-      // blobToBase64(audioBlob).then((base64Data) => {
-      //   const file = "data:audio/webm;base64," + base64Data;
-      //   console.log(base64Data);
-      // // const audioUrl = URL.createObjectURL(audioBlob);
-
-      //   // const formData = new FormData();
-      //   // formData.append('file', file);
-      //   // return fetch(url, {
-      //   //     method: 'POST',
-      //   //     body: formData
-      //   // }).then(res => res.json())
-      //  })
-
-      // const audioBlob = new Blob([data]);
-      // const audioUrl = URL.createObjectURL(audioBlob);
-      // console.log(audioUrl);
-
-      // const audio = new Audio(audioUrl);
-      // console.log(audio);
-
-      // audio
-      //   .play()
-      //   .then((res) => console.log(res))
-      //   .catch(console.log);
-      // console.log("fgdg", data);
-
-      // const blob = new Blob([data], {
-      //   type: "audio/mp3",
-      // });
-      // const url = URL.createObjectURL(blob);
-
-      // console.log(url);
-
-      // fetch(url)
-      //   .then((res) => res.blob())
-      //   .then((blob) => {
-      //     const reader = new FileReader();
-      //     // reader.onload = function (e) {
-      //     //   const srcUrl = url;
-      //     //   audioNode.src = srcUrl;
-      //     // };
-      //     // reader.readAsDataURL(blob);
-      //   });
-
-      // var newSource = audioContext.createBufferSource();
-      // var newBuffer = audioContext.createBuffer(
-      //   2,
-      //   buffers[0].length,
-      //   audioContext.sampleRate
-      // );
-      // newBuffer.getChannelData(0).set(buffers[0]);
-      // newBuffer.getChannelData(1).set(buffers[1]);
-      // newSource.buffer = newBuffer;
-
-      // newSource.connect(audioContext.destination);
-      // newSource.start(0);
-
-      // setAlertWidgetData({
-      //   ...alertWidgetData,
-      //   sound: url,
-      // });
-      //   const  =  await axios.get(`http://api.url`,
-      // }).then(resp => resp);
-      // const blob = new Blob([data], {
-      //     type: 'audio/wav'
-      // })
-      // const url = URL.createObjectURL(blob);
-
-      // fetch(url)
-      //     .then(res => res.blob())
-      //     .then(blob => fileDownload(blob, 'your_filename'))
-      //     .catch(e => console.log('ERROR DOWNLOADING AUDIO FILE'));
-    } catch (e) {
-      console.log(`api, ${e}`);
-    }
-  };
-
   useEffect(() => {
-    const { duration } = alertWidgetData;
     notifications.length && setLastNotif(notifications[0].donation);
-    setTimeout(() => {
-      setLastNotif({});
-    }, duration * 1000);
   }, [notifications]);
 
   useEffect(() => {
     const { voice, sound } = alertWidgetData;
+    if (lastNotif.sum_donation) {
+      if (sound && duration) {
+        play();
+        setTimeout(() => {
+          if (voice && lastNotif.donation_message) {
+            const tmp = new Audio(
+              `${baseURL}/api/user/generate/sound?text=${lastNotif.donation_message}`
+            );
+            tmp.onloadedmetadata = (e) => {
+              if (tmp.readyState > 0) {
+                const { duration } = alertWidgetData;
+                const disabledTime =
+                  duration >= tmp.duration ? duration : tmp.duration;
 
-    if (lastNotif.donation_message) {
-      sound && play();
-      if (voice && duration) {
-        const timeout = setTimeout(() => {
-          const speech = new SpeechSynthesisUtterance();
-          speech.rate = 1.5;
-          speech.pitch = 2;
-          speech.volume = 1;
-          speech.text = lastNotif.donation_message;
-          window.speechSynthesis.speak(speech);
+                tmp.play();
+
+                setTimeout(() => {
+                  setLastNotif({});
+                }, disabledTime * 1000);
+              }
+            };
+          } else {
+            setTimeout(() => {
+              setLastNotif({});
+            }, alertWidgetData.duration * 1000);
+          }
         }, duration);
-        // return clearTimeout(timeout);
       }
     }
   }, [lastNotif]);
 
   useEffect(() => {
-    // dispatch(setActiveUserName(pathnameEnd.slice(0, pathnameEnd.indexOf("/"))));
     dispatch(
       tryToGetPersonInfo({
         username: name,
       })
     );
-    // generateSound();
   }, []);
 
   const getAlertsWidgetData = async (user: any) => {
@@ -225,8 +117,6 @@ const DonatMessageContainer = () => {
 
   return (
     <div className="donat-messsage-container">
-      {/* {isPlay && <ReactPlayer url={sound} />} */}
-
       {Boolean(Object.keys(lastNotif).length) && (
         <>
           <img

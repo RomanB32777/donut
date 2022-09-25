@@ -36,7 +36,7 @@ import SpaceImg from "../../space.png";
 import "./styles.sass";
 import { HeaderComponent } from "../LayoutContainer/components/HeaderComponent";
 
-const maxLengthDescription = 120;
+const maxLengthDescription = 150;
 
 interface IDonatForm {
   message: string;
@@ -165,7 +165,6 @@ const DonatContainer = () => {
       try {
         await sendDonation();
         const metamaskData = await getMetamaskData();
-
         // if (metamaskData) {
         //   const { signer, provider, address } = metamaskData;
         //   const balance = await provider.getBalance(address);
@@ -276,12 +275,13 @@ const DonatContainer = () => {
         }}
       >
         <HeaderComponent
-          visibleLogo
           handlerHeaderSelect={() => {
             user.username ? navigate("/settings") : copyStr(mainWallet.token);
           }}
           modificator="donat-header"
           logoUrl={user.id ? "/donations" : "/landing"}
+          backgroundColor={personInfo.background_color}
+          visibleLogo
         />
         <div className="donat-info-container">
           <div className="donat-info-container__background">
