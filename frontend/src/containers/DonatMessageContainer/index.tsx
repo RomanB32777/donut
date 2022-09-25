@@ -215,7 +215,7 @@ const DonatMessageContainer = () => {
   };
 
   useEffect(() => {
-    // getAlertsWidgetData(user);
+    getAlertsWidgetData(user);
   }, [user]);
 
   const { banner, message_color, name_color, sum_color, sound } =
