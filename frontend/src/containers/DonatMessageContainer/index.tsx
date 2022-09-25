@@ -46,28 +46,31 @@ const DonatMessageContainer = () => {
       if (sound && duration) {
         play();
         setTimeout(() => {
+          const { duration } = alertWidgetData;
           if (voice && lastNotif.donation_message) {
             const tmp = new Audio(
               `${baseURL}/api/user/generate/sound?text=${lastNotif.donation_message}`
             );
-            tmp.onloadedmetadata = (e) => {
-              if (tmp.readyState > 0) {
-                const { duration } = alertWidgetData;
-                const disabledTime =
-                  duration >= tmp.duration ? duration : tmp.duration;
+            tmp.play();
+            // tmp.onloadedmetadata = (e) => {
+            //   if (tmp.readyState > 0) {
+            //     const { duration } = alertWidgetData;
+            //     const disabledTime =
+            //       duration >= tmp.duration ? duration : tmp.duration;
 
-                tmp.play();
+            //     tmp.play();
 
-                setTimeout(() => {
-                  setLastNotif({});
-                }, disabledTime * 1000);
-              }
-            };
-          } else {
-            setTimeout(() => {
-              setLastNotif({});
-            }, alertWidgetData.duration * 1000);
+            //     setTimeout(() => {
+            //       setLastNotif({});
+            //     }, disabledTime * 1000);
+            //   }
+            // };
           }
+          // else {
+          setTimeout(() => {
+            setLastNotif({});
+          }, duration * 1000);
+          // }
         }, duration);
       }
     }
@@ -94,7 +97,7 @@ const DonatMessageContainer = () => {
         message_color: data.message_color,
         name_color: data.name_color,
         sum_color: data.sum_color,
-        duration: data.duration,
+        duration: Number(data.duration),
         sound: data.sound,
         voice: data.voice,
       };

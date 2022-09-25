@@ -13,7 +13,7 @@
     "start:react": "parcel serve client/index.html --open --dist-dir client/build",
     "build": "parcel build client/index.html --dist-dir client/build"
   },
-  "author": "Nikita <iessenti@gmail.com>",
+  "author": "Roman <r.bogdanovskiy@onpoint.ru>",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/text-to-speech": "^4.0.2",

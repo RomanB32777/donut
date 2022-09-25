@@ -673,18 +673,11 @@ class UserController {
                 'Content-Type': 'audio/mpeg',
                 'Transfer-Encoding': 'chunked'
             })
-
+            
             const [response] = await client.synthesizeSpeech(request)
             const bufferStream = new stream.PassThrough()
             bufferStream.end(Buffer.from(response.audioContent))
             bufferStream.pipe(res)
-            
-            // const [response] = await client.synthesizeSpeech(request);
-            // // Write the binary audio content to a local file
-            // const writeFile = util.promisify(fs.writeFile);
-            // await writeFile('output.mp3', response.audioContent, 'binary');
-            // console.log('Audio content written to file: output.mp3', response);
-
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

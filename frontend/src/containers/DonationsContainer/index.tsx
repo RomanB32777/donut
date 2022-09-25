@@ -55,10 +55,8 @@ const DonationsContainer = () => {
 
       // timePeriod: string
       const { data } = await axiosClient.get(
-        `/api/donation/page/data/${user.id}?roleplay=${
-          user.roleplay
-        }&limit=${LIMIT_DONATS}&offset=${0}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}`
-      );
+        `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}`
+      ); // &limit=${LIMIT_DONATS}&offset=${0}
       if (data.donations && data.donations.length) {
         const forTableData: ITableData[] = data.donations.map(
           (donat: any, key: number) => ({
@@ -140,7 +138,7 @@ const DonationsContainer = () => {
     () => tableData.reduce((acc, donat) => acc + Number(donat.donationUSD), 0),
     [tableData]
   );
-  
+
   useEffect(() => {
     getUsdKoef("evmos", setUsdtKoef);
   }, []);
@@ -278,11 +276,12 @@ const DonationsContainer = () => {
           loading={loading}
           dataSource={tableData}
           columns={tableColumns}
-          pagination={{
-            current: 1,
-            pageSize: LIMIT_DONATS,
-            position: ["bottomCenter"],
-          }}
+          pagination={false}
+          // pagination={{
+          //   current: 1,
+          //   pageSize: LIMIT_DONATS,
+          //   position: ["bottomCenter"],
+          // }}
         />
       </div>
     </>
