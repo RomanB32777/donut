@@ -243,6 +243,7 @@ const DonationPageContainer = () => {
                 }
                 labelCol={8}
                 InputCol={16}
+                gutter={[0, 16]}
                 isTextarea
               />
             </div>
@@ -261,6 +262,7 @@ const DonationPageContainer = () => {
                 }
                 labelCol={8}
                 InputCol={10}
+                gutter={[0, 16]}
               />
             </div>
           </Col>
@@ -276,6 +278,7 @@ const DonationPageContainer = () => {
                   })
                 }
                 labelCol={8}
+                gutter={[0, 16]}
               />
             </div>
           </Col>
@@ -291,6 +294,7 @@ const DonationPageContainer = () => {
                   })
                 }
                 labelCol={8}
+                gutter={[0, 16]}
               />
             </div>
           </Col>

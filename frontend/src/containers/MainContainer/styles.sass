@@ -4,7 +4,7 @@
     background: variables.$grey-background-color
     border-radius: variables.$border-radius
     min-height: 100px
-    padding: 20px 29px 25px 25px
+    padding: 20px 15px
 
     &.widget-stat
         margin-bottom: 16px
@@ -30,8 +30,7 @@
         
     &__item
         display: flex
-        justify-content: space-between
-        align-items: center
+        flex-direction: column
         background: variables.$black-color
         border-radius: 20px
         padding: 22px 24px 22px 14px
@@ -52,10 +51,24 @@
             line-height: 20px
             font-weight: 400
             color: variables.$grey-color
-
+            margin-top: 5px
 
 @keyframes infiniteRotating
     0%
         transform: rotate(0deg)
     100%
         transform: rotate(-360deg)
+
+
+@media (min-width: 768px)
+    .widget
+        padding: 20px 29px 25px 25px
+
+@media (min-width: 576px)
+    .widget__item
+        flex-direction: row
+        justify-content: space-between
+        align-items: center
+
+        &_sum
+            margin-top: 0px

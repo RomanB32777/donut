@@ -127,7 +127,7 @@ const SettingsContainer = () => {
       <PageTitle formatId="page_title_settings" />
       <div className="stats-drawer__form">
         <Row gutter={[0, 18]} className="form">
-          <Col span={18}>
+          <Col xl={18} xs={24}>
             <div className="form-element">
               <Row justify="space-between" align="middle">
                 <Col span={16}>
@@ -159,7 +159,7 @@ const SettingsContainer = () => {
               </Row>
             </div>
           </Col>
-          <Col span={18}>
+          <Col xl={18} xs={24}>
             <div className="form-element">
               <Row justify="space-between" align="middle">
                 <Col span={16}>
@@ -172,6 +172,7 @@ const SettingsContainer = () => {
                     }
                     labelCol={8}
                     InputCol={16}
+                    gutter={[0, 16]}
                   />
                 </Col>
                 <Col span={7}>
@@ -185,7 +186,7 @@ const SettingsContainer = () => {
               </Row>
             </div>
           </Col>
-          <Col span={18}>
+          <Col xl={18} xs={24}>
             <div className="form-element">
               <Row justify="space-between" align="middle">
                 <Col span={16}>
@@ -198,6 +199,7 @@ const SettingsContainer = () => {
                     }
                     labelCol={8}
                     InputCol={16}
+                    gutter={[0, 16]}
                   />
                 </Col>
                 <Col span={7}>
@@ -215,15 +217,18 @@ const SettingsContainer = () => {
             </div>
           </Col>
           <Col span={24}>
-            <ConfirmPopup confirm={deleteProfile}>
-              <BaseButton
-                formatId="profile_form_delete_button"
-                padding="6px 30px"
-                onClick={() => console.log()}
-                fontSize="18px"
-                disabled={loading}
-              />
-            </ConfirmPopup>
+            <div className="btn-bottom">
+              <ConfirmPopup confirm={deleteProfile}>
+                <BaseButton
+                  formatId="profile_form_delete_button"
+                  padding="6px 30px"
+                  onClick={() => console.log()}
+                  fontSize="18px"
+                  disabled={loading}
+                  isRed
+                />
+              </ConfirmPopup>
+            </div>
           </Col>
         </Row>
       </div>

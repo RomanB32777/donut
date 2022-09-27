@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
 import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
-import { ITableData, tableColums } from "./tableData";
-import { useSelector } from "react-redux";
+import useWindowDimensions from "../../../../hooks/useWindowDimensions";
 import axiosClient from "../../../../axiosClient";
-import { DateFormatter, DateTimezoneFormatter } from "../../../../utils";
+import { ITableData, tableColums } from "./tableData";
 import "./styles.sass";
+import { Empty } from "antd";
+import WidgetItem from "../WidgetItem";
 
 const LIMIT_DONATS = 6;
 
-const WidgetTopDonat = () => {
+const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
+  const { isTablet } = useWindowDimensions();
   const user: any = useSelector((state: any) => state.user);
-  const [tableData, setTableData] = useState<ITableData[]>([]);
+  const [topDonations, setTopDonations] = useState<ITableData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
@@ -27,12 +30,9 @@ const WidgetTopDonat = () => {
       if (data) {
         const forTableData: ITableData[] = data.map((donat: any) => ({
           key: donat.id,
-          name: donat.username,
-          donationToken: donat.sum_donation,
-          message: donat.donation_message,
-          date: DateFormatter(DateTimezoneFormatter(donat.donation_date)),
+          ...donat,
         }));
-        setTableData(forTableData);
+        setTopDonations(forTableData);
       }
     } catch (error) {
       console.log(error);
@@ -59,12 +59,30 @@ const WidgetTopDonat = () => {
         </div>
       </div>
       <div className="widget__items">
-        <TableComponent
-          dataSource={tableData}
-          columns={tableColums}
-          loading={loading}
-          pagination={false}
-        />
+        {!isTablet && (
+          <TableComponent
+            dataSource={topDonations}
+            columns={tableColums}
+            loading={loading}
+            pagination={false}
+          />
+        )}
+        {isTablet &&
+          Boolean(topDonations.length) &&
+          topDonations.map((donat: any) => {
+            return (
+              <>
+                <WidgetItem
+                  key={donat.key}
+                  donat={donat}
+                  usdtKoef={usdtKoef}
+                />
+              </>
+            );
+          })}
+        {isTablet && !Boolean(topDonations.length) && (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </div>
     </div>
   );

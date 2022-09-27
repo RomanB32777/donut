@@ -5,6 +5,7 @@ import { url } from "../../../consts";
 import { LogoutIcon, SmallToggleListArrowIcon } from "../../../icons/icons";
 import { setUser } from "../../../store/types/User";
 import { setMainWallet } from "../../../store/types/Wallet";
+import "./styles.sass";
 
 const HeaderSelect = ({
   title,

@@ -17,6 +17,7 @@ import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
 import { filterPeriodItems, getTimePeriodQuery } from "../../consts";
 import "./styles.sass";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 interface IQueryForm {
   timePeriod: string;
@@ -29,6 +30,7 @@ interface IQueryForm {
 const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
+  const { isTablet } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
   const [queryForm, setQueryForm] = useState<IQueryForm>({
@@ -53,7 +55,6 @@ const DonationsContainer = () => {
 
       const timePeriodQuery = getTimePeriodQuery(timePeriod);
 
-      // timePeriod: string
       const { data } = await axiosClient.get(
         `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}`
       ); // &limit=${LIMIT_DONATS}&offset=${0}
@@ -159,7 +160,7 @@ const DonationsContainer = () => {
       <PageTitle formatId="page_title_donations" />
       <div className="donations-header">
         <Row justify="space-between">
-          <Col span={10}>
+          <Col xl={12} md={13}>
             <div className="donations-header__left">
               <Row justify="space-between">
                 {isCreator && (
@@ -204,11 +205,11 @@ const DonationsContainer = () => {
             </div>
           </Col>
           {isCreator && (
-            <Col span={7}>
+            <Col xl={8} md={13}>
               <div className="donations-header__right">
-                <Row justify="end">
+                <Row justify={isTablet ? "start" : "end"}>
                   {/* space-between */}
-                  <Col span={11}>
+                  <Col xl={11} >
                     <BaseButton
                       formatId="create_filter_button"
                       onClick={filterBtnClick}
@@ -217,7 +218,7 @@ const DonationsContainer = () => {
                       isBlue={visibleDatesPicker}
                     />
                   </Col>
-                  <Col span={12}>
+                  <Col xl={12} >
                     <BaseButton
                       formatId="create_export_button"
                       onClick={exportToExel}
@@ -277,6 +278,7 @@ const DonationsContainer = () => {
           dataSource={tableData}
           columns={tableColumns}
           pagination={false}
+          // scroll={{ x: '100vw' }}
           // pagination={{
           //   current: 1,
           //   pageSize: LIMIT_DONATS,

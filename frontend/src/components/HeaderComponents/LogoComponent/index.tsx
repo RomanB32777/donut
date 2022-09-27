@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import DonutzLogo from "../../../assets/DonutzLogo.png";
+import "./styles.sass";
 
 const Logo = ({ navigateUrl }: { navigateUrl: string }) => {
   const navigate = useNavigate();

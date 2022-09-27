@@ -135,7 +135,7 @@ const AlertsContainer = () => {
           className="alertsSettings-container"
           justify="space-between"
         >
-          <Col span={10}>
+          <Col xl={10} md={24}>
             <div className="preview-block">
               <div className="preview-block_img">
                 <img src={banner.preview || donImg} alt="preview logo" />
@@ -169,120 +169,141 @@ const AlertsContainer = () => {
               </p>
             </div>
           </Col>
-          <Col span={13} className="form">
-            <div className="form-element">
-              <UploadImage
-                label="Banner:"
-                formats={["PNG", "JPG", "JPEG", "GIF"]}
-                filePreview={banner.preview || donImg}
-                setFile={({ preview, file }) =>
-                  setFormData({
-                    ...formData,
-                    banner: {
-                      file,
-                      preview,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className="form-element">
-              <ColorPicker
-                setColor={(color) =>
-                  setFormData({ ...formData, message_color: color })
-                }
-                color={message_color}
-                label="Message color:"
-              />
-            </div>
-            <div className="form-element">
-              <ColorPicker
-                setColor={(color) =>
-                  setFormData({ ...formData, name_color: color })
-                }
-                color={name_color}
-                label="Donor name color:"
-              />
-            </div>
-            <div className="form-element">
-              <ColorPicker
-                setColor={(color) =>
-                  setFormData({ ...formData, sum_color: color })
-                }
-                color={sum_color}
-                label="Donation sum color:"
-              />
-            </div>
-            <div className="form-element">
-              <Row
-                style={{
-                  width: "100%",
-                }}
-              >
-                <Col span={12}>
-                  <span className="form-element__label">Alert duration:</span>
-                </Col>
-                <Col span={12}>
-                  <div className="durationSlider">
-                    <Slider
-                      onChange={(num) =>
-                        setFormData({ ...formData, duration: num })
-                      }
-                      value={duration}
-                      max={25}
-                      min={15}
-                    />
-                    <span>{duration} sec</span>
-                  </div>
-                </Col>
-              </Row>
-            </div>
-            <div className="form-element">
-              <Row
-                style={{
-                  width: "100%",
-                }}
-              >
-                <Col span={12}>
-                  <span className="form-element__label">Alert sound:</span>
-                </Col>
-                <Col span={4}>
-                  <SelectComponent
-                    title={sound}
-                    list={Object.keys(soundsList)}
-                    selectItem={(selected) => {
-                      setFormData({ ...formData, sound: selected });
-                      play();
-                    }}
-                    modificator="select-sound"
+          <Col xl={13} md={24}>
+            <Row gutter={[0, 18]} className="form">
+              <Col span={24}>
+                <div className="form-element">
+                  <UploadImage
+                    label="Banner:"
+                    formats={["PNG", "JPG", "JPEG", "GIF"]}
+                    filePreview={banner.preview || donImg}
+                    setFile={({ preview, file }) =>
+                      setFormData({
+                        ...formData,
+                        banner: {
+                          file,
+                          preview,
+                        },
+                      })
+                    }
                   />
-                </Col>
-              </Row>
-            </div>
-            <div className="form-element">
-              <Row
-                style={{
-                  width: "100%",
-                }}
-              >
-                <Col span={12}>
-                  <span className="form-element__label">Voice alerts:</span>
-                </Col>
-                <Col span={12}>
-                  <div className="voiceSwitch-wrapper">
-                    <span>Disabled</span>
-                    <Switch
-                      checked={voice}
-                      onChange={(flag) =>
-                        setFormData({ ...formData, voice: flag })
-                      }
-                      id="voiceSwitch"
-                    />
-                    <span>Abled</span>
-                  </div>
-                </Col>
-              </Row>
-            </div>
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <ColorPicker
+                    setColor={(color) =>
+                      setFormData({ ...formData, message_color: color })
+                    }
+                    color={message_color}
+                    label="Message color:"
+                    gutter={[0, 18]}
+                  />
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <ColorPicker
+                    setColor={(color) =>
+                      setFormData({ ...formData, name_color: color })
+                    }
+                    color={name_color}
+                    label="Donor name color:"
+                    gutter={[0, 18]}
+                  />
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <ColorPicker
+                    setColor={(color) =>
+                      setFormData({ ...formData, sum_color: color })
+                    }
+                    color={sum_color}
+                    label="Donation sum color:"
+                    gutter={[0, 18]}
+                  />
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <Row
+                    style={{
+                      width: "100%",
+                    }}
+                  >
+                    <Col span={12}>
+                      <span className="form-element__label">
+                        Alert duration:
+                      </span>
+                    </Col>
+                    <Col span={12}>
+                      <div className="durationSlider">
+                        <Slider
+                          onChange={(num) =>
+                            setFormData({ ...formData, duration: num })
+                          }
+                          value={duration}
+                          max={25}
+                          min={15}
+                        />
+                        <span>{duration} sec</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <Row
+                    style={{
+                      width: "100%",
+                    }}
+                  >
+                    <Col span={12}>
+                      <span className="form-element__label">Alert sound:</span>
+                    </Col>
+                    <Col span={4}>
+                      <SelectComponent
+                        title={sound}
+                        list={Object.keys(soundsList)}
+                        selectItem={(selected) => {
+                          setFormData({ ...formData, sound: selected });
+                          play();
+                        }}
+                        modificator="select-sound"
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <Row
+                    style={{
+                      width: "100%",
+                    }}
+                  >
+                    <Col span={12}>
+                      <span className="form-element__label">Voice alerts:</span>
+                    </Col>
+                    <Col span={12}>
+                      <div className="voiceSwitch-wrapper">
+                        <span>Disabled</span>
+                        <Switch
+                          checked={voice}
+                          onChange={(flag) =>
+                            setFormData({ ...formData, voice: flag })
+                          }
+                          id="voiceSwitch"
+                        />
+                        <span>Abled</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+            </Row>
           </Col>
         </Row>
         <div className="saveBottom">

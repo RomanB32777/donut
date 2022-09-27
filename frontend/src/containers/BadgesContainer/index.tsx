@@ -12,7 +12,7 @@ import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
 import { IBadge, IBadgeData, initBadgeData } from "../../types";
 import { addNotification } from "../../utils";
-import { Empty } from "antd";
+import { Col, Empty, Row } from "antd";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
@@ -120,34 +120,30 @@ const BadgesContainer = () => {
       )}
 
       <div className="badges-container__list">
-        {badgesList && badgesList.length > 0 ? (
-          badgesList.map(({ id, contract_address, creator_id }, rowIndex) => (
-            <div
-              key={"badge-panel" + rowIndex}
-              className="badge-panel"
-              style={{
-                marginRight:
-                  rowIndex % 4 !== 3 ? (1170 - 220 * 4) / 3 + "px" : "0px",
-                position: "relative",
-              }}
-            >
-              <ContentCard
-                data={{
-                  id,
-                  creator_id,
-                  contract_address,
-                }}
-                onClick={(badgeData) => {
-                  setActiveBadge({ ...badgeData });
-                  setIsOpenBadgePage(true);
-                }}
-                deleteBadge={deleteBadge}
-              />
-            </div>
-          ))
-        ) : (
-          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-        )}
+        <Row gutter={[36, 36]}>
+          {badgesList && badgesList.length > 0 ? (
+            badgesList.map(({ id, contract_address, creator_id }, rowIndex) => (
+              <Col xl={6} md={8} sm={12} xs={24}>
+                <div key={"badge-panel" + rowIndex} className="badge-panel">
+                  <ContentCard
+                    data={{
+                      id,
+                      creator_id,
+                      contract_address,
+                    }}
+                    onClick={(badgeData) => {
+                      setActiveBadge({ ...badgeData });
+                      setIsOpenBadgePage(true);
+                    }}
+                    deleteBadge={deleteBadge}
+                  />
+                </div>
+              </Col>
+            ))
+          ) : (
+            <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          )}
+        </Row>
       </div>
     </div>
   );

@@ -331,13 +331,6 @@ class DonationController {
             const isGroup = groupByName === "true";
             const isCreator = roleplay === "creators";
 
-            // const supporters = await db.query(`
-            // SELECT users.username, users.metamask_token, users.id FROM supporters
-            // LEFT JOIN users
-            // ON supporters.backer_id = users.id
-            // WHERE supporters.creator_id = $1 AND users.metamask_token IS NOT NULL`, [user_id])
-
-            // sum_donation, wallet_type, donation_message
             const data = await db.query(`
                 SELECT users.username,
                        ${isGroup ? `SUM(sum_donation::numeric) AS sum_donation`
@@ -367,8 +360,8 @@ class DonationController {
                     :
                     "ORDER BY donation_date DESC"
                 }
-                LIMIT ${limit}
-                OFFSET ${offset}`, [user_id])
+                LIMIT ${limit || 'ALL'}
+                OFFSET ${offset || 0}`, [user_id])
 
             if (data && data.rows && data.rows.length > 0) {
                 res.status(200).json({ donations: data.rows, length: data.rowCount })

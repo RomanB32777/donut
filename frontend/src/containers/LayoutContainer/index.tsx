@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { BackTop, Layout, Menu } from "antd";
@@ -10,9 +10,10 @@ import { AlertIcon, EmailIcon } from "../../icons/icons";
 
 import { getNotifications } from "../../store/types/Notifications";
 import { getNotificationMessage } from "../../utils";
-import Logo from "./components/Logo";
-import { HeaderComponent } from "./components/HeaderComponent";
+import Logo from "../../components/HeaderComponents/LogoComponent";
+import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import "./styles.sass";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const { Content, Sider } = Layout;
 
@@ -152,13 +153,14 @@ const addToMenu = (
 const LayoutApp = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
   const user = useSelector((state: any) => state.user);
+  const { width, isTablet } = useWindowDimensions();
 
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
     useState<boolean>(false);
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const handlerHeaderSelect = (e?: React.MouseEvent<HTMLDivElement>) => {
     e && e.stopPropagation();
@@ -176,6 +178,10 @@ const LayoutApp = () => {
     isOpenHeaderSelect && setIsOpenHeaderSelect(false);
     isNotificationPopupOpened && setNotificationPopupOpened(false);
   };
+
+  useEffect(() => {
+    isTablet ? setCollapsed(true) : setCollapsed(false);
+  }, [width]);
 
   const menuItems: IRoute[] = useMemo(() => {
     const menuShowItems = routers.reduce((acc, route) => {
@@ -270,18 +276,15 @@ const LayoutApp = () => {
       >
         <Sider
           hidden={hiddenLayoutElements}
-          style={{
-            overflow: "auto",
-            height: "100vh",
-            position: "fixed",
-            left: 0,
-            top: 0,
-            bottom: 0,
-          }}
           width="250"
           onClick={() => closeAllHeaderPopups()}
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          collapsedWidth="0"
+          className="layout-sidebar"
         >
-          <Logo navigateUrl="/landing" />
+          {!collapsed && <Logo navigateUrl="/landing" />}
           <div className="sidebar-content">
             <Menu
               theme="dark"
@@ -291,6 +294,7 @@ const LayoutApp = () => {
               onClick={({ key }) => {
                 navigate(key);
                 scrollToPosition();
+                isTablet && setCollapsed(true);
               }}
               items={
                 menuItems &&
@@ -316,22 +320,30 @@ const LayoutApp = () => {
                 })
               }
             />
-            <div className="sidebar-email">
-              <EmailIcon />
-              <a href="mailto:info@cryptodonutz.xyz">info@cryptodonutz.xyz</a>
-            </div>
+            {!collapsed && (
+              <div className="sidebar-email">
+                <EmailIcon />
+                <a href="mailto:info@cryptodonutz.xyz">info@cryptodonutz.xyz</a>
+              </div>
+            )}
           </div>
         </Sider>
         <BackTop />
         <Layout
           className="site-layout"
-          style={{ marginLeft: hiddenLayoutElements ? 0 : 250 }}
+          style={{
+            marginLeft: hiddenLayoutElements || isTablet ? 0 : 250, // collapsed
+          }}
         >
           <HeaderComponent
             hidden={hiddenLayoutElements}
             onClick={() => closeAllHeaderPopups()}
             isOpenHeaderSelect={isOpenHeaderSelect}
             handlerHeaderSelect={handlerHeaderSelect}
+            visibleGamburger={true}
+            collapsedSidebar={collapsed}
+            setCollapsedSidebar={setCollapsed}
+            modificator="layout-header"
           >
             {user.id && (
               <div className="notifications">

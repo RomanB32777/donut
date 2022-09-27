@@ -34,7 +34,7 @@ import { abi_transfer, contractMetaAddress, url } from "../../consts";
 
 import SpaceImg from "../../space.png";
 import "./styles.sass";
-import { HeaderComponent } from "../LayoutContainer/components/HeaderComponent";
+import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 
 const maxLengthDescription = 150;
 
@@ -398,7 +398,7 @@ const DonatContainer = () => {
                 {Array.isArray(goalsActive) && Boolean(goalsActive.length) && (
                   <div className="donat-container__payment_goals">
                     <Row justify="space-between">
-                      <Col span={8}>
+                      <Col md={8} xs={11}>
                         <div
                           className={clsx(
                             "donat-container__payment_goals_btn",
@@ -416,7 +416,7 @@ const DonatContainer = () => {
                         </div>
                       </Col>
                       {isOpenSelectGoal && (
-                        <Col span={15}>
+                        <Col md={15} xs={12}>
                           <div className="donat-container__payment_goals_list">
                             <Radio.Group
                               onChange={onChangeRadio}

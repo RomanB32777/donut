@@ -1,10 +1,4 @@
 import { useEffect, useState } from "react";
-import postData from "../../functions/postData";
-import { useNavigate } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import routes from "../../routes";
-import { tryToGetUser } from "../../store/types/User";
-import { setMainWallet } from "../../store/types/Wallet";
 import { Col, Row } from "antd";
 import PageTitle from "../../commonComponents/PageTitle";
 import WidgetStat from "./widgets/WidgetStat";
@@ -25,15 +19,15 @@ const MainContainer = () => {
     <>
       <PageTitle formatId="page_title_dashboard" />
       <Row gutter={[16, 16]} className="widgets_container">
-        <Col span={14}>
+        <Col xs={24} lg={14}>
           <WidgetStat usdtKoef={usdtKoef} />
           <WidgetTopSup usdtKoef={usdtKoef} />
         </Col>
-        <Col span={10}>
+        <Col xs={24} lg={10}>
           <WidgetLatestDonat usdtKoef={usdtKoef} />
         </Col>
         <Col span={24}>
-          <WidgetTopDonat />
+          <WidgetTopDonat usdtKoef={usdtKoef} />
         </Col>
       </Row>
     </>

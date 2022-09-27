@@ -12,6 +12,7 @@ import testIMG from "../../../assets/person.png";
 import "./styles.sass";
 import { addNotification } from "../../../utils";
 import ConfirmPopup from "../../../components/ConfirmPopup";
+import Loader from "../../../components/Loader";
 
 const ContentCard = (prop: {
   data: IBadge;
@@ -108,11 +109,16 @@ const ContentCard = (prop: {
       onClick={() => title.length && prop.onClick(badgeData)}
     >
       <div className="content-panel__Link">
-        <div className="content-panel__image">
+        <div
+          className="content-panel__image"
+          style={{
+            height: image.preview && image.preview.length > 0 ? 220 : 256,
+          }}
+        >
           {image.preview && image.preview.length > 0 ? (
             <img src={image.preview || testIMG} alt={title} />
           ) : (
-            <LargeImageIcon />
+            <Loader size="big" />
           )}
         </div>
         <div className="content-panel__info">

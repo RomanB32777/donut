@@ -7,9 +7,8 @@ import BaseButton from "../../../commonComponents/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import LinkCopy from "../../../components/LinkCopy";
 import SelectInput from "../../../components/SelectInput";
-import { IBadge, IBadgeData, initBadgeData } from "../../../types";
+import { IBadgeData, initBadgeData } from "../../../types";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { makeStorageClient } from "../utils";
 import { LeftArrowIcon } from "../../../icons/icons";
 import { abi, url } from "../../../consts";
 import {
@@ -17,6 +16,7 @@ import {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const BadgePage = ({
   activeBadge,
@@ -27,6 +27,7 @@ const BadgePage = ({
   backBtn: () => void;
   deleteBadge: (badge: IBadgeData) => Promise<boolean | undefined>;
 }) => {
+  const { isTablet } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
 
   const [formBadge, setFormBadge] = useState<IBadgeData>({
@@ -180,7 +181,7 @@ const BadgePage = ({
           className="create_badges__form"
           justify="space-between"
         >
-          <Col span={10}>
+          <Col xl={10} md={12}>
             <div className="upload-block">
               <UploadImage
                 label="Image"
@@ -192,7 +193,7 @@ const BadgePage = ({
               />
             </div>
           </Col>
-          <Col span={12}>
+          <Col xl={12} md={24}>
             <Row gutter={[0, 18]} className="details">
               <Col span={24}>
                 <p className="details__title">Details</p>
@@ -201,22 +202,22 @@ const BadgePage = ({
                 <div className="details__content">
                   <div className="details__content_row">
                     <Row justify="space-between">
-                      <Col span={5}>
+                      <Col md={5} xs={7}>
                         <p className="details__content_row_title">Name</p>
                       </Col>
-                      <Col span={18}>
+                      <Col md={18} xs={16}>
                         <p className="details__content_row_value">{title}</p>
                       </Col>
                     </Row>
                   </div>
                   <div className="details__content_row">
                     <Row justify="space-between">
-                      <Col span={5}>
+                      <Col md={5} xs={7}>
                         <p className="details__content_row_title">
                           Description
                         </p>
                       </Col>
-                      <Col span={18}>
+                      <Col md={18} xs={16}>
                         <p className="details__content_row_value">
                           {description}
                         </p>
@@ -225,20 +226,20 @@ const BadgePage = ({
                   </div>
                   <div className="details__content_row">
                     <Row justify="space-between">
-                      <Col span={5}>
+                      <Col md={5} xs={7}>
                         <p className="details__content_row_title">Quantity</p>
                       </Col>
-                      <Col span={18}>
+                      <Col md={18} xs={16}>
                         <p className="details__content_row_value">{quantity}</p>
                       </Col>
                     </Row>
                   </div>
                   <div className="details__content_row">
                     <Row justify="space-between">
-                      <Col span={5}>
+                      <Col md={5} xs={7}>
                         <p className="details__content_row_title">Address</p>
                       </Col>
-                      <Col span={18}>
+                      <Col md={18} xs={16}>
                         <div className="details__content_row_value">
                           <LinkCopy
                             link={contract_address}
@@ -327,7 +328,7 @@ const BadgePage = ({
                         title="Delete badge"
                         padding="6px 35px"
                         onClick={() => {}}
-                        fontSize="18px"
+                        fontSize={isTablet ? "14px" : "18px"}
                         disabled={deleteLoading || loading}
                         modificator="delete-btn"
                         isRed
@@ -337,7 +338,7 @@ const BadgePage = ({
                       formatId="badges_page_assign_button"
                       padding="6px 35px"
                       onClick={mintBadge}
-                      fontSize="18px"
+                      fontSize={isTablet ? "14px" : "18px"}
                       disabled={loading}
                       isBlue
                     />

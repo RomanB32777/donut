@@ -28,11 +28,19 @@
         display: flex
         align-items: center
 
+        @media (max-width: 480px)
+            flex-direction: column
+            align-items: flex-start
+
     &-block
         background: variables.$white-color
         padding: 8px 8px 4px
         width: fit-content
         margin-right: 50px
+
+        @media (max-width: 480px)
+            margin-right: 0
+            margin-bottom: 25px
 
 .designSettings
     margin-top: 40px

@@ -183,6 +183,7 @@ const StreamStatsContainer = () => {
                   }
                   labelCol={6}
                   InputCol={16}
+                  gutter={[0, 18]}
                 />
               </div>
             </Col>
@@ -197,6 +198,7 @@ const StreamStatsContainer = () => {
                   }
                   labelCol={6}
                   InputCol={16}
+                  gutter={[0, 18]}
                   isTextarea
                 />
               </div>
@@ -215,6 +217,7 @@ const StreamStatsContainer = () => {
                   }
                   labelCol={6}
                   selectCol={16}
+                  gutter={[0, 18]}
                 />
               </div>
             </Col>
@@ -232,6 +235,7 @@ const StreamStatsContainer = () => {
                   }
                   labelCol={6}
                   selectCol={16}
+                  gutter={[0, 18]}
                 />
                 {time_period === "Custom date" && (
                   <div className="customDatesPicker">
@@ -256,7 +260,7 @@ const StreamStatsContainer = () => {
                 <SelectInput
                   label="Template:"
                   list={currTemplateList}
-                  value={currTemplate} //
+                  value={currTemplate}
                   setValue={(value) =>
                     setFormData({
                       ...formData,
@@ -266,6 +270,7 @@ const StreamStatsContainer = () => {
                   descriptionSelect={currTemplateList.join(", ")}
                   selectCol={16}
                   labelCol={6}
+                  gutter={[0, 18]}
                   isTags
                 />
               </div>

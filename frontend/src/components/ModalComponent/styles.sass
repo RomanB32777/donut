@@ -7,9 +7,12 @@
     .modal-content-wrapper
         padding: 0 52px 34px
 
+        @media (max-width: 768px)
+            padding: 0
+            padding-bottom: 15px
+
         &.noPadding
             padding: 0
-
 
 .ant-modal-close-x
     color: variables.$grey-color
@@ -28,6 +31,9 @@
         color: variables.$white-color
         text-align: center
         margin-top: 39px
+
+        @media (max-width: 768px)
+            margin-top: 20px
 
 .modal-success
     display: flex

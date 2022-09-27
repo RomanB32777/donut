@@ -1,0 +1,48 @@
+@use '../../../../commonStyles/_variables'
+
+.widget__items
+    .widget__item_row   
+        padding: 15px 20px
+        display: block
+            
+        &_header
+            display: flex
+            justify-content: space-between
+            align-items: center
+
+            .name
+                font-size: 17px
+                line-height: 20px
+                font-weight: 600
+
+            .sum
+                color: variables.$white-color
+                font-size: 15px
+
+        .time
+            line-height: 25px
+            font-size: 10px
+            text-align: right
+
+        .message
+            margin: 0
+            margin-top: 8px
+            overflow: hidden
+            text-overflow: ellipsis
+            display: -webkit-box
+            -webkit-line-clamp: 2
+            -webkit-box-orient: vertical
+            font-family: variables.$inter-font
+            font-style: normal
+            font-size: 15px
+            line-height: 20px
+            font-weight: 400
+            color: variables.$white-color
+
+@media (min-width: 992px)
+    .widget__item_row 
+        padding: 15px
+        padding-left: 30px
+
+        .time
+            text-align: left

@@ -2,18 +2,23 @@ import { Col, Row } from "antd";
 import { Header } from "antd/lib/layout/layout";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
-import { shortStr } from "../../../../utils";
+import { MenuMobileIcon } from "../../../icons/icons";
+import { shortStr } from "../../../utils";
 import HeaderSelect from "../HeaderSelect";
-import Logo from "../Logo";
+import Logo from "../LogoComponent";
+import "./styles.sass";
 
 interface IHeaderComponent {
   isOpenHeaderSelect?: boolean;
   visibleLogo?: boolean;
   logoUrl?: string;
+  visibleGamburger?: boolean;
   hidden?: boolean;
   modificator?: string;
   backgroundColor?: string;
+  collapsedSidebar?: boolean;
   children?: React.ReactNode;
+  setCollapsedSidebar?: (status: boolean) => void;
   handlerHeaderSelect?: () => void;
   onClick?: () => void;
 }
@@ -23,9 +28,12 @@ export const HeaderComponent = ({
   handlerHeaderSelect,
   hidden,
   visibleLogo,
+  visibleGamburger,
   logoUrl,
   modificator,
   backgroundColor,
+  collapsedSidebar,
+  setCollapsedSidebar,
   children,
   onClick,
 }: IHeaderComponent) => {
@@ -50,18 +58,36 @@ export const HeaderComponent = ({
           width: "100%",
         }}
       >
+        {visibleGamburger && (
+          <div
+            className={clsx("gamb-icon", {
+              active: !collapsedSidebar,
+            })}
+            onClick={() =>
+              setCollapsedSidebar && setCollapsedSidebar(!collapsedSidebar)
+            }
+          >
+            <MenuMobileIcon />
+          </div>
+        )}
         {visibleLogo && (
-          <Col span={8}>
+          <Col lg={8} xs={12}>
             <div className="header__left">
               <Logo navigateUrl={logoUrl || "/landing"} />
             </div>
           </Col>
         )}
-        <Col span={!visibleLogo ? 24 : 10}>
+        <Col lg={!visibleLogo ? 24 : 10} xs={24}>
           <div className="header__right">
             {(user.id || mainWallet.token) && (
               <>
-                <Row align="middle" justify="end">
+                <Row
+                  align="middle"
+                  justify="end"
+                  style={{
+                    width: "100%",
+                  }}
+                >
                   <Col>{children}</Col>
                   <Col>
                     <HeaderSelect

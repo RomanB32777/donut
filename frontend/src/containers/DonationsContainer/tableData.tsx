@@ -31,6 +31,7 @@ export const tableColumns: ColumnsType<ITableData> = [
       if (role === "backers") return <Link to={`/support/${name}`}>{name}</Link>
       return name;
     },
+    fixed: 'left',
   },
   {
     title: "Donation, Token",
@@ -60,6 +61,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     dataIndex: "date",
     key: "date",
     width: "25%",
+    // fixed: 'right',
     render: (text) =>
       Date.parse(text) ? DateFormatter(DateTimezoneFormatter(text)) : "-",
     sorter: (a, b) =>
@@ -67,6 +69,7 @@ export const tableColumns: ColumnsType<ITableData> = [
       Date.parse(b.date) &&
       new Date(a.date).getTime() - new Date(b.date).getTime(),
   },
+  
 ];
 
 export type { ITableData };

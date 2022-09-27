@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import "./styles.sass";
 
 import { BlueDonut } from "../../assets/blueDonut";
-import { HeaderComponent } from "../LayoutContainer/components/HeaderComponent";
+import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 
 const cryptoSteps = [
@@ -118,12 +118,14 @@ const LandingContainer = () => {
           <iframe
             width="1120"
             height="630"
-            src="https://www.youtube.com/embed/31tneq73SlY"
+            // width="560"
+            // height="315"
+            src="https://www.youtube.com/embed/ng-7g2x4GnM"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen={true}
-          ></iframe>
+          />
         </div>
 
         <div className="landing-container__row-panel">
@@ -169,7 +171,7 @@ const LandingContainer = () => {
           >
             {features.map((feature) => (
               <Col
-                span={8}
+                lg={8} md={12} xs={24}
                 className="landing-container__row-panel-features_item"
                 key={"mainpage_features_" + feature.title}
               >

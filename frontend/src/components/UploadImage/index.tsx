@@ -74,7 +74,7 @@ const UploadImage = ({
           width: "100%",
         }}
       >
-        <Col span={labelCol || 12}>
+        <Col md={labelCol || 12} xs={24}>
           <div className="file-input__texts">
             <p className="file-input__title">{label}</p>
             {formats?.length && !disabled && (
@@ -90,7 +90,7 @@ const UploadImage = ({
             )}
           </div>
         </Col>
-        <Col span={InputCol || 12}>
+        <Col md={InputCol || 12} xs={24}>
           <div
             className={clsx("file-input__row", {
               banner: isBanner,

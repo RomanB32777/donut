@@ -75,7 +75,6 @@ const CreateBadgeForm = ({
   setActiveBadge?: (activeBadge: IBadgeData) => void;
   openBadgePage?: () => void;
 }) => {
-  const navigate = useNavigate();
   const user = useSelector((state: any) => state.user);
   const [loading, setLoading] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
@@ -250,7 +249,7 @@ const CreateBadgeForm = ({
           className="create_badges__form"
           justify="space-between"
         >
-          <Col span={10}>
+          <Col xl={10} md={12}>
             <div className="upload-block">
               <UploadImage
                 label="Upload Image"
@@ -272,7 +271,7 @@ const CreateBadgeForm = ({
               />
             </div>
           </Col>
-          <Col span={12}>
+          <Col xl={12} md={24}>
             <Row gutter={[0, 18]} className="form">
               <Col span={24}>
                 <div className="form-element">

@@ -2,6 +2,7 @@ import { HTMLInputTypeAttribute } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import "./styles.sass";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const FormInput = ({
   label,
@@ -38,12 +39,14 @@ const FormInput = ({
   addonAfter?: React.ReactNode;
   setValue?: (value: string) => void;
 }) => {
-  // const idForInput = `form_el_${name.split(" ").join("_")}`;
+  const { isMobile } = useWindowDimensions();
+
   return (
     <div className="formInput">
       <Row gutter={gutter || 0}>
         <Col
-          span={labelCol || (label ? 12 : 0)}
+          md={labelCol || (label ? 12 : 0)}
+          xs={24}
           className={clsx({
             alignCenter: !isTextarea,
           })}
@@ -51,7 +54,8 @@ const FormInput = ({
           <span className="formInput__label">{label}</span>
         </Col>
         <Col
-          span={InputCol || (label ? 12 : 24)}
+          md={InputCol || (label ? 12 : 24)}
+          xs={24}
           className={clsx("formInput__input", {
             [modificator as string]: modificator,
           })}
@@ -97,8 +101,8 @@ const FormInput = ({
       {descriptionInput && (
         <Row>
           <Col
-            offset={labelCol || (label ? 12 : 0)}
-            span={InputCol || (label ? 12 : 24)}
+            offset={(!isMobile ? labelCol : 0) || (label && !isMobile ? 12 : 0)}
+            md={InputCol || (label ? 12 : 24)}
           >
             <p className="formInput__description">{descriptionInput}</p>
           </Col>

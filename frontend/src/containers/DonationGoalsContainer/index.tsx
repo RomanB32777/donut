@@ -160,6 +160,7 @@ const DonationGoalsContainer = () => {
                   }
                   labelCol={6}
                   InputCol={14}
+                  gutter={[0, 18]}
                 />
               </div>
             </Col>
@@ -176,6 +177,7 @@ const DonationGoalsContainer = () => {
                   addonAfter={<span>USD</span>}
                   labelCol={6}
                   InputCol={10}
+                  gutter={[0, 18]}
                 />
               </div>
             </Col>
