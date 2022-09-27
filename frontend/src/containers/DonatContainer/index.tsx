@@ -18,7 +18,7 @@ import {
 } from "../../utils";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
-import BaseButton from "../../commonComponents/BaseButton";
+import BaseButton from "../../components/BaseButton";
 import { WebSocketContext } from "../../components/Websocket/WebSocket";
 import {
   LoadingModalComponent,

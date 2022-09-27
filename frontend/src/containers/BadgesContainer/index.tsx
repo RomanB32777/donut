@@ -3,14 +3,14 @@ import { FormattedMessage } from "react-intl";
 
 import { useSelector } from "react-redux";
 import axiosClient, { baseURL } from "../../axiosClient";
-import PageTitle from "../../commonComponents/PageTitle";
+import PageTitle from "../../components/PageTitle";
 import ContentCard from "./ContentCard";
-import BaseButton from "../../commonComponents/BaseButton";
+import BaseButton from "../../components/BaseButton";
 import "./styles.sass";
 
 import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
-import { IBadge, IBadgeData, initBadgeData } from "../../types";
+import { IBadgeData, initBadgeData } from "../../types";
 import { addNotification } from "../../utils";
 import { Col, Empty, Row } from "antd";
 

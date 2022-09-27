@@ -1,11 +1,11 @@
 import { Col, Row, StepProps, Steps, StepsProps } from "antd";
 import { useState } from "react";
 import { ethers } from "ethers";
-import BaseButton from "../../../commonComponents/BaseButton";
+import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import FormInput from "../../../components/FormInput";
 
-import PageTitle from "../../../commonComponents/PageTitle";
+import PageTitle from "../../../components/PageTitle";
 import { LeftArrowIcon } from "../../../icons/icons";
 import { IBadgeData, initBadgeData } from "../../../types";
 import SelectInput from "../../../components/SelectInput";

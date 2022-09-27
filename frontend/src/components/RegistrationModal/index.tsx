@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
-import BaseButton from "../../commonComponents/BaseButton";
+import BaseButton from "../../components/BaseButton";
 
 import postData from "../../functions/postData";
 import { closeModal } from "../../store/types/Modal";

@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
-import "./commonStyles/main.sass";
 import { LOCALES } from "./i18n/locales";
 import messages from "./i18n/messages";
 import { useDispatch } from "react-redux";
@@ -15,6 +14,7 @@ import { setMainWallet } from "./store/types/Wallet";
 import { setLoading } from "./store/types/Loading";
 
 import "antd/dist/antd.css";
+import "./commonStyles/main.sass";
 import LayoutApp from "./containers/LayoutContainer";
 
 // import moment from 'moment';

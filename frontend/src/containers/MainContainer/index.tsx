@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "antd";
-import PageTitle from "../../commonComponents/PageTitle";
+import PageTitle from "../../components/PageTitle";
 import WidgetStat from "./widgets/WidgetStat";
 import WidgetTopSup from "./widgets/WidgetTopSup";
 import WidgetTopDonat from "./widgets/WidgetTopDonat";

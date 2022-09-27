@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Col, Row } from "antd";
+import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import { FormattedMessage } from "react-intl";
-import BlueButton from "../../commonComponents/BlueButton";
 import {
   DashboardLandingIcon,
   DonationLandingIcon,
@@ -9,13 +10,11 @@ import {
   ShieldLandingIcon,
   WidgetsLandingIcon,
 } from "../../icons/icons";
-import { useNavigate } from "react-router";
-import { useSelector } from "react-redux";
-import "./styles.sass";
-
 import { BlueDonut } from "../../assets/blueDonut";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
+import BaseButton from "../../components/BaseButton";
+import "./styles.sass";
 
 const cryptoSteps = [
   {
@@ -95,7 +94,7 @@ const LandingContainer = () => {
             <span>
               <FormattedMessage id="mainpage_main_title" />
             </span>
-            <BlueButton
+            <BaseButton
               formatId={
                 user && user.id
                   ? "mainpage_main_button_logged"
@@ -104,6 +103,7 @@ const LandingContainer = () => {
               onClick={signUp}
               padding={document.body.clientWidth > 640 ? "23px" : "17px"}
               fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
+              isBlue
             />
           </div>
         </div>
@@ -171,7 +171,9 @@ const LandingContainer = () => {
           >
             {features.map((feature) => (
               <Col
-                lg={8} md={12} xs={24}
+                lg={8}
+                md={12}
+                xs={24}
                 className="landing-container__row-panel-features_item"
                 key={"mainpage_features_" + feature.title}
               >
@@ -229,7 +231,7 @@ const LandingContainer = () => {
               <span>
                 <FormattedMessage id="mainpage_bottom_panel_title" />
               </span>
-              <BlueButton
+              <BaseButton
                 onClick={signUp}
                 fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
                 formatId={
@@ -240,6 +242,7 @@ const LandingContainer = () => {
                 padding={
                   document.body.clientWidth > 640 ? "22px 78px" : "12px 64px"
                 }
+                isBlue
               />
             </div>
           </div>

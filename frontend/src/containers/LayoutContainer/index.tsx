@@ -30,7 +30,7 @@ const getItem = ({
 }) => ({
   key: path,
   icon: icon || null,
-  children,
+  children: children || null,
   label,
 });
 
@@ -286,19 +286,27 @@ const LayoutApp = () => {
           collapsedWidth="0"
           className="layout-sidebar"
           trigger={null}
+          // defaultCollapsed={}
         >
           {!collapsed && <Logo navigateUrl="/landing" />}
           <div className="sidebar-content">
             <Menu
               theme="dark"
               selectedKeys={[activeRoute]}
-              defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
+              // defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
+              triggerSubMenuAction="click"
               mode="inline"
               onClick={({ key }) => {
                 navigate(key);
                 scrollToPosition();
                 isTablet && setCollapsed(true);
               }}
+              // getPopupContainer={(el) => {
+              //   // el.style.display = "none";
+              //   console.log(el);
+
+              //   return el;
+              // }}
               items={
                 menuItems &&
                 menuItems.map(({ name, icon, menu, path, children }) => {
@@ -307,17 +315,17 @@ const LayoutApp = () => {
                         label: name,
                         path,
                         icon,
-                        children:
-                          children &&
-                          children.map((el) =>
-                            el.menu
-                              ? getItem({
-                                  label: el.name,
-                                  path: path + (`/${el.path}` || ""),
-                                  icon: el.icon,
-                                })
-                              : null
-                          ),
+                        children: children
+                          ? children.map((el) =>
+                              el.menu
+                                ? getItem({
+                                    label: el.name,
+                                    path: path + (`/${el.path}` || ""),
+                                    icon: el.icon,
+                                  })
+                                : null
+                            )
+                          : null,
                       })
                     : null;
                 })

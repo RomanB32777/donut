@@ -5,8 +5,8 @@ import QRCode from "react-qr-code";
 import clsx from "clsx";
 
 import axiosClient, { baseURL } from "../../axiosClient";
-import BaseButton from "../../commonComponents/BaseButton";
-import PageTitle from "../../commonComponents/PageTitle";
+import BaseButton from "../../components/BaseButton";
+import PageTitle from "../../components/PageTitle";
 import ColorPicker from "../../components/ColorPicker";
 import LinkCopy from "../../components/LinkCopy";
 import UploadImage from "../../components/UploadImage";

@@ -7,7 +7,6 @@ import {
   DonationPageIcon,
   PeopleIcon,
   ShieldMenuIcon,
-  // WidgetsIcon,
 } from "./icons/icons";
 import {
   PieChartOutlined,

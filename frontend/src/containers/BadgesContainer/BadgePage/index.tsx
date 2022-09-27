@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { ethers } from "ethers";
 import { useSelector } from "react-redux";
-import BaseButton from "../../../commonComponents/BaseButton";
+import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import LinkCopy from "../../../components/LinkCopy";
 import SelectInput from "../../../components/SelectInput";

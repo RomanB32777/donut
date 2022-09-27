@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Col, Empty, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import BaseButton from "../../commonComponents/BaseButton";
-import PageTitle from "../../commonComponents/PageTitle";
+import BaseButton from "../../components/BaseButton";
+import PageTitle from "../../components/PageTitle";
 import FormInput from "../../components/FormInput";
 import ModalComponent from "../../components/ModalComponent";
 import SelectInput from "../../components/SelectInput";

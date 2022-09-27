@@ -5,7 +5,7 @@ import LinkCopy from "../../../components/LinkCopy";
 import { PencilIcon, TrashBinIcon } from "../../../icons/icons";
 import ColorPicker from "../../../components/ColorPicker";
 import ConfirmPopup from "../../../components/ConfirmPopup";
-import BaseButton from "../../../commonComponents/BaseButton";
+import BaseButton from "../../../components/BaseButton";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { getGoals } from "../../../store/types/Goals";
 import { IGoalData } from "../../../types";
