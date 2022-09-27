@@ -122,7 +122,10 @@ const NotificationsPopup = ({ user }: { user: number }) => {
         {notifications.length >= 9 && (
           <div
             className="notifications-popup__content-link"
-            onClick={() => setMoreVisibleList(true)}
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+              e.stopPropagation();
+              setMoreVisibleList(true);
+            }}
           >
             Load more
           </div>
@@ -278,11 +281,11 @@ const LayoutApp = () => {
           hidden={hiddenLayoutElements}
           width="250"
           onClick={() => closeAllHeaderPopups()}
-          trigger={null}
           collapsible
           collapsed={collapsed}
           collapsedWidth="0"
           className="layout-sidebar"
+          trigger={null}
         >
           {!collapsed && <Logo navigateUrl="/landing" />}
           <div className="sidebar-content">

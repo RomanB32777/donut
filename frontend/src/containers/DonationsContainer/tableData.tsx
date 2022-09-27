@@ -18,7 +18,7 @@ export const initTableDataItem: ITableData = {
   donationUSD: 0,
   message: "",
   date: "",
-}
+};
 
 export const tableColumns: ColumnsType<ITableData> = [
   {
@@ -28,10 +28,10 @@ export const tableColumns: ColumnsType<ITableData> = [
     width: "15%",
     align: "center",
     render: (name, { role }) => {
-      if (role === "backers") return <Link to={`/support/${name}`}>{name}</Link>
+      if (role === "backers")
+        return <Link to={`/support/${name}`}>{name}</Link>;
       return name;
     },
-    fixed: 'left',
   },
   {
     title: "Donation, Token",
@@ -54,14 +54,15 @@ export const tableColumns: ColumnsType<ITableData> = [
     title: "Message",
     dataIndex: "message",
     key: "message",
-    width: "30%",
+    width: "70%",
+    // responsive: ['lg'],
+    // ellipsis: true,
   },
   {
     title: "Date and Time, UTM",
     dataIndex: "date",
     key: "date",
     width: "25%",
-    // fixed: 'right',
     render: (text) =>
       Date.parse(text) ? DateFormatter(DateTimezoneFormatter(text)) : "-",
     sorter: (a, b) =>
@@ -69,7 +70,6 @@ export const tableColumns: ColumnsType<ITableData> = [
       Date.parse(b.date) &&
       new Date(a.date).getTime() - new Date(b.date).getTime(),
   },
-  
 ];
 
 export type { ITableData };

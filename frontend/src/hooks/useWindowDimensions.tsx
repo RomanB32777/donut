@@ -5,6 +5,7 @@ export enum breakPointWidth {
   small = 576,
   mobile = 768,
   tablet = 992,
+  laptop = 1200,
 }
 
 const useWindowDimensions = () => {
@@ -15,11 +16,14 @@ const useWindowDimensions = () => {
     const height = hasWindow ? window.innerHeight : null;
     const isMobile = width && width <= breakPointWidth.mobile;
     const isTablet = width && width <= breakPointWidth.tablet;
+    const isLaptop = width && width <= breakPointWidth.laptop;
+
     return {
       width,
       height,
       isMobile,
       isTablet,
+      isLaptop,
     };
   }
 

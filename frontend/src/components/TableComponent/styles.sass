@@ -10,7 +10,7 @@
     font-size: 17px
     line-height: 22px
     color: variables.$white-color
-    
+
     a
         color: variables.$white-color
         text-decoration: underline
@@ -44,9 +44,16 @@
             font-size: 15px
             line-height: 20px
             padding: 0
-            
-    .ant-pagination-item-active 
+
+    .ant-pagination-item-active
         a
             color: variables.$blue-color !important
 
+@media (max-width: 768px)
+    .ant-table
+        width: 200% //max-content
+        transform: rotateX(180deg)
 
+    .ant-table-wrapper
+        overflow-x: scroll
+        transform: rotateX(180deg)

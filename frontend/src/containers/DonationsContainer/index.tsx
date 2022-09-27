@@ -30,7 +30,7 @@ interface IQueryForm {
 const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
-  const { isTablet } = useWindowDimensions();
+  const { isLaptop } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
   const [queryForm, setQueryForm] = useState<IQueryForm>({
@@ -207,9 +207,9 @@ const DonationsContainer = () => {
           {isCreator && (
             <Col xl={8} md={13}>
               <div className="donations-header__right">
-                <Row justify={isTablet ? "start" : "end"}>
+                <Row justify={isLaptop ? "start" : "end"}>
                   {/* space-between */}
-                  <Col xl={11} >
+                  <Col xl={11}>
                     <BaseButton
                       formatId="create_filter_button"
                       onClick={filterBtnClick}
@@ -218,7 +218,7 @@ const DonationsContainer = () => {
                       isBlue={visibleDatesPicker}
                     />
                   </Col>
-                  <Col xl={12} >
+                  <Col xl={12}>
                     <BaseButton
                       formatId="create_export_button"
                       onClick={exportToExel}
@@ -278,7 +278,11 @@ const DonationsContainer = () => {
           dataSource={tableData}
           columns={tableColumns}
           pagination={false}
-          // scroll={{ x: '100vw' }}
+          scroll={{
+            scrollToFirstRowOnChange: true,
+            x: true,
+            // y: 240,
+          }}
           // pagination={{
           //   current: 1,
           //   pageSize: LIMIT_DONATS,
