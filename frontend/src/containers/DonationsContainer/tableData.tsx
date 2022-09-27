@@ -54,7 +54,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     title: "Message",
     dataIndex: "message",
     key: "message",
-    width: "70%",
+    width: "30%",
     // responsive: ['lg'],
     // ellipsis: true,
   },
