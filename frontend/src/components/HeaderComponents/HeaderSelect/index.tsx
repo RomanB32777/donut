@@ -10,10 +10,12 @@ import "./styles.sass";
 const HeaderSelect = ({
   title,
   isOpenSelect,
+  isVisibleAvatar,
   handlerHeaderSelect,
 }: {
   title: string;
   isOpenSelect?: boolean;
+  isVisibleAvatar?: boolean;
   handlerHeaderSelect?: (e?: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
   const dispatch = useDispatch();
@@ -22,7 +24,7 @@ const HeaderSelect = ({
 
   return (
     <div className="header-select">
-      {user.id && (
+      {user.id && isVisibleAvatar && (
         <div
           className="header-select__image"
           onClick={() => navigate("/settings")}

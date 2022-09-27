@@ -398,7 +398,7 @@ const DonatContainer = () => {
                 {Array.isArray(goalsActive) && Boolean(goalsActive.length) && (
                   <div className="donat-container__payment_goals">
                     <Row justify="space-between">
-                      <Col md={8} xs={11}>
+                      <Col md={8} xs={12}>
                         <div
                           className={clsx(
                             "donat-container__payment_goals_btn",
@@ -416,7 +416,7 @@ const DonatContainer = () => {
                         </div>
                       </Col>
                       {isOpenSelectGoal && (
-                        <Col md={15} xs={12}>
+                        <Col md={15} xs={11}>
                           <div className="donat-container__payment_goals_list">
                             <Radio.Group
                               onChange={onChangeRadio}

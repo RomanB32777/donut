@@ -14,15 +14,19 @@ import {
   AlignText,
   IStatData,
   typeAligmnet,
+  typesTabContent,
 } from "../../../types";
 import {
   addNotification,
   addSuccessNotification,
+  copyStr,
   renderStatItem,
 } from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
 import { SliderMarks } from "antd/lib/slider";
 import SliderForm from "../../../components/SliderForm";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
+import { TabsComponent } from "../../../components/TabsComponent";
 
 const marksSlider: { [key: number]: typeAligmnet } = {
   0: "Left",
@@ -37,6 +41,199 @@ interface IEditStatData {
   aligment: typeAligmnet;
 }
 
+const PreviewStatBlock = ({
+  editStatData,
+  statData,
+  loading,
+  sendColorsData,
+}: {
+  editStatData: IEditStatData;
+  statData: IStatData;
+  loading: boolean;
+  sendColorsData: () => Promise<void>;
+}) => {
+  const { isLaptop } = useWindowDimensions();
+  const { template, data_type, time_period } = statData;
+  const { title_color, bar_color, content_color, aligment } = editStatData;
+  return (
+    <Col
+      xl={10}
+      md={24}
+      style={{
+        width: "100%",
+      }}
+    >
+      <div className="preview-block">
+        <span
+          className="preview-block_title"
+          style={{
+            background: bar_color,
+            color: title_color,
+          }}
+        >
+          {data_type} {time_period.toLowerCase()}
+        </span>
+        <div
+          className="preview-block_stat"
+          style={{
+            justifyContent: alignFlextItemsList[aligment],
+          }}
+        >
+          <div className="preview-block_stat__list">
+            <p
+              className="preview-block_stat__list-item"
+              style={{
+                color: content_color,
+                textAlign: (alignItemsList[aligment] as AlignText) || "center",
+              }}
+            >
+              {renderStatItem(
+                template,
+                {
+                  username: "Jordan",
+                  sum_donation: "30 USD",
+                  donation_message: "Hello! This is test message",
+                },
+                2.7
+              )}
+            </p>
+            <p
+              className="preview-block_stat__list-item"
+              style={{
+                color: content_color,
+                textAlign: (alignItemsList[aligment] as AlignText) || "center",
+              }}
+            >
+              {renderStatItem(
+                template,
+                {
+                  username: "Nate",
+                  sum_donation: "50 USD",
+                  donation_message: "How are you ?",
+                },
+                2.7
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
+      {isLaptop && (
+        <div className="btn-block">
+          <BaseButton
+            formatId="profile_form_save_changes_button"
+            padding="6px 35px"
+            onClick={sendColorsData}
+            fontSize="18px"
+            disabled={loading}
+            isBlue
+          />
+        </div>
+      )}
+    </Col>
+  );
+};
+
+const SettingsStatBlock = ({
+  editStatData,
+  loading,
+  sendColorsData,
+  setEditStatData,
+}: {
+  editStatData: IEditStatData;
+  loading: boolean;
+  sendColorsData: () => Promise<void>;
+  setEditStatData: (editStatData: IEditStatData) => void;
+}) => {
+  const { title_color, bar_color, content_color, aligment } = editStatData;
+
+  const valueSlider = useMemo(
+    () =>
+      Object.keys(marksSlider).find((key) => marksSlider[+key] === aligment),
+    [aligment]
+  );
+
+  return (
+    <Col xl={13} md={24}>
+      <Row gutter={[0, 18]} className="form">
+        <Col span={24}>
+          <div className="form-element">
+            <ColorPicker
+              setColor={(color) =>
+                setEditStatData({ ...editStatData, title_color: color })
+              }
+              color={title_color}
+              label="Goal title color:"
+              labelCol={10}
+              gutter={[0, 18]}
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <ColorPicker
+              setColor={(color) =>
+                setEditStatData({ ...editStatData, bar_color: color })
+              }
+              color={bar_color}
+              label="Goal bar color:"
+              labelCol={10}
+              gutter={[0, 18]}
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <ColorPicker
+              setColor={(color) =>
+                setEditStatData({
+                  ...editStatData,
+                  content_color: color,
+                })
+              }
+              color={content_color}
+              label="Content color:"
+              labelCol={10}
+              gutter={[0, 18]}
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SliderForm
+              label="Content alignment:"
+              marks={marksSlider as SliderMarks}
+              step={1}
+              min={0}
+              max={2}
+              setValue={(value) =>
+                setEditStatData({
+                  ...editStatData,
+                  aligment: marksSlider[value],
+                })
+              }
+              defaultValue={valueSlider ? +valueSlider : 1}
+              maxWidth={185}
+              tooltipVisible={false}
+              labelCol={10}
+              gutter={[0, 18]}
+            />
+          </div>
+        </Col>
+      </Row>
+      <div className="btn-block">
+        <BaseButton
+          formatId="profile_form_save_changes_button"
+          padding="6px 35px"
+          onClick={sendColorsData}
+          fontSize="18px"
+          disabled={loading}
+          isBlue
+        />
+      </div>
+    </Col>
+  );
+};
+
 const StatsItem = ({
   statData,
   openEditModal,
@@ -46,6 +243,7 @@ const StatsItem = ({
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
+  const { isLaptop, isTablet } = useWindowDimensions();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -55,12 +253,18 @@ const StatsItem = ({
     content_color: "#212127",
     aligment: "Center",
   });
+  const [tabContent, setTabContent] = useState<typesTabContent>("all");
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
 
-  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
+  const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
+    event && event.stopPropagation();
     openEditModal && openEditModal(statData);
+  };
+
+  const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
+    event && event.stopPropagation();
+    copyStr(linkForCopy);
   };
 
   const sendColorsData = async () => {
@@ -92,7 +296,7 @@ const StatsItem = ({
     }
   };
 
-  const deleteGoalWidget = async () => {
+  const deleteStatWidget = async () => {
     try {
       setLoading(true);
       const { id } = statData;
@@ -122,14 +326,60 @@ const StatsItem = ({
     });
   }, []);
 
+  useEffect(() => {
+    isLaptop ? setTabContent("settings") : setTabContent("all");
+  }, [isLaptop]);
+
+  const contents: { type: typesTabContent; content: React.ReactNode }[] = [
+    {
+      type: "preview",
+      content: (
+        <PreviewStatBlock
+          editStatData={editStatData}
+          statData={statData}
+          loading={loading}
+          sendColorsData={sendColorsData}
+        />
+      ),
+    },
+    {
+      type: "settings",
+      content: (
+        <SettingsStatBlock
+          editStatData={editStatData}
+          loading={loading}
+          setEditStatData={setEditStatData}
+          sendColorsData={sendColorsData}
+        />
+      ),
+    },
+    {
+      type: "all",
+      content: (
+        <>
+          <PreviewStatBlock
+            editStatData={editStatData}
+            statData={statData}
+            loading={loading}
+            sendColorsData={sendColorsData}
+          />
+          <SettingsStatBlock
+            editStatData={editStatData}
+            loading={loading}
+            setEditStatData={setEditStatData}
+            sendColorsData={sendColorsData}
+          />
+        </>
+      ),
+    },
+  ];
+
   const { id, title, stat_description, template, data_type, time_period } =
     statData;
-  const { title_color, bar_color, content_color, aligment } = editStatData;
 
-  const valueSlider = useMemo(
-    () =>
-      Object.keys(marksSlider).find((key) => marksSlider[+key] === aligment),
-    [aligment]
+  const linkForCopy = useMemo(
+    () => `${baseURL}/donat-stat/${user.username}/${id}`,
+    [baseURL, user, id]
   );
 
   return (
@@ -141,7 +391,7 @@ const StatsItem = ({
         onClick={handleActiveDetails}
       >
         <Row>
-          <Col span={11}>
+          <Col sm={isTablet ? 12 : 11} xs={24}>
             <div className="stats-item__mainInfo">
               <p className="stats-item__mainInfo_title">{title}</p>
               <p className="stats-item__mainInfo_description">
@@ -149,167 +399,103 @@ const StatsItem = ({
               </p>
             </div>
           </Col>
-          <Col span={12}>
+          <Col sm={12} xs={24}>
             <div className="stats-item__parameters">
               <p>Date period: {time_period} </p>
-              {/* 01/08/2022 - 31/08/2022 */}
               <p>Date type: {data_type}</p>
               <p>Template: {template}</p>
-              <LinkCopy
-                link={baseURL + "/donat-stat/" + user.username + "/" + id}
-                isSimple
-              />
+              {!isTablet && <LinkCopy link={linkForCopy} isSimple />}
             </div>
           </Col>
-          <Col span={1}>
-            <div className="stats-item__btns">
-              <div
-                style={{
-                  marginRight: 5,
-                }}
-                onClick={clickEditBtn}
-              >
-                <PencilIcon />
-              </div>
-              <ConfirmPopup confirm={deleteGoalWidget}>
-                <div style={{ marginLeft: 5 }}>
-                  <TrashBinIcon />
+          {!isTablet && (
+            <Col span={1}>
+              <div className="stats-item__btns">
+                <div
+                  style={{
+                    marginRight: 5,
+                  }}
+                  onClick={clickEditBtn}
+                >
+                  <PencilIcon />
                 </div>
-              </ConfirmPopup>
-            </div>
-          </Col>
+                <div
+                  onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
+                    e && e.stopPropagation()
+                  }
+                >
+                  <ConfirmPopup confirm={deleteStatWidget}>
+                    <div style={{ marginLeft: 5 }}>
+                      <TrashBinIcon />
+                    </div>
+                  </ConfirmPopup>
+                </div>
+              </div>
+            </Col>
+          )}
         </Row>
+        {isTablet && (
+          <div className="btn-mobile-block">
+            <Row
+              gutter={[18, 18]}
+              style={{
+                width: "100%",
+              }}
+              justify="center"
+            >
+              <Col>
+                <BaseButton
+                  title="Copy link"
+                  padding="3px 20px"
+                  onClick={clickCopyBtn}
+                  fontSize="15px"
+                  isBlue
+                />
+              </Col>
+              <Col>
+                <BaseButton
+                  title="Edit widget"
+                  padding="3px 20px"
+                  onClick={clickEditBtn}
+                  fontSize="15px"
+                  disabled={loading}
+                  isBlack
+                />
+              </Col>
+              <Col>
+                <div
+                  onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
+                    e && e.stopPropagation()
+                  }
+                >
+                  <ConfirmPopup confirm={deleteStatWidget}>
+                    <BaseButton
+                      title="Delete widget"
+                      padding="3px 20px"
+                      onClick={() => {}}
+                      fontSize="15px"
+                      disabled={loading}
+                      isRed
+                    />
+                  </ConfirmPopup>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        )}
       </div>
       {isActiveDetails && (
         <div className="stats-item__details">
+          {tabContent !== "all" && (
+            <TabsComponent setTabContent={setTabContent} />
+          )}
           <Row
             gutter={[4, 4]}
             className="stats-item__details-container"
             justify="space-between"
           >
-            <Col span={10}>
-              <div className="preview-block">
-                <span
-                  className="preview-block_title"
-                  style={{
-                    background: bar_color,
-                    color: title_color,
-                  }}
-                >
-                  {data_type} {time_period.toLowerCase()}
-                </span>
-                <div
-                  className="preview-block_stat"
-                  style={{
-                    justifyContent: alignFlextItemsList[aligment],
-                  }}
-                >
-                  <div className="preview-block_stat__list">
-                    <p
-                      className="preview-block_stat__list-item"
-                      style={{
-                        color: content_color,
-                        textAlign:
-                          (alignItemsList[aligment] as AlignText) || "center",
-                      }}
-                    >
-                      {renderStatItem(
-                        template,
-                        {
-                          username: "Jordan",
-                          sum_donation: "30 USD",
-                          donation_message: "Hello! This is test message",
-                        },
-                        2.7
-                      )}
-                    </p>
-                    <p
-                      className="preview-block_stat__list-item"
-                      style={{
-                        color: content_color,
-                        textAlign:
-                          (alignItemsList[aligment] as AlignText) || "center",
-                      }}
-                    >
-                      {renderStatItem(
-                        template,
-                        {
-                          username: "Nate",
-                          sum_donation: "50 USD",
-                          donation_message: "How are you ?",
-                        },
-                        2.7
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col span={13} className="form">
-              <div className="form-element">
-                <ColorPicker
-                  setColor={(color) =>
-                    setEditStatData({ ...editStatData, title_color: color })
-                  }
-                  color={title_color}
-                  label="Goal title color:"
-                  labelCol={10}
-                />
-              </div>
-              <div className="form-element">
-                <ColorPicker
-                  setColor={(color) =>
-                    setEditStatData({ ...editStatData, bar_color: color })
-                  }
-                  color={bar_color}
-                  label="Goal bar color:"
-                  labelCol={10}
-                />
-              </div>
-              <div className="form-element">
-                <ColorPicker
-                  setColor={(color) =>
-                    setEditStatData({
-                      ...editStatData,
-                      content_color: color,
-                    })
-                  }
-                  color={content_color}
-                  label="Content color:"
-                  labelCol={10}
-                />
-              </div>
-              <div className="form-element">
-                <SliderForm
-                  label="Content alignment:"
-                  marks={marksSlider as SliderMarks}
-                  step={1}
-                  min={0}
-                  max={2}
-                  setValue={(value) =>
-                    setEditStatData({
-                      ...editStatData,
-                      aligment: marksSlider[value],
-                    })
-                  }
-                  defaultValue={valueSlider ? +valueSlider : 1}
-                  maxWidth={185}
-                  tooltipVisible={false}
-                  labelCol={10}
-                />
-              </div>
-
-              <div className="btn-block">
-                <BaseButton
-                  formatId="profile_form_save_changes_button"
-                  padding="6px 35px"
-                  onClick={sendColorsData}
-                  fontSize="18px"
-                  disabled={loading}
-                  isBlue
-                />
-              </div>
-            </Col>
+            {contents.map(
+              (block) => block.type === tabContent && block.content
+            )}
           </Row>
         </div>
       )}

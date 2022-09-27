@@ -2,6 +2,7 @@ import { Col, Row } from "antd";
 import { Header } from "antd/lib/layout/layout";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { MenuMobileIcon } from "../../../icons/icons";
 import { shortStr } from "../../../utils";
 import HeaderSelect from "../HeaderSelect";
@@ -37,6 +38,7 @@ export const HeaderComponent = ({
   children,
   onClick,
 }: IHeaderComponent) => {
+  const { isMobile } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
   const mainWallet = useSelector((state: any) => state.wallet);
 
@@ -71,13 +73,13 @@ export const HeaderComponent = ({
           </div>
         )}
         {visibleLogo && (
-          <Col lg={8} xs={12}>
+          <Col lg={8} xs={14}>
             <div className="header__left">
               <Logo navigateUrl={logoUrl || "/landing"} />
             </div>
           </Col>
         )}
-        <Col lg={!visibleLogo ? 24 : 10} xs={24}>
+        <Col xs={!visibleLogo ? 24 : 8} >
           <div className="header__right">
             {(user.id || mainWallet.token) && (
               <>
@@ -94,6 +96,7 @@ export const HeaderComponent = ({
                       title={user.username || shortStr(mainWallet.token, 8)}
                       isOpenSelect={user.id && isOpenHeaderSelect}
                       handlerHeaderSelect={handlerHeaderSelect}
+                      isVisibleAvatar={true} // !visibleLogo && 
                     />
                   </Col>
                 </Row>

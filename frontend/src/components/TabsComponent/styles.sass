@@ -1,0 +1,21 @@
+@use '../../commonStyles/variables'
+
+.page_tabs
+    .ant-tabs-tab
+        &-btn
+            font-family: variables.$jakarta-font
+            font-size: 20px
+            font-style: normal
+            font-weight: 700
+            line-height: 25px
+            color: variables.$white-color
+
+        &.ant-tabs-tab-active
+            .ant-tabs-tab-btn
+                color: variables.$blue-color
+
+    .ant-tabs-ink-bar
+        background: variables.$blue-color
+
+    .ant-tabs-top > .ant-tabs-nav::before
+        border-color: transparent

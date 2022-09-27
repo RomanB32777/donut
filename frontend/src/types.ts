@@ -105,3 +105,5 @@ export interface IBadge {
   creator_id: number;
   contributor_user_id_list?: string;
 }
+
+export type typesTabContent = "all" | "settings" | "preview";

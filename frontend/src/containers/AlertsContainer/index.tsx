@@ -15,12 +15,11 @@ import BaseButton from "../../components/BaseButton";
 import LinkCopy from "../../components/LinkCopy";
 import SelectComponent from "../../components/SelectComponent";
 import SliderForm from "../../components/SliderForm";
-import { IAlertData, initAlertData } from "../../types";
+import { IAlertData, initAlertData, typesTabContent } from "../../types";
 import { url } from "../../consts";
 import { soundsList } from "../../assets/sounds";
 import "./styles.sass";
-
-type typesTabContent = "all" | "settings" | "preview";
+import { TabsComponent } from "../../components/TabsComponent";
 
 const PreviewAlertsBlock = ({ formData }: { formData: IAlertData }) => {
   const { banner, message_color, name_color, sum_color } = formData;
@@ -222,7 +221,7 @@ const AlertsContainer = () => {
   const { isLaptop } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
 
-  const [tabContent, setTabContent] = useState<typesTabContent>("all"); // typesTabContent
+  const [tabContent, setTabContent] = useState<typesTabContent>("all");
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<IAlertData>({ ...initAlertData });
 
@@ -341,28 +340,7 @@ const AlertsContainer = () => {
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />
         {tabContent !== "all" && (
-          <div className="page_tabs">
-            <Tabs onChange={(key) => setTabContent(key as typesTabContent)}>
-              <Tabs.TabPane
-                tab={
-                  <>
-                    <SettingOutlined />
-                    Settings
-                  </>
-                }
-                key="settings"
-              />
-              <Tabs.TabPane
-                tab={
-                  <>
-                    <EyeOutlined />
-                    Preview
-                  </>
-                }
-                key="preview"
-              />
-            </Tabs>
-          </div>
+          <TabsComponent setTabContent={setTabContent} />
         )}
         <Row
           gutter={[4, 4]}
