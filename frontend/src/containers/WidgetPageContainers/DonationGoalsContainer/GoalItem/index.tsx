@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import LinkCopy from "../../../../components/LinkCopy";
-import { PencilIcon, TrashBinIcon } from "../../../../icons/icons";
+import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons/icons";
 import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
 import BaseButton from "../../../../components/BaseButton";
@@ -350,7 +350,12 @@ const GoalItem = ({
               )}
             />
           </Col>
-          <Col xs={isTablet ? 16 : 21} offset={isMobile ? 5 : 0}>
+          <Col
+            xs={{ span: isTablet ? 16 : 18, offset: 5 }}
+            sm={{ offset: 2 }}
+            lg={{ offset: 0 }}
+          >
+            {/* offset={isTablet ? 5 : 0} */}
             <Row
               style={{
                 alignItems: "baseline",
@@ -374,84 +379,37 @@ const GoalItem = ({
                   )}
                 </Col>
               )}
-              {!isLaptop && (
-                <Col span={2}>
-                  <div className="goals-item__btns">
-                    {!isarchive && (
-                      <div onClick={clickEditBtn} style={{ marginRight: 10 }}>
-                        <PencilIcon />
-                      </div>
-                    )}
-                    <div
-                      onClick={(e: React.MouseEvent<HTMLDivElement>) =>
-                        e.stopPropagation()
-                      }
-                    >
-                      <ConfirmPopup confirm={deleteGoalWidget}>
-                        <div>
-                          <TrashBinIcon />
-                        </div>
-                      </ConfirmPopup>
-                    </div>
-                  </div>
-                </Col>
-              )}
             </Row>
           </Col>
-        </Row>
-        {isLaptop && (
-          <div className="btn-mobile-block">
-            <Row
-              gutter={[18, 18]}
-              style={{
-                width: "100%",
-              }}
-              justify="center"
+          <div className="goals-item__btns">
+            {isLaptop && !isarchive && (
+              <div className="goals-item__btns_item" onClick={clickCopyBtn}>
+                <CopyIcon />
+              </div>
+            )}
+            {!isarchive && (
+              <div
+                className="goals-item__btns_item"
+                onClick={clickEditBtn}
+                style={{ marginRight: 10 }}
+              >
+                <PencilIcon />
+              </div>
+            )}
+            <div
+              className="goals-item__btns_item"
+              onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                e.stopPropagation()
+              }
             >
-              {!isarchive && (
-                <Col>
-                  <BaseButton
-                    title="Copy link"
-                    padding="3px 20px"
-                    onClick={clickCopyBtn}
-                    fontSize="15px"
-                    isBlue
-                  />
-                </Col>
-              )}
-              {!isarchive && (
-                <Col>
-                  <BaseButton
-                    title="Edit widget"
-                    padding="3px 20px"
-                    onClick={clickEditBtn}
-                    fontSize="15px"
-                    disabled={loading}
-                    isBlack
-                  />
-                </Col>
-              )}
-              <Col>
-                <div
-                  onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
-                    e && e.stopPropagation()
-                  }
-                >
-                  <ConfirmPopup confirm={deleteGoalWidget}>
-                    <BaseButton
-                      title="Delete widget"
-                      padding="3px 20px"
-                      onClick={() => {}}
-                      fontSize="15px"
-                      disabled={loading}
-                      isRed
-                    />
-                  </ConfirmPopup>
+              <ConfirmPopup confirm={deleteGoalWidget}>
+                <div>
+                  <TrashBinIcon />
                 </div>
-              </Col>
-            </Row>
+              </ConfirmPopup>
+            </div>
           </div>
-        )}
+        </Row>
       </div>
       {isActiveDetails && (
         <div className="goals-item__details">

@@ -19,7 +19,7 @@ import ModalComponent, {
 } from "../../../components/ModalComponent";
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
 import { addNotification } from "../../../utils";
-import { useNavigate } from "react-router";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const { Step } = Steps;
 
@@ -75,6 +75,7 @@ const CreateBadgeForm = ({
   setActiveBadge?: (activeBadge: IBadgeData) => void;
   openBadgePage?: () => void;
 }) => {
+  const { isTablet } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
   const [loading, setLoading] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
@@ -346,6 +347,7 @@ const CreateBadgeForm = ({
         title="Follow steps"
         closable={false}
         width={550}
+        centered={isTablet as boolean}
       >
         <div className="goals-modal">
           <Row gutter={[0, 18]} className="goals-modal__form" justify="center">

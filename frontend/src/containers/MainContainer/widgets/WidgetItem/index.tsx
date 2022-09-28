@@ -8,8 +8,8 @@ const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
     <Row gutter={[32, 0]}>
       <Col span={24}>
         <div className="widget__item widget__item_row">
-          <Row justify="space-between" style={{ width: "100%" }}>
-            <Col lg={16} xs={18}>
+          <Row justify="space-between" align="middle" style={{ width: "100%" }}>
+            <Col xs={17} md={18}>
               <div className="widget__item_header widget__item_row_header">
                 <div className="widget__item_header_name name">
                   {donat.username}
@@ -22,7 +22,7 @@ const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
                 </div>
               </div>
             </Col>
-            <Col lg={6} xs={4}>
+            <Col xs={5} md={4}>
               <div className="widget__item_header_time time">
                 {moment(
                   DateTimezoneFormatter(donat.donation_date)

@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { Modal, ModalProps } from "antd";
-import "./styles.sass";
 import clsx from "clsx";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import Loader from "../Loader";
+import "./styles.sass";
 
 interface IModalComponent extends ModalProps {
   topModal?: boolean;
@@ -16,6 +17,7 @@ const ModalComponent = ({
   width,
   confirmLoading,
   topModal,
+  centered,
   onCancel,
   noPadding,
   closable,
@@ -27,12 +29,13 @@ const ModalComponent = ({
     confirmLoading={confirmLoading || false}
     onCancel={onCancel}
     width={width || 520}
-    style={{ top: topModal ? 20 : 100 }}
+    style={{ top: topModal ? 20 : centered ? 0 : 100 }}
     closable={closable}
     footer={null}
     bodyStyle={{
       padding: noPadding ? 0 : 24,
     }}
+    centered={centered || false}
   >
     <div
       className={clsx("modal-content-wrapper", {
@@ -73,7 +76,10 @@ export const SuccessModalComponent = ({
   onClose,
   showDurationPopup,
   description,
+  centered,
 }: ISuccessModalComponent) => {
+  const { isTablet, isMobile } = useWindowDimensions();
+
   useEffect(() => {
     let timeOut: NodeJS.Timeout | undefined;
     if (visible)
@@ -88,9 +94,10 @@ export const SuccessModalComponent = ({
     <ModalComponent
       visible={visible}
       closable={false}
-      width={700}
-      topModal
+      width={isTablet ? 500 : 700}
+      topModal={!isTablet}
       noPadding
+      centered={isMobile as boolean}
     >
       <div className="modal-success">
         <p className="modal-success__message">{message}</p>

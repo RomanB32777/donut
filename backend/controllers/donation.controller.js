@@ -32,7 +32,7 @@ const dateParams = {
 
 const dateTrancSelectParams = {
     'today': 'hour',
-    '7days': 'week',
+    '7days': 'day',
     '30days': 'day',
     'year': 'month',
 }

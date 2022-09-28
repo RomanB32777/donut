@@ -29,6 +29,7 @@
         border-radius: 20px
         padding: 20px 30px
         cursor: pointer
+        position: relative
 
         @media (max-width: 768px)
             padding: 15px 20px
@@ -93,7 +94,13 @@
         &__btns
             display: flex
             justify-content: flex-end
+            position: absolute
+            right: 18px
+            top: 18px
 
+            &_item:not(:last-child)
+                margin-right: 10px
+            
             svg
                 color: variables.$white-color
                 cursor: pointer

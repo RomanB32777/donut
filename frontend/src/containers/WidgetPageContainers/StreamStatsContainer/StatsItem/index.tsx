@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
 import LinkCopy from "../../../../components/LinkCopy";
-import { PencilIcon, TrashBinIcon } from "../../../../icons/icons";
+import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons/icons";
 import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
 import BaseButton from "../../../../components/BaseButton";
@@ -407,81 +407,29 @@ const StatsItem = ({
               {!isTablet && <LinkCopy link={linkForCopy} isSimple />}
             </div>
           </Col>
-          {!isTablet && (
-            <Col span={1}>
-              <div className="stats-item__btns">
-                <div
-                  style={{
-                    marginRight: 5,
-                  }}
-                  onClick={clickEditBtn}
-                >
-                  <PencilIcon />
-                </div>
-                <div
-                  onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
-                    e && e.stopPropagation()
-                  }
-                >
-                  <ConfirmPopup confirm={deleteStatWidget}>
-                    <div style={{ marginLeft: 5 }}>
-                      <TrashBinIcon />
-                    </div>
-                  </ConfirmPopup>
-                </div>
-              </div>
-            </Col>
-          )}
         </Row>
-        {isTablet && (
-          <div className="btn-mobile-block">
-            <Row
-              gutter={[18, 18]}
-              style={{
-                width: "100%",
-              }}
-              justify="center"
-            >
-              <Col>
-                <BaseButton
-                  title="Copy link"
-                  padding="3px 20px"
-                  onClick={clickCopyBtn}
-                  fontSize="15px"
-                  isBlue
-                />
-              </Col>
-              <Col>
-                <BaseButton
-                  title="Edit widget"
-                  padding="3px 20px"
-                  onClick={clickEditBtn}
-                  fontSize="15px"
-                  disabled={loading}
-                  isBlack
-                />
-              </Col>
-              <Col>
-                <div
-                  onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
-                    e && e.stopPropagation()
-                  }
-                >
-                  <ConfirmPopup confirm={deleteStatWidget}>
-                    <BaseButton
-                      title="Delete widget"
-                      padding="3px 20px"
-                      onClick={() => {}}
-                      fontSize="15px"
-                      disabled={loading}
-                      isRed
-                    />
-                  </ConfirmPopup>
-                </div>
-              </Col>
-            </Row>
+        <div className="stats-item__btns">
+          {isTablet && (
+            <div className="stats-item__btns_item" onClick={clickCopyBtn}>
+              <CopyIcon />
+            </div>
+          )}
+          <div className="stats-item__btns_item" onClick={clickEditBtn}>
+            <PencilIcon />
           </div>
-        )}
+          <div
+            className="stats-item__btns_item"
+            onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
+              e && e.stopPropagation()
+            }
+          >
+            <ConfirmPopup confirm={deleteStatWidget}>
+              <div>
+                <TrashBinIcon />
+              </div>
+            </ConfirmPopup>
+          </div>
+        </div>
       </div>
       {isActiveDetails && (
         <div className="stats-item__details">

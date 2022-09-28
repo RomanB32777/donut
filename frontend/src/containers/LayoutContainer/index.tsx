@@ -272,28 +272,32 @@ const LayoutApp = () => {
       <Layout
         style={{
           minHeight: "100vh",
+          position: "relative",
         }}
         className={clsx({
           transparent: isTransparentMainConteiner,
         })}
       >
+        {!collapsed && (
+          <div className="sidebar-overlay" onClick={() => setCollapsed(true)} />
+        )}
         <Sider
           hidden={hiddenLayoutElements}
-          width="250"
+          width={isTablet ? 275 : 250}
           onClick={() => closeAllHeaderPopups()}
           collapsible
           collapsed={collapsed}
           collapsedWidth="0"
           className="layout-sidebar"
           trigger={null}
-          // defaultCollapsed={}
+          onCollapse={(c, t) => console.log(c, t)}
         >
           {!collapsed && <Logo navigateUrl="/landing" />}
           <div className="sidebar-content">
             <Menu
               theme="dark"
               selectedKeys={[activeRoute]}
-              // defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
+              defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
               triggerSubMenuAction="click"
               mode="inline"
               onClick={({ key }) => {

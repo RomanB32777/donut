@@ -11,6 +11,8 @@ const LIMIT_SUPPORTERS = 6;
 
 const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);
+  const notifications = useSelector((state: any) => state.notifications);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
@@ -34,7 +36,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
     user.id && timePeriod && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem]);
+  }, [user, activeFilterItem, notifications]);
 
   return (
     <div className="widget widget-topSup">
@@ -50,10 +52,10 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
       </div>
       {/* {loading && <Loader size="small" />} */}
       {Boolean(topSupporters.length) ? (
-        topSupporters.map((donat: any) => (
-          <div className="widget__items" key={donat.username}>
-            <Row gutter={[48, 16]}>
-              <Col span={12}>
+        <div className="widget__items">
+          <Row gutter={[16, 16]}>
+            {topSupporters.map((donat: any) => (
+              <Col span={12} key={donat.username}>
                 <div className="widget__item">
                   <div className="widget__item_name">{donat.username}</div>
                   <div className="widget__item_sum">
@@ -61,9 +63,9 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
                   </div>
                 </div>
               </Col>
-            </Row>
-          </div>
-        ))
+            ))}
+          </Row>
+        </div>
       ) : (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       )}

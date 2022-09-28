@@ -15,6 +15,8 @@ const LIMIT_DONATS = 6;
 const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const { isTablet } = useWindowDimensions();
   const user: any = useSelector((state: any) => state.user);
+  const notifications = useSelector((state: any) => state.notifications);
+
   const [topDonations, setTopDonations] = useState<ITableData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
@@ -44,7 +46,7 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
     user.id && timePeriod && getTopDonations(timePeriod);
-  }, [user, activeFilterItem]);
+  }, [user, activeFilterItem, notifications]);
 
   return (
     <div className="widget widget-topDonat">

@@ -11,6 +11,8 @@ const LIMIT_LATEST = 6;
 
 const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);
+  const notifications = useSelector((state: any) => state.notifications);
+
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
@@ -30,7 +32,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
     user.id && timePeriod && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem]);
+  }, [user, activeFilterItem, notifications]);
 
   return (
     <div className="widget widget-latestDonat">

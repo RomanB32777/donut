@@ -32,6 +32,7 @@ const LIMIT_DONATS = 15;
 const DonationsContainer = () => {
   const { isLaptop } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
+  const notifications = useSelector((state: any) => state.notifications);
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
   const [queryForm, setQueryForm] = useState<IQueryForm>({
     timePeriod: filterPeriodItems["7days"],
@@ -146,7 +147,7 @@ const DonationsContainer = () => {
 
   useEffect(() => {
     user.id && usdtKoef && getDonationsData();
-  }, [user, usdtKoef]); // queryForm
+  }, [user, usdtKoef, notifications]); // queryForm
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",
