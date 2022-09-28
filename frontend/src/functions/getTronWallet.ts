@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
 import { addInstallWalletNotification } from '../utils';
+import mainWalletConf from '../conf/main_wallet.json'
+
 const getTronWallet = () => {
     if ((window as any).tronWeb && (window as any).tronWeb.defaultAddress.base58) {
         return (window as any).tronWeb.defaultAddress.base58
@@ -7,7 +9,6 @@ const getTronWallet = () => {
         return null
     } 
 }
-
 
 export const getMetamaskWallet = async () => {
     if ((window as any).ethereum) {
@@ -29,7 +30,7 @@ export const getMetamaskData = async () => {
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
 
-        if (chainId !== '0x2328') {
+        if (chainId !== mainWalletConf.chainId) { // 0x2328
             await (window as any).ethereum.request({
                 method: "wallet_addEthereumChain",
                 params: [{

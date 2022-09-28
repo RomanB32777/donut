@@ -139,7 +139,7 @@ create TABLE donations(
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
     goal_id VARCHAR(20) DEFAULT '',
-    FOREIGN KEY (goal_id) REFERENCES goals(id)
+    FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE SET NULL
 );
 
 create TABLE notifications (

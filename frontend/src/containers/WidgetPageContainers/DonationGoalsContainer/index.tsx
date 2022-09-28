@@ -1,14 +1,14 @@
 import { Col, Empty, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axiosClient from "../../axiosClient";
-import BaseButton from "../../components/BaseButton";
-import PageTitle from "../../components/PageTitle";
-import FormInput from "../../components/FormInput";
-import ModalComponent from "../../components/ModalComponent";
-import { getGoals } from "../../store/types/Goals";
-import { IGoalData } from "../../types";
-import { addNotification, addSuccessNotification } from "../../utils";
+import axiosClient from "../../../axiosClient";
+import BaseButton from "../../../components/BaseButton";
+import PageTitle from "../../../components/PageTitle";
+import FormInput from "../../../components/FormInput";
+import ModalComponent from "../../../components/ModalComponent";
+import { getGoals } from "../../../store/types/Goals";
+import { IGoalData } from "../../../types";
+import { addNotification, addSuccessNotification } from "../../../utils";
 import GoalItem from "./GoalItem";
 
 import "./styles.sass";

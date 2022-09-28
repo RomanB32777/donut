@@ -10,12 +10,12 @@ import "./styles.sass";
 const HeaderSelect = ({
   title,
   isOpenSelect,
-  isVisibleAvatar,
+  isNotVisibleAvatarInMobile,
   handlerHeaderSelect,
 }: {
   title: string;
   isOpenSelect?: boolean;
-  isVisibleAvatar?: boolean;
+  isNotVisibleAvatarInMobile?: boolean;
   handlerHeaderSelect?: (e?: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
   const dispatch = useDispatch();
@@ -24,9 +24,11 @@ const HeaderSelect = ({
 
   return (
     <div className="header-select">
-      {user.id && isVisibleAvatar && (
+      {user.id && (
         <div
-          className="header-select__image"
+          className={clsx("header-select__image", {
+            dNone: isNotVisibleAvatarInMobile,
+          })}
           onClick={() => navigate("/settings")}
         >
           {user.avatarlink && <img src={url + user.avatarlink} alt="" />}

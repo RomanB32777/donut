@@ -214,16 +214,19 @@
         width: 70%
         padding: 70px 0 0
 
-        @media (max-width: 768px)
-            padding: 30px 0 0
-
         .title
             font-family: variables.$jakarta-font
             font-style: normal
             font-weight: 600
             font-size: 30px
-            line-height: 30px
+            line-height: 35px
             color: variables.$white-color
+
+        @media (max-width: 768px)
+            padding: 30px 0 0
+
+            .title
+                font-size: 25px
 
 .donat-loading
     display: flex

@@ -1,22 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
-import LinkCopy from "../../../components/LinkCopy";
-import { PencilIcon, TrashBinIcon } from "../../../icons/icons";
-import ColorPicker from "../../../components/ColorPicker";
-import ConfirmPopup from "../../../components/ConfirmPopup";
-import BaseButton from "../../../components/BaseButton";
-import axiosClient, { baseURL } from "../../../axiosClient";
-import { getGoals } from "../../../store/types/Goals";
-import { IGoalData, typesTabContent } from "../../../types";
+import LinkCopy from "../../../../components/LinkCopy";
+import { PencilIcon, TrashBinIcon } from "../../../../icons/icons";
+import ColorPicker from "../../../../components/ColorPicker";
+import ConfirmPopup from "../../../../components/ConfirmPopup";
+import BaseButton from "../../../../components/BaseButton";
+import axiosClient, { baseURL } from "../../../../axiosClient";
+import { getGoals } from "../../../../store/types/Goals";
+import { IGoalData, typesTabContent } from "../../../../types";
 import {
   addNotification,
   addSuccessNotification,
   copyStr,
-} from "../../../utils";
+} from "../../../../utils";
 import clsx from "clsx";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { TabsComponent } from "../../../components/TabsComponent";
+import useWindowDimensions from "../../../../hooks/useWindowDimensions";
+import { TabsComponent } from "../../../../components/TabsComponent";
 
 interface IEditGoalData {
   title_color: string;
@@ -374,12 +374,14 @@ const GoalItem = ({
                   )}
                 </Col>
               )}
-              {!isLaptop && !isarchive && (
+              {!isLaptop && (
                 <Col span={2}>
                   <div className="goals-item__btns">
-                    <div onClick={clickEditBtn} style={{ marginRight: 10 }}>
-                      <PencilIcon />
-                    </div>
+                    {!isarchive && (
+                      <div onClick={clickEditBtn} style={{ marginRight: 10 }}>
+                        <PencilIcon />
+                      </div>
+                    )}
                     <div
                       onClick={(e: React.MouseEvent<HTMLDivElement>) =>
                         e.stopPropagation()
@@ -397,7 +399,7 @@ const GoalItem = ({
             </Row>
           </Col>
         </Row>
-        {isLaptop && !isarchive && (
+        {isLaptop && (
           <div className="btn-mobile-block">
             <Row
               gutter={[18, 18]}
@@ -406,25 +408,29 @@ const GoalItem = ({
               }}
               justify="center"
             >
-              <Col>
-                <BaseButton
-                  title="Copy link"
-                  padding="3px 20px"
-                  onClick={clickCopyBtn}
-                  fontSize="15px"
-                  isBlue
-                />
-              </Col>
-              <Col>
-                <BaseButton
-                  title="Edit widget"
-                  padding="3px 20px"
-                  onClick={clickEditBtn}
-                  fontSize="15px"
-                  disabled={loading}
-                  isBlack
-                />
-              </Col>
+              {!isarchive && (
+                <Col>
+                  <BaseButton
+                    title="Copy link"
+                    padding="3px 20px"
+                    onClick={clickCopyBtn}
+                    fontSize="15px"
+                    isBlue
+                  />
+                </Col>
+              )}
+              {!isarchive && (
+                <Col>
+                  <BaseButton
+                    title="Edit widget"
+                    padding="3px 20px"
+                    onClick={clickEditBtn}
+                    fontSize="15px"
+                    disabled={loading}
+                    isBlack
+                  />
+                </Col>
+              )}
               <Col>
                 <div
                   onClick={(e?: React.MouseEvent<HTMLDivElement>) =>

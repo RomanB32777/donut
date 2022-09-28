@@ -2,12 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
-import LinkCopy from "../../../components/LinkCopy";
-import { PencilIcon, TrashBinIcon } from "../../../icons/icons";
-import ColorPicker from "../../../components/ColorPicker";
-import ConfirmPopup from "../../../components/ConfirmPopup";
-import BaseButton from "../../../components/BaseButton";
-import axiosClient, { baseURL } from "../../../axiosClient";
+import LinkCopy from "../../../../components/LinkCopy";
+import { PencilIcon, TrashBinIcon } from "../../../../icons/icons";
+import ColorPicker from "../../../../components/ColorPicker";
+import ConfirmPopup from "../../../../components/ConfirmPopup";
+import BaseButton from "../../../../components/BaseButton";
+import axiosClient, { baseURL } from "../../../../axiosClient";
 import {
   alignFlextItemsList,
   alignItemsList,
@@ -15,18 +15,18 @@ import {
   IStatData,
   typeAligmnet,
   typesTabContent,
-} from "../../../types";
+} from "../../../../types";
 import {
   addNotification,
   addSuccessNotification,
   copyStr,
   renderStatItem,
-} from "../../../utils";
-import { getStats } from "../../../store/types/Stats";
+} from "../../../../utils";
+import { getStats } from "../../../../store/types/Stats";
 import { SliderMarks } from "antd/lib/slider";
-import SliderForm from "../../../components/SliderForm";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { TabsComponent } from "../../../components/TabsComponent";
+import SliderForm from "../../../../components/SliderForm";
+import useWindowDimensions from "../../../../hooks/useWindowDimensions";
+import { TabsComponent } from "../../../../components/TabsComponent";
 
 const marksSlider: { [key: number]: typeAligmnet } = {
   0: "Left",

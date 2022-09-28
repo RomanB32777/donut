@@ -79,7 +79,7 @@ export const HeaderComponent = ({
             </div>
           </Col>
         )}
-        <Col xs={!visibleLogo ? 24 : 8} >
+        <Col xs={!visibleLogo ? 24 : 8}>
           <div className="header__right">
             {(user.id || mainWallet.token) && (
               <>
@@ -96,7 +96,7 @@ export const HeaderComponent = ({
                       title={user.username || shortStr(mainWallet.token, 8)}
                       isOpenSelect={user.id && isOpenHeaderSelect}
                       handlerHeaderSelect={handlerHeaderSelect}
-                      isVisibleAvatar={true} // !visibleLogo && 
+                      isNotVisibleAvatarInMobile={visibleLogo}
                     />
                   </Col>
                 </Row>

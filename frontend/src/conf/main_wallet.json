@@ -1,0 +1,11 @@
+{
+  "chainId": "0x2328",
+  "chainName": "Evmos Testnet",
+  "nativeCurrency": {
+    "name": "test-Evmos",
+    "symbol": "tEVMOS",
+    "decimals": 18
+  },
+  "rpcUrls": ["https://eth.bd.evmos.dev:8545"],
+  "blockExplorerUrls": ["https://evm.evmos.dev"]
+}

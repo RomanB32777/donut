@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import axiosClient, { baseURL } from "../../axiosClient";
+import axiosClient, { baseURL } from "../../../axiosClient";
 import {
   alignFlextItemsList,
   alignItemsList,
   AlignText,
   IStatData,
-} from "../../types";
-import { getCurrentTimePeriodQuery, getStatsDataTypeQuery } from "../../consts";
-import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
+} from "../../../types";
+import { getCurrentTimePeriodQuery, getStatsDataTypeQuery } from "../../../consts";
+import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
 import "./styles.sass";
-import { getUsdKoef, renderStatItem, renderStrWithTokens } from "../../utils";
+import { getUsdKoef, renderStatItem, renderStrWithTokens } from "../../../utils";
 
 const LIMIT = 3;
 

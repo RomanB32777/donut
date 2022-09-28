@@ -1,4 +1,4 @@
-import DonatStatContainer from "../containers/DonatStatContainer";
+import DonatStatContainer from "../containers/WidgetContainers/DonatStatContainer";
 
 const DonatStatPage = () => (
     <DonatStatContainer />

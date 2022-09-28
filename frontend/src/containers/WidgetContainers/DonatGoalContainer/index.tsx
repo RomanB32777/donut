@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
 import { Progress } from "antd";
-import axiosClient, { baseURL } from "../../axiosClient";
-import { IGoalData } from "../../types";
+import axiosClient, { baseURL } from "../../../axiosClient";
+import { IGoalData } from "../../../types";
 import "./styles.sass";
 
 const DonatGoalContainer = () => {

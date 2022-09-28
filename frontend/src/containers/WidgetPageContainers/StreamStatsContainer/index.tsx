@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Col, Empty, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import BaseButton from "../../components/BaseButton";
-import PageTitle from "../../components/PageTitle";
-import FormInput from "../../components/FormInput";
-import ModalComponent from "../../components/ModalComponent";
-import SelectInput from "../../components/SelectInput";
-import { IStatData } from "../../types";
+import BaseButton from "../../../components/BaseButton";
+import PageTitle from "../../../components/PageTitle";
+import FormInput from "../../../components/FormInput";
+import ModalComponent from "../../../components/ModalComponent";
+import SelectInput from "../../../components/SelectInput";
+import { IStatData } from "../../../types";
 import StatsItem from "./StatsItem";
-import DatesPicker from "../../components/DatesPicker";
-import axiosClient from "../../axiosClient";
-import { addNotification, addSuccessNotification } from "../../utils";
-import { getStats } from "../../store/types/Stats";
-import { filterCurrentPeriodItems, filterDataTypeItems } from "../../consts";
+import DatesPicker from "../../../components/DatesPicker";
+import axiosClient from "../../../axiosClient";
+import { addNotification, addSuccessNotification } from "../../../utils";
+import { getStats } from "../../../store/types/Stats";
+import { filterCurrentPeriodItems, filterDataTypeItems } from "../../../consts";
 import "./styles.sass";
 
 interface IWidgetStatData {

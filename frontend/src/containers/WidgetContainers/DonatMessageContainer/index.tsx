@@ -4,14 +4,14 @@ import clsx from "clsx";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
+import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
 
-import bigImg from "../../assets/big_don.png";
-import axiosClient, { baseURL } from "../../axiosClient";
-import { IAlertData, initAlertData } from "../../types";
-import { url } from "../../consts";
-import { soundsList } from "../../assets/sounds";
-import EvmosIMG from "../../assets/evmos.png";
+import bigImg from "../../../assets/big_don.png";
+import axiosClient, { baseURL } from "../../../axiosClient";
+import { IAlertData, initAlertData } from "../../../types";
+import { url } from "../../../consts";
+import { soundsList } from "../../../assets/sounds";
+import EvmosIMG from "../../../assets/evmos.png";
 import "./styles.sass";
 
 const testDonat = {

@@ -1,4 +1,4 @@
-import AlertsContainer from "../containers/AlertsContainer";
+import AlertsContainer from "../containers/WidgetPageContainers/AlertsContainer";
 
 const AlertsPage = () => <AlertsContainer />;
 

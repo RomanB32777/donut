@@ -1,4 +1,4 @@
-import DonatMessageContainer from "../containers/DonatMessageContainer";
+import DonatMessageContainer from "../containers/WidgetContainers/DonatMessageContainer";
 
 const DonatMessagePage = () => <DonatMessageContainer />;
 

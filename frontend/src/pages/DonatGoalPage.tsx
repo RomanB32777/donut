@@ -1,4 +1,4 @@
-import DonatGoalContainer from "../containers/DonatGoalContainer";
+import DonatGoalContainer from "../containers/WidgetContainers/DonatGoalContainer";
 
 const DonatGoalPage = () => (
     <DonatGoalContainer />
