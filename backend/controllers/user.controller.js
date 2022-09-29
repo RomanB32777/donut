@@ -229,16 +229,6 @@ class UserController {
             if (user.rows[0].roleplay === 'creators') {
                 table = 'creators'
             }
-            if (table = 'creators') {
-                const editedDBUser = await db.query(`UPDATE ${table} SET welcome_text = $1, btn_text = $2, main_color = $3, background_color = $4 WHERE user_id = $5 RETURNING *`, [
-                    welcome_text,
-                    btn_text,
-                    main_color,
-                    background_color,
-                    user.rows[0].id
-                ])
-                editedUser = editedDBUser.rows[0]
-            }
 
             if (username) {
                 const editedUsername = await db.query(`UPDATE users SET username = $1 WHERE id = $2 RETURNING *`, [
@@ -250,6 +240,17 @@ class UserController {
                     user.rows[0].id
                 ])
                 editedUser = { ...editedUser, username: editedUsername.rows[0].username }
+            } else {
+                if (table = 'creators') {
+                    const editedDBUser = await db.query(`UPDATE ${table} SET welcome_text = $1, btn_text = $2, main_color = $3, background_color = $4 WHERE user_id = $5 RETURNING *`, [
+                        welcome_text,
+                        btn_text,
+                        main_color,
+                        background_color,
+                        user.rows[0].id
+                    ])
+                    editedUser = editedDBUser.rows[0]
+                }
             }
             res.status(200).json({ editedUser })
         } catch (error) {
@@ -673,7 +674,7 @@ class UserController {
                 'Content-Type': 'audio/mpeg',
                 'Transfer-Encoding': 'chunked'
             })
-            
+
             const [response] = await client.synthesizeSpeech(request)
             const bufferStream = new stream.PassThrough()
             bufferStream.end(Buffer.from(response.audioContent))

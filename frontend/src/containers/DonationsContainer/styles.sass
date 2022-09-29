@@ -21,6 +21,10 @@
                     border: none
                     background: variables.$grey-background-color !important
 
+                @media (max-width: 576px)
+                    input
+                        font-size: 15px
+
             &_select
                 .ant-select,
                 .ant-select:not(.ant-select-customize-input)
@@ -30,7 +34,10 @@
                         border: none !important
 
                     .ant-select-selection-item
-                        font-size: 15px
+                        font-size: 18px
+
+                        @media (max-width: 576px)
+                            font-size: 15px
 
     &-selectDates
         margin-bottom: 40px

@@ -1,5 +1,5 @@
 import { GET_NOTIF } from './../../store/types/Notifications/index';
-import { call, put, takeEvery } from "redux-saga/effects";
+import { call, put, takeEvery, select } from "redux-saga/effects";
 import { baseURL } from "../../axiosClient";
 import { setLoading } from "../../store/types/Loading";
 import {setNotifications} from "../../store/types/Notifications"
@@ -16,7 +16,9 @@ function* NotificationsWorker(action: any): any {
     yield put(setLoading(true))
     const data: any = yield call(asyncGetNotifications, action.payload)
     if (data) {
-        yield put(setNotifications(data.notifications))
+        const notifications = yield select((state: any) => state.notifications)
+        if (data.notifications.length > notifications.length)
+            yield put(setNotifications(data.notifications))
     }
     yield put(setLoading(false))
 }

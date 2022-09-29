@@ -1,19 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { BackTop, Layout, Menu } from "antd";
+import { BackTop, Layout, Menu, Row } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
 import { IRoute, Pages, routers } from "../../routes";
 import { AlertIcon, EmailIcon } from "../../icons/icons";
 
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { getNotifications } from "../../store/types/Notifications";
 import { getNotificationMessage } from "../../utils";
 import Logo from "../../components/HeaderComponents/LogoComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
+import Loader from "../../components/Loader";
 import "./styles.sass";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const { Content, Sider } = Layout;
 
@@ -49,6 +50,7 @@ const scrollToPosition = (top = 0) => {
 const NotificationsPopup = ({ user }: { user: number }) => {
   const dispatch = useDispatch();
   const notifications: any[] = useSelector((state: any) => state.notifications);
+  const { isLoading } = useSelector((state: any) => state.loading);
   const [moreVisibleList, setMoreVisibleList] = useState(false);
 
   useEffect(() => {
@@ -63,24 +65,15 @@ const NotificationsPopup = ({ user }: { user: number }) => {
           n.donation.username,
           { sum: n.donation.sum_donation, wallet: n.donation.wallet_type }
         )}
-      {n.follow &&
-        getNotificationMessage(
-          n.follow.creator_id === user
-            ? "following_creator"
-            : "following_backer",
-          n.follow.creator_id === user
-            ? n.follow.backer_username
-            : n.follow.creator_username
-        )}
       {n.badge &&
         getNotificationMessage(
-          n.badge.owner_user_id === user
+          n.badge.creator_id === user
             ? "add_badge_creator"
             : "add_badge_supporter",
-          n.badge.owner_user_id === user
+          n.badge.creator_id === user
             ? n.badge.supporter_username
             : n.badge.creator_username,
-          n.badge.badge_name
+          // n.badge.badge_name
         )}
     </div>
   );
@@ -93,44 +86,50 @@ const NotificationsPopup = ({ user }: { user: number }) => {
         flexDirection: "column",
       }}
     >
-      <div className="notifications-popup__content">
-        {Boolean(notifications.length) ? (
-          <div
-            className="notifications-popup__content-list"
-            style={{
-              overflowY: notifications.length >= 9 ? "scroll" : "auto",
-            }}
-          >
-            {notifications &&
-              Boolean(notifications.length) &&
-              notifications.slice(0, 9).map(renderNotifList)}
-            {moreVisibleList &&
-              Boolean(notifications.length) &&
-              notifications.slice(10).length &&
-              notifications.slice(10).map(renderNotifList)}
-          </div>
-        ) : (
-          <div
-            className="notifications-popup__content-item"
-            style={{
-              textAlign: "center",
-            }}
-          >
-            No notifications
-          </div>
-        )}
-        {notifications.length >= 9 && (
-          <div
-            className="notifications-popup__content-link"
-            onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-              e.stopPropagation();
-              setMoreVisibleList(true);
-            }}
-          >
-            Load more
-          </div>
-        )}
-      </div>
+      {isLoading ? (
+        <Row justify="center">
+          <Loader size="small" />
+        </Row>
+      ) : (
+        <div className="notifications-popup__content">
+          {Boolean(notifications.length) ? (
+            <div
+              className="notifications-popup__content-list"
+              style={{
+                overflowY: notifications.length >= 9 ? "scroll" : "auto",
+              }}
+            >
+              {notifications &&
+                Boolean(notifications.length) &&
+                notifications.slice(0, 9).map(renderNotifList)}
+              {moreVisibleList &&
+                Boolean(notifications.length) &&
+                notifications.slice(10).length &&
+                notifications.slice(10).map(renderNotifList)}
+            </div>
+          ) : (
+            <div
+              className="notifications-popup__content-item"
+              style={{
+                textAlign: "center",
+              }}
+            >
+              No notifications
+            </div>
+          )}
+          {notifications.length >= 9 && (
+            <div
+              className="notifications-popup__content-link"
+              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                e.stopPropagation();
+                setMoreVisibleList(true);
+              }}
+            >
+              Load more
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

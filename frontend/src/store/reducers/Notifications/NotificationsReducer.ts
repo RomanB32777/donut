@@ -1,8 +1,6 @@
 import { SET_NOTIF } from "../../types/Notifications"
 
-const initialState = {
-    
-}
+const initialState: any[] = [];
 
 const NotificationsReducer = (state = initialState, action: any) => {
 

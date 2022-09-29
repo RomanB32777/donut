@@ -27,7 +27,6 @@ app.use(cors())
 app.use(fileupload())
 app.use(express.json())
 app.use('/images', express.static(__dirname + '/images'))
-// app.use(express.static(path.resolve(__dirname, '../client/build')))
 app.use('/api/user/', userRouter)
 app.use('/api/badge/', badgeRouter)
 app.use('/api/donation/', donationRouter)
@@ -46,7 +45,6 @@ const getActiveRooms = (io) => {
 io.on('connection', async (socket) => {
 	const { userName } = socket.handshake.query;
 	socket.join(userName);
-
 	// console.log('a user connected ', userId, socket.id);
 	socket.on('new_donat', async (data) => {
 		const { supporter, creator_id, creator_username, sum, donationID, wallet } = data;
@@ -66,18 +64,6 @@ io.on('connection', async (socket) => {
 				})
 			);
 			await db.query(`INSERT INTO notifications (donation, sender, senderName, recipient, recipientName) values ($1, $2, $3, $4, $5);`, [donationID, supporter.id, supporter.username, creator_id, creator_username])
-		}
-	});
-
-	socket.on('new_following', async (data) => {
-		const { follower, creator_id, creator_username, followID } = data;
-		const rooms = getActiveRooms(io);
-		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
-			userSockets && userSockets.length && userSockets.forEach(socketID =>
-				socket.to(socketID).emit("new_notification", { type: 'following', follower: follower.username })
-			);
-			await db.query(`INSERT INTO notifications (follow, sender, recipient) values ($1, $2, $3);`, [followID, follower.id, creator_id])
 		}
 	});
 

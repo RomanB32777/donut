@@ -53,7 +53,12 @@
             color: variables.$white-color
             height: 24px
             overflow: hidden
+            max-width: 185px
             text-overflow: ellipsis
+
+            @media (max-width: 576px)
+                max-width: 100px
+
 
         &__icon
             display: flex

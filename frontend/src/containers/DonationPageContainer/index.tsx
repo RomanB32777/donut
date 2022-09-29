@@ -91,9 +91,7 @@ const DonationPageContainer = () => {
         (await sendFile(avatar.file, user, "/api/user/edit-image/"));
       banner.file &&
         (await sendFile(banner.file, user, "/api/user/edit-background/"));
-
       dispatch(tryToGetUser(user.metamask_token));
-      setLoading(false);
       addSuccessNotification("Data saved successfully");
     } catch (error) {
       addNotification({
@@ -103,6 +101,8 @@ const DonationPageContainer = () => {
           (error as any)?.response?.data?.message ||
           `An error occurred while saving data`,
       });
+    } finally {
+      setLoading(false);
     }
   };
 

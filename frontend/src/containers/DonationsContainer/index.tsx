@@ -161,11 +161,11 @@ const DonationsContainer = () => {
       <PageTitle formatId="page_title_donations" />
       <div className="donations-header">
         <Row justify="space-between">
-          <Col xl={12} md={13}>
+          <Col xl={12} md={14}>
             <div className="donations-header__left">
               <Row justify="space-between">
                 {isCreator && (
-                  <Col span={14}>
+                  <Col md={13} xs={12}>
                     <FormInput
                       name="widgetTitle"
                       value={searchStr || ""}
@@ -178,7 +178,7 @@ const DonationsContainer = () => {
                     />
                   </Col>
                 )}
-                <Col span={9}>
+                <Col md={10} xs={11}>
                   <SelectInput
                     value={timePeriod}
                     list={Object.values(filterPeriodItems)}

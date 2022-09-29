@@ -16,6 +16,7 @@ import { Col, Empty, Row } from "antd";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
+  const notifications: any[] = useSelector((state: any) => state.notifications);
 
   const [badgesList, setBadgesList] = useState<IBadgeData[]>([]);
   const [activeBadge, setActiveBadge] = useState<IBadgeData>({
@@ -78,7 +79,7 @@ const BadgesContainer = () => {
     if (user.id && user.roleplay && !isOpenCreateForm) {
       getBadges(user.id);
     }
-  }, [user, isOpenCreateForm]);
+  }, [user, isOpenCreateForm, notifications]);
 
   if (isOpenBadgePage)
     return (

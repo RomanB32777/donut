@@ -1,5 +1,5 @@
 import { Avatar, Col, Divider, Row, Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
 import { ethers } from "ethers";
 import { useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import {
 } from "../../../components/ModalComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
+import { WebSocketContext } from "../../../components/Websocket/WebSocket";
 
 const BadgePage = ({
   activeBadge,
@@ -29,6 +30,7 @@ const BadgePage = ({
 }) => {
   const { isTablet } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
+  const socket = useContext(WebSocketContext);
 
   const [formBadge, setFormBadge] = useState<IBadgeData>({
     ...initBadgeData,
@@ -94,12 +96,34 @@ const BadgePage = ({
 
   const assignBadge = async (contributor_id: number) => {
     try {
-      const { id, contract_address } = activeBadge;
-      await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
+      const { id, contract_address, creator_id, title } = activeBadge;
+
+      // description: string;
+      // blockchain: string;
+      // contract_address: string;
+      // quantity: number;
+      // URI?: string;
+      // contributor_user_id_list?: string;
+
+      const res = await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
         id,
         contract_address,
         contributor_id,
       });
+      if (res.status === 200) {
+        socket &&
+          res.data &&
+          socket.emit("new_badge", {
+            supporter: {
+              username: selectedUser,
+              id: contributor_id,
+            },
+            creator_id: creator_id,
+            creator_username: user.username,
+            badgeID: id,
+            badgeName: title,
+          });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -129,6 +153,7 @@ const BadgePage = ({
         await updateBadgeNFTData(activeBadge);
         await getHolders(activeBadge);
         setIsOpenSuccessModal(true);
+        setSelectedUser("")
       }
     } catch (error) {
       console.log(error);

@@ -75,23 +75,10 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
             });
             if (checkNotifPermissions())
               new Notification(
-                `Supporter: ${data.supporter}; Sum: ${data.additional.sum} ${
-                  data.additional.wallet === "tron" ? "TRX" : "MATIC"
-                }; Message: ${data.additional.message}`,
+                `Supporter: ${data.supporter}; Sum: ${data.additional.sum} ${'tEVMOS'}; Message: ${data.additional.message}`,
                 { image: notifImage }
               );
-            break;
-
-          case "following":
-            let messageFollowing = getNotificationMessage(
-              "following_creator",
-              data.follower
-            );
-            addNotification({
-              type: "info",
-              title: "New following",
-              message: messageFollowing,
-            });
+              // data.additional.wallet === "tron" ? "TRX" : "MATIC"
             break;
 
           case "add_badge":

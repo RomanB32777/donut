@@ -391,7 +391,7 @@ const StatsItem = ({
         onClick={handleActiveDetails}
       >
         <Row>
-          <Col sm={isTablet ? 12 : 11} xs={24}>
+          <Col sm={11} xs={24}>
             <div className="stats-item__mainInfo">
               <p className="stats-item__mainInfo_title">{title}</p>
               <p className="stats-item__mainInfo_description">
@@ -399,7 +399,7 @@ const StatsItem = ({
               </p>
             </div>
           </Col>
-          <Col sm={12} xs={24}>
+          <Col sm={11} xs={24}>
             <div className="stats-item__parameters">
               <p>Date period: {time_period} </p>
               <p>Date type: {data_type}</p>

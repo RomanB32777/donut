@@ -83,8 +83,12 @@
     input::-webkit-inner-spin-button
         -webkit-appearance: none
 
-    input[type="text"]:disabled
-        border-color: variables.$grey-color !important
+    input[type="text"]:disabled,
+    input[disabled]
+        -webkit-text-fill-color: variables.$white-color
+        border-color: variables.$grey-color
+        -webkit-opacity: 1
+        opacity: 1
 
     textarea
         resize: none

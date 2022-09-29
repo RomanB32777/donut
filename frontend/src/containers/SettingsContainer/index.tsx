@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Col, Row } from "antd";
+import clsx from "clsx";
 import axiosClient from "../../axiosClient";
 import PageTitle from "../../components/PageTitle";
 import FormInput from "../../components/FormInput";
@@ -150,7 +151,9 @@ const SettingsContainer = () => {
                 </Col>
                 <Col span={7}>
                   <div
-                    className="form-element__action"
+                    className={clsx("form-element__action", {
+                      active: avatar.preview !== url + user.avatarlink,
+                    })}
                     onClick={avatarBtnClick}
                   >
                     Change
@@ -177,7 +180,9 @@ const SettingsContainer = () => {
                 </Col>
                 <Col span={7}>
                   <div
-                    className="form-element__action"
+                    className={clsx("form-element__action", {
+                      active: username !== user.username,
+                    })}
                     onClick={usernameBtnClick}
                   >
                     Change

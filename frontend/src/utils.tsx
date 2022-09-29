@@ -92,18 +92,10 @@ export const getNotificationMessage = (
     case "donat_creator":
       return `${user} sent you ${
         data.additional ? data.additional.sum : data.sum
-      } ${
-        (data.additional ? data.additional.wallet : data.wallet) === "tron"
-          ? "TRX"
-          : "MATIC"
-      }!`;
+      } ${'tEVMOS'}!`;
 
     case "donat_supporter":
-      return `You sent ${data.additional ? data.additional.sum : data.sum} ${
-        (data.additional ? data.additional.wallet : data.wallet) === "tron"
-          ? "TRX"
-          : "MATIC"
-      } to ${user}!`;
+      return `You sent ${data.additional ? data.additional.sum : data.sum} ${'tEVMOS'} to ${user}!`;
 
     case "following_creator":
       return `${user} started following you`;
@@ -112,10 +104,10 @@ export const getNotificationMessage = (
       return `You started following ${user}`;
 
     case "add_badge_creator":
-      return `You sent a badge ${data} to ${user}`;
+      return `You sent a badge ${data || ""} to ${user}`;
 
     case "add_badge_supporter":
-      return `You received a badge ${data} from ${user}`;
+      return `You received a badge ${data || ""} from ${user}`;
 
     default:
       return `notification`;

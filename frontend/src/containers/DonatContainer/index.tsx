@@ -25,6 +25,7 @@ import {
   SuccessModalComponent,
 } from "../../components/ModalComponent";
 import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
+import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import Loader from "../../components/Loader";
 import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
@@ -34,7 +35,6 @@ import { abi_transfer, contractMetaAddress, url } from "../../consts";
 
 import SpaceImg from "../../space.png";
 import "./styles.sass";
-import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 
 const maxLengthDescription = 150;
 
@@ -166,34 +166,42 @@ const DonatContainer = () => {
         const metamaskData = await getMetamaskData();
         if (metamaskData) {
           const { signer, provider, address } = metamaskData;
-          const balance = await provider.getBalance(address);
-          setLoading(true);
+          if (address !== personInfo.metamask_token) {
+            const balance = await provider.getBalance(address);
+            setLoading(true);
 
-          if (balance) {
-            const intBalance = Number(
-              ethers.utils.formatEther(balance.toString())
-            );
+            if (balance) {
+              const intBalance = Number(
+                ethers.utils.formatEther(balance.toString())
+              );
 
-            if (intBalance >= Number(amount)) {
-              const smartContract = new ethers.Contract(
-                contractMetaAddress,
-                abi_transfer,
-                signer
-              );
-              const tx = await smartContract.transferMoney(
-                personInfo.metamask_token,
-                { value: ethers.utils.parseEther(amount) }
-              );
-              await tx.wait();
-              await sendDonation();
-            } else {
-              addNotification({
-                type: "warning",
-                title: "Insufficient balance",
-                message:
-                  "Unfortunately, there are not enough funds on your balance to carry out the operation",
-              });
+              if (intBalance >= Number(amount)) {
+                const smartContract = new ethers.Contract(
+                  contractMetaAddress,
+                  abi_transfer,
+                  signer
+                );
+                const tx = await smartContract.transferMoney(
+                  personInfo.metamask_token,
+                  { value: ethers.utils.parseEther(amount) }
+                );
+                await tx.wait();
+                await sendDonation();
+              } else {
+                addNotification({
+                  type: "warning",
+                  title: "Insufficient balance",
+                  message:
+                    "Unfortunately, there are not enough funds on your balance to carry out the operation",
+                });
+              }
             }
+          } else {
+            addNotification({
+              type: "warning",
+              title: "Seriously ?)",
+              message: "You are trying to send a donation to yourself",
+            });
           }
         }
       } catch (error) {
@@ -210,7 +218,7 @@ const DonatContainer = () => {
       }
     } else {
       addNotification({
-        type: "danger",
+        type: "warning",
         title: "Not all fields are filled",
       });
     }
