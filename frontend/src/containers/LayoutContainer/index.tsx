@@ -72,7 +72,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
             : "add_badge_supporter",
           n.badge.creator_id === user
             ? n.badge.supporter_username
-            : n.badge.creator_username,
+            : n.badge.creator_username
           // n.badge.badge_name
         )}
     </div>
@@ -344,7 +344,9 @@ const LayoutApp = () => {
         </Sider>
         <BackTop />
         <Layout
-          className="site-layout"
+          className={clsx("site-layout", {
+            transparent: isTransparentMainConteiner,
+          })}
           style={{
             marginLeft: hiddenLayoutElements || isTablet ? 0 : 250, // collapsed
           }}
@@ -384,6 +386,7 @@ const LayoutApp = () => {
             <div
               className={clsx("main-container", {
                 noPadding: noPaddingMainConteiner,
+                noMargin: hiddenLayoutElements,
               })}
             >
               <Pages />

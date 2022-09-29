@@ -4,17 +4,21 @@
     &-header
         margin-bottom: 45px
 
+        &__left,
         &__right
+            width: 100%
+
             &_btn
                 text-transform: uppercase
                 font-size: 18px
                 line-height: 20px !important
                 padding: 11px 18px 11px 25px
                 border-radius: 20px !important
-                // margin-left: 20px
+
+                @media (max-width: 576px)
+                    font-size: 15px
         
         &__left
-            width: 100%
             &_input
                 input,
                 .formInput__input_addonBefore

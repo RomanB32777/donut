@@ -7,7 +7,8 @@
 .ant-menu-dark .ant-menu-inline.ant-menu-sub
     background: variables.$grey-background-color
 
-.ant-layout
+.ant-layout,
+.site-layout
     background: variables.$black-color
 
     &.transparent
@@ -107,7 +108,7 @@
     &-popup-wrapper
         display: flex
         flex-direction: column
-        width: 300px
+        width: 350px
         background: variables.$grey-background-color
         border-radius: variables.$border-radius
         position: absolute
@@ -127,10 +128,14 @@
             color: variables.$white-color
             overflow: hidden
             text-overflow: ellipsis
+
             &-list
                 max-height: 250px
+
             &-item
                 margin-bottom: 5px
+                padding-right: 20px
+
             &-link
                 margin-top: 15px
                 text-align: center
@@ -210,6 +215,9 @@
         margin-top: 0
         padding: 0
 
+    &.noMargin
+        margin-top: 0
+
 .layout-sidebar
     overflow: auto
     height: 100vh
@@ -255,7 +263,7 @@
 
     .notifications
         &-popup-wrapper
-            right: -140px
+            right: -200px
 
 @media (max-width: 768px)
     .main-container

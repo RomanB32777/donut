@@ -1,17 +1,11 @@
 {
-  "name": "donut",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "server": "nodemon app.js",
-    "client": "npm run start --prefix client",
-    "client:install": "npm install --prefix client",
-    "client:build": "npm run build --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start:react": "parcel serve client/index.html --open --dist-dir client/build",
-    "build": "parcel build client/index.html --dist-dir client/build"
+    "server": "nodemon app.js"
   },
   "author": "Roman <r.bogdanovskiy@onpoint.ru>",
   "license": "ISC",

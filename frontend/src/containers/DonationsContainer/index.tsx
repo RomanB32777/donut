@@ -16,8 +16,8 @@ import { initTableDataItem, ITableData, tableColumns } from "./tableData";
 import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
 import { filterPeriodItems, getTimePeriodQuery } from "../../consts";
-import "./styles.sass";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
+import "./styles.sass";
 
 interface IQueryForm {
   timePeriod: string;
@@ -161,7 +161,7 @@ const DonationsContainer = () => {
       <PageTitle formatId="page_title_donations" />
       <div className="donations-header">
         <Row justify="space-between">
-          <Col xl={12} md={14}>
+          <Col xl={12} md={14} xs={24}>
             <div className="donations-header__left">
               <Row justify="space-between">
                 {isCreator && (
@@ -192,11 +192,11 @@ const DonationsContainer = () => {
                   />
                 </Col>
                 {!isCreator && (
-                  <Col span={12}>
+                  <Col md={12} xs={11}>
                     <BaseButton
                       formatId="create_filter_button"
                       onClick={filterBtnClick}
-                      modificator={"donations-header__right_btn"}
+                      modificator={"donations-header__left_btn"}
                       icon={<CalendarIcon />}
                       isBlue={visibleDatesPicker}
                     />
@@ -206,7 +206,7 @@ const DonationsContainer = () => {
             </div>
           </Col>
           {isCreator && (
-            <Col xl={8} md={13}>
+            <Col xl={8} md={13} xs={24}>
               <div className="donations-header__right">
                 <Row justify={isLaptop ? "start" : "end"}>
                   {/* space-between */}

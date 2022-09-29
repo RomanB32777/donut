@@ -130,6 +130,7 @@ const DonatContainer = () => {
     });
 
     if (status === 200) {
+      !socket?.connected && socket?.connect();
       socket &&
         user &&
         data.donation &&
