@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
@@ -14,6 +14,8 @@ import { BlueDonut } from "../../assets/blueDonut";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import BaseButton from "../../components/BaseButton";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
+import bigImg from "../../assets/big_don.png";
 import "./styles.sass";
 
 const cryptoSteps = [
@@ -61,6 +63,7 @@ const features = [
 
 const LandingContainer = () => {
   const navigate = useNavigate();
+  const { isMobile, isTablet } = useWindowDimensions();
   const user: any = useSelector((state: any) => state.user);
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
@@ -72,6 +75,12 @@ const LandingContainer = () => {
   const signUp = async () => {
     user.id ? navigate("/") : navigate("/login");
   };
+
+  const videoWidth = useMemo(() => {
+    if (isMobile) return 300;
+    if (isTablet) return 500;
+    return 630;
+  }, [isTablet, isMobile]);
 
   return (
     <>
@@ -114,10 +123,10 @@ const LandingContainer = () => {
             marginBottom: "0px",
           }}
         >
-          <span>What is Crypto Donutz?</span>
+          <span className="block-title">What is Crypto Donutz?</span>
           <iframe
-            width="1120"
-            height="630"
+            width="100%"
+            height={videoWidth}
             // width="560"
             // height="315"
             src="https://www.youtube.com/embed/ng-7g2x4GnM"
@@ -129,7 +138,7 @@ const LandingContainer = () => {
         </div>
 
         <div className="landing-container__row-panel">
-          <span>
+          <span className="block-title">
             <FormattedMessage id="mainpage_crypto_steps_title" />
           </span>
           <Row
@@ -159,7 +168,7 @@ const LandingContainer = () => {
         </div>
 
         <div className="landing-container__row-panel">
-          <span>
+          <span className="block-title">
             <FormattedMessage id="mainpage_features_title" />
           </span>
           <Row
@@ -196,7 +205,8 @@ const LandingContainer = () => {
               justifyContent: "space-between",
             }}
           >
-            <BlueDonut />
+            {/* <BlueDonut /> */}
+            <img src={bigImg} alt="bigImg" />
             <div>
               <span className="title">
                 <FormattedMessage id="mainpage_donut_mocup_title" />

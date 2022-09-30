@@ -30,7 +30,7 @@ interface IQueryForm {
 const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
-  const { isLaptop } = useWindowDimensions();
+  const { isMobile, isLaptop } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
   const notifications = useSelector((state: any) => state.notifications);
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
@@ -261,7 +261,7 @@ const DonationsContainer = () => {
           title="Show data"
           onClick={sendQuery}
           padding="8px 24px"
-          fontSize="21px"
+          fontSize={isMobile ? "15px" : "18px"}
           isBlue
         />
       </div>
