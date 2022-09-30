@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import {
   NotificationTitleMessage,
   NOTIFICATION_TYPE,
@@ -6,6 +7,7 @@ import {
 import moment from "moment";
 import postData from "./functions/postData";
 import axiosClient from "./axiosClient";
+import { getMetamaskData } from "./functions/getTronWallet";
 
 interface INotification {
   type: NOTIFICATION_TYPE;
@@ -92,10 +94,12 @@ export const getNotificationMessage = (
     case "donat_creator":
       return `${user} sent you ${
         data.additional ? data.additional.sum : data.sum
-      } ${'tEVMOS'}!`;
+      } ${"tEVMOS"}!`;
 
     case "donat_supporter":
-      return `You sent ${data.additional ? data.additional.sum : data.sum} ${'tEVMOS'} to ${user}!`;
+      return `You sent ${
+        data.additional ? data.additional.sum : data.sum
+      } ${"tEVMOS"} to ${user}!`;
 
     case "following_creator":
       return `${user} started following you`;
@@ -211,6 +215,18 @@ export const getUsdKoef = async (
   );
   setUsdtKoef && setUsdtKoef(+data[currency].usd);
   return +data[currency].usd;
+};
+
+export const getBalance = async (setBalance?: (amount: number) => void) => {
+  const metamaskData = await getMetamaskData();
+  if (metamaskData) {
+    const { provider, address } = metamaskData;
+    const balance = await provider.getBalance(address);
+    const intBalance = Number(ethers.utils.formatEther(balance.toString()));
+    setBalance && intBalance && setBalance(intBalance);
+    return intBalance;
+  }
+  return 0;
 };
 
 interface IReplaceObj {

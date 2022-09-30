@@ -45,14 +45,15 @@ const getActiveRooms = (io) => {
 io.on('connection', async (socket) => {
 	const { userName } = socket.handshake.query;
 	socket.join(userName);
-	// console.log('a user connected ', userId, socket.id);
+	// console.log('a user connected ', userName, rooms);
 	socket.on('new_donat', async (data) => {
 		const { supporter, creator_id, creator_username, sum, donationID, wallet } = data;
 		const rooms = getActiveRooms(io);
 		// console.log(rooms);
 		if (rooms.length) {
 			const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
-			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID])
+			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID]);
+			// console.log("new_donat", creator_username, userSockets, donation.rows[0]);
 
 			donation.rows[0] && userSockets && userSockets.length && userSockets.forEach(socketID =>
 				socket.to(socketID).emit("new_notification", {

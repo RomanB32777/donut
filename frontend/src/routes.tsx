@@ -3,11 +3,7 @@ import MainPage from "./pages/MainPage";
 import BadgesPage from "./pages/BadgesPage";
 import DonatPage from "./pages/DonatPage";
 
-import {
-  DonationPageIcon,
-  PeopleIcon,
-  ShieldMenuIcon,
-} from "./icons/icons";
+import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons/icons";
 import {
   PieChartOutlined,
   SettingOutlined,

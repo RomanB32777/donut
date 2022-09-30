@@ -17,7 +17,7 @@ import {
 } from "../../../components/ModalComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { WebSocketContext } from "../../../components/Websocket/WebSocket";
+import { WebSocketContext } from "../../../components/Websocket";
 
 const BadgePage = ({
   activeBadge,

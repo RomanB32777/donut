@@ -9,7 +9,7 @@ import { tryToGetUser } from "./store/types/User";
 import { ReactNotifications } from "react-notifications-component";
 
 import "react-notifications-component/dist/theme.css";
-import { WebSocketProvider } from "./components/Websocket/WebSocket";
+import { WebSocketProvider } from "./components/Websocket";
 import { setMainWallet } from "./store/types/Wallet";
 import { setLoading } from "./store/types/Loading";
 

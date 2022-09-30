@@ -5,6 +5,7 @@ import clsx from "clsx";
 
 import axiosClient from "../../axiosClient";
 import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
+import { Socket } from "socket.io-client";
 import { ethers } from "ethers";
 
 import { getMetamaskData } from "../../functions/getTronWallet";
@@ -14,19 +15,19 @@ import {
   addNotFoundUserNotification,
   addNotification,
   copyStr,
+  getBalance,
   getUsdKoef,
 } from "../../utils";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
 import BaseButton from "../../components/BaseButton";
-import { WebSocketContext } from "../../components/Websocket/WebSocket";
+import { connectSocket, WebSocketContext } from "../../components/Websocket";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
 } from "../../components/ModalComponent";
 import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
-import Loader from "../../components/Loader";
 import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
 import { StarIcon } from "../../icons/icons";
@@ -62,6 +63,7 @@ const DonatContainer = () => {
   const mainWallet = useSelector((state: any) => state.wallet);
 
   const [usdtKoef, setUsdtKoef] = useState(0);
+  const [balance, setBalance] = useState(0);
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
 
   const socket = useContext(WebSocketContext);
@@ -117,10 +119,13 @@ const DonatContainer = () => {
 
   const sendDonation = async () => {
     let newUser: any = {};
+    let newSocket: Socket | null = null;
+
     if (!user.id) {
       newUser = await registerSupporter();
+      newSocket = connectSocket(newUser.username, dispatch);
     }
-    const { data, status } = await axiosClient.post("/api/donation/create/", {
+    const { data } = await axiosClient.post("/api/donation/create/", {
       creator_token: personInfo.metamask_token,
       backer_token: user.metamask_token || newUser.metamask_token,
       sum: +amount,
@@ -129,22 +134,27 @@ const DonatContainer = () => {
       goal_id: selectedGoal !== "0" ? selectedGoal : null,
     });
 
-    if (status === 200) {
-      !socket?.connected && socket?.connect();
-      socket &&
-        user &&
-        data.donation &&
-        socket.emit("new_donat", {
-          supporter: {
-            username: user.username || newUser.username,
-            id: user.user_id || newUser.user_id,
-          },
-          wallet: "metamask",
-          creator_id: data.donation.creator_id,
-          creator_username: data.donation.creator_username,
-          sum: amount,
-          donationID: data.donation.id,
-        });
+    if (data.donation && (user || newUser)) {
+      const emitObj = {
+        supporter: {
+          username: user.username || newUser.username,
+          id: user.user_id || newUser.id,
+        },
+        wallet: "metamask",
+        creator_id: data.donation.creator_id,
+        creator_username: data.donation.creator_username,
+        sum: amount,
+        donationID: data.donation.id,
+      };
+
+      if (socket) {
+        socket.emit("new_donat", emitObj);
+      } else if (newSocket) {
+        newSocket.emit("new_donat", emitObj);
+      } else {
+        console.log("not connected user");
+      }
+
       selectedGoal !== "0" &&
         (await axiosClient.put("/api/user/goals-widget/", {
           goalData: {
@@ -153,9 +163,7 @@ const DonatContainer = () => {
           creator_id: data.donation.creator_id,
           id: selectedGoal,
         }));
-      // addSuccessNotification(
-      //   `You’ve successfully sent ${amount} tEVMOS to ${data.donation.creator_username}`
-      // );
+
       setIsOpenSuccessModal(true);
     }
   };
@@ -166,17 +174,11 @@ const DonatContainer = () => {
       try {
         const metamaskData = await getMetamaskData();
         if (metamaskData) {
-          const { signer, provider, address } = metamaskData;
+          const { signer, address } = metamaskData;
           if (address !== personInfo.metamask_token) {
-            const balance = await provider.getBalance(address);
             setLoading(true);
-
             if (balance) {
-              const intBalance = Number(
-                ethers.utils.formatEther(balance.toString())
-              );
-
-              if (intBalance >= Number(amount)) {
+              if (balance >= Number(amount)) {
                 const smartContract = new ethers.Contract(
                   contractMetaAddress,
                   abi_transfer,
@@ -227,6 +229,7 @@ const DonatContainer = () => {
 
   useEffect(() => {
     getUsdKoef("evmos", setUsdtKoef);
+    getBalance(setBalance);
     dispatch(
       tryToGetPersonInfo({
         username: name,
@@ -433,11 +436,19 @@ const DonatContainer = () => {
                               <Space direction="vertical">
                                 <Radio value={"0"}>Don’t participate</Radio>
                                 {goalsActive &&
-                                  goalsActive.map((goal: IGoalData) => (
-                                    <Radio key={goal.id} value={goal.id}>
-                                      {goal.title}
-                                    </Radio>
-                                  ))}
+                                  goalsActive.map(
+                                    ({
+                                      id,
+                                      title,
+                                      amount_raised,
+                                      amount_goal,
+                                    }: IGoalData) => (
+                                      <Radio key={id} value={id}>
+                                        {title} ({amount_raised}/{amount_goal}{" "}
+                                        USD)
+                                      </Radio>
+                                    )
+                                  )}
                               </Space>
                             </Radio.Group>
                           </div>
@@ -455,15 +466,9 @@ const DonatContainer = () => {
                     color={personInfo.main_color}
                     disabled={loading}
                   />
-                  {loading && (
-                    <div
-                      style={{
-                        marginLeft: 10,
-                      }}
-                    >
-                      <Loader size="small" />
-                    </div>
-                  )}
+                  <div className="donat-container__payment_balance">
+                    Your balance: {(balance * usdtKoef).toFixed(2)} USD
+                  </div>
                 </div>
               </div>
             </div>

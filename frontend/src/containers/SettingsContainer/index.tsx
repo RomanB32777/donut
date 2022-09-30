@@ -152,7 +152,9 @@ const SettingsContainer = () => {
                 <Col span={7}>
                   <div
                     className={clsx("form-element__action", {
-                      active: avatar.preview !== url + user.avatarlink,
+                      active: avatar.preview.length
+                        ? avatar.preview !== url + user.avatarlink
+                        : avatar.preview !== user.avatarlink,
                     })}
                     onClick={avatarBtnClick}
                   >

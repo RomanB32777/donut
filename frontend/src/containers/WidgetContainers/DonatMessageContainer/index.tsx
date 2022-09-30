@@ -76,14 +76,6 @@ const DonatMessageContainer = () => {
     }
   }, [lastNotif]);
 
-  useEffect(() => {
-    dispatch(
-      tryToGetPersonInfo({
-        username: name,
-      })
-    );
-  }, []);
-
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
       const { data } = await axiosClient.get(
@@ -111,7 +103,12 @@ const DonatMessageContainer = () => {
 
   useEffect(() => {
     getAlertsWidgetData(user);
-  }, [user]);
+    dispatch(
+      tryToGetPersonInfo({
+        username: name,
+      })
+    );
+  }, [name]);
 
   const { banner, message_color, name_color, sum_color, sound } =
     alertWidgetData;

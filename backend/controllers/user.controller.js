@@ -160,7 +160,7 @@ class UserController {
     async getUserNotifications(req, res) {
         try {
             let notificationsAll = []
-            const user = req.params.user
+            const {user} = req.params
             let notifications = {}
             if (typeof user === 'string' && user.includes("@"))
                 notifications = await db.query(`SELECT * FROM notifications WHERE senderName = $1 OR recipientName = $1 ORDER BY creation_date DESC`, [user])
