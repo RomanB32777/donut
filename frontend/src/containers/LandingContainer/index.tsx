@@ -10,7 +10,6 @@ import {
   ShieldLandingIcon,
   WidgetsLandingIcon,
 } from "../../icons/icons";
-import { BlueDonut } from "../../assets/blueDonut";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import BaseButton from "../../components/BaseButton";
@@ -199,43 +198,25 @@ const LandingContainer = () => {
             ))}
           </Row>
 
-          <div
-            className="landing-container__donut-panel"
-            style={{
-              justifyContent: "space-between",
-            }}
-          >
-            {/* <BlueDonut /> */}
-            <img src={bigImg} alt="bigImg" />
-            <div>
-              <span className="title">
-                <FormattedMessage id="mainpage_donut_mocup_title" />
-              </span>
-              <span className="subtitle">
-                <FormattedMessage id="mainpage_donut_mocup_subtitle" />
-              </span>
-            </div>
+          <div className="landing-container__donut-panel">
+            <Row>
+              <Col lg={8} md={12} xs={24}>
+                <div className="landing-container__donut-panel_img">
+                  <img src={bigImg} alt="bigImg" />
+                </div>
+              </Col>
+              <Col lg={8} md={12} xs={24}>
+                <div className="landing-container__donut-panel_txt">
+                  <span className="title">
+                    <FormattedMessage id="mainpage_donut_mocup_title" />
+                  </span>
+                  <span className="subtitle">
+                    <FormattedMessage id="mainpage_donut_mocup_subtitle" />
+                  </span>
+                </div>
+              </Col>
+            </Row>
           </div>
-
-          {/* <div
-          className="main-container__video-wrapper"
-          style={{
-            flexDirection: "column",
-            marginBottom: "64px",
-          }}
-        >
-          <span>Product Walkthrough</span>
-          <iframe
-            width="1120"
-            height="630"
-            src="https://www.youtube.com/embed/fYYqsa102AY"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div> */}
-
           <div className="landing-container__bottom-panel">
             <div>
               <span>
