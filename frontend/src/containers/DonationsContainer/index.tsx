@@ -209,7 +209,6 @@ const DonationsContainer = () => {
             <Col xl={8} md={13} xs={24}>
               <div className="donations-header__right">
                 <Row justify={isLaptop ? "start" : "end"}>
-                  {/* space-between */}
                   <Col xl={11}>
                     <BaseButton
                       formatId="create_filter_button"
@@ -278,17 +277,16 @@ const DonationsContainer = () => {
           loading={loading}
           dataSource={tableData}
           columns={tableColumns}
-          pagination={false}
           scroll={{
             scrollToFirstRowOnChange: true,
             x: true,
-            // y: 240,
           }}
-          // pagination={{
-          //   current: 1,
-          //   pageSize: LIMIT_DONATS,
-          //   position: ["bottomCenter"],
-          // }}
+          pagination={{
+            total: tableData.length,
+            pageSize: LIMIT_DONATS,
+            position: ["bottomCenter"],
+            hideOnSinglePage: true,
+          }}
         />
       </div>
     </>

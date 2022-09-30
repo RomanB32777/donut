@@ -4,8 +4,6 @@ import type { ColumnsType, TablePaginationConfig, TableProps } from "antd/es/tab
 import "./styles.sass";
 
 interface ITableData<T> extends TableProps<T> {}
-// colums: ColumnsType<T>;
-// dataSource: T[];
 
 const TableComponent = <T extends object>({
   dataSource,
