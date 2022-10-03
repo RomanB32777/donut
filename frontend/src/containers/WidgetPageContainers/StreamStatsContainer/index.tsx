@@ -73,7 +73,7 @@ const StreamStatsContainer = () => {
         formData;
 
       id
-        ? await axiosClient.put("/api/user/stats-widget/", {
+        ? await axiosClient.put("/api/widget/stats-widget/", {
             statData: {
               title,
               stat_description,
@@ -83,7 +83,7 @@ const StreamStatsContainer = () => {
             },
             id,
           })
-        : await axiosClient.post("/api/user/stats-widget/", {
+        : await axiosClient.post("/api/widget/stats-widget/", {
             title,
             stat_description,
             template: (template as string[]).join(" "),

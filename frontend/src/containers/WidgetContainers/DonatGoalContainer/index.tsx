@@ -28,7 +28,7 @@ const DonatGoalContainer = () => {
 
   const getGoalData = async () => {
     const response = await axiosClient.get(
-      `${baseURL}/api/user/goals-widget/${name}/${id}`
+      `${baseURL}/api/widget/goals-widget/${name}/${id}`
     );
     response.status === 200 && setGoalData(response.data);
   };

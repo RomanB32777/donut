@@ -59,7 +59,7 @@ const DonationGoalsContainer = () => {
       setLoading(true);
       const { widgetDescription, widgetAmount, id } = formData;
       id
-        ? await axiosClient.put("/api/user/goals-widget/", {
+        ? await axiosClient.put("/api/widget/goals-widget/", {
             goalData: {
               title: widgetDescription,
               amount_goal: +widgetAmount,
@@ -67,7 +67,7 @@ const DonationGoalsContainer = () => {
             creator_id: user.id,
             id,
           })
-        : await axiosClient.post("/api/user/goals-widget/", {
+        : await axiosClient.post("/api/widget/goals-widget/", {
             title: widgetDescription,
             amount_goal: +widgetAmount,
             creator_id: user.id,

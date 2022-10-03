@@ -7,7 +7,7 @@ import {
 import moment from "moment";
 import postData from "./functions/postData";
 import axiosClient from "./axiosClient";
-import { getMetamaskData } from "./functions/getTronWallet";
+import { getMetamaskData } from "./functions/getWalletData";
 
 interface INotification {
   type: NOTIFICATION_TYPE;

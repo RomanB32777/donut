@@ -1,15 +1,9 @@
 import { useDispatch } from "react-redux";
-import getTronWallet, {
+import {
   getMetamaskData,
   metamaskWalletIsIntall,
-  tronWalletIsIntall,
-} from "../../functions/getTronWallet";
+} from "../../functions/getWalletData";
 import MetaMaskFoxBig from "../../assets/MetaMask_Fox_big.png";
-import {
-  openAuthTronModal,
-  openRegistrationModal,
-  closeModal,
-} from "../../store/types/Modal";
 import { FormattedMessage } from "react-intl";
 import { setMainWallet } from "../../store/types/Wallet";
 import { useNavigate } from "react-router";
@@ -26,7 +20,7 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
     if (walletType === "metamask") {
       if (metamaskWalletIsIntall()) {
         const walletData = await getMetamaskData();
-        
+
         if (walletData?.address) {
           const walletObj = {
             wallet: "metamask",
@@ -50,31 +44,6 @@ const ChooseWalletModal = ({ withoutLogin }: { withoutLogin?: boolean }) => {
           "Metamask",
           "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
         );
-      }
-    } else {
-      if (tronWalletIsIntall()) {
-        const walletToken = getTronWallet();
-        if (walletToken) {
-          const walletData = {
-            wallet: "tron",
-            token: walletToken,
-          };
-          dispatch(setMainWallet(walletData));
-          !withoutLogin &&
-            localStorage.setItem("main_wallet", JSON.stringify(walletData));
-          const isExist = await checkIsExistUser(walletToken);
-          if (!isExist) {
-            !withoutLogin && dispatch(openRegistrationModal());
-          } else {
-            dispatch(tryToGetUser(walletToken));
-            if (!withoutLogin) {
-              navigate("/");
-              dispatch(closeModal());
-            }
-          }
-        }
-      } else {
-        dispatch(openAuthTronModal());
       }
     }
   };

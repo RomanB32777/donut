@@ -147,7 +147,7 @@ const DonationsContainer = () => {
 
   useEffect(() => {
     user.id && usdtKoef && getDonationsData();
-  }, [user, usdtKoef, notifications]); // queryForm
+  }, [user, usdtKoef, notifications]);
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",

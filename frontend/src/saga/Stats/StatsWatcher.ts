@@ -4,7 +4,7 @@ import { setLoading } from "../../store/types/Loading";
 import { GET_STATS, setStats } from "../../store/types/Stats"
 
 const asyncGetStats = async (creator_id: string) => {
-    const response = await fetch( baseURL + '/api/user/stats-widgets/'+ creator_id)
+    const response = await fetch( baseURL + '/api/widget/stats-widgets/'+ creator_id)
     if (response.status === 200) {
         const result = await response.json()
         return result

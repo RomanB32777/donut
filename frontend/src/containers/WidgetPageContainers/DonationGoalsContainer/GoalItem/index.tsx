@@ -212,7 +212,7 @@ const GoalItem = ({
       setLoading(true);
       const { id } = goalData;
       const { title_color, progress_color, background_color } = editGoalData;
-      await axiosClient.put("/api/user/goals-widget/", {
+      await axiosClient.put("/api/widget/goals-widget/", {
         goalData: {
           title_color,
           progress_color,
@@ -240,7 +240,7 @@ const GoalItem = ({
     try {
       setLoading(true);
       const { id } = goalData;
-      await axiosClient.delete("/api/user/goals-widget/" + id);
+      await axiosClient.delete("/api/widget/goals-widget/" + id);
       dispatch(getGoals(user.id));
       addSuccessNotification("Widget deleted successfully");
     } catch (error) {

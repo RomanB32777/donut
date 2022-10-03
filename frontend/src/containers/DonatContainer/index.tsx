@@ -8,7 +8,7 @@ import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import { Socket } from "socket.io-client";
 import { ethers } from "ethers";
 
-import { getMetamaskData } from "../../functions/getTronWallet";
+import { getMetamaskData } from "../../functions/getWalletData";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import { setMainWallet } from "../../store/types/Wallet";
 import {
@@ -129,7 +129,7 @@ const DonatContainer = () => {
       creator_token: personInfo.metamask_token,
       backer_token: user.metamask_token || newUser.metamask_token,
       sum: +amount,
-      wallet: "metamask",
+      currency: "tEVMOS",
       donation_message: message,
       goal_id: selectedGoal !== "0" ? selectedGoal : null,
     });
@@ -156,7 +156,7 @@ const DonatContainer = () => {
       }
 
       selectedGoal !== "0" &&
-        (await axiosClient.put("/api/user/goals-widget/", {
+        (await axiosClient.put("/api/widget/goals-widget/", {
           goalData: {
             donat: +amount * usdtKoef,
           },

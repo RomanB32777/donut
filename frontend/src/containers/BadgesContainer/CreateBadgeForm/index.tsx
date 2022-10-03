@@ -13,7 +13,7 @@ import axiosClient from "../../../axiosClient";
 import { useSelector } from "react-redux";
 import { makeStorageClient } from "../utils";
 import { abi, bytecode } from "../../../consts";
-import { getMetamaskData } from "../../../functions/getTronWallet";
+import { getMetamaskData } from "../../../functions/getWalletData";
 import ModalComponent, {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";

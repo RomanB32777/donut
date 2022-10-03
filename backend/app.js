@@ -2,26 +2,24 @@ const express = require('express')
 const app = express()
 const fileupload = require("express-fileupload")
 
-// const sockPath = `${path.resolve(__dirname, './sock')}/server.sock`
 const userRouter = require('./routes/user.routes')
 const badgeRouter = require('./routes/badge.routes')
 const donationRouter = require('./routes/donation.routes')
-const nftRouter = require('./routes/nft.routes')
+const widgetRouter = require('./routes/widget.routes')
+const socketHandler = require('./sockets')
 
 const cors = require('cors')
 
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+
 const io = new Server(server, {
 	path: '/sockt/',
 	cors: {
 		origin: '*' // 'http://localhost:3000/'
 	}
 });
-
-const db = require('./db')
-
 
 app.use(cors())
 app.use(fileupload())
@@ -30,76 +28,14 @@ app.use('/images', express.static(__dirname + '/images'))
 app.use('/api/user/', userRouter)
 app.use('/api/badge/', badgeRouter)
 app.use('/api/donation/', donationRouter)
-app.use('/api/nft/', nftRouter)
+app.use('/api/widget/', widgetRouter)
 
-const getActiveRooms = (io) => {
-	// Convert map into 2D list:
-	// ==> [['4ziBKG9XFS06NdtVAAAH', Set(1)], ['room1', Set(2)], ...]
-	const arr = Array.from(io.sockets.adapter.rooms);
-	const filtered = arr.filter(room => !room[1].has(room[0]))
-	const res = filtered.map(i => ({ room: i[0], sockets: Array.from(i[1]) }));
-	return res;
-}
-
-
-io.on('connection', async (socket) => {
-	const { userName } = socket.handshake.query;
-	socket.join(userName);
-	// console.log('a user connected ', userName, rooms);
-	socket.on('new_donat', async (data) => {
-		const { supporter, creator_id, creator_username, sum, donationID, wallet } = data;
-		const rooms = getActiveRooms(io);
-		// console.log(rooms);
-		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
-			const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID]);
-			// console.log("new_donat", creator_username, userSockets, donation.rows[0]);
-
-			donation.rows[0] && userSockets && userSockets.length && userSockets.forEach(socketID =>
-				socket.to(socketID).emit("new_notification", {
-					type: 'donat', supporter: supporter.username, additional: {
-						sum,
-						wallet,
-						message: donation.rows[0].donation_message,
-					}
-				})
-			);
-			await db.query(`INSERT INTO notifications (donation, sender, senderName, recipient, recipientName) values ($1, $2, $3, $4, $5);`, [donationID, supporter.id, supporter.username, creator_id, creator_username])
-		}
-	});
-
-	socket.on('new_badge', async (data) => {
-		const { supporter, creator_id, creator_username, badgeID, badgeName } = data;
-		const rooms = getActiveRooms(io);
-		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => room === supporter.username).sockets;
-			userSockets && userSockets.length && userSockets.forEach(socketID =>
-				socket.to(socketID).emit("new_notification", { type: 'add_badge', supporter: supporter.username, badgeName })
-			);
-			await db.query(`INSERT INTO notifications (badge, sender, senderName, recipient, recipientName) values ($1, $2, $3, $4, $5);`, [badgeID, creator_id, creator_username, supporter.id, supporter.username])
-		}
-	});
-
-	socket.on('remove_badge', async (data) => {
-		const { supporter, creator_id, badgeID, badgeName } = data;
-		const rooms = getActiveRooms(io);
-		if (rooms.length) {
-			const userSockets = rooms.find(({ room }) => room === supporter.username).sockets;
-			userSockets && userSockets.length && userSockets.forEach(socketID =>
-				socket.to(socketID).emit("new_notification", { type: 'remove_badge', supporter: supporter.username, badgeName })
-			);
-			await db.query(`INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3);`, [badgeID, creator_id, supporter.id])
-		}
-	});
-});
-
+io.on('connection', socketHandler);
 
 async function start() {
 	try {
 		const port = process.env.PORT || 5000
 		server.listen(port, () => console.log(`App has been started on port ${port}...`))
-		// fs.existsSync(sockPath) && fs.rmSync(sockPath)
-		// app.listen(sockPath, () => fs.chmod(sockPath, 0o666, () => {console.log(`App has been started on ${sockPath}`)}))
 	} catch (e) {
 		console.log('Server error', e.message)
 		process.exit(1)

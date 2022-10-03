@@ -249,7 +249,7 @@ const AlertsContainer = () => {
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
       const { data } = await axiosClient.get(
-        "/api/user/get-alerts-widget/" + user.id
+        "/api/widget/get-alerts-widget/" + user.id
       );
       const userData: IAlertData = {
         banner: {
@@ -298,7 +298,7 @@ const AlertsContainer = () => {
         })
       );
       form.append("creator_id", user.id);
-      await axiosClient.put("/api/user/edit-alerts-widget/", form);
+      await axiosClient.put("/api/widget/edit-alerts-widget/", form);
       addSuccessNotification("Data saved successfully");
     } catch (error) {
       addNotification({

@@ -272,7 +272,7 @@ const StatsItem = ({
       setLoading(true);
       const { id } = statData;
       const { title_color, bar_color, content_color, aligment } = editStatData;
-      await axiosClient.put("/api/user/stats-widget/", {
+      await axiosClient.put("/api/widget/stats-widget/", {
         statData: {
           title_color,
           bar_color,
@@ -300,7 +300,7 @@ const StatsItem = ({
     try {
       setLoading(true);
       const { id } = statData;
-      await axiosClient.delete("/api/user/stats-widget/" + id);
+      await axiosClient.delete("/api/widget/stats-widget/" + id);
       dispatch(getStats(user.id));
       addSuccessNotification("Widget deleted successfully");
     } catch (error) {

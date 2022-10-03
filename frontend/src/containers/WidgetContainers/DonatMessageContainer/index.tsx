@@ -49,28 +49,13 @@ const DonatMessageContainer = () => {
           const { duration } = alertWidgetData;
           if (voice && lastNotif.donation_message) {
             const tmp = new Audio(
-              `${baseURL}/api/user/generate/sound?text=${lastNotif.donation_message}`
+              `${baseURL}/api/widget/generate/sound?text=${lastNotif.donation_message}`
             );
             tmp.play();
-            // tmp.onloadedmetadata = (e) => {
-            //   if (tmp.readyState > 0) {
-            //     const { duration } = alertWidgetData;
-            //     const disabledTime =
-            //       duration >= tmp.duration ? duration : tmp.duration;
-
-            //     tmp.play();
-
-            //     setTimeout(() => {
-            //       setLastNotif({});
-            //     }, disabledTime * 1000);
-            //   }
-            // };
           }
-          // else {
           setTimeout(() => {
             setLastNotif({});
           }, duration * 1000);
-          // }
         }, duration);
       }
     }
@@ -79,7 +64,7 @@ const DonatMessageContainer = () => {
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
       const { data } = await axiosClient.get(
-        "/api/user/get-alerts-widget/" + user.id
+        "/api/widget/get-alerts-widget/" + user.id
       );
       const userData: IAlertData = {
         banner: {

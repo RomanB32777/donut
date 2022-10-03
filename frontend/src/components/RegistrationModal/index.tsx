@@ -1,18 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
 import BaseButton from "../../components/BaseButton";
 
 import postData from "../../functions/postData";
-import { closeModal } from "../../store/types/Modal";
-import getTronWallet, {
-  getMetamaskData,
-  getMetamaskWallet,
-  metamaskWalletIsIntall,
-  tronWalletIsIntall,
-} from "../../functions/getTronWallet";
+import { getMetamaskData } from "../../functions/getWalletData";
 import { useNavigate } from "react-router";
-import { setUser, tryToGetUser } from "../../store/types/User";
+import { tryToGetUser } from "../../store/types/User";
 import { addNotification } from "../../utils";
 import FormInput from "../FormInput";
 import registerImg from "../../assets/registerImg.png";
@@ -45,10 +39,8 @@ const RegistrationModal = () => {
                 role: "creators",
                 username: username,
                 token: wallet,
-                typeWallet:
-                  mainWallet.wallet ||
-                  (tronWalletIsIntall() ? "tron" : "metamask"),
-              }).then((res) => {
+                typeWallet: mainWallet.wallet || "metamask",
+              }).then(() => {
                 dispatch(tryToGetUser(wallet as string));
                 navigate("/");
               })

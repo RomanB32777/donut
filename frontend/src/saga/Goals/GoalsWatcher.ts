@@ -4,7 +4,7 @@ import { setLoading } from "../../store/types/Loading";
 import { GET_GOALS, setGoals } from "../../store/types/Goals"
 
 const asyncGetGoals = async (creator_id: string) => {
-    const response = await fetch( baseURL + '/api/user/goals-widgets/'+ creator_id)
+    const response = await fetch( baseURL + '/api/widget/goals-widgets/'+ creator_id)
     if (response.status === 200) {
         const result = await response.json()
         return result

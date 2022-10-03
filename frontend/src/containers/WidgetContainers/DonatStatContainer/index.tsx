@@ -53,7 +53,7 @@ const DonatStatContainer = () => {
 
   const getStatData = async () => {
     const response = await axiosClient.get(
-      baseURL + "/api/user/stats-widget/" + id
+      baseURL + "/api/widget/stats-widget/" + id
     );
     if (response.status === 200) {
       setStatData(response.data);
