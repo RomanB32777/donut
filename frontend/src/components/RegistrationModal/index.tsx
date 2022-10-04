@@ -1,57 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
 import BaseButton from "../../components/BaseButton";
 
 import postData from "../../functions/postData";
-import { getMetamaskData } from "../../functions/getWalletData";
-import { useNavigate } from "react-router";
 import { tryToGetUser } from "../../store/types/User";
 import { addNotification } from "../../utils";
 import FormInput from "../FormInput";
+import { walletsConf } from "../../consts";
+import { setMainWallet } from "../../store/types/Wallet";
 import registerImg from "../../assets/registerImg.png";
 import "./styles.sass";
 
 const RegistrationModal = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const mainWallet = useSelector((state: any) => state.wallet);
+  const user = useSelector((state: any) => state.user);
+  // const mainWallet = useSelector((state: any) => state.wallet);
 
   const [username, setUsername] = useState<string>("");
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
 
+  useEffect(() => {
+    user.id && navigate("/");
+  }, [user]);
+
   const tryToLogin = async () => {
-    postData("/api/user/check-username", { username: username }).then(
-      async (res) => {
-        if (res.error) {
-          setIsUsernameError(true);
-        } else {
-          let wallet: string | undefined = "";
-
-          if (mainWallet.wallet === "metamask") {
-            const metaMaskWallet = await getMetamaskData();
-
-            wallet = metaMaskWallet?.address;
-          }
-
-          wallet
-            ? postData("/api/user/create-user", {
-                role: "creators",
-                username: username,
-                token: wallet,
-                typeWallet: mainWallet.wallet || "metamask",
-              }).then(() => {
-                dispatch(tryToGetUser(wallet as string));
-                navigate("/");
-              })
-            : addNotification({
-                type: "danger",
-                title: "Auth error",
-                message: "An error occurred while authorizing the wallet",
-              });
-        }
-      }
+    const wallet = process.env.REACT_APP_WALLET || "metamask";
+    const { address } = await walletsConf[wallet].getWalletData(
+      process.env.REACT_APP_BLOCKCHAIN
     );
+
+    if (address) {
+      dispatch(
+        setMainWallet({
+          wallet,
+          token: address,
+        })
+      );
+
+      postData("/api/user/check-username", { username: username }).then(
+        async (res) => {
+          if (res.error) {
+            setIsUsernameError(true);
+          } else {
+            postData("/api/user/create-user", {
+              role: "creators",
+              username: username,
+              token: address,
+              typeWallet: process.env.REACT_APP_WALLET || "metamask",
+            }).then(() => {
+              dispatch(tryToGetUser(address as string));
+              navigate("/");
+            });
+          }
+        }
+      );
+    } else {
+      addNotification({
+        type: "danger",
+        title: "Auth error",
+        message: "An error occurred while authorizing the wallet",
+      });
+    }
   };
 
   return (

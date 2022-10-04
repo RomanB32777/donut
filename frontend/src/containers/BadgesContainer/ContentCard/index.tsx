@@ -2,17 +2,16 @@ import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { ethers } from "ethers";
 import clsx from "clsx";
-import { abi } from "../../../consts";
-import { LargeImageIcon, TrashBinIcon } from "../../../icons/icons";
+import { walletsConf } from "../../../consts";
+import { TrashBinIcon } from "../../../icons/icons";
 
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
 import axiosClient from "../../../axiosClient";
 import { makeStorageClient } from "../utils";
 import testIMG from "../../../assets/person.png";
-import "./styles.sass";
-import { addNotification } from "../../../utils";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import Loader from "../../../components/Loader";
+import "./styles.sass";
 
 const ContentCard = (prop: {
   data: IBadge;
@@ -34,7 +33,7 @@ const ContentCard = (prop: {
       );
       let currentContract = new ethers.Contract(
         contract_address,
-        abi,
+        walletsConf[process.env.REACT_APP_WALLET || "metamask"].abi || [],
         provider
       );
 

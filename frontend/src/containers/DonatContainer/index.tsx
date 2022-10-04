@@ -32,7 +32,7 @@ import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
 import { StarIcon } from "../../icons/icons";
 import { IGoalData } from "../../types";
-import { abi_transfer, contractMetaAddress, url } from "../../consts";
+import { walletsConf, url } from "../../consts";
 
 import SpaceImg from "../../space.png";
 import "./styles.sass";
@@ -43,6 +43,7 @@ interface IDonatForm {
   message: string;
   username: string;
   amount: string;
+  selectedBlockchain: string;
   selectedGoal: string;
 }
 
@@ -50,6 +51,7 @@ const initObj: IDonatForm = {
   message: "",
   username: "",
   amount: "",
+  selectedBlockchain: "",
   selectedGoal: "0",
 };
 
@@ -63,7 +65,7 @@ const DonatContainer = () => {
   const mainWallet = useSelector((state: any) => state.wallet);
 
   const [usdtKoef, setUsdtKoef] = useState(0);
-  const [balance, setBalance] = useState(0);
+  // const [balance, setBalance] = useState(0);
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
 
   const socket = useContext(WebSocketContext);
@@ -118,6 +120,7 @@ const DonatContainer = () => {
   };
 
   const sendDonation = async () => {
+    const { selectedBlockchain } = form;
     let newUser: any = {};
     let newSocket: Socket | null = null;
 
@@ -125,46 +128,52 @@ const DonatContainer = () => {
       newUser = await registerSupporter();
       newSocket = connectSocket(newUser.username, dispatch);
     }
-    const { data } = await axiosClient.post("/api/donation/create/", {
-      creator_token: personInfo.metamask_token,
-      backer_token: user.metamask_token || newUser.metamask_token,
-      sum: +amount,
-      currency: "tEVMOS",
-      donation_message: message,
-      goal_id: selectedGoal !== "0" ? selectedGoal : null,
-    });
+    const tokenField = `${process.env.REACT_APP_WALLET}_token`;
 
-    if (data.donation && (user || newUser)) {
-      const emitObj = {
-        supporter: {
-          username: user.username || newUser.username,
-          id: user.user_id || newUser.id,
-        },
-        wallet: "metamask",
-        creator_id: data.donation.creator_id,
-        creator_username: data.donation.creator_username,
-        sum: amount,
-        donationID: data.donation.id,
-      };
+    if (tokenField && selectedBlockchain) {
+      const { data } = await axiosClient.post("/api/donation/create/", {
+        creator_token: personInfo[tokenField],
+        backer_token: user[tokenField] || newUser[tokenField],
+        sum: +amount,
+        wallet: process.env.REACT_APP_WALLET || "metamask",
+        currency: selectedBlockchain, // "tEVMOS"
+        donation_message: message,
+        goal_id: selectedGoal !== "0" ? selectedGoal : null,
+      });
 
-      if (socket) {
-        socket.emit("new_donat", emitObj);
-      } else if (newSocket) {
-        newSocket.emit("new_donat", emitObj);
-      } else {
-        console.log("not connected user");
-      }
-
-      selectedGoal !== "0" &&
-        (await axiosClient.put("/api/widget/goals-widget/", {
-          goalData: {
-            donat: +amount * usdtKoef,
+      if (data.donation && (user || newUser)) {
+        const emitObj = {
+          supporter: {
+            username: user.username || newUser.username,
+            id: user.user_id || newUser.id,
           },
+          wallet: process.env.REACT_APP_WALLET || "metamask",
+          currency: selectedBlockchain, // "tEVMOS"
           creator_id: data.donation.creator_id,
-          id: selectedGoal,
-        }));
+          creator_username: personInfo.username,
+          sum: amount,
+          donationID: data.donation.id,
+        };
 
-      setIsOpenSuccessModal(true);
+        if (socket) {
+          socket.emit("new_donat", emitObj);
+        } else if (newSocket) {
+          newSocket.emit("new_donat", emitObj);
+        } else {
+          console.log("not connected user");
+        }
+
+        selectedGoal !== "0" &&
+          (await axiosClient.put("/api/widget/goals-widget/", {
+            goalData: {
+              donat: +amount * usdtKoef,
+            },
+            creator_id: data.donation.creator_id,
+            id: selectedGoal,
+          }));
+
+        setIsOpenSuccessModal(true);
+      }
     }
   };
 
@@ -172,32 +181,51 @@ const DonatContainer = () => {
     const { amount, username } = form;
     if (Boolean(+amount) && username.length) {
       try {
-        const metamaskData = await getMetamaskData();
-        if (metamaskData) {
-          const { signer, address } = metamaskData;
-          if (address !== personInfo.metamask_token) {
+        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+
+        const walletData = await wallet.getWalletData(
+          process.env.REACT_APP_BLOCKCHAIN
+        ); // await getMetamaskData();
+
+        if (walletData && walletData.address) {
+          const { signer, address, provider } = walletData;
+
+          const tokenField = `${process.env.REACT_APP_WALLET}_token`;
+
+          if (address !== personInfo[tokenField]) {
             setLoading(true);
-            if (balance) {
-              if (balance >= Number(amount)) {
-                const smartContract = new ethers.Contract(
-                  contractMetaAddress,
-                  abi_transfer,
-                  signer
-                );
-                const tx = await smartContract.transferMoney(
-                  personInfo.metamask_token,
-                  { value: ethers.utils.parseEther(amount) }
-                );
-                await tx.wait();
-                await sendDonation();
-              } else {
-                addNotification({
-                  type: "warning",
-                  title: "Insufficient balance",
-                  message:
-                    "Unfortunately, there are not enough funds on your balance to carry out the operation",
+
+            const balance = await wallet.getBalance({
+              address: user[tokenField] || mainWallet.token,
+              provider,
+            });
+
+            if (balance >= Number(amount)) {
+              const currentBlockchain = wallet.blockchains.find(
+                (b) => b.name === process.env.REACT_APP_BLOCKCHAIN
+              );
+
+              if (currentBlockchain) {
+                const res = await wallet.paymentMethod({
+                  contract: currentBlockchain.address,
+                  addressTo: personInfo[tokenField],
+                  sum: amount,
+                  abi_transfer:
+                    walletsConf[process.env.REACT_APP_WALLET || "metamask"]
+                      .abi_transfer || null,
+                  signer,
                 });
+
+                console.log(res);
+                await sendDonation();
               }
+            } else {
+              addNotification({
+                type: "warning",
+                title: "Insufficient balance",
+                message:
+                  "Unfortunately, there are not enough funds on your balance to carry out the operation",
+              });
             }
           } else {
             addNotification({
@@ -228,8 +256,6 @@ const DonatContainer = () => {
   };
 
   useEffect(() => {
-    getUsdKoef("evmos", setUsdtKoef);
-    getBalance(setBalance);
     dispatch(
       tryToGetPersonInfo({
         username: name,
@@ -238,15 +264,37 @@ const DonatContainer = () => {
   }, [name]);
 
   useEffect(() => {
+    // const { selectedBlockchain } = form;
+    // const currBlockchain = walletsConf[
+    //   process.env.REACT_APP_WALLET || "metamask"
+    // ].blockchains.find((b) => b.name === process.env.REACT_APP_BLOCKCHAIN); // b.nativeCurrency.symbol === selectedBlockchain
+    // currBlockchain &&
+    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
+  }, []); // form
+
+  useEffect(() => {
+    // console.log(mainWallet);
+    // const walletData = walletsConf[
+    //   process.env.REACT_APP_WALLET || "metamask"
+    // ].getWalletData(process.env.REACT_APP_BLOCKCHAIN);
+  }, [mainWallet]);
+
+  useEffect(() => {
     const setUser = async () => {
+      // console.log(mainWallet);
       if (user.id) setForm({ ...form, username: user.username });
       else {
-        const walletData = await getMetamaskData();
+        const walletData = await walletsConf[
+          process.env.REACT_APP_WALLET || "metamask"
+        ].getWalletData(process.env.REACT_APP_BLOCKCHAIN); //  getMetamaskData();
+        // console.log(walletData);
+
         if (walletData) {
           const wallet = {
-            wallet: "metamask",
+            wallet: process.env.REACT_APP_WALLET || "metamask",
             token: walletData.address,
           };
+          // getBalance(walletData.provider, walletData.address, setBalance);
           dispatch(setMainWallet(wallet));
         }
       }
@@ -263,6 +311,21 @@ const DonatContainer = () => {
   //   () => !metamaskWalletIsIntall() && !tronWalletIsIntall(),
   //   []
   // );
+
+  const blockchainList = useMemo(() => {
+    const currBlockchain = walletsConf[
+      process.env.REACT_APP_WALLET || "metamask"
+    ].blockchains.find((b) => b.name === process.env.REACT_APP_BLOCKCHAIN);
+
+    if (currBlockchain) {
+      setForm({
+        ...initObj,
+        selectedBlockchain: currBlockchain.nativeCurrency.symbol,
+      });
+      return currBlockchain.nativeCurrency.symbol;
+    }
+    return "";
+  }, []);
 
   const goalsActive = useMemo(
     () =>
@@ -290,7 +353,7 @@ const DonatContainer = () => {
             user.username ? navigate("/settings") : copyStr(mainWallet.token);
           }}
           modificator="donat-header"
-          logoUrl={user.id ? "/donations" : "/landing"}
+          logoUrl={user.id ? "/donations" : "/"}
           backgroundColor={personInfo.background_color}
           visibleLogo
         />
@@ -392,9 +455,14 @@ const DonatContainer = () => {
                       typeInput="number"
                       addonAfter={
                         <SelectComponent
-                          title="tEVMOS"
-                          list={["tEVMOS"]}
-                          selectItem={(selected) => console.log(selected)}
+                          title={blockchainList}
+                          list={[blockchainList]}
+                          selectItem={(selected) =>
+                            setForm({
+                              ...form,
+                              selectedBlockchain: selected,
+                            })
+                          }
                           modificator="donat-container__payment_inputs-select"
                         />
                       }
@@ -466,9 +534,9 @@ const DonatContainer = () => {
                     color={personInfo.main_color}
                     disabled={loading}
                   />
-                  <div className="donat-container__payment_balance">
+                  {/* <div className="donat-container__payment_balance">
                     Your balance: {(balance * usdtKoef).toFixed(2)} USD
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

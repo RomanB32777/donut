@@ -12,7 +12,7 @@ const MainContainer = () => {
   const [usdtKoef, setUsdtKoef] = useState<number>(0)
 
   useEffect(() => {
-    getUsdKoef("evmos", setUsdtKoef);
+    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
   }, [])
 
   return (

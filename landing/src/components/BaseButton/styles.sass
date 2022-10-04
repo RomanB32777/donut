@@ -1,0 +1,60 @@
+@use '../../commonStyles/variables'
+
+.base-button
+    display: flex
+    justify-content: center
+    align-items: center
+    box-sizing: border-box
+    width: fit-content
+    background: transparent
+    color: variables.$white-color
+    border: 1px solid variables.$white-color
+    font-family: variables.$jakarta-font
+    font-style: normal
+    font-weight: 600
+    line-height: 30px
+    border-radius: 10px
+    cursor: pointer
+    transition: all .4s ease
+
+    &:hover
+        -webkit-box-shadow: 0px 0px 4px 2px variables.$white-color
+        box-shadow: 0px 0px 4px 2px variables.$white-color
+
+    &__icon
+        margin-left: 5px
+
+    &.disabled
+        background: variables.$grey-color !important
+        border-color: variables.$grey-color !important
+        pointer-events: none
+
+        &:hover
+            -webkit-box-shadow: 0px 0px 4px 2px variables.$grey-color
+            box-shadow: 0px 0px 4px 2px variables.$grey-color
+
+    &.blueButton
+        background: variables.$blue-color
+        border-color: variables.$blue-color
+
+        &:hover
+            -webkit-box-shadow: 0px 0px 4px 2px variables.$blue-color
+            box-shadow: 0px 0px 4px 2px variables.$blue-color
+
+    &.redButton
+        background: variables.$red-color
+        border-color: variables.$red-color
+        
+        &:hover
+            -webkit-box-shadow: 0px 0px 4px 2px variables.$red-color
+            box-shadow: 0px 0px 4px 2px variables.$red-color
+
+    &.blackButton
+        background: variables.$black-color
+        border-color: variables.$black-color
+        
+        &:hover
+            -webkit-box-shadow: 0px 0px 4px 2px variables.$black-color
+            box-shadow: 0px 0px 4px 2px variables.$black-color
+
+            

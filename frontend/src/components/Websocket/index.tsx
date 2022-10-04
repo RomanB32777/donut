@@ -45,7 +45,7 @@ export const connectSocket = (
           new Notification(
             `Supporter: ${data.supporter}; Sum: ${
               data.additional.sum
-            } ${"tEVMOS"}; Message: ${data.additional.message}`,
+            } ${data.additional.currency}; Message: ${data.additional.message}`,
             { image: notifImage }
           );
         // data.additional.wallet === "tron" ? "TRX" : "MATIC"

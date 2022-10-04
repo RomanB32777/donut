@@ -10,7 +10,7 @@ import SelectInput from "../../../components/SelectInput";
 import { IBadgeData, initBadgeData } from "../../../types";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { LeftArrowIcon } from "../../../icons/icons";
-import { abi, url } from "../../../consts";
+import { walletsConf, url } from "../../../consts";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
@@ -52,14 +52,14 @@ const BadgePage = ({
       );
       let currentContract = new ethers.Contract(
         contract_address,
-        abi,
+        walletsConf[process.env.REACT_APP_WALLET || "metamask"].abi || [],
         provider
       );
 
       const quantityBadge =
         user.id === creator_id
           ? await currentContract.totalSupply(1)
-          : await currentContract.balanceOf(user.metamask_token, 1);
+          : await currentContract.balanceOf(user[`${process.env.REACT_APP_WALLET}_token`], 1);
 
       quantityBadge &&
         setFormBadge({
@@ -137,14 +137,14 @@ const BadgePage = ({
         (s: any) => s.username === selectedUser
       );
       if (selectedUserObj) {
-        const selectedUserAddress = selectedUserObj.metamask_token;
+        const selectedUserAddress = selectedUserObj[`${process.env.REACT_APP_WALLET}_token`];
         const provider = new ethers.providers.Web3Provider(
           (window as any).ethereum
         );
         const signer = provider.getSigner(0);
         let currentContract = new ethers.Contract(
           contract_address,
-          abi,
+          walletsConf[process.env.REACT_APP_WALLET || "metamask"].abi || [],
           signer
         );
         const tx = await currentContract.mint(selectedUserAddress, 1, 1);

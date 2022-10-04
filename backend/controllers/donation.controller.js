@@ -2,12 +2,11 @@ const axios = require("axios");
 
 const db = require('../db')
 
-const getUsdKoef = async (currency) => {
-    const { data } = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
-    );
-    return +data[currency].usd
-};
+const currenciesFormatApi = {
+    tEVMOS: "evmos",
+    KLAY: "klay-token",
+    TRX: "tron",
+}
 
 const dateParams = {
     'today': '1 day',
@@ -33,6 +32,14 @@ const dateTrancCurrentParams = {
     'custom': 'custom',
 }
 
+const getUsdKoef = async (currency) => {
+    const currencyForTransfer = currenciesFormatApi[currency]
+    const { data } = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currencyForTransfer}&vs_currencies=usd`
+    );
+    return +data[currencyForTransfer].usd
+};
+
 const getTimePeriod = (period) => `
     to_timestamp(donation_date,'YYYY/MM/DD${period !== 'today' ? ' T HH24:MI:SS' : ''} ')
     >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} `
@@ -52,7 +59,7 @@ const getTimeCurrentPeriod = (period, startDate = "", endDate = "") => {
 class DonationController {
     async createDonation(req, res) {
         try {
-            const { creator_token, backer_token, donation_message, goal_id, sum, currency } = req.body
+            const { creator_token, backer_token, donation_message, goal_id, sum, wallet, currency } = req.body
 
             const initDate = new Date()
             // initDate.setDate(initDate.getDate() - 4);
@@ -62,8 +69,8 @@ class DonationController {
             const toUsdKoef = await getUsdKoef(currency); // "evmos"
 
             if (backer_token && creator_token) {
-                const creator = await db.query('SELECT * FROM users WHERE metamask_token = $1', [creator_token])
-                const backer = await db.query('SELECT * FROM users WHERE metamask_token = $1', [backer_token])
+                const creator = await db.query(`SELECT * FROM users WHERE ${wallet}_token = $1`, [creator_token])
+                const backer = await db.query(`SELECT * FROM users WHERE ${wallet}_token = $1`, [backer_token])
                 const donation = await db.query(`INSERT INTO donations (donation_date, backer_id, sum_donation, donation_message, currency, goal_id, creator_id) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *`, [
                     date,
                     backer.rows[0].id,
@@ -75,9 +82,6 @@ class DonationController {
                 ])
 
                 const supporter = await db.query(`SELECT * FROM supporters WHERE backer_id = $1`, [backer.rows[0].id])
-                if (donation.rows[0]) {
-                    res.status(200).json({ message: 'success', donation: donation.rows[0] });
-                }
 
                 if (supporter.rows && supporter.rows.length > 0) {
                     await db.query('UPDATE supporters SET sum_donations = $1, amount_donations = $2 WHERE backer_id = $3', [
@@ -93,6 +97,10 @@ class DonationController {
                         1
                     ])
                 }
+
+                if (donation.rows[0]) {
+                    res.status(200).json({ message: 'success', donation: donation.rows[0] });
+                }
             }
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
@@ -107,7 +115,6 @@ class DonationController {
                 LEFT JOIN users
                 ON supporters.backer_id = users.id
                 WHERE supporters.creator_id = $1 AND users.metamask_token IS NOT NULL`, [user_id])
-            // const donations = await db.query('SELECT * FROM donations WHERE creator_id = $1', [user_id])
             res.status(200).json(supporters.rows)
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
@@ -150,7 +157,8 @@ class DonationController {
             const data = await db.query(`
                 SELECT  users.username,
                         donations.id,
-                        donation_message, 
+                        donation_message,
+                        currency,
                         donation_date, 
                         sum_donation 
                 FROM donations 
@@ -233,7 +241,8 @@ class DonationController {
                     :
                     `donations.id,
                     donation_message, 
-                    donation_date, 
+                    donation_date,
+                    currency,
                     sum_donation`
                 }
                 FROM donations

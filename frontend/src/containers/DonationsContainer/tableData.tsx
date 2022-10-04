@@ -9,6 +9,7 @@ interface ITableData {
   donationUSD: number;
   message: string;
   date: string;
+  currency: string;
   role?: roleUser;
 }
 
@@ -18,6 +19,7 @@ export const initTableDataItem: ITableData = {
   donationUSD: 0,
   message: "",
   date: "",
+  currency: "",
 };
 
 export const tableColumns: ColumnsType<ITableData> = [
@@ -39,7 +41,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     key: "donationToken",
     width: "15%",
     align: "center",
-    render: (text) => text + " tEVMOS",
+    render: (text, { currency }) => text + ` ${currency}`,
   },
   {
     title: "Donation, USD",

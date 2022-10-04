@@ -66,7 +66,7 @@ const DonatStatContainer = () => {
         username: name,
       })
     );
-    getUsdKoef("evmos", setUsdtKoef);
+    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
   }, []);
 
   useEffect(() => {

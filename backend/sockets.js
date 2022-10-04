@@ -9,14 +9,13 @@ const getActiveRooms = (io) => {
     return res;
 }
 
-const socketHandler = async (socket) => {
+const socketHandler = async (socket, io) => {
     const { userName } = socket.handshake.query;
     socket.join(userName);
 
     socket.on('new_donat', async (data) => {
-        const { supporter, creator_id, creator_username, sum, donationID, wallet } = data;
+        const { supporter, creator_id, creator_username, sum, donationID, currency } = data;
         const rooms = getActiveRooms(io);
-
         if (rooms.length) {
             const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
             const donation = await db.query(`SELECT donation_message from donations WHERE id = $1;`, [donationID]);
@@ -25,7 +24,7 @@ const socketHandler = async (socket) => {
                 socket.to(socketID).emit("new_notification", {
                     type: 'donat', supporter: supporter.username, additional: {
                         sum,
-                        wallet,
+                        currency,
                         message: donation.rows[0].donation_message,
                     }
                 })

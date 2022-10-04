@@ -67,6 +67,7 @@ const DonationsContainer = () => {
             donationToken: donat.sum_donation,
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
+            currency:  donat.currency || "-",
             date: donat.donation_date || "-",
             role: user.roleplay,
           })
@@ -142,7 +143,7 @@ const DonationsContainer = () => {
   );
 
   useEffect(() => {
-    getUsdKoef("evmos", setUsdtKoef);
+    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
   }, []);
 
   useEffect(() => {

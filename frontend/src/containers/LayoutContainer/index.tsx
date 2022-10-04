@@ -291,7 +291,7 @@ const LayoutApp = () => {
           trigger={null}
           onCollapse={(c, t) => console.log(c, t)}
         >
-          {!collapsed && <Logo navigateUrl="/landing" />}
+          {!collapsed && <Logo navigateUrl="/" />}
           <div className="sidebar-content">
             <Menu
               theme="dark"

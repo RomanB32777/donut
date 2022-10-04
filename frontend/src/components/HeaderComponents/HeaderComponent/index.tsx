@@ -75,7 +75,7 @@ export const HeaderComponent = ({
         {visibleLogo && (
           <Col lg={8} xs={14}>
             <div className="header__left">
-              <Logo navigateUrl={logoUrl || "/landing"} />
+              <Logo navigateUrl={logoUrl || "/"} />
             </div>
           </Col>
         )}

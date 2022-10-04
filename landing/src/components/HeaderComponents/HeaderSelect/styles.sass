@@ -1,0 +1,113 @@
+@use '../../../commonStyles/variables'
+
+.header-select
+    position: relative
+    height: 72px
+    width: 100%
+    border-bottom: 1px solid #000000
+    box-sizing: border-box
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: flex-end
+
+    &__image
+        margin-right: 11px
+        background: #1D14FF
+        width: 36px
+        height: 36px
+        border-radius: 50%
+        display: flex
+        justify-content: center
+        align-items: center
+        overflow: hidden
+        cursor: pointer
+
+        &.dNone
+            @media (max-width: 576px)
+                display: none
+
+        img
+            object-fit: cover
+            width: 100%
+            height: 100%
+
+    &__info
+        display: flex
+        flex-direction: row
+        align-items: center
+        cursor: pointer
+        background: variables.$black-color
+        padding: 8px 7px 8px 15px
+        border-radius: 20px
+
+        &.withoutArrow
+            padding: 8px 15px 8px 15px
+
+        &__name
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 700
+            font-size: 19px
+            line-height: 24px
+            color: variables.$white-color
+            height: 24px
+            overflow: hidden
+            max-width: 185px
+            text-overflow: ellipsis
+
+            @media (max-width: 576px)
+                max-width: 100px
+
+
+        &__icon
+            display: flex
+            align-items: center
+
+            svg
+                transition: transform .4s
+
+            &.rotated
+                svg
+                    transform: rotate(180deg)
+
+        &-popup
+            display: flex
+            flex-direction: column
+            width: 205px
+            background: variables.$grey-background-color
+            border-radius: variables.$border-radius
+            position: absolute
+            top: 75px
+            right: 0
+            z-index: 100
+            padding: 15px 0
+
+        &-item
+            display: flex
+            justify-content: space-between
+            align-items: center
+            padding: 0 20px
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 700
+            font-size: 14px
+            line-height: 24px
+            color: variables.$white-color
+            cursor: pointer
+
+            &__name
+                font-size: 18px
+                line-height: 24px
+
+            &__content
+                display: flex
+                align-items: center
+                span
+                    margin-left: 10px
+
+            &:not(:last-child)
+                border-bottom: 1px solid #19191F
+
+            // &:last-child
+            //     padding: 9px 20px 0 20px

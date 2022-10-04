@@ -1,7 +1,8 @@
 create TABLE users(
     id SERIAL PRIMARY KEY,
-    tron_token VARCHAR(255) DEFAULT '',
+    tronlink_token VARCHAR(255) DEFAULT '',
     metamask_token VARCHAR(255) DEFAULT '',
+    near_token VARCHAR(255) DEFAULT '',
     username VARCHAR(255) UNIQUE DEFAULT '',
     roleplay VARCHAR(15) DEFAULT ''
 );
@@ -39,7 +40,7 @@ create TABLE supporters(
     id SERIAL PRIMARY KEY,
     -- username VARCHAR(255) DEFAULT '',
     backer_id INTEGER,
-    FOREIGN KEY (backer_id) REFERENCES users(id),
+    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE SET NULL,
     sum_donations NUMERIC DEFAULT 0,
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -123,8 +124,6 @@ create TABLE notifications (
     FOREIGN KEY (recipient) REFERENCES users(id) ON DELETE CASCADE,
 	donation INTEGER,
 	FOREIGN KEY (donation) REFERENCES donations(id) ON DELETE CASCADE,
-    follow INTEGER,
-	FOREIGN KEY (follow) REFERENCES follows(id) ON DELETE CASCADE,
     badge INTEGER,
 	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE
 );

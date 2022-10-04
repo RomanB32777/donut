@@ -21,7 +21,7 @@ import {
 import { setMainWallet } from "../../store/types/Wallet";
 import { setLoading } from "../../store/types/Loading";
 import { IFileInfo } from "../../types";
-import { url } from "../../consts";
+import { url, walletsConf } from "../../consts";
 import "./styles.sass";
 
 const SettingsContainer = () => {
@@ -53,7 +53,7 @@ const SettingsContainer = () => {
           username,
           user_id: user.id,
         });
-        dispatch(tryToGetUser(user.metamask_token));
+        dispatch(tryToGetUser(user[`${process.env.REACT_APP_WALLET}_token`]));
         addSuccessNotification("Data saved successfully");
       } catch (error) {
         addNotification({
@@ -76,7 +76,7 @@ const SettingsContainer = () => {
         const { avatar } = formSettings;
         avatar.file &&
           (await sendFile(avatar.file, user, "/api/user/edit-image/"));
-        dispatch(tryToGetUser(user.metamask_token));
+        dispatch(tryToGetUser(user[`${process.env.REACT_APP_WALLET}_token`]));
         addSuccessNotification("Data saved successfully");
       } catch (error) {
         addNotification({
@@ -93,11 +93,11 @@ const SettingsContainer = () => {
   };
 
   useEffect(() => {
-    const { id, username, avatarlink, metamask_token } = user;
+    const { id, username, avatarlink } = user;
     id &&
       setFormSettings({
         username: username,
-        wallet: metamask_token,
+        wallet: user[`${process.env.REACT_APP_WALLET}_token`],
         avatar: {
           ...formSettings.avatar,
           preview: avatarlink ? `${url + user.avatarlink}` : "",
@@ -113,11 +113,13 @@ const SettingsContainer = () => {
     localStorage.removeItem("main_wallet");
     dispatch(setMainWallet({}));
     dispatch(setLoading(false));
-    navigate("/landing");
+    navigate("/register");
   };
 
   const shortWalletToken = useMemo(
-    () => user.metamask_token && shortStr(user.metamask_token, 22),
+    () =>
+      user[`${process.env.REACT_APP_WALLET}_token`] &&
+      shortStr(user[`${process.env.REACT_APP_WALLET}_token`], 22),
     [user]
   );
 
@@ -202,7 +204,15 @@ const SettingsContainer = () => {
                     name="wallet"
                     value={shortWalletToken}
                     addonBefore={
-                      <img width="18" src={walletSmall} alt="walletIcon" />
+                      <img
+                        width="18"
+                        src={
+                          walletsConf[
+                            process.env.REACT_APP_WALLET || "metamask"
+                          ].icon
+                        }
+                        alt="walletIcon"
+                      />
                     }
                     labelCol={8}
                     InputCol={16}

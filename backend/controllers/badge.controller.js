@@ -64,7 +64,13 @@ class BadgeController {
             const users = await db.query(`SELECT contributor_user_id_list FROM badges WHERE id = $1 AND contract_address= $2`, [badge_id, contract_address])
             if (users.rows && users.rows[0].contributor_user_id_list.length) {
                 const usersIDs = users.rows[0].contributor_user_id_list.split(' ').filter(Boolean).join(',');
-                const holders = await db.query(`SELECT id, username, avatarlink FROM backers WHERE user_id IN (${usersIDs})`)
+                const holders = await db.query(`
+                    SELECT backers.id, backers.avatarlink, users.username 
+                    FROM backers
+                    LEFT JOIN users
+                    ON backers.user_id = users.id
+                    WHERE backers.user_id IN (${usersIDs})
+                `)
                 return res.status(200).json(holders.rows)
             }
             res.status(200).json([])

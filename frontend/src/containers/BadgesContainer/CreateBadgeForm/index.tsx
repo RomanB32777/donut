@@ -1,5 +1,5 @@
 import { Col, Row, StepProps, Steps, StepsProps } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ethers } from "ethers";
 import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
@@ -12,8 +12,7 @@ import SelectInput from "../../../components/SelectInput";
 import axiosClient from "../../../axiosClient";
 import { useSelector } from "react-redux";
 import { makeStorageClient } from "../utils";
-import { abi, bytecode } from "../../../consts";
-import { getMetamaskData } from "../../../functions/getWalletData";
+import { walletsConf } from "../../../consts";
 import ModalComponent, {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
@@ -192,16 +191,30 @@ const CreateBadgeForm = ({
       try {
         setLoading(true);
         setLoadingCurrStep({ loadingStep: 0 });
-        const walletData = await getMetamaskData();
+        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+
+        const walletData = await wallet.getWalletData(
+          process.env.REACT_APP_BLOCKCHAIN
+        ); // await getMetamaskData();
+
         if (walletData?.address) {
           const _uri = await uploadToIpfs();
+
           setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 });
+
           const provider = new ethers.providers.Web3Provider(
             (window as any).ethereum
           );
           const signer = provider.getSigner(0);
+
           setLoadingCurrStep({ finishedStep: 1, loadingStep: 2 });
-          const Badge = new ethers.ContractFactory(abi, bytecode, signer);
+
+          const Badge = new ethers.ContractFactory(
+            wallet.abi || [],
+            wallet.bytecode || "",
+            signer
+          );
+
           const badgeContract = await Badge.deploy(_uri); // deploy contracts
           setLoadingCurrStep({ finishedStep: 2 });
 
@@ -233,6 +246,21 @@ const CreateBadgeForm = ({
       });
     }
   };
+
+  const blockchainList = useMemo(() => {
+    const currBlockchain = walletsConf[
+      process.env.REACT_APP_WALLET || "metamask"
+    ].blockchains.find((b) => b.name === process.env.REACT_APP_BLOCKCHAIN);
+
+    if (currBlockchain) {
+      // setFormBadge({
+      //   ...formBadge,
+      //   blockchain: currBlockchain.nativeCurrency.symbol,
+      // });
+      return currBlockchain.nativeCurrency.symbol;
+    }
+    return "";
+  }, []);
 
   const { image, title, description, blockchain } = formBadge;
 
@@ -311,8 +339,9 @@ const CreateBadgeForm = ({
                 <div className="form-element">
                   <SelectInput
                     value={blockchain}
-                    list={["tEVMOS"]}
+                    // list={["tEVMOS"]}
                     label="Blockchain"
+                    list={[blockchainList]}
                     placeholder="Choose blockchain"
                     setValue={(value) =>
                       setFormBadge({

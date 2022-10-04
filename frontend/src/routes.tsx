@@ -80,10 +80,10 @@ const ProtectedRoutes = (props: ProtectedRouteType) => {
         <Navigate to="/donations" />
       )
     ) : (
-      <Navigate to="/landing" />
+      <Navigate to="/register" />
     );
   } else {
-    return user.id ? <Outlet /> : <Navigate to="/landing" />;
+    return user.id ? <Outlet /> : <Navigate to="/register" />;
   }
 };
 
@@ -172,17 +172,17 @@ export const routers: IRoute[] = [
       },
     ],
   },
-  {
-    path: "landing",
-    element: <LandingPage />,
-    hiddenLayoutElements: true,
-    noPaddingMainConteiner: true,
-  },
-  {
-    path: "login",
-    element: <ChooseWalletModal />,
-    hiddenLayoutElements: true,
-  },
+  // {
+  //   path: "landing",
+  //   element: <LandingPage />,
+  //   hiddenLayoutElements: true,
+  //   noPaddingMainConteiner: true,
+  // },
+  // {
+  //   path: "login",
+  //   element: <ChooseWalletModal />,
+  //   hiddenLayoutElements: true,
+  // },
   {
     path: "register",
     element: <RegistrationModal />,

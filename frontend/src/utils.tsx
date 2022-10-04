@@ -204,29 +204,37 @@ export const copyStr = (str: string) => {
   }
 };
 
-declare type currencyTypes = "evmos";
+// declare type currencyTypes = "evmos";
 
 export const getUsdKoef = async (
-  currency: currencyTypes,
+  currency: string, // currencyTypes
   setUsdtKoef?: (price: number) => void
 ) => {
+  
   const { data } = await axiosClient.get(
     `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`
-  );
-  setUsdtKoef && setUsdtKoef(+data[currency].usd);
-  return +data[currency].usd;
+    );
+
+  setUsdtKoef && data[currency] && setUsdtKoef(+data[currency].usd);
+  if (data[currency]) return +data[currency].usd;
+  return 0
 };
 
-export const getBalance = async (setBalance?: (amount: number) => void) => {
-  const metamaskData = await getMetamaskData();
-  if (metamaskData) {
-    const { provider, address } = metamaskData;
-    const balance = await provider.getBalance(address);
-    const intBalance = Number(ethers.utils.formatEther(balance.toString()));
-    setBalance && intBalance && setBalance(intBalance);
-    return intBalance;
-  }
-  return 0;
+export const getBalance = async (provider: any, address: string, setBalance?: (amount: number) => void) => {
+  const balance = await provider.getBalance(address);
+  const intBalance = Number(ethers.utils.formatEther(balance.toString()));
+  setBalance && intBalance && setBalance(intBalance);
+  return intBalance;
+
+  // const tronWeb = (window as any).tronWeb;
+  // const tronBalance = await tronWeb.trx.getBalance(getTronWallet());
+  // if (tronBalance) {
+  //   const formatTronBalance = tronWeb.fromSun(tronBalance);
+  //   const tronUsdKoef: number = await getTronUsdKoef();
+  //   setTotalBalance(
+  //     Number((parseFloat(formatTronBalance) * tronUsdKoef).toFixed(2))
+  //   );
+  // }
 };
 
 interface IReplaceObj {

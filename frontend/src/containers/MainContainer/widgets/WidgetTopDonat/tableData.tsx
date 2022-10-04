@@ -7,6 +7,7 @@ interface ITableData {
   donationToken: number;
   message: string;
   date: string;
+  currency: string;
 }
 
 export const tableColums: ColumnsType<ITableData> = [
@@ -21,7 +22,7 @@ export const tableColums: ColumnsType<ITableData> = [
     dataIndex: "sum_donation",
     width: "20%",
     align: "center",
-    render: (text) => text + " tEVMOS",
+    render: (text, { currency }) => text + ` ${currency}`,
   },
   {
     title: "Message",
@@ -32,7 +33,7 @@ export const tableColums: ColumnsType<ITableData> = [
     title: "Date and Time, UTM",
     dataIndex: "donation_date",
     width: "25%",
-    render: (date) => DateFormatter(DateTimezoneFormatter(date))
+    render: (date) => DateFormatter(DateTimezoneFormatter(date)),
   },
 ];
 

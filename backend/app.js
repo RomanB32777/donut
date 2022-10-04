@@ -17,7 +17,7 @@ const { Server } = require("socket.io");
 const io = new Server(server, {
 	path: '/sockt/',
 	cors: {
-		origin: '*' // 'http://localhost:3000/'
+		origin: '*'
 	}
 });
 
@@ -30,11 +30,11 @@ app.use('/api/badge/', badgeRouter)
 app.use('/api/donation/', donationRouter)
 app.use('/api/widget/', widgetRouter)
 
-io.on('connection', socketHandler);
+io.on('connection', (socket) => socketHandler(socket, io));
 
 async function start() {
 	try {
-		const port = process.env.PORT || 5000
+		const port = process.env.PORT || 4000
 		server.listen(port, () => console.log(`App has been started on port ${port}...`))
 	} catch (e) {
 		console.log('Server error', e.message)

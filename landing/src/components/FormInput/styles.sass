@@ -1,0 +1,94 @@
+@use '../../commonStyles/variables'
+
+.formInput
+    width: 100%
+
+    .alignCenter
+        display: flex
+        align-items: center
+
+    &__label
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 400
+        font-size: 20px
+        line-height: 25px
+        color: variables.$white-color
+
+    &__input
+        display: flex
+        align-items: center
+
+        &_addonAfter,
+        &_addonBefore
+            background: transparent // variables.$black-color
+            border: 1px solid variables.$grey-color
+            font-family: variables.$jakarta-font
+            color: variables.$white-color
+            height: 100%
+            padding: 12px
+
+        &_addonBefore
+            border-right: none
+            padding-right: 0
+            border-top-left-radius: 10px
+            border-bottom-left-radius: 10px
+
+        &_addonAfter
+            border-left: none
+            padding-left: 0
+            border-top-right-radius: 10px
+            border-bottom-right-radius: 10px
+
+    &__description
+        margin-top: 10px
+        margin-bottom: 0
+        font-family: variables.$jakarta-font
+        font-style: normal
+        font-weight: 400
+        font-size: 17px
+        line-height: 22px
+        color: variables.$grey-color
+
+    input, textarea
+        width: 100%
+        background: transparent // variables.$black-color
+        outline: none
+        line-height: 22px
+        font-size: 18px
+        border-radius: 10px
+        border: 1px solid variables.$grey-color
+        font-family: variables.$jakarta-font
+        color: variables.$white-color
+        font-weight: 600
+        box-sizing: border-box
+        padding: 12px 24px
+        
+        &.withAddonBefore
+            border-top-left-radius: 0
+            border-bottom-left-radius: 0
+            border-left: none
+            padding-left: 12px
+
+        &.withAddonAfter
+            border-top-right-radius: 0
+            border-bottom-right-radius: 0
+            border-right: none
+            padding-right: 12px
+
+    input[type='number']
+        -moz-appearance: textfield
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button
+        -webkit-appearance: none
+
+    input[type="text"]:disabled,
+    input[disabled]
+        -webkit-text-fill-color: variables.$white-color
+        border-color: variables.$grey-color
+        -webkit-opacity: 1
+        opacity: 1
+
+    textarea
+        resize: none

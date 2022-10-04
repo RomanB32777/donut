@@ -29,7 +29,7 @@ class UserController {
     async checkUserExist(req, res) {
         try {
             const { token } = req.body
-            const user = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
+            const user = await db.query('SELECT * FROM users WHERE tronlink_token = $1 OR metamask_token = $1 OR near_token = $1', [token])
             if (user.rows && user.rows.length === 0) {
                 res.status(200).json({ notExist: true })
             } else {
@@ -73,7 +73,7 @@ class UserController {
     async getUser(req, res) {
         try {
             const { token } = req.params
-            const user = await db.query('SELECT * FROM users WHERE tron_token = $1 OR metamask_token = $1', [token])
+            const user = await db.query('SELECT * FROM users WHERE tronlink_token = $1 OR metamask_token = $1 OR near_token = $1', [token])
             if (user.rows[0] && user.rows[0].id) {
                 const role = await db.query(`SELECT * FROM ${user.rows[0].roleplay} WHERE user_id = $1`, [user.rows[0].id])
                 res.status(200).json({ ...role.rows[0], ...user.rows[0] }) // subscriptions
@@ -97,16 +97,22 @@ class UserController {
 
     async getUserNotifications(req, res) {
         try {
-            let notificationsAll = []
             const { user } = req.params
-            let notifications = {}
-            if (typeof user === 'string' && user.includes("@"))
-                notifications = await db.query(`SELECT * FROM notifications WHERE senderName = $1 OR recipientName = $1 ORDER BY creation_date DESC`, [user])
-            else
-                notifications = await db.query(`SELECT * FROM notifications WHERE sender = $1 OR recipient = $1 ORDER BY creation_date DESC`, [user])
-
+            let userID = null
+            if (user.includes("@"))
+                userID = await db.query(`SELECT id FROM users WHERE username = $1`, [user])
+            
+            const notifications = await db.query(`
+                SELECT * FROM notifications 
+                WHERE sender = $1 OR recipient = $1 
+                ORDER BY creation_date DESC`, 
+                [
+                    userID ? userID.rows[0].id : user
+                ]
+            )
+            
             if (notifications && notifications.rows.length) {
-                notificationsAll = await Promise.all(notifications.rows.map(async n => {
+                const notificationsAll = await Promise.all(notifications.rows.map(async n => {
                     if (n.donation) {
                         const donation = await db.query(`SELECT * FROM donations WHERE id = $1`, [n.donation]);
                         if (donation.rows[0]) return { ...n, donation: donation.rows[0] }
@@ -120,8 +126,10 @@ class UserController {
                         return n;
                     }
                 }))
-                res.status(200).json({ notifications: notificationsAll })
+                return res.status(200).json({ notifications: notificationsAll })
             }
+            // }
+            return res.status(200).json({ notifications: [] })
         } catch (error) {
             res.status(error.status || 500).json({ error: true, message: error.message || 'Something broke!' })
         }
@@ -134,7 +142,7 @@ class UserController {
                 SELECT * FROM creators
                 LEFT JOIN users
                 ON creators.user_id = users.id
-                WHERE users.username = $1`, [username.toLowerCase()])
+                WHERE users.username = $1`, [username])
             if (creator.rows[0]) {
                 res.status(200).json({ ...creator.rows[0] })
             } else {

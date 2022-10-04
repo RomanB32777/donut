@@ -1,0 +1,79 @@
+@use '../../commonStyles/_variables'
+
+.ant-layout-header,
+.ant-menu-dark .ant-menu-inline.ant-menu-sub
+    background: variables.$grey-background-color
+
+.ant-layout,
+.site-layout
+    background: variables.$black-color
+
+.ant-layout-header
+    display: flex
+    height: 68px
+    justify-content: flex-end
+    align-items: center
+
+.ant-layout-sider-zero-width-trigger
+    background: none
+
+.gamb-icon
+    path
+        transition: transform 0.25s
+
+    &.active
+        path:nth-of-type(1)
+            transform: rotate(45deg)
+            transform-origin: -1px 3px
+
+        path:nth-of-type(2)
+            display: none
+
+        path:nth-of-type(3)
+            transform: rotate(-45deg)
+            transform-origin: 0px 13px
+
+.ant-back-top
+    right: 25px
+    bottom: 20px
+
+.ant-btn-default:hover
+    border-color: variables.$blue-color
+    color: variables.$blue-color
+
+.ant-btn-primary,
+.ant-btn-primary:hover
+    border-color: variables.$blue-color
+    background-color: variables.$blue-color
+
+.icon
+    display: flex
+    align-items: center
+
+    &-notifications
+        height: 100%
+        cursor: pointer
+
+.form
+    &-element
+        &__label
+            font-family: variables.$jakarta-font
+            font-style: normal
+            font-weight: 400
+            font-size: 20px
+            line-height: 25px
+            color: variables.$white-color
+
+.main-container
+    color: variables.$white-color
+
+.layout-header
+    position: fixed
+    width: 100%
+    top: 0
+    left: 0
+    z-index: 1
+
+@media (max-width: 992px)
+    .layout-header
+        z-index: 100

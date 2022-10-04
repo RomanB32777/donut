@@ -1,0 +1,21 @@
+@use '../../../commonStyles/variables'
+
+.main-logo
+    display: flex
+    align-items: center
+    height: 32px
+    margin: 16px
+    color: variables.$white-color
+    font-weight: 700
+    font-family: variables.$inter-font
+    font-size: 23px
+    cursor: pointer
+
+    img
+        margin-left: 8px
+
+    span
+        line-height: 20px
+
+    @media (max-width: 576px)
+        margin: 16px 0
