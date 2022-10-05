@@ -5,15 +5,14 @@ import { addInstallWalletNotification } from "../../utils";
 
 import "./styles.sass";
 
-const ChooseCurrencyModal = () => {
+const ChooseBlockchainsModal = () => {
   const navigate = useNavigate();
 
   const registrationWalletClick = async (name: string) => {
     const { installLink, isInstallMethod } = wallets[name];
     isInstallMethod()
-      ? navigate(`/currencies/${name}`)
+      ? navigate(`/blockchains/${name}`)
       : addInstallWalletNotification(name, installLink);
-    // : window.open(currencies[0].appLink, "_blank");
   };
 
   return (
@@ -21,7 +20,7 @@ const ChooseCurrencyModal = () => {
       <p className="donat-popup__main-title">Choose the wallet</p>
       <div className="donat-popup__registration_wallets">
         {Object.keys(wallets).map((name) => {
-          const { img, currencies } = wallets[name];
+          const { img, blockchains } = wallets[name];
           return (
             <div className="donat-popup__registration_wallets-item" key={name}>
               <div className="donat-popup__registration_wallets-img">
@@ -36,7 +35,7 @@ const ChooseCurrencyModal = () => {
                 />
               </div>
               <div className="donat-popup__registration_wallets-descr">
-                Working on {currencies.map((c) => c.name).join(", ")}
+                Working on {blockchains.map((b) => b.name).join(", ")}
               </div>
             </div>
           );
@@ -46,4 +45,4 @@ const ChooseCurrencyModal = () => {
   );
 };
 
-export default ChooseCurrencyModal;
+export default ChooseBlockchainsModal;

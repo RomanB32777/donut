@@ -5,7 +5,7 @@ import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
-import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
+import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import axiosClient from "../../../../axiosClient";
 import { DateFormatter } from "../../../../utils";
 import { dateFormat, options } from "./graphData";
@@ -39,7 +39,7 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
     try {
       setLoading(true);
       const { data } = await axiosClient.get(
-        `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}`
+        `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
       );
       if (data) {
         const labels = data.map((donat: any) =>

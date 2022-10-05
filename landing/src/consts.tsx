@@ -14,7 +14,7 @@ interface IWallet {
     img: string;
     isInstallMethod: () => boolean;
     installLink: string;
-    currencies: {
+    blockchains: {
       name: string;
       appLink: string;
       img: string;
@@ -23,12 +23,12 @@ interface IWallet {
 }
 
 export const wallets: IWallet = {
-  Metamask: {
+  metamask: {
     img: MetaMaskFoxBig,
     isInstallMethod: isInstallMetamaskWallet,
     installLink:
       "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn",
-    currencies: [
+    blockchains: [
       {
         name: "tEVMOS Testnet",
         appLink: "https://evmos.cryptodonutz.xyz/",
@@ -41,12 +41,12 @@ export const wallets: IWallet = {
       },
     ],
   },
-  Tronlink: {
+  tronlink: {
     img: TronlinkBig,
     isInstallMethod: isInstallTronWallet,
     installLink:
       "https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec",
-    currencies: [
+    blockchains: [
       {
         name: "Tron Nile Testnet",
         appLink: "https://tron.cryptodonutz.xyz/",

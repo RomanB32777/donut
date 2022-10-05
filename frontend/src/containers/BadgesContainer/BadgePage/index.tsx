@@ -148,6 +148,7 @@ const BadgePage = ({
           signer
         );
         const tx = await currentContract.mint(selectedUserAddress, 1, 1);
+      
         await tx.wait();
         await assignBadge(selectedUserObj.id);
         await updateBadgeNFTData(activeBadge);

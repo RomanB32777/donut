@@ -9,10 +9,10 @@ import {
   AlignText,
   IStatData,
 } from "../../../types";
-import { getCurrentTimePeriodQuery, getStatsDataTypeQuery } from "../../../consts";
+import { currBlockchain, getCurrentTimePeriodQuery, getStatsDataTypeQuery } from "../../../consts";
 import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
 import "./styles.sass";
-import { getUsdKoef, renderStatItem, renderStrWithTokens } from "../../../utils";
+import { getUsdKoef, renderStatItem } from "../../../utils";
 
 const LIMIT = 3;
 
@@ -41,7 +41,7 @@ const DonatStatContainer = () => {
               Boolean(customPeriod.length > 1)
                 ? `timePeriod=${timePeriod}&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
                 : `timePeriod=${timePeriod}`
-            }&isStatPage=true`
+            }&isStatPage=true&blockchain=${currBlockchain?.nativeCurrency.symbol}`
           );
           data && data.length && setRenderList(data);
         }

@@ -7,7 +7,7 @@ interface ITableData {
   donationToken: number;
   message: string;
   date: string;
-  currency: string;
+  blockchain: string;
 }
 
 export const tableColums: ColumnsType<ITableData> = [
@@ -22,7 +22,7 @@ export const tableColums: ColumnsType<ITableData> = [
     dataIndex: "sum_donation",
     width: "20%",
     align: "center",
-    render: (text, { currency }) => text + ` ${currency}`,
+    render: (text, { blockchain }) => text + ` ${blockchain}`,
   },
   {
     title: "Message",

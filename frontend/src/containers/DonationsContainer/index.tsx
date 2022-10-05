@@ -15,7 +15,7 @@ import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { initTableDataItem, ITableData, tableColumns } from "./tableData";
 import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
-import { filterPeriodItems, getTimePeriodQuery } from "../../consts";
+import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../consts";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import "./styles.sass";
 
@@ -55,9 +55,9 @@ const DonationsContainer = () => {
         queryForm;
 
       const timePeriodQuery = getTimePeriodQuery(timePeriod);
-
+      
       const { data } = await axiosClient.get(
-        `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}`
+        `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
       ); // &limit=${LIMIT_DONATS}&offset=${0}
       if (data.donations && data.donations.length) {
         const forTableData: ITableData[] = data.donations.map(
@@ -67,7 +67,7 @@ const DonationsContainer = () => {
             donationToken: donat.sum_donation,
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
-            currency:  donat.currency || "-",
+            blockchain:  donat.blockchain || "-",
             date: donat.donation_date || "-",
             role: user.roleplay,
           })

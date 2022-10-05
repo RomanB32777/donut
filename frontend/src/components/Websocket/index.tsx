@@ -6,11 +6,8 @@ import { baseURL } from "../../axiosClient";
 import { getNotifications } from "../../store/types/Notifications";
 import {
   addNotification,
-  checkNotifPermissions,
   getNotificationMessage,
 } from "../../utils";
-
-import notifImage from "../../assets/notif_donation.png";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -41,14 +38,6 @@ export const connectSocket = (
           title: "New donut",
           message: messageDonat,
         });
-        if (checkNotifPermissions())
-          new Notification(
-            `Supporter: ${data.supporter}; Sum: ${
-              data.additional.sum
-            } ${data.additional.currency}; Message: ${data.additional.message}`,
-            { image: notifImage }
-          );
-        // data.additional.wallet === "tron" ? "TRX" : "MATIC"
         break;
 
       case "add_badge":

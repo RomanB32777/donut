@@ -1,5 +1,5 @@
 import { useRoutes, RouteObject } from "react-router";
-import ChooseCurrencyModal from "./components/ChooseCurrencyModal";
+import ChooseBlockchainModal from "./components/ChooseBlockchainModal";
 
 import ChooseWalletModal from "./components/ChooseWalletModal";
 import LandingPage from "./pages/LandingPage";
@@ -15,8 +15,8 @@ export const routers: RouteObject[] = [
     element: <ChooseWalletModal />,
   },
   {
-    path: "currencies/:wallet",
-    element: <ChooseCurrencyModal />,
+    path: "blockchains/:wallet",
+    element: <ChooseBlockchainModal />,
   },
 ];
 

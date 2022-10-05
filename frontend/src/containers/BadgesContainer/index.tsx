@@ -13,6 +13,7 @@ import BadgePage from "./BadgePage";
 import { IBadgeData, initBadgeData } from "../../types";
 import { addNotification } from "../../utils";
 import { Col, Empty, Row } from "antd";
+import { currBlockchain } from "../../consts";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
@@ -28,8 +29,8 @@ const BadgesContainer = () => {
   const getBadges = async (id: number) => {
     const url =
       user.roleplay === "creators"
-        ? `${baseURL}/api/badge/${id}`
-        : `${baseURL}/api/badge/badges-backer/${id}`;
+        ? `${baseURL}/api/badge/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}`
+        : `${baseURL}/api/badge/badges-backer/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}`;
 
     const { data } = await axiosClient.get(url);
     if (Array.isArray(data) && data.length) {

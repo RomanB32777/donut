@@ -29,7 +29,7 @@ import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
 import { StarIcon } from "../../icons/icons";
 import { IGoalData } from "../../types";
-import { walletsConf, url } from "../../consts";
+import { walletsConf, url, currBlockchain } from "../../consts";
 
 import SpaceImg from "../../space.png";
 import "./styles.sass";
@@ -133,7 +133,7 @@ const DonatContainer = () => {
         backer_token: user[tokenField] || newUser[tokenField],
         sum: +amount,
         wallet: process.env.REACT_APP_WALLET || "metamask",
-        currency: selectedBlockchain, // "tEVMOS"
+        blockchain: selectedBlockchain, // "tEVMOS"
         donation_message: message,
         goal_id: selectedGoal !== "0" ? selectedGoal : null,
       });
@@ -145,7 +145,7 @@ const DonatContainer = () => {
             id: user.user_id || newUser.id,
           },
           wallet: process.env.REACT_APP_WALLET || "metamask",
-          currency: selectedBlockchain, // "tEVMOS"
+          blockchain: selectedBlockchain, // "tEVMOS"
           creator_id: data.donation.creator_id,
           creator_username: personInfo.username,
           sum: amount,
@@ -310,10 +310,6 @@ const DonatContainer = () => {
   // );
 
   const blockchainList = useMemo(() => {
-    const currBlockchain = walletsConf[
-      process.env.REACT_APP_WALLET || "metamask"
-    ].blockchains.find((b) => b.name === process.env.REACT_APP_BLOCKCHAIN);
-
     if (currBlockchain) {
       setForm({
         ...initObj,

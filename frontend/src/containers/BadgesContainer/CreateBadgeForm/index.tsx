@@ -12,7 +12,7 @@ import SelectInput from "../../../components/SelectInput";
 import axiosClient from "../../../axiosClient";
 import { useSelector } from "react-redux";
 import { makeStorageClient } from "../utils";
-import { walletsConf } from "../../../consts";
+import { currBlockchain, walletsConf } from "../../../consts";
 import ModalComponent, {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
@@ -195,7 +195,7 @@ const CreateBadgeForm = ({
 
         const walletData = await wallet.getWalletData(
           process.env.REACT_APP_BLOCKCHAIN
-        ); // await getMetamaskData();
+        );
 
         if (walletData?.address) {
           const _uri = await uploadToIpfs();
@@ -219,18 +219,12 @@ const CreateBadgeForm = ({
           setLoadingCurrStep({ finishedStep: 2 });
 
           if (badgeContract) {
-            // const newBadge =
             await axiosClient.post("/api/badge/", {
               creator_id: user.id,
               contract_address: badgeContract.address,
+              blockchain,
             });
             setIsOpenSuccessModal(true);
-            // setActiveBadge({
-            //   contract_address: badgeContract.address,
-            //   id: newBadge.data.id,
-            // });
-            // backBtn();
-            // openBadgePage();
           }
         }
       } catch (error) {
@@ -248,16 +242,8 @@ const CreateBadgeForm = ({
   };
 
   const blockchainList = useMemo(() => {
-    const currBlockchain = walletsConf[
-      process.env.REACT_APP_WALLET || "metamask"
-    ].blockchains.find((b) => b.name === process.env.REACT_APP_BLOCKCHAIN);
-
     if (currBlockchain) {
-      // setFormBadge({
-      //   ...formBadge,
-      //   blockchain: currBlockchain.nativeCurrency.symbol,
-      // });
-      return currBlockchain.nativeCurrency.symbol;
+      return currBlockchain?.nativeCurrency.symbol;
     }
     return "";
   }, []);

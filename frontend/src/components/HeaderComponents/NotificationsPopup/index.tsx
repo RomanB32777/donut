@@ -23,7 +23,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
         getNotificationMessage(
           n.donation.creator_id === user ? "donat_creator" : "donat_supporter",
           n.donation.username,
-          { sum: n.donation.sum_donation, currency: n.donation.currency }
+          { sum: n.donation.sum_donation, blockchain: n.donation.blockchain }
         )}
       {n.badge &&
         getNotificationMessage(

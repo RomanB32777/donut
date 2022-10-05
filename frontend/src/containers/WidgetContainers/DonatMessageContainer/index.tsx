@@ -100,7 +100,7 @@ const DonatMessageContainer = () => {
   const blockchainImg = useMemo(() => {
     const currBlockchain = walletsConf[
       process.env.REACT_APP_WALLET || "metamask"
-    ].blockchains.find((b) => b.nativeCurrency.symbol === lastNotif.currency);
+    ].blockchains.find((b) => b.nativeCurrency.symbol === lastNotif.blockchain);
     if (currBlockchain) return currBlockchain.icon;
     return "";
   }, [lastNotif]);
@@ -138,7 +138,7 @@ const DonatMessageContainer = () => {
                       color: sum_color,
                     }}
                   >
-                    {lastNotif.sum_donation} {lastNotif.currency}
+                    {lastNotif.sum_donation} {lastNotif.blockchain}
                   </span>
                 </>
               )}

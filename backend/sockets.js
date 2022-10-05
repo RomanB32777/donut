@@ -14,7 +14,7 @@ const socketHandler = async (socket, io) => {
     socket.join(userName);
 
     socket.on('new_donat', async (data) => {
-        const { supporter, creator_id, creator_username, sum, donationID, currency } = data;
+        const { supporter, creator_id, creator_username, sum, donationID, blockchain } = data;
         const rooms = getActiveRooms(io);
         if (rooms.length) {
             const userSockets = rooms.find(({ room }) => room === creator_username).sockets;
@@ -24,7 +24,7 @@ const socketHandler = async (socket, io) => {
                 socket.to(socketID).emit("new_notification", {
                     type: 'donat', supporter: supporter.username, additional: {
                         sum,
-                        currency,
+                        blockchain,
                         message: donation.rows[0].donation_message,
                     }
                 })

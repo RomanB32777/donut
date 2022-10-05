@@ -128,6 +128,8 @@ class UserController {
   async getUserNotifications(req, res) {
     try {
       const { user } = req.params;
+      const { blockchain } = req.query;
+
       const userInfo = await db.query(
         `SELECT id, roleplay FROM users WHERE ${
           user.includes("@") ? "username" : "id"
@@ -153,7 +155,8 @@ class UserController {
                 `SELECT donations.*, users.username FROM donations 
                     LEFT JOIN users
                     ON donations.${roleplaySendler}_id = users.id
-                    WHERE donations.id = $1`,
+                    WHERE donations.id = $1
+                    ${blockchain ? ` AND blockchain = '${blockchain}'` : ""}`,
                 [n.donation]
               );
               if (donation.rows[0]) return { ...n, donation: donation.rows[0] };
@@ -161,7 +164,8 @@ class UserController {
             }
             if (n.badge) {
               const badge = await db.query(
-                `SELECT * FROM badges WHERE id = $1`,
+                `SELECT * FROM badges WHERE id = $1 
+                  ${blockchain ? ` AND blockchain = '${blockchain}'` : ""}`,
                 [n.badge]
               );
               const creator = await db.query(

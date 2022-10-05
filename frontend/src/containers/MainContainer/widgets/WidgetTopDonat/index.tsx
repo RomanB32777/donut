@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
-import { filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
+import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import useWindowDimensions from "../../../../hooks/useWindowDimensions";
 import axiosClient from "../../../../axiosClient";
 import { ITableData, tableColums } from "./tableData";
@@ -27,7 +27,7 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
     try {
       setLoading(true);
       const { data } = await axiosClient.get(
-        `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}`
+        `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
       );
       if (data) {
         const forTableData: ITableData[] = data.map((donat: any) => ({
