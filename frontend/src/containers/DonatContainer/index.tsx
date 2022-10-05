@@ -6,16 +6,13 @@ import clsx from "clsx";
 import axiosClient from "../../axiosClient";
 import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import { Socket } from "socket.io-client";
-import { ethers } from "ethers";
 
-import { getMetamaskData } from "../../functions/getWalletData";
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
 import { setMainWallet } from "../../store/types/Wallet";
 import {
   addNotFoundUserNotification,
   addNotification,
   copyStr,
-  getBalance,
   getUsdKoef,
 } from "../../utils";
 import FormInput from "../../components/FormInput";
@@ -287,12 +284,12 @@ const DonatContainer = () => {
         const walletData = await walletsConf[
           process.env.REACT_APP_WALLET || "metamask"
         ].getWalletData(process.env.REACT_APP_BLOCKCHAIN); //  getMetamaskData();
-        // console.log(walletData);
 
         if (walletData) {
           const wallet = {
-            wallet: process.env.REACT_APP_WALLET || "metamask",
             token: walletData.address,
+            wallet: process.env.REACT_APP_WALLET || "metamask",
+            blockchain: process.env.REACT_APP_BLOCKCHAIN,
           };
           // getBalance(walletData.provider, walletData.address, setBalance);
           dispatch(setMainWallet(wallet));
@@ -335,7 +332,7 @@ const DonatContainer = () => {
     [goals]
   );
 
-  const { username, message, amount, selectedGoal } = form;
+  const { username, message, amount, selectedBlockchain, selectedGoal } = form;
 
   if (personInfo.error) return null;
 
@@ -549,7 +546,7 @@ const DonatContainer = () => {
         <SuccessModalComponent
           visible={isOpenSuccessModal}
           onClose={closeSuccessPopup}
-          message={`You’ve successfully sent ${amount} tEVMOS to ${name}`}
+          message={`You’ve successfully sent ${amount} ${selectedBlockchain} to ${name}`}
         />
       </div>
     </>

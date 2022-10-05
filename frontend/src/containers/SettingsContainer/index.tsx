@@ -10,7 +10,6 @@ import BaseButton from "../../components/BaseButton";
 import ConfirmPopup from "../../components/ConfirmPopup";
 import UploadImage from "../../components/UploadImage";
 import { setUser, tryToGetUser } from "../../store/types/User";
-import walletSmall from "../../assets/MetaMask_Fox.png";
 import {
   addNotification,
   addSuccessNotification,
@@ -115,6 +114,8 @@ const SettingsContainer = () => {
     dispatch(setLoading(false));
     navigate("/register");
   };
+
+  // console.log(process.env.REACT_APP_WALLET, user.metamask_token, `${process.env.REACT_APP_WALLET}_token`);
 
   const shortWalletToken = useMemo(
     () =>

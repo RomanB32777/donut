@@ -16,6 +16,7 @@ import { setLoading } from "./store/types/Loading";
 import "antd/dist/antd.css";
 import "./commonStyles/main.sass";
 import LayoutApp from "./containers/LayoutContainer";
+import { walletsConf } from "./consts";
 
 // import moment from 'moment';
 // moment.locale();
@@ -25,24 +26,33 @@ function App() {
   const locale = LOCALES.ENGLISH;
 
   useEffect(() => {
-    const walletData = localStorage.getItem("main_wallet");
+    const checkWallet = async () => {
+      const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+      const walletData = await wallet.getWalletData(
+        process.env.REACT_APP_BLOCKCHAIN
+      );
+      if (walletData) {
+        dispatch(
+          setMainWallet({
+            token: walletData.address,
+            wallet: process.env.REACT_APP_WALLET,
+            blockchain: process.env.REACT_APP_BLOCKCHAIN,
+          })
+        );
 
-    if (walletData) {
-      const wallet = JSON.parse(walletData);
-      dispatch(setMainWallet(wallet));
-
-      dispatch(tryToGetUser(wallet.token));
-      var refreshId = setInterval(function () {
-        // var tron = getTronWallet();
-        if (wallet) {
-          dispatch(tryToGetUser(wallet.token));
-          clearInterval(refreshId);
-        }
-      }, 1000);
-    } else {
-      dispatch(setLoading(false));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        dispatch(tryToGetUser(walletData.address));
+        var refreshId = setInterval(function () {
+          if (wallet) {
+            dispatch(tryToGetUser(walletData.address));
+            clearInterval(refreshId);
+          }
+        }, 1000);
+      } else {
+        dispatch(setLoading(false));
+      }
+    };
+    checkWallet();
+    // localStorage.getItem("main_wallet");
   }, []);
 
   return (

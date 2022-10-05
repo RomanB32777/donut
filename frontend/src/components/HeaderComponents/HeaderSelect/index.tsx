@@ -63,7 +63,7 @@ const HeaderSelect = ({
                 dispatch(setUser(""));
                 localStorage.removeItem("main_wallet");
                 dispatch(setMainWallet({}));
-                navigate("/landing");
+                navigate("/");
               }}
             >
               <div className="header-select__info-item__img icon">

@@ -101,47 +101,6 @@
 .empty-el
     margin: 0 auto
 
-.notifications
-    position: relative
-    margin-right: 37px
-
-    &-popup-wrapper
-        display: flex
-        flex-direction: column
-        width: 350px
-        background: variables.$grey-background-color
-        border-radius: variables.$border-radius
-        position: absolute
-        right: -75px
-        top: 56px
-        z-index: 100
-        padding: 20px
-
-    &-popup
-        &__content
-            width: 100%
-            font-family: variables.$jakarta-font
-            font-style: normal
-            font-weight: 500
-            font-size: 18px
-            line-height: 24px
-            color: variables.$white-color
-            overflow: hidden
-            text-overflow: ellipsis
-
-            &-list
-                max-height: 250px
-
-            &-item
-                margin-bottom: 5px
-                padding-right: 20px
-
-            &-link
-                margin-top: 15px
-                text-align: center
-                color: variables.$grey-color
-                cursor: pointer
-
 .ant-switch-checked
     background: variables.$blue-color
 
@@ -260,10 +219,6 @@
 
         .main-logo
             display: none
-
-    .notifications
-        &-popup-wrapper
-            right: -200px
 
 @media (max-width: 768px)
     .main-container

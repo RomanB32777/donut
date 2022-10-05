@@ -78,8 +78,6 @@ export const addInstallWalletNotification = (
 declare type typeNotification =
   | "donat_creator"
   | "donat_supporter"
-  | "following_creator"
-  | "following_backer"
   | "add_badge_creator"
   | "add_badge_supporter"
   | "remove_badge_creator"
@@ -93,19 +91,13 @@ export const getNotificationMessage = (
   switch (type) {
     case "donat_creator":
       return `${user} sent you ${
-        data.additional ? data.additional.sum : data.sum
-      } ${"tEVMOS"}!`;
+        data.sum
+      } ${data.currency}!`;
 
     case "donat_supporter":
       return `You sent ${
-        data.additional ? data.additional.sum : data.sum
-      } ${"tEVMOS"} to ${user}!`;
-
-    case "following_creator":
-      return `${user} started following you`;
-
-    case "following_backer":
-      return `You started following ${user}`;
+        data.sum
+      } ${data.currency} to ${user}!`;
 
     case "add_badge_creator":
       return `You sent a badge ${data || ""} to ${user}`;

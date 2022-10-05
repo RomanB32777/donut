@@ -37,6 +37,7 @@ const RegistrationModal = () => {
         setMainWallet({
           wallet,
           token: address,
+          blockchain: process.env.REACT_APP_BLOCKCHAIN,
         })
       );
 

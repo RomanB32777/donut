@@ -1,6 +1,7 @@
 const db = require('../db')
 const stream = require("stream")
 const textToSpeech = require('@google-cloud/text-to-speech');
+const getRandomStr = require('../utils');
 
 const client = new textToSpeech.TextToSpeechClient();
 

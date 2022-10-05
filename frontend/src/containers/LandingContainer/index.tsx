@@ -88,7 +88,7 @@ const LandingContainer = () => {
         visibleLogo
         isOpenHeaderSelect={isOpenHeaderSelect}
         handlerHeaderSelect={handlerHeaderSelect}
-        logoUrl={user.id ? "/" : "/landing"}
+        logoUrl="/" // user.id ? "/" : "/landing"
       />
       <div className="landing-container">
         <div

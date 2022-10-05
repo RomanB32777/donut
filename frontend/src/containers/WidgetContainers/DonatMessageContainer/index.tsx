@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSound from "use-sound";
 import clsx from "clsx";
 
@@ -9,9 +9,8 @@ import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
 import bigImg from "../../../assets/big_don.png";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { IAlertData, initAlertData } from "../../../types";
-import { url } from "../../../consts";
+import { url, walletsConf } from "../../../consts";
 import { soundsList } from "../../../assets/sounds";
-import EvmosIMG from "../../../assets/evmos.png";
 import "./styles.sass";
 
 const testDonat = {
@@ -88,12 +87,23 @@ const DonatMessageContainer = () => {
 
   useEffect(() => {
     getAlertsWidgetData(user);
+  }, [user]);
+
+  useEffect(() => {
     dispatch(
       tryToGetPersonInfo({
         username: name,
       })
     );
   }, [name]);
+
+  const blockchainImg = useMemo(() => {
+    const currBlockchain = walletsConf[
+      process.env.REACT_APP_WALLET || "metamask"
+    ].blockchains.find((b) => b.nativeCurrency.symbol === lastNotif.currency);
+    if (currBlockchain) return currBlockchain.icon;
+    return "";
+  }, [lastNotif]);
 
   const { banner, message_color, name_color, sum_color, sound } =
     alertWidgetData;
@@ -128,16 +138,12 @@ const DonatMessageContainer = () => {
                       color: sum_color,
                     }}
                   >
-                    {lastNotif.sum_donation}{" "}
-                    {lastNotif.wallet_type === "tron" && "TRX"}
-                    {lastNotif.wallet_type === "metamask" && "tEVMOS"}
+                    {lastNotif.sum_donation} {lastNotif.currency}
                   </span>
                 </>
               )}
             </span>
-            {lastNotif.wallet_type === "metamask" && (
-              <img src={EvmosIMG} alt="evmos" />
-            )}
+            <img src={blockchainImg} alt="evmos" />
           </div>
           <p
             className="donat-messsage-container_message"
