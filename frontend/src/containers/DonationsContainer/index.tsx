@@ -67,7 +67,7 @@ const DonationsContainer = () => {
             donationToken: donat.sum_donation,
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
-            blockchain:  donat.blockchain || "-",
+            blockchain:  donat.blockchain || currBlockchain?.nativeCurrency.symbol,
             date: donat.donation_date || "-",
             role: user.roleplay,
           })

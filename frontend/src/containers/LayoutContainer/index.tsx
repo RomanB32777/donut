@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { BackTop, Layout, Menu, Row } from "antd";
+import { BackTop, Layout, Menu } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
@@ -9,13 +9,10 @@ import { IRoute, Pages, routers } from "../../routes";
 import { AlertIcon, EmailIcon } from "../../icons/icons";
 
 import useWindowDimensions from "../../hooks/useWindowDimensions";
-import { getNotifications } from "../../store/types/Notifications";
-import { getNotificationMessage } from "../../utils";
 import Logo from "../../components/HeaderComponents/LogoComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
-import Loader from "../../components/Loader";
-import "./styles.sass";
 import NotificationsPopup from "../../components/HeaderComponents/NotificationsPopup";
+import "./styles.sass";
 
 const { Content, Sider } = Layout;
 
@@ -158,7 +155,7 @@ const LayoutApp = () => {
       Boolean(route.children)
     );
 
-    const childRouters = routersWithChild.map((route) => route.children);
+    const childRouters = routersWithChild.filter((route) => route.children);
 
     const allRouters: IRoute[] = menuItems.concat(
       ...(childRouters as IRoute[])

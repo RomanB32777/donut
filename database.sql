@@ -24,7 +24,6 @@ create TABLE creators(
 create TABLE backers(
     id SERIAL PRIMARY KEY,
     avatarLink VARCHAR(255) DEFAULT '',
-    twitter VARCHAR(255) DEFAULT '',
     creation_date VARCHAR(255) DEFAULT '',
     user_description VARCHAR(512) DEFAULT '',
     user_id INTEGER,

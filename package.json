@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "frontend": "npm start --prefix frontend",
+    "frontend": "REACT_APP_WALLET=tronlink REACT_APP_BLOCKCHAIN=tron npm start --prefix frontend",
     "landing": "npm start --prefix landing",
     "backend": "npm run server --prefix backend",
     "frontend:install": "npm install --prefix frontend",
-    "frontend:build": "npm build --prefix frontend",
+    "frontend:build": "npm  run build --prefix frontend",
     "landing:install": "npm install --prefix landing",
-    "landing:build": "npm build --prefix landing",
+    "landing:build": "npm  run build --prefix landing",
     "backend:install": "npm install --prefix backend",
     "install": "concurrently \"npm run frontend:install\" \"npm run landing:install\" \"npm run backend:install\"",
     "dev": "concurrently \"npm run frontend\" \"npm run landing\" \"npm run backend\""

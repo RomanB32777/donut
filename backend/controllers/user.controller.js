@@ -160,7 +160,7 @@ class UserController {
                 [n.donation]
               );
               if (donation.rows[0]) return { ...n, donation: donation.rows[0] };
-              return n;
+              return { ...n, donation: null };
             }
             if (n.badge) {
               const badge = await db.query(
@@ -168,30 +168,31 @@ class UserController {
                   ${blockchain ? ` AND blockchain = '${blockchain}'` : ""}`,
                 [n.badge]
               );
-              const creator = await db.query(
-                `SELECT username FROM users WHERE id = $1`,
-                [n.sender]
-              );
-              const supporter = await db.query(
-                `SELECT username FROM users WHERE id = $1`,
-                [n.recipient]
-              );
-              if (badge.rows[0] && creator.rows[0] && supporter.rows[0])
-                return {
-                  ...n,
-                  badge: {
-                    ...badge.rows[0],
-                    supporter_username: supporter.rows[0].username,
-                    creator_username: creator.rows[0].username,
-                  },
-                };
-              return n;
+              if (badge.rows[0]) {
+                const creator = await db.query(
+                  `SELECT username FROM users WHERE id = $1`,
+                  [n.sender]
+                );
+                const supporter = await db.query(
+                  `SELECT username FROM users WHERE id = $1`,
+                  [n.recipient]
+                );
+                if (creator.rows[0] && supporter.rows[0])
+                  return {
+                    ...n,
+                    badge: {
+                      ...badge.rows[0],
+                      supporter_username: supporter.rows[0].username,
+                      creator_username: creator.rows[0].username,
+                    },
+                  };
+              }
+              return { ...n, badge: null };
             }
           })
         );
         return res.status(200).json({ notifications: notificationsAll });
       }
-      // }
       return res.status(200).json({ notifications: [] });
     } catch (error) {
       res

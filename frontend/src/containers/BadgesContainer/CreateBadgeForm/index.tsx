@@ -197,34 +197,28 @@ const CreateBadgeForm = ({
           process.env.REACT_APP_BLOCKCHAIN
         );
 
-        if (walletData?.address) {
+        if (walletData) {
           const _uri = await uploadToIpfs();
 
           setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 });
 
-          const provider = new ethers.providers.Web3Provider(
-            (window as any).ethereum
-          );
-          const signer = provider.getSigner(0);
-
-          setLoadingCurrStep({ finishedStep: 1, loadingStep: 2 });
-
-          const Badge = new ethers.ContractFactory(
-            wallet.abi || [],
-            wallet.bytecode || "",
-            signer
-          );
-
-          const badgeContract = await Badge.deploy(_uri); // deploy contracts
-          setLoadingCurrStep({ finishedStep: 2 });
-
-          if (badgeContract) {
-            await axiosClient.post("/api/badge/", {
-              creator_id: user.id,
-              contract_address: badgeContract.address,
-              blockchain,
+          if (_uri) {
+            const badgeContract = await wallet.createContract({
+              _uri,
+              abi: wallet.abi,
+              bytecode: wallet.bytecode,
+              setLoadingStep: setLoadingCurrStep
             });
-            setIsOpenSuccessModal(true);
+
+            if (badgeContract) {
+              console.log(badgeContract);
+              await axiosClient.post("/api/badge/", {
+                creator_id: user.id,
+                contract_address: badgeContract,
+                blockchain,
+              });
+              setIsOpenSuccessModal(true);
+            }
           }
         }
       } catch (error) {

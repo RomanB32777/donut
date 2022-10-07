@@ -31,6 +31,7 @@ function App() {
       const walletData = await wallet.getWalletData(
         process.env.REACT_APP_BLOCKCHAIN
       );
+
       if (walletData) {
         dispatch(
           setMainWallet({

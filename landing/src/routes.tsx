@@ -4,7 +4,6 @@ import ChooseBlockchainModal from "./components/ChooseBlockchainModal";
 import ChooseWalletModal from "./components/ChooseWalletModal";
 import LandingPage from "./pages/LandingPage";
 
-
 export const routers: RouteObject[] = [
   {
     path: "/",
@@ -17,6 +16,10 @@ export const routers: RouteObject[] = [
   {
     path: "blockchains/:wallet",
     element: <ChooseBlockchainModal />,
+  },
+  {
+    path: "*",
+    element: <LandingPage />,
   },
 ];
 

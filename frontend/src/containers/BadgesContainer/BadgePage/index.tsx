@@ -97,14 +97,7 @@ const BadgePage = ({
   const assignBadge = async (contributor_id: number) => {
     try {
       const { id, contract_address, creator_id, title } = activeBadge;
-
-      // description: string;
-      // blockchain: string;
-      // contract_address: string;
-      // quantity: number;
-      // URI?: string;
-      // contributor_user_id_list?: string;
-
+      
       const res = await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
         id,
         contract_address,

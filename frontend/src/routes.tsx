@@ -1,8 +1,5 @@
 import { Navigate, useRoutes, Outlet, RouteObject } from "react-router";
-import MainPage from "./pages/MainPage";
-import BadgesPage from "./pages/BadgesPage";
-import DonatPage from "./pages/DonatPage";
-
+import { useSelector } from "react-redux";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons/icons";
 import {
   PieChartOutlined,
@@ -10,6 +7,9 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 
+import MainPage from "./pages/MainPage";
+import BadgesPage from "./pages/BadgesPage";
+import DonatPage from "./pages/DonatPage";
 import DonationsPage from "./pages/DonationsPage";
 import AlertsPage from "./pages/AlertsPage";
 import WidgetsPage from "./pages/WidgetsPage";
@@ -18,36 +18,23 @@ import StreamStatsPage from "./pages/StreamStatsPage";
 import DonationGoalsPage from "./pages/DonationGoalsPage";
 import SettingsPage from "./pages/SettingsPage";
 import RegistrationModal from "./components/RegistrationModal";
-import { useSelector } from "react-redux";
-import ChooseWalletModal from "./components/ChooseWalletModal";
 import Loader from "./components/Loader";
 import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
 import DonatStatPage from "./pages/DonatStatPage";
-import LandingPage from "./pages/LandingPage";
+import NoPage from "./pages/NoPage";
 
 const routes = {
   main: "/",
-  creator: "/creator/:name",
-  profile: "/profile",
-  createNewBadge: "/create-new-badge",
-  badges: "/badges",
-  notifications: "/notifications",
-  donat: "/donat/:name/:token",
-  donatMessage: "/donat-message/:name/:random",
-  supporters: "/supporters/",
-  nft: "/nft",
-  createNft: "/create-nft",
-  followers: "/followers",
-  transactions: "/transactions",
-  following: "/following",
-  creators: "/creators",
-  backers: "/backers",
 };
 
 interface IRoute extends RouteObject {
+  path: string;
+  index?: boolean;
   name?: string;
   menu?: boolean;
+  element?: React.ReactNode | null;
+  errorElement?: React.ReactNode | null;
   icon?: React.ReactNode;
   children?: IRoute[];
   roleRequired?: string;
@@ -211,6 +198,10 @@ export const routers: IRoute[] = [
     hiddenLayoutElements: true,
     transparet: true,
   },
+  {
+    path: "*",
+    element: <NoPage />,
+  },
 ];
 export const Pages = () => {
   const pages = useRoutes(routers);
@@ -218,4 +209,3 @@ export const Pages = () => {
 };
 
 export type { IRoute, userRoles };
-export default routes;

@@ -7,7 +7,6 @@ import {
 import moment from "moment";
 import postData from "./functions/postData";
 import axiosClient from "./axiosClient";
-import { getMetamaskData } from "./functions/getWalletData";
 
 interface INotification {
   type: NOTIFICATION_TYPE;
@@ -36,6 +35,20 @@ export const addAuthNotification = () =>
     title: "Authorization",
     message: "To perform this action, please register",
     type: "info",
+  });
+
+export const addAuthWalletNotification = (wallet: string) =>
+  addNotification({
+    title: "Authorization",
+    message: `You need to log in to your wallet ${wallet}`,
+    type: "warning",
+  });
+
+export const addErrorNotification = (message: string) =>
+  addNotification({
+    title: "Error",
+    message,
+    type: "danger",
   });
 
 export const addSuccessNotification = (message: string) =>
@@ -90,14 +103,10 @@ export const getNotificationMessage = (
 ) => {
   switch (type) {
     case "donat_creator":
-      return `${user} sent you ${
-        data.sum
-      } ${data.blockchain}!`;
+      return `${user} sent you ${data.sum} ${data.blockchain}!`;
 
     case "donat_supporter":
-      return `You sent ${
-        data.sum
-      } ${data.blockchain} to ${user}!`;
+      return `You sent ${data.sum} ${data.blockchain} to ${user}!`;
 
     case "add_badge_creator":
       return `You sent a badge ${data || ""} to ${user}`;
@@ -202,17 +211,20 @@ export const getUsdKoef = async (
   blockchain: string, // currencyTypes
   setUsdtKoef?: (price: number) => void
 ) => {
-  
   const { data } = await axiosClient.get(
     `https://api.coingecko.com/api/v3/simple/price?ids=${blockchain}&vs_currencies=usd`
-    );
+  );
 
   setUsdtKoef && data[blockchain] && setUsdtKoef(+data[blockchain].usd);
   if (data[blockchain]) return +data[blockchain].usd;
-  return 0
+  return 0;
 };
 
-export const getBalance = async (provider: any, address: string, setBalance?: (amount: number) => void) => {
+export const getBalance = async (
+  provider: any,
+  address: string,
+  setBalance?: (amount: number) => void
+) => {
   const balance = await provider.getBalance(address);
   const intBalance = Number(ethers.utils.formatEther(balance.toString()));
   setBalance && intBalance && setBalance(intBalance);
