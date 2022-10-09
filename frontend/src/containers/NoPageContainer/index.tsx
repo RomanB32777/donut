@@ -6,7 +6,7 @@ import "./styles.sass";
 const NoPageContainer = () => {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="no-page">
       <Result
         status="404"
         title="404"

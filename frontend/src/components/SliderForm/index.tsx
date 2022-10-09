@@ -11,6 +11,7 @@ interface ISliderProps extends SliderBaseProps {
   sliderCol?: number;
   labelCol?: number;
   maxWidth?: number;
+  tooltipVisible?: boolean;
   gutter?: number | [number, number];
   setValue: (value: number) => void;
 }

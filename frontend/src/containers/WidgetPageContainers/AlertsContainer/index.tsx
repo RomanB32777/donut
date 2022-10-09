@@ -13,6 +13,7 @@ import BaseButton from "../../../components/BaseButton";
 import LinkCopy from "../../../components/LinkCopy";
 import SelectComponent from "../../../components/SelectComponent";
 import SliderForm from "../../../components/SliderForm";
+import SwitchForm from "../../../components/SwitchForm";
 import { TabsComponent } from "../../../components/TabsComponent";
 import WidgetMobileWrapper from "../../../components/WidgetMobileWrapper";
 import { IAlertData, initAlertData } from "../../../types";
@@ -168,7 +169,7 @@ const SettingsAlertsBlock = ({
               gutter={[0, 18]}
               align="middle"
             >
-              <Col md={12} xs={12}>
+              <Col md={12} sm={8} xs={12}>
                 <span className="form-element__label">Alert sound:</span>
               </Col>
               <Col md={4}>
@@ -187,39 +188,13 @@ const SettingsAlertsBlock = ({
         </Col>
         <Col span={24}>
           <div className="form-element">
-            <Row
-              style={{
-                width: "100%",
-              }}
+            <SwitchForm
+              label="Voice alerts:"
+              checked={voice}
+              setValue={(flag) => setFormData({ ...formData, voice: flag })}
+              maxWidth={185}
               gutter={[0, 18]}
-            >
-              <Col md={12} xs={24}>
-                <span className="form-element__label">Voice alerts:</span>
-              </Col>
-              <Col md={12} xs={24}>
-                <div className="voiceSwitch-wrapper">
-                  <span>Disabled</span>
-                  <Switch
-                    checked={voice}
-                    onChange={(flag) =>
-                      setFormData({ ...formData, voice: flag })
-                    }
-                    id="voiceSwitch"
-                  />
-                  <span>Abled</span>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="form-element">
-            <Row
-              style={{
-                width: "100%",
-              }}
-            >
-              <Col xs={{ offset: 0, span: 24 }} md={{ offset: 12, span: 12 }}>
+              afterComponent={
                 <TabsComponent
                   setTabContent={(gender_voice) =>
                     setFormData({ ...formData, gender_voice })
@@ -236,8 +211,8 @@ const SettingsAlertsBlock = ({
                     },
                   ]}
                 />
-              </Col>
-            </Row>
+              }
+            />
           </div>
         </Col>
       </Row>

@@ -15,7 +15,7 @@
     "landing:build": "npm  run build --prefix landing",
     "backend:install": "npm install --prefix backend",
     "install": "concurrently \"npm run frontend:install\" \"npm run landing:install\" \"npm run backend:install\"",
-    "dev": "concurrently \"npm run frontend\" \"npm run landing\" \"npm run backend\""
+    "dev": "concurrently \"npm run frontend:evmos\" \"npm run backend\""
   },
   "author": "Roman <r.bogdanovskiy@onpoint.ru>",
   "license": "ISC",
