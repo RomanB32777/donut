@@ -32,7 +32,7 @@ export interface IWalletConf {
     name: string;
     icon: string;
     chainId?: string;
-    chainName?: string;
+    chainName: string;
     badgeName: string;
     nativeCurrency: {
       symbol: string;

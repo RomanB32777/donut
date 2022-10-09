@@ -150,6 +150,7 @@ const tronlinkConf: IWalletConf = {
       address: "TX6dd8YNKRCKZazcBZUHZQjyckzxvPKYJU",
       name: "tron",
       icon: tronlinkIcon,
+      chainName: "Tron Nile Testnet",
       badgeName: "Tron",
       nativeCurrency: {
         name: "tron",

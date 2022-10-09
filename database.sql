@@ -58,7 +58,7 @@ create TABLE alerts (
     duration NUMERIC DEFAULT 15,
     sound VARCHAR(255) DEFAULT 'sound_1',
     voice BOOLEAN DEFAULT 'false',
-    genderVoice VARCHAR(10) DEFAULT 'MALE',
+    gender_voice BOOLEAN DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );

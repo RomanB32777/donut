@@ -1,16 +1,11 @@
-import { useEffect } from "react";
 import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router-dom";
 
 import { LOCALES } from "./i18n/locales";
 import messages from "./i18n/messages";
-import { useDispatch } from "react-redux";
-import { tryToGetUser } from "./store/types/User";
 import { ReactNotifications } from "react-notifications-component";
 
 import "react-notifications-component/dist/theme.css";
-import { setMainWallet } from "./store/types/Wallet";
-import { setLoading } from "./store/types/Loading";
 
 import "antd/dist/antd.css";
 import "./commonStyles/main.sass";
@@ -20,12 +15,10 @@ import LayoutApp from "./containers/LayoutContainer";
 // moment.locale();
 
 function App() {
-  const dispatch = useDispatch();
   const locale = LOCALES.ENGLISH;
-
+  // const dispatch = useDispatch();
   // useEffect(() => {
   //   const walletData = localStorage.getItem("main_wallet");
-
   //   if (walletData) {
   //     const wallet = JSON.parse(walletData);
   //     dispatch(setMainWallet(wallet));
