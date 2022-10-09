@@ -3,7 +3,8 @@ const stream = require("stream")
 const textToSpeech = require('@google-cloud/text-to-speech');
 const getRandomStr = require('../utils');
 
-const client = new textToSpeech.TextToSpeechClient();
+const speechClient = new textToSpeech.TextToSpeechClient();
+// require('dotenv').config();
 
 class WidgetController {
     // alerts
@@ -19,8 +20,9 @@ class WidgetController {
                 sum_color = $3,
                 duration = $4,
                 sound = $5,
-                voice = $6
-                WHERE creator_id = $7 RETURNING *;`, [
+                voice = $6,
+                gender_voice = $7
+                WHERE creator_id = $8 RETURNING *;`, [
                 ...Object.values(parseData),
                 creator_id
             ])
@@ -244,11 +246,11 @@ class WidgetController {
 
     async generateSound(req, res) {
         try {
-            const { text } = req.query
+            const { text, gender_voice } = req.query
 
             const request = {
                 input: { text },
-                voice: { languageCode: 'en-US', ssmlGender: 'NEUTRAL' },
+                voice: { languageCode: 'en-US', ssmlGender: gender_voice }, // MALE // FEMALE
                 audioConfig: { audioEncoding: 'MP3' },
             }
 
@@ -257,7 +259,7 @@ class WidgetController {
                 'Transfer-Encoding': 'chunked'
             })
 
-            const [response] = await client.synthesizeSpeech(request)
+            const [response] = await speechClient.synthesizeSpeech(request)
             const bufferStream = new stream.PassThrough()
             bufferStream.end(Buffer.from(response.audioContent))
             bufferStream.pipe(res)

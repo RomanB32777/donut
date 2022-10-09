@@ -4,15 +4,22 @@
     .ant-tabs-tab
         &-btn
             font-family: variables.$jakarta-font
-            font-size: 20px
+            font-size: 15px
             font-style: normal
-            font-weight: 700
-            line-height: 25px
-            color: variables.$white-color
+            font-weight: 400
+            line-height: 20px
+            color: variables.$white-color !important
+
+    &.isBigTabs 
+        .ant-tabs-tab
+            &-btn
+                font-size: 20px
+                font-weight: 700
+                line-height: 25px
 
         &.ant-tabs-tab-active
             .ant-tabs-tab-btn
-                color: variables.$white-color
+                color: variables.$white-color !important
 
     .ant-tabs-ink-bar
         background: variables.$blue-color

@@ -5,6 +5,11 @@ import "./styles.sass";
 
 const { Option } = Select;
 
+export interface ISelectItem {
+  key: string;
+  value: string;
+}
+
 const SelectInput = ({
   value,
   list,
@@ -19,7 +24,7 @@ const SelectInput = ({
   setValue,
 }: {
   value: string | string[];
-  list: string[];
+  list: ISelectItem[] | null; // string[]
   label?: string;
   gutter?: number | [number, number];
   placeholder?: string;
@@ -58,14 +63,15 @@ const SelectInput = ({
             placeholder={placeholder || ""}
             mode={isTags ? "tags" : undefined}
             onChange={setValue}
-            // bordered={false}
             showArrow
+            disabled={list && Boolean(list.length) ? false : true}
           >
-            {list.map((item) => (
-              <Option value={item} key={item}>
-                {item}
-              </Option>
-            ))}
+            {list &&
+              list.map(({ key, value }) => (
+                <Option value={key} key={key}>
+                  {value}
+                </Option>
+              ))}
           </Select>
         </Col>
       </Row>

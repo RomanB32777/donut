@@ -3,7 +3,7 @@ import { call, put, takeEvery, select } from "redux-saga/effects";
 import { baseURL } from "../../axiosClient";
 import { setLoading } from "../../store/types/Loading";
 import { setNotifications } from "../../store/types/Notifications";
-import { currBlockchain } from "../../consts";
+import { currBlockchain } from "../../utils";
 
 const asyncGetNotifications = async (user: number | string) => {
   const response = await fetch(`${baseURL}/api/user/notifications/${user}?blockchain=${currBlockchain?.nativeCurrency.symbol}`);

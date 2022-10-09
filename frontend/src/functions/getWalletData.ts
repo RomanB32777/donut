@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { walletsConf } from "../consts";
+import { walletsConf } from "../utils";
 import { addInstallWalletNotification } from "../utils";
 
 export const getMetamaskWallet = async () => {

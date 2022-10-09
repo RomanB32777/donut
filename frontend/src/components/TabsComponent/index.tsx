@@ -1,33 +1,36 @@
+import clsx from "clsx";
 import { Tabs } from "antd";
-import { EyeOutlined, SettingOutlined } from "@ant-design/icons";
 import { typesTabContent } from "../../types";
 import "./styles.sass";
 
+interface Itab {
+  label: React.ReactNode;
+  key: string;
+}
+
 export const TabsComponent = ({
+  tabs,
+  activeKey,
+  modificator,
+  isBigTabs,
   setTabContent,
 }: {
+  tabs: Itab[];
+  activeKey?: string;
+  modificator?: string;
+  isBigTabs?: boolean;
   setTabContent: (key: typesTabContent) => void;
 }) => (
-  <div className="page_tabs">
-    <Tabs onChange={(key) => setTabContent(key as typesTabContent)}>
-      <Tabs.TabPane
-        tab={
-          <>
-            <SettingOutlined />
-            Settings
-          </>
-        }
-        key="settings"
-      />
-      <Tabs.TabPane
-        tab={
-          <>
-            <EyeOutlined />
-            Preview
-          </>
-        }
-        key="preview"
-      />
-    </Tabs>
+  <div
+    className={clsx("page_tabs", {
+      [modificator as string]: modificator,
+      isBigTabs,
+    })}
+  >
+    <Tabs
+      activeKey={activeKey}
+      onChange={(key) => setTabContent(key as typesTabContent)}
+      items={tabs}
+    />
   </div>
 );

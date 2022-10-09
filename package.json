@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "frontend": "REACT_APP_WALLET=tronlink REACT_APP_BLOCKCHAIN=tron npm start --prefix frontend",
+    "frontend": "npm start --prefix frontend",
+    "frontend:tron": "REACT_APP_BLOCKCHAIN=tron REACT_APP_WALLET=tronlink npm start --prefix frontend",
+    "frontend:evmos": "REACT_APP_BLOCKCHAIN=evmos REACT_APP_WALLET=metamask npm start --prefix frontend",
+    "frontend:klay": "REACT_APP_BLOCKCHAIN=klay-token REACT_APP_WALLET=metamask npm start --prefix frontend",
     "landing": "npm start --prefix landing",
     "backend": "npm run server --prefix backend",
     "frontend:install": "npm install --prefix frontend",

@@ -15,8 +15,10 @@ import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { initTableDataItem, ITableData, tableColumns } from "./tableData";
 import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
-import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../consts";
+import { currBlockchain } from "../../utils";
+import { filterPeriodItems } from "../../utils/dateMethods/consts";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
+import { periodItemsTypes } from "../../utils/dateMethods/types";
 import "./styles.sass";
 
 interface IQueryForm {
@@ -35,7 +37,7 @@ const DonationsContainer = () => {
   const notifications = useSelector((state: any) => state.notifications);
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
   const [queryForm, setQueryForm] = useState<IQueryForm>({
-    timePeriod: filterPeriodItems["7days"],
+    timePeriod: "7days",
     searchStr: "",
     groupByName: false,
     startDate: "",
@@ -51,13 +53,16 @@ const DonationsContainer = () => {
   const getDonationsData = async () => {
     try {
       setLoading(true);
-      const { timePeriod, searchStr, groupByName, startDate, endDate } =
-        queryForm;
-
-      const timePeriodQuery = getTimePeriodQuery(timePeriod);
-      
+      const queryFormString = Object.keys(queryForm).reduce(
+        (acc, key) =>
+          queryForm[key as keyof IQueryForm]
+            ? acc + `&${key}=${queryForm[key as keyof IQueryForm]}`
+            : acc,
+        ""
+      );
+      const blockchain = currBlockchain?.nativeCurrency.symbol;
       const { data } = await axiosClient.get(
-        `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}&timePeriod=${timePeriodQuery}&startDate=${startDate}&endDate=${endDate}&groupByName=${groupByName}&searchStr=${searchStr}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
+        `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}${queryFormString}&blockchain=${blockchain}`
       ); // &limit=${LIMIT_DONATS}&offset=${0}
       if (data.donations && data.donations.length) {
         const forTableData: ITableData[] = data.donations.map(
@@ -67,7 +72,8 @@ const DonationsContainer = () => {
             donationToken: donat.sum_donation,
             donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
             message: donat.donation_message || "-",
-            blockchain:  donat.blockchain || currBlockchain?.nativeCurrency.symbol,
+            blockchain:
+              donat.blockchain || currBlockchain?.nativeCurrency.symbol,
             date: donat.donation_date || "-",
             role: user.roleplay,
           })
@@ -182,7 +188,10 @@ const DonationsContainer = () => {
                 <Col md={10} xs={11}>
                   <SelectInput
                     value={timePeriod}
-                    list={Object.values(filterPeriodItems)}
+                    list={Object.keys(filterPeriodItems).map((key) => ({
+                      key,
+                      value: filterPeriodItems[key as periodItemsTypes],
+                    }))}
                     modificator={"donations-header__left_select"}
                     setValue={(selected) =>
                       setQueryForm({

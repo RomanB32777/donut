@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { ethers } from "ethers";
 import clsx from "clsx";
-import { walletsConf } from "../../../consts";
+import { walletsConf } from "../../../utils";
 import { TrashBinIcon } from "../../../icons/icons";
 
 import { IBadge, IBadgeData, initBadgeData } from "../../../types";
@@ -26,7 +26,10 @@ const ContentCard = (prop: {
 
   const getBadgeNFTData = async (badge: IBadge) => {
     try {
+      const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
       const { contract_address, creator_id } = badge;
+
+      const currentToken = await wallet.getBadgeURI(contract_address);
 
       const provider = new ethers.providers.Web3Provider(
         (window as any).ethereum
@@ -37,8 +40,7 @@ const ContentCard = (prop: {
         provider
       );
 
-      const currentToken = await currentContract.uri(1);
-
+      // const currentToken = await currentContract.uri(1);
       const quantityBadge =
         user.id === creator_id
           ? await currentContract.totalSupply(1)
@@ -47,32 +49,34 @@ const ContentCard = (prop: {
       const quantityBadgeNum = quantityBadge.toNumber();
       if (user.roleplay === "backers" && quantityBadgeNum < 1) return;
 
-      const rootCid = currentToken.split("//")[1];
-      const dataBadgeJSON = await axiosClient.get(
-        `https://${rootCid}.ipfs.w3s.link/metadata.json`
-      );
+      if (currentToken) {
+        const rootCid = currentToken.split("//")[1];
+        const dataBadgeJSON = await axiosClient.get(
+          `https://${rootCid}.ipfs.w3s.link/metadata.json`
+        );
 
-      if (dataBadgeJSON.status == 200) {
-        const client = makeStorageClient();
-        const imgCid = dataBadgeJSON.data.URI.split("//")[1];
-        const res = await client.get(imgCid); // Web3Response
+        if (dataBadgeJSON.status === 200) {
+          const client = makeStorageClient();
+          const imgCid = dataBadgeJSON.data.URI.split("//")[1];
+          const res = await client.get(imgCid); // Web3Response
 
-        if (res) {
-          const files = await res.files(); // Web3File[]
+          if (res) {
+            const files = await res.files(); // Web3File[]
 
-          const reader = new FileReader();
-          reader.readAsDataURL(files[0]);
-          reader.onload = () =>
-            setBadgeData({
-              ...badgeData,
-              ...dataBadgeJSON.data,
-              image: {
-                ...badgeData.image,
-                preview: (reader.result as string) || "",
-              },
-              contract_address,
-              quantity: quantityBadgeNum,
-            });
+            const reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+            reader.onload = () =>
+              setBadgeData({
+                ...badgeData,
+                ...dataBadgeJSON.data,
+                image: {
+                  ...badgeData.image,
+                  preview: (reader.result as string) || "",
+                },
+                contract_address,
+                quantity: quantityBadgeNum,
+              });
+          }
         }
       }
     } catch (error) {

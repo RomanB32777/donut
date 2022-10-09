@@ -9,17 +9,18 @@ import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
 import bigImg from "../../../assets/big_don.png";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { IAlertData, initAlertData } from "../../../types";
-import { url, walletsConf } from "../../../consts";
+import { url } from "../../../consts";
+import { walletsConf } from "../../../utils";
 import { soundsList } from "../../../assets/sounds";
 import "./styles.sass";
 
-const testDonat = {
-  wallet_type: "metamask",
-  sum_donation: 50,
-  username: "tester",
-  donation_message:
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
-};
+// const testDonat = {
+//   wallet_type: "metamask",
+//   sum_donation: 50,
+//   username: "tester",
+//   donation_message:
+//     "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto, optio deleniti. Placeat facilis cupiditate dolorem aspernatur quaerat magnam soluta, ratione ullam commodi provident officiis nobis quasi corporis atque? Numquam, necessitatibus!",
+// };
 
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const DonatMessageContainer = () => {
   }, [notifications]);
 
   useEffect(() => {
-    const { voice, sound } = alertWidgetData;
+    const { voice, sound, gender_voice } = alertWidgetData;
     if (lastNotif.sum_donation) {
       if (sound && duration) {
         play();
@@ -48,7 +49,7 @@ const DonatMessageContainer = () => {
           const { duration } = alertWidgetData;
           if (voice && lastNotif.donation_message) {
             const tmp = new Audio(
-              `${baseURL}/api/widget/generate/sound?text=${lastNotif.donation_message}`
+              `${baseURL}/api/widget/generate/sound?text=${lastNotif.donation_message}&gender_voice=${gender_voice}`
             );
             tmp.play();
           }
@@ -76,6 +77,7 @@ const DonatMessageContainer = () => {
         duration: Number(data.duration),
         sound: data.sound,
         voice: data.voice,
+        gender_voice: data.gender_voice,
       };
 
       setAlertWidgetData({

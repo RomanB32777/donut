@@ -1,5 +1,5 @@
 import { Col, Row, Slider } from "antd";
-import { SliderBaseProps, SliderMarks } from "antd/lib/slider";
+import { SliderBaseProps } from "antd/lib/slider"; // SliderMarks
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import "./styles.sass";
 
@@ -66,7 +66,7 @@ const SliderForm = ({
               step={step}
               max={max}
               min={min}
-              tooltipVisible={tooltipVisible}
+              tooltip={{ formatter: tooltipVisible ? (value) => value : null }}
             />
           </div>
         </Col>

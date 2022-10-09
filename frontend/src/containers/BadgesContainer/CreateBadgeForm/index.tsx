@@ -1,6 +1,5 @@
 import { Col, Row, StepProps, Steps, StepsProps } from "antd";
 import { useMemo, useState } from "react";
-import { ethers } from "ethers";
 import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import FormInput from "../../../components/FormInput";
@@ -12,12 +11,11 @@ import SelectInput from "../../../components/SelectInput";
 import axiosClient from "../../../axiosClient";
 import { useSelector } from "react-redux";
 import { makeStorageClient } from "../utils";
-import { currBlockchain, walletsConf } from "../../../consts";
 import ModalComponent, {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
-import { addNotification } from "../../../utils";
+import { addNotification, currBlockchain, walletsConf } from "../../../utils";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const { Step } = Steps;
@@ -207,7 +205,7 @@ const CreateBadgeForm = ({
               _uri,
               abi: wallet.abi,
               bytecode: wallet.bytecode,
-              setLoadingStep: setLoadingCurrStep
+              setLoadingStep: setLoadingCurrStep,
             });
 
             if (badgeContract) {
@@ -237,9 +235,14 @@ const CreateBadgeForm = ({
 
   const blockchainList = useMemo(() => {
     if (currBlockchain) {
-      return currBlockchain?.nativeCurrency.symbol;
+      return [
+        {
+          key: currBlockchain.nativeCurrency.symbol,
+          value: currBlockchain.badgeName,
+        },
+      ];
     }
-    return "";
+    return null;
   }, []);
 
   const { image, title, description, blockchain } = formBadge;
@@ -319,9 +322,8 @@ const CreateBadgeForm = ({
                 <div className="form-element">
                   <SelectInput
                     value={blockchain}
-                    // list={["tEVMOS"]}
                     label="Blockchain"
-                    list={[blockchainList]}
+                    list={blockchainList}
                     placeholder="Choose blockchain"
                     setValue={(value) =>
                       setFormBadge({
@@ -352,7 +354,7 @@ const CreateBadgeForm = ({
         </Row>
       </div>
       <ModalComponent
-        visible={loading}
+        open={loading}
         title="Follow steps"
         closable={false}
         width={550}
@@ -371,7 +373,7 @@ const CreateBadgeForm = ({
         </div>
       </ModalComponent>
       <SuccessModalComponent
-        visible={isOpenSuccessModal}
+        open={isOpenSuccessModal}
         onClose={closeSuccessPopup}
         message={`Your ERC-1155 NFT Badge was created successfully!`}
         description="Usually it takes around 30-60 seconds for it to be displayed in Badges section"

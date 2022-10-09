@@ -11,9 +11,8 @@ import "./styles.sass";
 import CreateBadgeForm from "./CreateBadgeForm";
 import BadgePage from "./BadgePage";
 import { IBadgeData, initBadgeData } from "../../types";
-import { addNotification } from "../../utils";
+import { addNotification, currBlockchain } from "../../utils";
 import { Col, Empty, Row } from "antd";
-import { currBlockchain } from "../../consts";
 
 const BadgesContainer = () => {
   const user = useSelector((state: any) => state.user);
@@ -125,8 +124,8 @@ const BadgesContainer = () => {
         <Row gutter={[36, 36]}>
           {badgesList && badgesList.length > 0 ? (
             badgesList.map(({ id, contract_address, creator_id }, rowIndex) => (
-              <Col xl={6} md={8} sm={12} xs={24}>
-                <div key={"badge-panel" + rowIndex} className="badge-panel">
+              <Col xl={6} md={8} sm={12} xs={24} key={"badge-panel" + rowIndex}>
+                <div className="badge-panel">
                   <ContentCard
                     data={{
                       id,

@@ -8,15 +8,15 @@ import { useDispatch } from "react-redux";
 import { tryToGetUser } from "./store/types/User";
 import { ReactNotifications } from "react-notifications-component";
 
-import "react-notifications-component/dist/theme.css";
+import LayoutApp from "./containers/LayoutContainer";
 import { WebSocketProvider } from "./components/Websocket";
 import { setMainWallet } from "./store/types/Wallet";
 import { setLoading } from "./store/types/Loading";
+import { walletsConf } from "./utils";
 
+import "react-notifications-component/dist/theme.css";
 import "antd/dist/antd.css";
 import "./commonStyles/main.sass";
-import LayoutApp from "./containers/LayoutContainer";
-import { walletsConf } from "./consts";
 
 // import moment from 'moment';
 // moment.locale();

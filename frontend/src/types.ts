@@ -1,4 +1,4 @@
-import { allPeriodItemsTypes, statsDataTypes } from "./consts";
+import { allPeriodItemsTypes, statsDataTypes } from "./utils/dateMethods/types";
 
 export declare type roleUser = "creators" | "backers";
 
@@ -55,6 +55,7 @@ export interface IAlertData {
   duration: number;
   sound: any;
   voice: boolean;
+  gender_voice: string;
 }
 
 export const initAlertData: IAlertData = {
@@ -68,6 +69,7 @@ export const initAlertData: IAlertData = {
   duration: 15,
   sound: "sound_1",
   voice: false,
+  gender_voice: 'MAN'
 }
 
 export declare type typeAligmnet = "Left" | "Center" | "Right";
@@ -106,4 +108,4 @@ export interface IBadge {
   contributor_user_id_list?: string;
 }
 
-export type typesTabContent = "all" | "settings" | "preview";
+export type typesTabContent = "All" | "Settings" | "Preview";

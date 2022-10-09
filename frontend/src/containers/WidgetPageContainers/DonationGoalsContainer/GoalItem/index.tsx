@@ -1,22 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
+import clsx from "clsx";
 import LinkCopy from "../../../../components/LinkCopy";
+import WidgetMobileWrapper from "../../../../components/WidgetMobileWrapper";
 import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons/icons";
 import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
 import BaseButton from "../../../../components/BaseButton";
+import useWindowDimensions from "../../../../hooks/useWindowDimensions";
 import axiosClient, { baseURL } from "../../../../axiosClient";
 import { getGoals } from "../../../../store/types/Goals";
-import { IGoalData, typesTabContent } from "../../../../types";
 import {
   addNotification,
   addSuccessNotification,
   copyStr,
 } from "../../../../utils";
-import clsx from "clsx";
-import useWindowDimensions from "../../../../hooks/useWindowDimensions";
-import { TabsComponent } from "../../../../components/TabsComponent";
+import { IGoalData } from "../../../../types";
 
 interface IEditGoalData {
   title_color: string;
@@ -182,7 +182,7 @@ const GoalItem = ({
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const { isLaptop, isTablet, isMobile } = useWindowDimensions();
+  const { isLaptop, isTablet } = useWindowDimensions();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -191,8 +191,6 @@ const GoalItem = ({
     progress_color: "#1D14FF",
     background_color: "#212127",
   });
-
-  const [tabContent, setTabContent] = useState<typesTabContent>("all");
 
   const handleActiveDetails = () =>
     !isarchive && setisActiveDetails(!isActiveDetails);
@@ -265,60 +263,12 @@ const GoalItem = ({
     });
   }, []);
 
-  useEffect(() => {
-    isLaptop ? setTabContent("settings") : setTabContent("all");
-  }, [isLaptop]);
-
-  const contents: { type: typesTabContent; content: React.ReactNode }[] = [
-    {
-      type: "preview",
-      content: (
-        <PreviewGoalBlock
-          editGoalData={editGoalData}
-          goalData={goalData}
-          loading={loading}
-          sendColorsData={sendColorsData}
-        />
-      ),
-    },
-    {
-      type: "settings",
-      content: (
-        <SettingsGoalBlock
-          editGoalData={editGoalData}
-          loading={loading}
-          setEditGoalData={setEditGoalData}
-          sendColorsData={sendColorsData}
-        />
-      ),
-    },
-    {
-      type: "all",
-      content: (
-        <>
-          <PreviewGoalBlock
-            editGoalData={editGoalData}
-            goalData={goalData}
-            loading={loading}
-            sendColorsData={sendColorsData}
-          />
-          <SettingsGoalBlock
-            editGoalData={editGoalData}
-            loading={loading}
-            setEditGoalData={setEditGoalData}
-            sendColorsData={sendColorsData}
-          />
-        </>
-      ),
-    },
-  ];
-
   const { id, title, amount_goal, amount_raised, isarchive } = goalData;
   const { progress_color } = editGoalData;
 
   const linkForCopy = useMemo(
     () => `${baseURL}/donat-goal/${user.username}/${id}`,
-    [baseURL, user, id]
+    [user, id]
   );
 
   return (
@@ -413,18 +363,24 @@ const GoalItem = ({
       </div>
       {isActiveDetails && (
         <div className="goals-item__details">
-          {tabContent !== "all" && (
-            <TabsComponent setTabContent={setTabContent} />
-          )}
-          <Row
-            gutter={[4, 4]}
-            className="goals-item__details-container"
-            justify="space-between"
-          >
-            {contents.map(
-              (block) => block.type === tabContent && block.content
-            )}
-          </Row>
+          <WidgetMobileWrapper
+            previewBlock={
+              <PreviewGoalBlock
+                editGoalData={editGoalData}
+                goalData={goalData}
+                loading={loading}
+                sendColorsData={sendColorsData}
+              />
+            }
+            settingsBlock={
+              <SettingsGoalBlock
+                editGoalData={editGoalData}
+                loading={loading}
+                setEditGoalData={setEditGoalData}
+                sendColorsData={sendColorsData}
+              />
+            }
+          />
         </div>
       )}
     </>

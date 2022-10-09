@@ -1,4 +1,5 @@
-import { currBlockchain } from "../../../consts";
+
+import { currBlockchain } from "../../../utils";
 import "./styles.sass";
 
 export const HeaderBanner = () => {

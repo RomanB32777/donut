@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 // import { ChromePicker } from "react-color";
-import { Col, Row, Switch, Tabs } from "antd";
+import { Col, Row, Switch } from "antd";
 import { useSelector } from "react-redux";
 import useSound from "use-sound";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import PageTitle from "../../../components/PageTitle";
 import { addNotification, addSuccessNotification } from "../../../utils";
@@ -15,7 +14,8 @@ import LinkCopy from "../../../components/LinkCopy";
 import SelectComponent from "../../../components/SelectComponent";
 import SliderForm from "../../../components/SliderForm";
 import { TabsComponent } from "../../../components/TabsComponent";
-import { IAlertData, initAlertData, typesTabContent } from "../../../types";
+import WidgetMobileWrapper from "../../../components/WidgetMobileWrapper";
+import { IAlertData, initAlertData } from "../../../types";
 import { url } from "../../../consts";
 import { soundsList } from "../../../assets/sounds";
 import "./styles.sass";
@@ -81,6 +81,7 @@ const SettingsAlertsBlock = ({
     duration,
     sound,
     voice,
+    gender_voice,
   } = formData;
 
   const [play] = useSound(soundsList[sound]);
@@ -211,40 +212,43 @@ const SettingsAlertsBlock = ({
             </Row>
           </div>
         </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <Row
+              style={{
+                width: "100%",
+              }}
+            >
+              <Col xs={{ offset: 0, span: 24 }} md={{ offset: 12, span: 12 }}>
+                <TabsComponent
+                  setTabContent={(gender_voice) =>
+                    setFormData({ ...formData, gender_voice })
+                  }
+                  activeKey={gender_voice}
+                  tabs={[
+                    {
+                      key: "MALE",
+                      label: "Male",
+                    },
+                    {
+                      key: "FEMALE",
+                      label: "Female",
+                    },
+                  ]}
+                />
+              </Col>
+            </Row>
+          </div>
+        </Col>
       </Row>
     </Col>
   );
 };
 
 const AlertsContainer = () => {
-  const { isLaptop } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
-
-  const [tabContent, setTabContent] = useState<typesTabContent>("all");
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<IAlertData>({ ...initAlertData });
-
-  const contents: { type: typesTabContent; content: React.ReactNode }[] = [
-    {
-      type: "preview",
-      content: <PreviewAlertsBlock formData={formData} />,
-    },
-    {
-      type: "settings",
-      content: (
-        <SettingsAlertsBlock formData={formData} setFormData={setFormData} />
-      ),
-    },
-    {
-      type: "all",
-      content: (
-        <>
-          <PreviewAlertsBlock formData={formData} />
-          <SettingsAlertsBlock formData={formData} setFormData={setFormData} />
-        </>
-      ),
-    },
-  ];
 
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
@@ -262,6 +266,7 @@ const AlertsContainer = () => {
         duration: data.duration,
         sound: data.sound,
         voice: data.voice,
+        gender_voice: data.gender_voice,
       };
 
       setFormData({
@@ -282,6 +287,7 @@ const AlertsContainer = () => {
         duration,
         sound,
         voice,
+        gender_voice,
       } = formData;
 
       const form = new FormData();
@@ -295,6 +301,7 @@ const AlertsContainer = () => {
           duration,
           sound,
           voice,
+          gender_voice,
         })
       );
       form.append("creator_id", user.id);
@@ -317,13 +324,8 @@ const AlertsContainer = () => {
     getAlertsWidgetData(user);
   }, [user]);
 
-  useEffect(() => {
-    isLaptop ? setTabContent("settings") : setTabContent("all");
-  }, [isLaptop]);
-
   const linkForStream = useMemo(
-    () =>
-      baseURL + "/donat-message/" + user.username + "/" + user.security_string,
+    () => `${baseURL}/donat-message/${user.username}/${user.security_string}`,
     [user]
   );
 
@@ -338,16 +340,18 @@ const AlertsContainer = () => {
       />
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />
-        {tabContent !== "all" && (
-          <TabsComponent setTabContent={setTabContent} />
-        )}
-        <Row
-          gutter={[4, 4]}
-          className="alertsSettings-container"
-          justify="space-between"
-        >
-          {contents.map((block) => block.type === tabContent && block.content)}
-        </Row>
+        <WidgetMobileWrapper
+          previewBlock={
+            <PreviewAlertsBlock key="preview" formData={formData} />
+          }
+          settingsBlock={
+            <SettingsAlertsBlock
+              key="settings"
+              formData={formData}
+              setFormData={setFormData}
+            />
+          }
+        />
         <div className="saveBottom">
           <BaseButton
             formatId="profile_form_save_changes_button"

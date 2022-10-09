@@ -5,10 +5,11 @@ import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
-import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
+import { currBlockchain, getTimePeriodQuery, DateFormatter } from "../../../../utils";
+import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import axiosClient from "../../../../axiosClient";
-import { DateFormatter } from "../../../../utils";
 import { dateFormat, options } from "./graphData";
+import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
 
 Chart.register(...registerables);
@@ -38,8 +39,9 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
   const getLatestDonations = async (timePeriod: string) => {
     try {
       setLoading(true);
+      const blockchain = currBlockchain?.nativeCurrency.symbol;
       const { data } = await axiosClient.get(
-        `/api/donation/widgets/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
+        `${widgetApiUrl}/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${blockchain}`
       );
       if (data) {
         const labels = data.map((donat: any) =>

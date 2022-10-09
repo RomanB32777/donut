@@ -3,8 +3,10 @@ import { useSelector } from "react-redux";
 import { Empty } from "antd";
 import WidgetItem from "../WidgetItem";
 import SelectComponent from "../../../../components/SelectComponent";
-import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
+import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
+import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import axiosClient from "../../../../axiosClient";
+import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
 
 const LIMIT_LATEST = 6;
@@ -20,8 +22,9 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
 
   const getLatestDonations = async (timePeriod: string) => {
     try {
+      const blockchain = currBlockchain?.nativeCurrency.symbol;
       const { data } = await axiosClient.get(
-        `/api/donation/widgets/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
+        `${widgetApiUrl}/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}&blockchain=${blockchain}`
       );
       data && setLatestDonations(data);
     } catch (error) {

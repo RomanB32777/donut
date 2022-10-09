@@ -5,16 +5,22 @@ import BaseButton from "../../../components/BaseButton";
 import PageTitle from "../../../components/PageTitle";
 import FormInput from "../../../components/FormInput";
 import ModalComponent from "../../../components/ModalComponent";
-import SelectInput from "../../../components/SelectInput";
+import SelectInput, { ISelectItem } from "../../../components/SelectInput";
 import { IStatData } from "../../../types";
 import StatsItem from "./StatsItem";
 import DatesPicker from "../../../components/DatesPicker";
 import axiosClient from "../../../axiosClient";
 import { addNotification, addSuccessNotification } from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
-import { filterCurrentPeriodItems, filterDataTypeItems } from "../../../consts";
+import {
+  filterDataTypeItems,
+  filterCurrentPeriodItems,
+} from "../../../utils/dateMethods/consts";
 import "./styles.sass";
-
+import {
+  allPeriodItemsTypes,
+  statsDataTypes,
+} from "../../../utils/dateMethods/types";
 interface IWidgetStatData {
   title: string;
   stat_description: string;
@@ -28,11 +34,16 @@ const initWidgetStatData: IWidgetStatData = {
   title: "",
   stat_description: "",
   template: [],
-  data_type: filterDataTypeItems["top-donations"],
-  time_period: "Today",
+  data_type: "top-donations", // filterDataTypeItems["top-donations"]
+  time_period: "today", // "Today"
 };
 
-const templateList = ["{username}", "{sum}", "{message}"];
+const templates = ["{username}", "{sum}", "{message}"];
+
+const templateList: ISelectItem[] = templates.map((tName) => ({
+  value: tName,
+  key: tName,
+}));
 
 const StreamStatsContainer = () => {
   const dispatch = useDispatch();
@@ -120,7 +131,7 @@ const StreamStatsContainer = () => {
   const currTemplateList = useMemo(
     () =>
       data_type === filterDataTypeItems["top-supporters"]
-        ? templateList.filter((t) => t !== "{message}")
+        ? templateList.filter((t) => t.key !== "{message}")
         : templateList,
     [data_type]
   );
@@ -164,7 +175,7 @@ const StreamStatsContainer = () => {
         )}
       </div>
       <ModalComponent
-        visible={isOpenModal}
+        open={isOpenModal}
         title="New widget creation"
         onCancel={closeEditModal}
         width={880}
@@ -207,7 +218,10 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <SelectInput
                   label="Data type:"
-                  list={Object.values(filterDataTypeItems)}
+                  list={Object.keys(filterDataTypeItems).map((key) => ({
+                    key,
+                    value: filterDataTypeItems[key as statsDataTypes],
+                  }))}
                   value={data_type}
                   setValue={(value) =>
                     setFormData({
@@ -225,7 +239,10 @@ const StreamStatsContainer = () => {
               <div className="form-element">
                 <SelectInput
                   label="Time period:"
-                  list={Object.values(filterCurrentPeriodItems)}
+                  list={Object.keys(filterCurrentPeriodItems).map((key) => ({
+                    key,
+                    value: filterCurrentPeriodItems[key as allPeriodItemsTypes],
+                  }))}
                   value={time_period}
                   setValue={(value) =>
                     setFormData({
@@ -267,7 +284,7 @@ const StreamStatsContainer = () => {
                       template: value as string[],
                     })
                   }
-                  descriptionSelect={currTemplateList.join(", ")}
+                  descriptionSelect={currTemplateList.map(t => t.value).join(", ")}
                   selectCol={16}
                   labelCol={6}
                   gutter={[0, 18]}

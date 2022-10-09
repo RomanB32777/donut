@@ -29,9 +29,10 @@ import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
 import { StarIcon } from "../../icons/icons";
 import { IGoalData } from "../../types";
-import { walletsConf, url, currBlockchain } from "../../consts";
+import { walletsConf, currBlockchain } from "../../utils";
 
 import SpaceImg from "../../space.png";
+import { url } from "../../consts";
 import "./styles.sass";
 
 const maxLengthDescription = 150;
@@ -62,7 +63,7 @@ const DonatContainer = () => {
   const mainWallet = useSelector((state: any) => state.wallet);
 
   const [usdtKoef, setUsdtKoef] = useState(0);
-  // const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState(0);
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
 
   const socket = useContext(WebSocketContext);
@@ -185,17 +186,12 @@ const DonatContainer = () => {
         ); // await getMetamaskData();
 
         if (walletData && walletData.address) {
-          const { signer, address, provider } = walletData;
+          const { signer, address } = walletData;
 
           const tokenField = `${process.env.REACT_APP_WALLET}_token`;
 
           if (address !== personInfo[tokenField]) {
             setLoading(true);
-
-            const balance = await wallet.getBalance({
-              address: user[tokenField] || mainWallet.token,
-              provider,
-            });
 
             if (balance >= Number(amount)) {
               const currentBlockchain = wallet.blockchains.find(
@@ -207,9 +203,6 @@ const DonatContainer = () => {
                   contract: currentBlockchain.address,
                   addressTo: personInfo[tokenField],
                   sum: amount,
-                  abi_transfer:
-                    walletsConf[process.env.REACT_APP_WALLET || "metamask"]
-                      .abi_transfer || null,
                   signer,
                 });
 
@@ -261,38 +254,31 @@ const DonatContainer = () => {
   }, [name]);
 
   useEffect(() => {
-    // const { selectedBlockchain } = form;
-    // const currBlockchain = walletsConf[
-    //   process.env.REACT_APP_WALLET || "metamask"
-    // ].blockchains.find((b) => b.name === process.env.REACT_APP_BLOCKCHAIN); // b.nativeCurrency.symbol === selectedBlockchain
-    // currBlockchain &&
     getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
   }, []); // form
 
   useEffect(() => {
-    // console.log(mainWallet);
-    // const walletData = walletsConf[
-    //   process.env.REACT_APP_WALLET || "metamask"
-    // ].getWalletData(process.env.REACT_APP_BLOCKCHAIN);
-  }, [mainWallet]);
-
-  useEffect(() => {
     const setUser = async () => {
-      // console.log(mainWallet);
       if (user.id) setForm({ ...form, username: user.username });
       else {
-        const walletData = await walletsConf[
-          process.env.REACT_APP_WALLET || "metamask"
-        ].getWalletData(process.env.REACT_APP_BLOCKCHAIN); //  getMetamaskData();
+        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+        const walletData = await wallet.getWalletData(
+          process.env.REACT_APP_BLOCKCHAIN
+        );
 
         if (walletData) {
-          const wallet = {
-            token: walletData.address,
-            wallet: process.env.REACT_APP_WALLET || "metamask",
-            blockchain: process.env.REACT_APP_BLOCKCHAIN,
-          };
-          // getBalance(walletData.provider, walletData.address, setBalance);
-          dispatch(setMainWallet(wallet));
+          await wallet.getBalance({
+            walletData,
+            setBalance,
+          });
+
+          dispatch(
+            setMainWallet({
+              token: walletData.address,
+              wallet: process.env.REACT_APP_WALLET || "metamask",
+              blockchain: process.env.REACT_APP_BLOCKCHAIN,
+            })
+          );
         }
       }
     };
@@ -527,20 +513,20 @@ const DonatContainer = () => {
                     color={personInfo.main_color}
                     disabled={loading}
                   />
-                  {/* <div className="donat-container__payment_balance">
+                  <div className="donat-container__payment_balance">
                     Your balance: {(balance * usdtKoef).toFixed(2)} USD
-                  </div> */}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <LoadingModalComponent
-          visible={loading}
+          open={loading}
           message="Please don’t close this window untill donation confirmation"
         />
         <SuccessModalComponent
-          visible={isOpenSuccessModal}
+          open={isOpenSuccessModal}
           onClose={closeSuccessPopup}
           message={`You’ve successfully sent ${amount} ${selectedBlockchain} to ${name}`}
         />

@@ -1,12 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Col, Progress, Row } from "antd";
+import { Col, Row } from "antd";
 import clsx from "clsx";
+import { SliderMarks } from "antd/lib/slider";
 import LinkCopy from "../../../../components/LinkCopy";
 import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons/icons";
 import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
 import BaseButton from "../../../../components/BaseButton";
+import SliderForm from "../../../../components/SliderForm";
+import useWindowDimensions from "../../../../hooks/useWindowDimensions";
+import WidgetMobileWrapper from "../../../../components/WidgetMobileWrapper";
 import axiosClient, { baseURL } from "../../../../axiosClient";
 import {
   alignFlextItemsList,
@@ -14,19 +18,16 @@ import {
   AlignText,
   IStatData,
   typeAligmnet,
-  typesTabContent,
 } from "../../../../types";
 import {
   addNotification,
   addSuccessNotification,
   copyStr,
+  getCurrentTimePeriodQuery,
+  getStatsDataTypeQuery,
   renderStatItem,
 } from "../../../../utils";
 import { getStats } from "../../../../store/types/Stats";
-import { SliderMarks } from "antd/lib/slider";
-import SliderForm from "../../../../components/SliderForm";
-import useWindowDimensions from "../../../../hooks/useWindowDimensions";
-import { TabsComponent } from "../../../../components/TabsComponent";
 
 const marksSlider: { [key: number]: typeAligmnet } = {
   0: "Left",
@@ -55,6 +56,17 @@ const PreviewStatBlock = ({
   const { isLaptop } = useWindowDimensions();
   const { template, data_type, time_period } = statData;
   const { title_color, bar_color, content_color, aligment } = editStatData;
+
+  const timePeriodName = useMemo(
+    () => getCurrentTimePeriodQuery(time_period),
+    [time_period]
+  );
+
+  const typeStatData = useMemo(
+    () => getStatsDataTypeQuery(data_type),
+    [data_type]
+  );
+  
   return (
     <Col
       xl={10}
@@ -71,7 +83,7 @@ const PreviewStatBlock = ({
             color: title_color,
           }}
         >
-          {data_type} {time_period.toLowerCase()}
+          {timePeriodName} {typeStatData.toLowerCase()}
         </span>
         <div
           className="preview-block_stat"
@@ -243,7 +255,7 @@ const StatsItem = ({
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const { isLaptop, isTablet } = useWindowDimensions();
+  const { isTablet } = useWindowDimensions();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -253,7 +265,6 @@ const StatsItem = ({
     content_color: "#212127",
     aligment: "Center",
   });
-  const [tabContent, setTabContent] = useState<typesTabContent>("all");
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
 
@@ -326,60 +337,22 @@ const StatsItem = ({
     });
   }, []);
 
-  useEffect(() => {
-    isLaptop ? setTabContent("settings") : setTabContent("all");
-  }, [isLaptop]);
-
-  const contents: { type: typesTabContent; content: React.ReactNode }[] = [
-    {
-      type: "preview",
-      content: (
-        <PreviewStatBlock
-          editStatData={editStatData}
-          statData={statData}
-          loading={loading}
-          sendColorsData={sendColorsData}
-        />
-      ),
-    },
-    {
-      type: "settings",
-      content: (
-        <SettingsStatBlock
-          editStatData={editStatData}
-          loading={loading}
-          setEditStatData={setEditStatData}
-          sendColorsData={sendColorsData}
-        />
-      ),
-    },
-    {
-      type: "all",
-      content: (
-        <>
-          <PreviewStatBlock
-            editStatData={editStatData}
-            statData={statData}
-            loading={loading}
-            sendColorsData={sendColorsData}
-          />
-          <SettingsStatBlock
-            editStatData={editStatData}
-            loading={loading}
-            setEditStatData={setEditStatData}
-            sendColorsData={sendColorsData}
-          />
-        </>
-      ),
-    },
-  ];
-
   const { id, title, stat_description, template, data_type, time_period } =
     statData;
 
   const linkForCopy = useMemo(
     () => `${baseURL}/donat-stat/${user.username}/${id}`,
-    [baseURL, user, id]
+    [user, id]
+  );
+
+  const timePeriodName = useMemo(
+    () => getCurrentTimePeriodQuery(time_period),
+    [time_period]
+  );
+
+  const typeStatData = useMemo(
+    () => getStatsDataTypeQuery(data_type),
+    [data_type]
   );
 
   return (
@@ -401,8 +374,8 @@ const StatsItem = ({
           </Col>
           <Col sm={11} xs={24}>
             <div className="stats-item__parameters">
-              <p>Date period: {time_period} </p>
-              <p>Date type: {data_type}</p>
+              <p>Date period: {timePeriodName} </p>
+              <p>Date type: {typeStatData}</p>
               <p>Template: {template}</p>
               {!isTablet && <LinkCopy link={linkForCopy} isSimple />}
             </div>
@@ -433,18 +406,24 @@ const StatsItem = ({
       </div>
       {isActiveDetails && (
         <div className="stats-item__details">
-          {tabContent !== "all" && (
-            <TabsComponent setTabContent={setTabContent} />
-          )}
-          <Row
-            gutter={[4, 4]}
-            className="stats-item__details-container"
-            justify="space-between"
-          >
-            {contents.map(
-              (block) => block.type === tabContent && block.content
-            )}
-          </Row>
+          <WidgetMobileWrapper
+            previewBlock={
+              <PreviewStatBlock
+                editStatData={editStatData}
+                statData={statData}
+                loading={loading}
+                sendColorsData={sendColorsData}
+              />
+            }
+            settingsBlock={
+              <SettingsStatBlock
+                editStatData={editStatData}
+                loading={loading}
+                setEditStatData={setEditStatData}
+                sendColorsData={sendColorsData}
+              />
+            }
+          />
         </div>
       )}
     </>

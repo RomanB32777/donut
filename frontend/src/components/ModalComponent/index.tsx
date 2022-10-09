@@ -12,7 +12,7 @@ interface IModalComponent extends ModalProps {
 }
 
 const ModalComponent = ({
-  visible,
+  open,
   title,
   width,
   confirmLoading,
@@ -25,7 +25,7 @@ const ModalComponent = ({
 }: IModalComponent) => (
   <Modal
     title={title}
-    visible={visible}
+    open={open}
     confirmLoading={confirmLoading || false}
     onCancel={onCancel}
     width={width || 520}
@@ -36,6 +36,7 @@ const ModalComponent = ({
       padding: noPadding ? 0 : 24,
     }}
     centered={centered || false}
+    className="app-modal"
   >
     <div
       className={clsx("modal-content-wrapper", {
@@ -49,14 +50,13 @@ const ModalComponent = ({
 
 interface ILoadingModalComponent extends IModalComponent {
   message: string;
-  visible: boolean;
 }
 
 export const LoadingModalComponent = ({
   message,
-  visible,
+  open,
 }: ILoadingModalComponent) => (
-  <ModalComponent visible={visible} closable={false} width={600}>
+  <ModalComponent open={open} closable={false} width={600}>
     <div className="donat-loading">
       <p className="donat-loading__message">{message}</p>
       <Loader size="big" />
@@ -72,27 +72,26 @@ interface ISuccessModalComponent extends ILoadingModalComponent {
 
 export const SuccessModalComponent = ({
   message,
-  visible,
+  open,
   onClose,
   showDurationPopup,
   description,
-  centered,
 }: ISuccessModalComponent) => {
   const { isTablet, isMobile } = useWindowDimensions();
 
   useEffect(() => {
     let timeOut: NodeJS.Timeout | undefined;
-    if (visible)
+    if (open)
       timeOut = setTimeout(() => {
         onClose();
       }, showDurationPopup || 5000);
 
     return () => clearTimeout(timeOut);
-  }, [visible]);
+  }, [open]);
 
   return (
     <ModalComponent
-      visible={visible}
+      open={open}
       closable={false}
       width={isTablet ? 500 : 700}
       topModal={!isTablet}

@@ -1,77 +1,16 @@
 @use '../../commonStyles/_variables'
 
-.ant-layout-sider,
-.ant-menu.ant-menu-dark,
-.ant-layout-sider-trigger,
-.ant-layout-header,
-.ant-menu-dark .ant-menu-inline.ant-menu-sub
-    background: variables.$grey-background-color
+.main-container
+    margin-top: 68px
+    padding: 39px 50px 34px
+    color: variables.$white-color
 
-.ant-layout,
-.site-layout
-    background: variables.$black-color
-
-    &.transparent
-        background: rgba(0, 0, 0, 0)
-        padding-bottom: 0
-        overflow: hidden
-
-.ant-layout-sider
-    border-right: 1px solid variables.$black-color
-
-.ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected,
-.ant-menu.ant-menu-dark .ant-menu-item-selected
-    background-color: variables.$blue-color
-
-.ant-menu
-    font-family: variables.$inter-font
-    color: variables.$grey-color
-
-.ant-menu-item,
-.ant-menu-submenu
-    svg
-        width: 24px
-        height: 24px
-
-.ant-menu-submenu-popup
-    display: none !important
-
-.ant-menu-inline
-    .ant-menu-item
+    &.noPadding
         margin-top: 0
-        &:not(:last-child)
-            margin-bottom: 0
+        padding: 0
 
-    .ant-menu-item-only-child
-        padding-left: 60px !important
-
-    .ant-menu-submenu-title
-        margin: 0
-
-.ant-layout-header
-    display: flex
-    height: 68px
-    justify-content: flex-end
-    align-items: center
-
-.ant-layout-sider-zero-width-trigger
-    background: none
-
-.gamb-icon
-    path
-        transition: transform 0.25s
-
-    &.active
-        path:nth-of-type(1)
-            transform: rotate(45deg)
-            transform-origin: -1px 3px
-
-        path:nth-of-type(2)
-            display: none
-
-        path:nth-of-type(3)
-            transform: rotate(-45deg)
-            transform-origin: 0px 13px
+    &.noMargin
+        margin-top: 0
 
 .sidebar
     &-content
@@ -98,102 +37,6 @@
             a, svg
                 color: variables.$white-color
 
-.empty-el
-    margin: 0 auto
-
-.ant-switch-checked
-    background: variables.$blue-color
-
-    &:focus
-        box-shadow: none
-
-.ant-slider:hover .ant-slider-track,
-.ant-slider-track
-    background-color: variables.$blue-color
-
-.ant-slider-handle,
-.ant-slider-handle:focus,
-.ant-slider-handle:hover
-    border-color: variables.$blue-color
-
-.ant-back-top
-    right: 25px
-    bottom: 20px
-
-.ant-btn-default:hover
-    border-color: variables.$blue-color
-    color: variables.$blue-color
-
-.ant-btn-primary,
-.ant-btn-primary:hover
-    border-color: variables.$blue-color
-    background-color: variables.$blue-color
-
-.ant-steps
-    .ant-steps-item
-        .ant-steps-item-title
-            color: variables.$white-color !important
-            font-family: variables.$inter-font !important
-            font-size: 20px !important
-
-.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot
-    background: variables.$white-color !important
-
-.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after
-    background-color: variables.$green-color
-
-.line
-    color: variables.$white-color
-    border-top: 1px solid variables.$white-color
-    opacity: .8
-
-.icon
-    display: flex
-    align-items: center
-
-    &-notifications
-        height: 100%
-        cursor: pointer
-
-.form
-    &-element
-        &__label
-            font-family: variables.$jakarta-font
-            font-style: normal
-            font-weight: 400
-            font-size: 20px
-            line-height: 25px
-            color: variables.$white-color
-
-.main-container
-    margin-top: 68px
-    padding: 39px 50px 34px
-    color: variables.$white-color
-
-    &.noPadding
-        margin-top: 0
-        padding: 0
-
-    &.noMargin
-        margin-top: 0
-
-.layout-sidebar
-    overflow: auto
-    height: 100vh
-    position: fixed
-    left: 0
-    top: 0
-    bottom: 0
-    z-index: 2
-    transition: all .4s
-
-.layout-header
-    position: fixed
-    width: 100%
-    top: 0
-    left: 0
-    z-index: 1
-
 @media (max-width: 992px)
     .layout-header
         z-index: 100
@@ -212,13 +55,6 @@
     .main-container
         &.noPadding
             margin-top: 0
-
-    .layout-sidebar
-        top: 68px
-        z-index: 100
-
-        .main-logo
-            display: none
 
 @media (max-width: 768px)
     .main-container

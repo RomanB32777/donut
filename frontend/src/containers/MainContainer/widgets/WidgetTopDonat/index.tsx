@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Empty } from "antd";
+import axiosClient from "../../../../axiosClient";
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
-import { currBlockchain, filterPeriodItems, getTimePeriodQuery } from "../../../../consts";
 import useWindowDimensions from "../../../../hooks/useWindowDimensions";
-import axiosClient from "../../../../axiosClient";
-import { ITableData, tableColums } from "./tableData";
-import "./styles.sass";
-import { Empty } from "antd";
 import WidgetItem from "../WidgetItem";
+import { ITableData, tableColums } from "./tableData";
+import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
+import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
+import { widgetApiUrl } from "../../../../consts";
+import "./styles.sass";
 
 const LIMIT_DONATS = 6;
 
@@ -26,8 +28,9 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const getTopDonations = async (timePeriod: string) => {
     try {
       setLoading(true);
+      const blockchain = currBlockchain?.nativeCurrency.symbol;
       const { data } = await axiosClient.get(
-        `/api/donation/widgets/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&blockchain=${currBlockchain?.nativeCurrency.symbol}`
+        `${widgetApiUrl}/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&blockchain=${blockchain}`
       );
       if (data) {
         const forTableData: ITableData[] = data.map((donat: any) => ({
@@ -73,13 +76,7 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
           Boolean(topDonations.length) &&
           topDonations.map((donat: any) => {
             return (
-              <>
-                <WidgetItem
-                  key={donat.key}
-                  donat={donat}
-                  usdtKoef={usdtKoef}
-                />
-              </>
+              <WidgetItem key={donat.key} donat={donat} usdtKoef={usdtKoef} />
             );
           })}
         {isTablet && !Boolean(topDonations.length) && (

@@ -8,7 +8,7 @@ import postData from "../../functions/postData";
 import { tryToGetUser } from "../../store/types/User";
 import { addNotification } from "../../utils";
 import FormInput from "../FormInput";
-import { walletsConf } from "../../consts";
+import { walletsConf } from "../../utils";
 import { setMainWallet } from "../../store/types/Wallet";
 import registerImg from "../../assets/registerImg.png";
 import "./styles.sass";

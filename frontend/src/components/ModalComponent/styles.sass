@@ -1,85 +1,86 @@
 @use '../../commonStyles/variables'
 
-.ant-modal-content
-    background: variables.$grey-background-color
-    border-radius: 20px
+.app-modal 
+    .ant-modal-content
+        background: variables.$grey-background-color
+        border-radius: 20px
 
-    .modal-content-wrapper
-        padding: 0 52px 34px
+        .modal-content-wrapper
+            padding: 0 52px 34px
 
-        @media (max-width: 768px)
-            padding: 0
-            padding-bottom: 15px
+            @media (max-width: 768px)
+                padding: 0
+                padding-bottom: 15px
 
-        &.noPadding
-            padding: 0
+            &.noPadding
+                padding: 0
 
-.ant-modal-close-x
-    color: variables.$grey-color
+    .ant-modal-close-x
+        color: variables.$grey-color
 
-.ant-modal-header
-    background: variables.$grey-background-color
-    border: none
-    border-radius: 20px
+    .ant-modal-header
+        background: variables.$grey-background-color
+        border: none
+        border-radius: 20px
 
-    .ant-modal-title
-        font-family: variables.$inter-font
-        font-style: normal
-        font-weight: 500
-        font-size: 30px
-        line-height: 30px
-        color: variables.$white-color
-        text-align: center
-        margin-top: 39px
+        .ant-modal-title
+            font-family: variables.$inter-font
+            font-style: normal
+            font-weight: 500
+            font-size: 30px
+            line-height: 30px
+            color: variables.$white-color
+            text-align: center
+            margin-top: 39px
 
-        @media (max-width: 768px)
-            margin-top: 20px
+            @media (max-width: 768px)
+                margin-top: 20px
 
-.modal-success
-    display: flex
-    flex-direction: column
-    align-items: center
-    justify-content: center
-    background: url('../../assets/modalBg.png')
-    background-repeat: no-repeat
-    background-size: cover
-    background-position-y: 45%
-    height: 93vh
-    border-radius: variables.$border-radius
-        
-    &__message,
-    &__description
-        text-align: center
-        font-family: variables.$jakarta-font
-        font-style: normal
-
-    &__message
-        max-width: 70%
-        margin-bottom: 25px
-        font-weight: 600
-        font-size: 32px
-        line-height: 37px
-        color: variables.$green-color
-
-    &__description
-        max-width: 85%
-        margin-top: 75px
-        font-weight: 400
-        font-size: 25px
-        line-height: 30px
-        color: #F6F7F1
-
-
-    @media (max-width: 992px)
-        height: 55vh
+    .modal-success
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        background: url('../../assets/modalBg.png')
+        background-repeat: no-repeat
+        background-size: cover
+        background-position-y: 45%
+        height: 93vh
+        border-radius: variables.$border-radius
+            
+        &__message,
+        &__description
+            text-align: center
+            font-family: variables.$jakarta-font
+            font-style: normal
 
         &__message
-            max-width: 90%
-            font-size: 27px
-            line-height: 32px
+            max-width: 70%
+            margin-bottom: 25px
+            font-weight: 600
+            font-size: 32px
+            line-height: 37px
+            color: variables.$green-color
 
         &__description
-            max-width: 90%
-            font-size: 22px
+            max-width: 85%
+            margin-top: 75px
+            font-weight: 400
+            font-size: 25px
             line-height: 30px
-            margin-top: 15px
+            color: #F6F7F1
+
+
+        @media (max-width: 992px)
+            height: 55vh
+
+            &__message
+                max-width: 90%
+                font-size: 27px
+                line-height: 32px
+
+            &__description
+                max-width: 90%
+                font-size: 22px
+                line-height: 30px
+                margin-top: 15px

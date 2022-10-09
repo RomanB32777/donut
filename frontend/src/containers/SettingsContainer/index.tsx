@@ -16,11 +16,12 @@ import {
   copyStr,
   sendFile,
   shortStr,
+  walletsConf,
 } from "../../utils";
 import { setMainWallet } from "../../store/types/Wallet";
 import { setLoading } from "../../store/types/Loading";
 import { IFileInfo } from "../../types";
-import { url, walletsConf } from "../../consts";
+import { url } from "../../consts";
 import "./styles.sass";
 
 const SettingsContainer = () => {

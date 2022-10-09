@@ -3,14 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
 import { ethers } from "ethers";
 import { useSelector } from "react-redux";
+
 import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import LinkCopy from "../../../components/LinkCopy";
 import SelectInput from "../../../components/SelectInput";
-import { IBadgeData, initBadgeData } from "../../../types";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { LeftArrowIcon } from "../../../icons/icons";
-import { walletsConf, url } from "../../../consts";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
@@ -18,6 +16,10 @@ import {
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { WebSocketContext } from "../../../components/Websocket";
+import { IBadgeData, initBadgeData } from "../../../types";
+import { walletsConf } from "../../../utils";
+import { url } from "../../../consts";
+import { LeftArrowIcon } from "../../../icons/icons";
 
 const BadgePage = ({
   activeBadge,
@@ -59,7 +61,10 @@ const BadgePage = ({
       const quantityBadge =
         user.id === creator_id
           ? await currentContract.totalSupply(1)
-          : await currentContract.balanceOf(user[`${process.env.REACT_APP_WALLET}_token`], 1);
+          : await currentContract.balanceOf(
+              user[`${process.env.REACT_APP_WALLET}_token`],
+              1
+            );
 
       quantityBadge &&
         setFormBadge({
@@ -97,7 +102,7 @@ const BadgePage = ({
   const assignBadge = async (contributor_id: number) => {
     try {
       const { id, contract_address, creator_id, title } = activeBadge;
-      
+
       const res = await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
         id,
         contract_address,
@@ -130,24 +135,18 @@ const BadgePage = ({
         (s: any) => s.username === selectedUser
       );
       if (selectedUserObj) {
-        const selectedUserAddress = selectedUserObj[`${process.env.REACT_APP_WALLET}_token`];
-        const provider = new ethers.providers.Web3Provider(
-          (window as any).ethereum
-        );
-        const signer = provider.getSigner(0);
-        let currentContract = new ethers.Contract(
+        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+        const selectedUserAddress =
+          selectedUserObj[`${process.env.REACT_APP_WALLET}_token`];
+        await wallet.mintBadge({
           contract_address,
-          walletsConf[process.env.REACT_APP_WALLET || "metamask"].abi || [],
-          signer
-        );
-        const tx = await currentContract.mint(selectedUserAddress, 1, 1);
-      
-        await tx.wait();
+          addressTo: selectedUserAddress,
+        });
         await assignBadge(selectedUserObj.id);
         await updateBadgeNFTData(activeBadge);
         await getHolders(activeBadge);
         setIsOpenSuccessModal(true);
-        setSelectedUser("")
+        setSelectedUser("");
       }
     } catch (error) {
       console.log(error);
@@ -172,7 +171,7 @@ const BadgePage = ({
       // getBadge(activeBadge);
       user.roleplay && user.roleplay === "creators" && getHolders(activeBadge);
     }
-  }, [activeBadge]);
+  }, [activeBadge, user]);
 
   useEffect(() => {
     user.id &&
@@ -328,8 +327,11 @@ const BadgePage = ({
                     <SelectInput
                       list={
                         Boolean(supporters.length)
-                          ? supporters.map((s) => s.username)
-                          : [""]
+                          ? supporters.map((s) => ({
+                              key: s.username,
+                              value: s.username,
+                            }))
+                          : null
                       }
                       value={selectedUser}
                       setValue={(selected) =>
@@ -369,11 +371,11 @@ const BadgePage = ({
         </Row>
       </div>
       <LoadingModalComponent
-        visible={loading}
+        open={loading}
         message="Please sign the transaction in your wallet"
       />
       <SuccessModalComponent
-        visible={isOpenSuccessModal}
+        open={isOpenSuccessModal}
         onClose={() => setIsOpenSuccessModal(false)}
         message={`Badge has been assigned successfully!`}
         // Assign to ${selectedUser} successfully!
