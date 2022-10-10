@@ -153,7 +153,7 @@ class DonationController {
       const { user_id } = req.params;
       const supporters = await db.query(
         `
-                SELECT users.username, users.metamask_token, users.id FROM supporters
+                SELECT * FROM supporters
                 LEFT JOIN users
                 ON supporters.backer_id = users.id
                 WHERE supporters.creator_id = $1 AND users.metamask_token IS NOT NULL`,

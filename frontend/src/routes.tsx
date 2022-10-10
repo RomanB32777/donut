@@ -203,7 +203,117 @@ export const routers: IRoute[] = [
     element: <NoPage />,
   },
 ];
+
+// const test = [
+//   {
+//     path: "/",
+//     element: <ProtectedRoutes />,
+//     children: [
+//       {
+//         path: "/",
+//         element: <ProtectedRoutes roleRequired="creators" />,
+//         children: [
+//           {
+//             index: true,
+//             path: "/",
+//             element: <MainPage />,
+//           },
+//           {
+//             path: "donat", // /:name/:token
+//             element: <DonationPage />,
+//           },
+//           {
+//             path: "widgets",
+//             element: <WidgetsPage />,
+//             children: [
+//               {
+//                 path: "alerts",
+//                 element: <AlertsPage />,
+//               },
+//               {
+//                 path: "stats",
+//                 element: <StreamStatsPage />,
+//               },
+//               {
+//                 path: "goals",
+//                 element: <DonationGoalsPage />,
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//       {
+//         path: "donations",
+//         element: <DonationsPage />,
+//       },
+//       {
+//         path: "badges",
+//         element: <BadgesPage />,
+//       },
+//       {
+//         path: "settings",
+//         element: <SettingsPage />,
+//       },
+//     ],
+//   },
+//   {
+//     path: "register",
+//     element: <RegistrationModal />,
+//   },
+//   {
+//     path: "support/:name",
+//     element: <DonatPage />,
+//   },
+//   {
+//     path: "donat-message/:name/:token",
+//     element: <DonatMessagePage />,
+//   },
+//   {
+//     path: "donat-goal/:name/:id",
+//     element: <DonatGoalPage />,
+//   },
+//   {
+//     path: "donat-stat/:name/:id",
+//     element: <DonatStatPage />,
+//   },
+//   {
+//     path: "*",
+//     element: <NoPage />,
+//   },
+// ];
+
+const addChildrenRoute = (currRoute: IRoute, routersAcc: IRoute[]) => {
+  // console.log(route.path);
+  if (currRoute.children) {
+    const mapArr = currRoute.children.map((route) => {
+      // console.log(route.path);
+      if (route.children) addChildrenRoute(route, routersAcc);
+      return {
+        path: route.path,
+        element: route.element
+      }
+    });
+  }
+  return routersAcc;
+};
+
 export const Pages = () => {
+  const routerPages = routers.reduce((acc, route) => {
+    if (route.children) {
+      const newAcc = addChildrenRoute(route, acc);
+      return newAcc;
+    }
+    return [
+      ...acc,
+      {
+        path: route.path,
+        element: route.element,
+      },
+    ];
+  }, [] as IRoute[]);
+
+  // console.log(routerPages);
+
   const pages = useRoutes(routers);
   return pages;
 };

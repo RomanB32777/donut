@@ -72,6 +72,7 @@ const DonationPageContainer = () => {
   const sendData = async () => {
     try {
       setLoading(true);
+      const walletKey = process.env.REACT_APP_WALLET || "metamask";
       const {
         avatar,
         banner,
@@ -91,8 +92,8 @@ const DonationPageContainer = () => {
         (await sendFile(avatar.file, user, "/api/user/edit-image/"));
       banner.file &&
         (await sendFile(banner.file, user, "/api/user/edit-background/"));
-      dispatch(tryToGetUser(user.metamask_token));
-      addSuccessNotification("Data saved successfully");
+      dispatch(tryToGetUser(user[`${walletKey}_token`]));
+      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
       addNotification({
         type: "danger",

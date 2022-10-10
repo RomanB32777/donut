@@ -1,7 +1,6 @@
 import { Avatar, Col, Divider, Row, Tooltip } from "antd";
 import { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
-import { ethers } from "ethers";
 import { useSelector } from "react-redux";
 
 import BaseButton from "../../../components/BaseButton";
@@ -17,7 +16,7 @@ import ConfirmPopup from "../../../components/ConfirmPopup";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { WebSocketContext } from "../../../components/Websocket";
 import { IBadgeData, initBadgeData } from "../../../types";
-import { walletsConf } from "../../../utils";
+import { addErrorNotification, walletsConf } from "../../../utils";
 import { url } from "../../../consts";
 import { LeftArrowIcon } from "../../../icons/icons";
 
@@ -49,27 +48,18 @@ const BadgePage = ({
     try {
       const { contract_address, creator_id } = badge;
 
-      const provider = new ethers.providers.Web3Provider(
-        (window as any).ethereum
-      );
-      let currentContract = new ethers.Contract(
+      const walletKey = process.env.REACT_APP_WALLET || "metamask";
+      const wallet = walletsConf[walletKey];
+      const quantity = await wallet.getQuantityBalance({
         contract_address,
-        walletsConf[process.env.REACT_APP_WALLET || "metamask"].abi || [],
-        provider
-      );
+        supporter_address: user[`${walletKey}_token`],
+        isCreator: user.id === creator_id,
+      });
 
-      const quantityBadge =
-        user.id === creator_id
-          ? await currentContract.totalSupply(1)
-          : await currentContract.balanceOf(
-              user[`${process.env.REACT_APP_WALLET}_token`],
-              1
-            );
-
-      quantityBadge &&
+      quantity &&
         setFormBadge({
           ...formBadge,
-          quantity: quantityBadge.toNumber(),
+          quantity, // : quantityBadge.toNumber()
         });
     } catch (error) {
       console.log(error);
@@ -102,7 +92,6 @@ const BadgePage = ({
   const assignBadge = async (contributor_id: number) => {
     try {
       const { id, contract_address, creator_id, title } = activeBadge;
-
       const res = await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
         id,
         contract_address,
@@ -138,6 +127,7 @@ const BadgePage = ({
         const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
         const selectedUserAddress =
           selectedUserObj[`${process.env.REACT_APP_WALLET}_token`];
+
         await wallet.mintBadge({
           contract_address,
           addressTo: selectedUserAddress,
@@ -149,7 +139,8 @@ const BadgePage = ({
         setSelectedUser("");
       }
     } catch (error) {
-      console.log(error);
+      const errorObj = (error as any); // Error
+      addErrorNotification({ message: errorObj?.message, title: errorObj?.error });
     } finally {
       setLoading(false);
     }

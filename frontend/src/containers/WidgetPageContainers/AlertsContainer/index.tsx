@@ -281,7 +281,7 @@ const AlertsContainer = () => {
       );
       form.append("creator_id", user.id);
       await axiosClient.put("/api/widget/edit-alerts-widget/", form);
-      addSuccessNotification("Data saved successfully");
+      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
       addNotification({
         type: "danger",

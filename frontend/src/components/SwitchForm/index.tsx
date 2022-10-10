@@ -47,7 +47,7 @@ const SwitchForm = ({
         <Col md={switchCol || (label ? 12 : 24)} xs={24}>
           <div className="switch-wrapper">
             <span>Disabled</span>
-            <Switch checked={checked} onChange={setValue} id="voiceSwitch" />
+            <Switch checked={checked} onChange={setValue} />
             <span>Abled</span>
           </div>
         </Col>

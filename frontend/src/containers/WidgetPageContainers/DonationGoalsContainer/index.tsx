@@ -77,7 +77,7 @@ const DonationGoalsContainer = () => {
       setFormData({
         ...initWidgetGoalData,
       });
-      addSuccessNotification("Data created successfully");
+      addSuccessNotification({ message: "Data created successfully" });
     } catch (error) {
       addNotification({
         type: "danger",

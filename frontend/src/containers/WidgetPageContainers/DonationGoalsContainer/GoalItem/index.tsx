@@ -220,7 +220,7 @@ const GoalItem = ({
         id,
       });
       dispatch(getGoals(user.id));
-      addSuccessNotification("Data saved successfully");
+      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
       addNotification({
         type: "danger",
@@ -240,7 +240,7 @@ const GoalItem = ({
       const { id } = goalData;
       await axiosClient.delete("/api/widget/goals-widget/" + id);
       dispatch(getGoals(user.id));
-      addSuccessNotification("Widget deleted successfully");
+      addSuccessNotification({ message: "Widget deleted successfully" });
     } catch (error) {
       addNotification({
         type: "danger",

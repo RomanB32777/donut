@@ -15,7 +15,14 @@
     "landing:build": "npm  run build --prefix landing",
     "backend:install": "npm install --prefix backend",
     "install": "concurrently \"npm run frontend:install\" \"npm run landing:install\" \"npm run backend:install\"",
-    "dev": "concurrently \"npm run frontend:evmos\" \"npm run backend\""
+    "dev": "concurrently \"npm run frontend:evmos\" \"npm run backend\"",
+    "dumpSql": "docker exec -i new_donut_db_1 pg_dump --username postgres -d donut > /home/deploy/new_donut/dump.sql",
+    "exexSql": "docker exec -it new_donut_db_1 psql  -U postgres -d donut",
+    "dockerUp": "docker-compose up -d --build",
+    "dockerStop": "docker-compose stop",
+    "dockerDown": "docker-compose down",
+    "dockerRmiDangling": "docker rmi $(docker images -f dangling=true -q)",
+    "dockerClear": "docker system prune -a -f"
   },
   "author": "Roman <r.bogdanovskiy@onpoint.ru>",
   "license": "ISC",

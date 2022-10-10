@@ -10,6 +10,12 @@ export interface IBalanceObj {
   setBalance?: (amount: number) => void;
 }
 
+export interface IQuantityBalanceObj {
+  contract_address: string;
+  supporter_address: string;
+  isCreator: boolean;
+}
+
 export interface IMintBadgeObj {
   contract_address: string;
   addressTo: string;
@@ -51,12 +57,9 @@ export interface IWalletConf {
   createContract: (
     objForContract: ICreateContractObj
   ) => Promise<string | null>;
-  getBadgeURI: (
-    contract_address: string
-  ) => Promise<string | null>;
-  mintBadge: (
-    objForMint: IMintBadgeObj
-  ) => Promise<any>;
+  getBadgeURI: (contract_address: string) => Promise<string | null>;
+  mintBadge: (objForMint: IMintBadgeObj) => Promise<any>;
+  getQuantityBalance: (objForQuantityBalance: IQuantityBalanceObj) => Promise<any>;
 }
 
 export interface IWalletsConf {

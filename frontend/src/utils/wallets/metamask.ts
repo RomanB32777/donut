@@ -6,6 +6,7 @@ import {
   ICreateContractObj,
   IWalletConf,
   IMintBadgeObj,
+  IQuantityBalanceObj,
 } from "./types";
 
 import metamaskIcon from "../../assets/MetaMask_Fox.png";
@@ -132,12 +133,39 @@ const mintBadgeMetamask = async (
   const { abi } = walletConf;
   if (abi) {
     const { contract_address, addressTo } = mintObj;
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
     const signer = provider.getSigner(0);
     let currentContract = new ethers.Contract(contract_address, abi, signer);
-    const tx = await currentContract.mint(addressTo, 1, 1);
+      const tx = await currentContract.mint(addressTo, 1, 1);
     await tx.wait();
   } else return;
+};
+
+const getQuantityBalanceMetamask = async (
+  objForQuantityBalance: IQuantityBalanceObj,
+  walletConf: IWalletConf
+) => {
+  const { abi } = walletConf;
+  if (abi) {
+    const { supporter_address, contract_address, isCreator } =
+      objForQuantityBalance;
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const currentContract = new ethers.Contract(
+      contract_address,
+      abi,
+      provider
+    );
+    const quantityBadge = isCreator
+      ? await currentContract.totalSupply(1)
+      : await currentContract.balanceOf(supporter_address, 1);
+    const quantityBadgeNum = quantityBadge.toNumber();
+    return quantityBadgeNum;
+  }
+  return null;
 };
 
 const metamaskAbi =
@@ -189,6 +217,9 @@ const metamaskConf: IWalletConf = {
   },
   mintBadge(objForBadge) {
     return mintBadgeMetamask(objForBadge, this);
+  },
+  getQuantityBalance(objForQuantityBalance) {
+    return getQuantityBalanceMetamask(objForQuantityBalance, this);
   },
   abi: JSON.parse(metamaskAbi),
   bytecode:

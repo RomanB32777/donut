@@ -55,7 +55,8 @@ const BadgesContainer = () => {
           message: "Badge removal is not possible (contributor users > 0)",
         });
         return false;
-      } else {
+      } 
+      else {
         addNotification({
           type: "warning",
           title: "Badge removal is not possible",

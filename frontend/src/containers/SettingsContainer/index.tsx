@@ -54,7 +54,7 @@ const SettingsContainer = () => {
           user_id: user.id,
         });
         dispatch(tryToGetUser(user[`${process.env.REACT_APP_WALLET}_token`]));
-        addSuccessNotification("Data saved successfully");
+        addSuccessNotification({ message: "Data saved successfully" });
       } catch (error) {
         addNotification({
           type: "danger",
@@ -77,7 +77,7 @@ const SettingsContainer = () => {
         avatar.file &&
           (await sendFile(avatar.file, user, "/api/user/edit-image/"));
         dispatch(tryToGetUser(user[`${process.env.REACT_APP_WALLET}_token`]));
-        addSuccessNotification("Data saved successfully");
+        addSuccessNotification({ message: "Data saved successfully" });
       } catch (error) {
         addNotification({
           type: "danger",
@@ -115,8 +115,6 @@ const SettingsContainer = () => {
     dispatch(setLoading(false));
     navigate("/register");
   };
-
-  // console.log(process.env.REACT_APP_WALLET, user.metamask_token, `${process.env.REACT_APP_WALLET}_token`);
 
   const shortWalletToken = useMemo(
     () =>

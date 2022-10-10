@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { ethers } from "ethers";
 import clsx from "clsx";
 import { walletsConf } from "../../../utils";
 import { TrashBinIcon } from "../../../icons/icons";
@@ -26,28 +25,18 @@ const ContentCard = (prop: {
 
   const getBadgeNFTData = async (badge: IBadge) => {
     try {
-      const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+      const walletKey = process.env.REACT_APP_WALLET || "metamask";
+      const wallet = walletsConf[walletKey];
       const { contract_address, creator_id } = badge;
-
+      
       const currentToken = await wallet.getBadgeURI(contract_address);
-
-      const provider = new ethers.providers.Web3Provider(
-        (window as any).ethereum
-      );
-      let currentContract = new ethers.Contract(
+      const quantity = await wallet.getQuantityBalance({
         contract_address,
-        walletsConf[process.env.REACT_APP_WALLET || "metamask"].abi || [],
-        provider
-      );
+        supporter_address: user[`${walletKey}_token`],
+        isCreator: user.id === creator_id,
+      });
 
-      // const currentToken = await currentContract.uri(1);
-      const quantityBadge =
-        user.id === creator_id
-          ? await currentContract.totalSupply(1)
-          : await currentContract.balanceOf(user.metamask_token, 1);
-
-      const quantityBadgeNum = quantityBadge.toNumber();
-      if (user.roleplay === "backers" && quantityBadgeNum < 1) return;
+      if (user.roleplay === "backers" && quantity < 1) return;
 
       if (currentToken) {
         const rootCid = currentToken.split("//")[1];
@@ -74,7 +63,7 @@ const ContentCard = (prop: {
                   preview: (reader.result as string) || "",
                 },
                 contract_address,
-                quantity: quantityBadgeNum,
+                quantity,
               });
           }
         }
@@ -91,7 +80,8 @@ const ContentCard = (prop: {
   };
 
   useEffect(() => {
-    user.metamask_token && getBadgeNFTData(prop.data);
+    const walletKey = process.env.REACT_APP_WALLET || "metamask";
+    user[`${walletKey}_token`] && getBadgeNFTData(prop.data);
   }, [user, prop.data]);
 
   const { image, title, description, creator_id } = badgeData;

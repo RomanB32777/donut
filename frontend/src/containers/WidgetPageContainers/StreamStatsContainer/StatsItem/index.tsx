@@ -103,7 +103,7 @@ const PreviewStatBlock = ({
                 template,
                 {
                   username: "Jordan",
-                  sum_donation: "30 USD",
+                  sum_donation: 30,
                   donation_message: "Hello! This is test message",
                 },
                 2.7
@@ -120,7 +120,7 @@ const PreviewStatBlock = ({
                 template,
                 {
                   username: "Nate",
-                  sum_donation: "50 USD",
+                  sum_donation: 50,
                   donation_message: "How are you ?",
                 },
                 2.7
@@ -293,7 +293,7 @@ const StatsItem = ({
         id,
       });
       dispatch(getStats(user.id));
-      addSuccessNotification("Data saved successfully");
+      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
       addNotification({
         type: "danger",
@@ -313,7 +313,7 @@ const StatsItem = ({
       const { id } = statData;
       await axiosClient.delete("/api/widget/stats-widget/" + id);
       dispatch(getStats(user.id));
-      addSuccessNotification("Widget deleted successfully");
+      addSuccessNotification({message: "Widget deleted successfully"});
     } catch (error) {
       addNotification({
         type: "danger",

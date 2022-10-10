@@ -107,7 +107,7 @@ const StreamStatsContainer = () => {
       setFormData({
         ...initWidgetStatData,
       });
-      addSuccessNotification("Data created successfully");
+      addSuccessNotification({ message: "Data created successfully" });
     } catch (error) {
       addNotification({
         type: "danger",

@@ -9,6 +9,11 @@ export interface INotification {
   message?: NotificationTitleMessage;
 }
 
+export interface INotificationWithoutType {
+  title?: string;
+  message: NotificationTitleMessage;
+}
+
 declare type typeNotification =
   | "donat_creator"
   | "donat_supporter"

@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import { IReplaceObj } from "./types";
 import { addNotification } from "../notifications";
 
@@ -62,4 +63,10 @@ export const renderStatItem = (
       to: objToRender.donation_message || "",
     },
   ]);
+};
+
+export const fromHexToString = (strHex: string) => {
+  const bufferFormat = Buffer.from(strHex, "hex");
+  if (bufferFormat) return bufferFormat.toString("utf8");
+  else return strHex;
 };

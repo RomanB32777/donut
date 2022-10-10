@@ -1,25 +1,24 @@
-import { addErrorNotification } from "./../../utils";
+import { addErrorNotification } from "./../notifications";
 import {
   IBalanceObj,
   ICreateContractObj,
   IPayObj,
   IWalletConf,
   IMintBadgeObj,
+  IQuantityBalanceObj,
 } from "./types";
 import {
   addAuthWalletNotification,
   addInstallWalletNotification,
 } from "../../utils";
-
+import { fromHexToString } from "../stringMethods";
 import tronlinkIcon from "../../assets/tronlinkIcon.png";
 
-type tronErrors = "BANDWITH_ERROR" | "SIGERROR";
-
-const TRON_WALLET_ERR: { [err in tronErrors]: string } = {
-  BANDWITH_ERROR:
-    "There is not enough bandwidth or TRX to burn to send a transaction.",
-  SIGERROR: "Signature error",
-};
+// enum TRON_WALLET_ERR {
+//   BANDWITH_ERROR = "There is not enough bandwidth or TRX to burn to send a transaction.",
+//   SIGERROR = "Signature error",
+//   CONTRACT_VALIDATE_ERROR = "Contract validate error",
+// }
 
 const getTronWallet = (blockchainName?: any) =>
   new Promise((resolve) => {
@@ -94,7 +93,10 @@ const createTronContract = async ({
     return contract_address;
   } else if (contract_instance.code) {
     console.log(contract_instance);
-    addErrorNotification(TRON_WALLET_ERR[contract_instance.code as tronErrors]);
+    const message = fromHexToString(contract_instance.message); // txid
+    addErrorNotification({ message });
+    // TRON_WALLET_ERR[contract_instance.code as keyof typeof TRON_WALLET_ERR]
+    // TRON_WALLET_ERR[contract_instance.code as tronErrors]);
     return null;
   }
 };
@@ -110,7 +112,6 @@ const getBadgeURITron = async (
       contract_address
     );
     const getURInew = await instance.uri(1).call();
-    console.log(getURInew);
     return getURInew;
   }
   return "";
@@ -123,22 +124,39 @@ const mintBadgeTron = async (
   const { abi } = walletConf;
   if (abi) {
     const { contract_address, addressTo } = mintObj;
-    let instance = await (window as any).tronWeb.contract(
+    const instance = await (window as any).tronWeb.contract(
       abi,
       contract_address
     );
-    console.log(instance);
-
-    const getURInew = await instance.mint(1).send({
+    // const getURInew =
+    await instance.mint(addressTo, 1, 1).send({
       feeLimit: 100_000_000,
       callValue: 0,
       tokenId: 1000036,
       tokenValue: 100,
       shouldPollResponse: true,
     });
-
-    console.log(getURInew);
   } else return;
+};
+
+const getQuantityBalanceTron = async (
+  objForQuantityBalance: IQuantityBalanceObj,
+  walletConf: IWalletConf
+) => {
+  const { abi } = walletConf;
+  if (abi) {
+    const { supporter_address, contract_address, isCreator } =
+      objForQuantityBalance;
+    const instance = await (window as any).tronWeb.contract(
+      abi,
+      contract_address
+    );
+    const balanceToken = isCreator
+      ? await instance.totalSupply(1).call()
+      : await instance.balanceOf(supporter_address, 1).call();
+    return balanceToken.toNumber();
+  }
+  return null;
 };
 
 const tronAbi =
@@ -168,6 +186,9 @@ const tronlinkConf: IWalletConf = {
   },
   mintBadge(objForBadge) {
     return mintBadgeTron(objForBadge, this);
+  },
+  getQuantityBalance(objForQuantityBalance) {
+    return getQuantityBalanceTron(objForQuantityBalance, this);
   },
   abi: JSON.parse(tronAbi),
   bytecode:

@@ -1,5 +1,9 @@
 import { Store } from "react-notifications-component";
-import { INotification, typeNotification } from "./types";
+import {
+  INotification,
+  INotificationWithoutType,
+  typeNotification,
+} from "./types";
 
 export const addNotification = ({ type, title, message }: INotification) => {
   Store.addNotification({
@@ -31,16 +35,22 @@ export const addAuthWalletNotification = (wallet: string) =>
     type: "warning",
   });
 
-export const addErrorNotification = (message: string) =>
+export const addErrorNotification = ({
+  message,
+  title,
+}: INotificationWithoutType) =>
   addNotification({
-    title: "Error",
+    title: title || "Error",
     message,
     type: "danger",
   });
 
-export const addSuccessNotification = (message: string) =>
+export const addSuccessNotification = ({
+  message,
+  title,
+}: INotificationWithoutType) =>
   addNotification({
-    title: "Success",
+    title: title || "Success",
     message,
     type: "success",
   });
