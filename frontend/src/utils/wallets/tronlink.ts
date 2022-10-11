@@ -22,12 +22,20 @@ import tronlinkIcon from "../../assets/tronlinkIcon.png";
 
 const getTronWallet = (blockchainName?: any) =>
   new Promise((resolve) => {
-    setTimeout(() => {
-      if ((window as any).tronWeb)
-        (window as any).tronWeb.defaultAddress.base58
-          ? resolve({ address: (window as any).tronWeb.defaultAddress.base58 })
-          : addAuthWalletNotification("Tronlink");
-      else
+    setTimeout(async () => {
+      if ((window as any).tronWeb) {
+        if ((window as any).tronWeb.defaultAddress.base58)
+          resolve({ address: (window as any).tronWeb.defaultAddress.base58 });
+        else {
+          addAuthWalletNotification("Tronlink");
+          const currBlock = await (window as any).tronWeb.trx.getCurrentBlock();
+          currBlock && currBlock.blockID
+            ? resolve({
+                address: (window as any).tronWeb.defaultAddress.base58,
+              })
+            : resolve(null);
+        }
+      } else
         addInstallWalletNotification(
           "TronLink",
           "https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec"
@@ -80,10 +88,13 @@ const createTronContract = async ({
     (window as any).tronWeb.defaultAddress.hex
   );
   const signedTransaction = await (window as any).tronWeb.trx.sign(transaction);
+
   setLoadingStep({ finishedStep: 1, loadingStep: 2 });
+
   const contract_instance = await (
     window as any
   ).tronWeb.trx.sendRawTransaction(signedTransaction);
+
   setLoadingStep({ finishedStep: 2 });
 
   if (contract_instance.transaction) {
@@ -92,7 +103,6 @@ const createTronContract = async ({
     );
     return contract_address;
   } else if (contract_instance.code) {
-    console.log(contract_instance);
     const message = fromHexToString(contract_instance.message); // txid
     addErrorNotification({ message });
     // TRON_WALLET_ERR[contract_instance.code as keyof typeof TRON_WALLET_ERR]
@@ -107,7 +117,7 @@ const getBadgeURITron = async (
 ) => {
   const { abi } = walletConf;
   if (abi) {
-    let instance = await (window as any).tronWeb.contract(
+    const instance = await (window as any).tronWeb.contract(
       abi,
       contract_address
     );
@@ -117,26 +127,16 @@ const getBadgeURITron = async (
   return "";
 };
 
-const mintBadgeTron = async (
-  mintObj: IMintBadgeObj,
-  walletConf: IWalletConf
-) => {
-  const { abi } = walletConf;
-  if (abi) {
-    const { contract_address, addressTo } = mintObj;
-    const instance = await (window as any).tronWeb.contract(
-      abi,
-      contract_address
-    );
-    // const getURInew =
-    await instance.mint(addressTo, 1, 1).send({
-      feeLimit: 100_000_000,
-      callValue: 0,
-      tokenId: 1000036,
-      tokenValue: 100,
-      shouldPollResponse: true,
-    });
-  } else return;
+const mintBadgeTron = async (mintObj: IMintBadgeObj) => {
+  const { contract_address, addressTo } = mintObj;
+  const instance = await (window as any).tronWeb
+    .contract()
+    .at(contract_address);
+  await instance.mint(addressTo, 1, 1).send({
+    feeLimit: 100_000_000,
+    callValue: 0,
+    shouldPollResponse: true,
+  });
 };
 
 const getQuantityBalanceTron = async (
@@ -185,7 +185,7 @@ const tronlinkConf: IWalletConf = {
     return getBadgeURITron(contract_address, this);
   },
   mintBadge(objForBadge) {
-    return mintBadgeTron(objForBadge, this);
+    return mintBadgeTron(objForBadge);
   },
   getQuantityBalance(objForQuantityBalance) {
     return getQuantityBalanceTron(objForQuantityBalance, this);

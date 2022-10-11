@@ -30,8 +30,8 @@ function App() {
       const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
       const walletData = await wallet.getWalletData(
         process.env.REACT_APP_BLOCKCHAIN
-      );
-
+      );   
+      
       if (walletData) {
         dispatch(
           setMainWallet({

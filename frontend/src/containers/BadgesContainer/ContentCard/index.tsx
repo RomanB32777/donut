@@ -23,13 +23,14 @@ const ContentCard = (prop: {
     ...prop.data,
   });
 
-  const getBadgeNFTData = async (badge: IBadge) => {
+  const getBadgeData = async (badge: IBadge) => {
     try {
       const walletKey = process.env.REACT_APP_WALLET || "metamask";
       const wallet = walletsConf[walletKey];
       const { contract_address, creator_id } = badge;
-      
+
       const currentToken = await wallet.getBadgeURI(contract_address);
+      
       const quantity = await wallet.getQuantityBalance({
         contract_address,
         supporter_address: user[`${walletKey}_token`],
@@ -81,7 +82,7 @@ const ContentCard = (prop: {
 
   useEffect(() => {
     const walletKey = process.env.REACT_APP_WALLET || "metamask";
-    user[`${walletKey}_token`] && getBadgeNFTData(prop.data);
+    user[`${walletKey}_token`] && getBadgeData(prop.data);
   }, [user, prop.data]);
 
   const { image, title, description, creator_id } = badgeData;

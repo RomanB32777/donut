@@ -137,8 +137,8 @@ const mintBadgeMetamask = async (
       (window as any).ethereum
     );
     const signer = provider.getSigner(0);
-    let currentContract = new ethers.Contract(contract_address, abi, signer);
-      const tx = await currentContract.mint(addressTo, 1, 1);
+    const currentContract = new ethers.Contract(contract_address, abi, signer);
+    const tx = await currentContract.mint(addressTo, 1, 1);
     await tx.wait();
   } else return;
 };
