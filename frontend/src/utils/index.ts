@@ -1,3 +1,4 @@
+import axiosClient, { baseURL } from "./../axiosClient";
 import { getTimePeriodQuery } from "./dateMethods/index";
 import {
   addNotification,
@@ -28,6 +29,47 @@ import {
 import { walletsConf, currBlockchain, getUsdKoef } from "./wallets";
 import { checkIsExistUser } from "./asyncMethods";
 
+const getBadgesStatus = async (user: any, socket?: any) => {
+  const url =
+    user.roleplay === "creators"
+      ? `${baseURL}/api/badge/${user.id}?blockchain=${currBlockchain?.nativeCurrency.symbol}&status=pending`
+      : `${baseURL}/api/badge/badges-backer/${user.id}?blockchain=${currBlockchain?.nativeCurrency.symbol}&status=pending`;
+
+  const { data } = await axiosClient.get(url);
+  if (Array.isArray(data) && data.length) {
+    const pendingBadges = data; //.slice(0, 1);
+
+    if (pendingBadges.length) {
+      const resultTransactions = await Promise.all(
+        pendingBadges.map(async (badge) => {
+          const walletKey = process.env.REACT_APP_WALLET || "metamask";
+          const wallet = walletsConf[walletKey];
+          const transactionInfo = await wallet.getTransactionInfo(
+            badge.transaction_hash
+          );
+          if (transactionInfo) {
+            const result = transactionInfo?.result;
+            if (result) {
+              const resultObj = {
+                result: transactionInfo.result,
+                badge_id: badge.id,
+                transaction_hash: badge.transaction_hash,
+                username: user.username,
+                user_id: user.id,
+              };
+              socket.emit("check_badge", resultObj);
+              return resultObj;
+            }
+            return transactionInfo;
+          }
+          return null;
+        })
+      );
+      return resultTransactions;
+    }
+  }
+};
+
 export {
   // notifications
   addNotification,
@@ -38,6 +80,9 @@ export {
   addNotFoundUserNotification,
   addInstallWalletNotification,
   getNotificationMessage,
+
+  // badges
+  getBadgesStatus,
 
   // strings
   getRandomStr,

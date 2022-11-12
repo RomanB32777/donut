@@ -305,7 +305,6 @@ const GoalItem = ({
             sm={{ offset: 2 }}
             lg={{ offset: 0 }}
           >
-            {/* offset={isTablet ? 5 : 0} */}
             <Row
               style={{
                 alignItems: "baseline",

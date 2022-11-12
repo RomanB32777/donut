@@ -20,6 +20,8 @@ declare type typeNotification =
   | "add_badge_creator"
   | "add_badge_supporter"
   | "remove_badge_creator"
-  | "remove_badge_supporter";
+  | "remove_badge_supporter"
+  | "failed_badge"
+  | "success_badge"
 
 export type { typeNotification };

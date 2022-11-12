@@ -56,10 +56,11 @@ export interface IWalletConf {
   getBalance: (objForBalance: IBalanceObj) => Promise<number>;
   createContract: (
     objForContract: ICreateContractObj
-  ) => Promise<string | null>;
+  ) => Promise<any>;
   getBadgeURI: (contract_address: string) => Promise<string | null>;
   mintBadge: (objForMint: IMintBadgeObj) => Promise<any>;
   getQuantityBalance: (objForQuantityBalance: IQuantityBalanceObj) => Promise<any>;
+  getTransactionInfo: (hash: string) => Promise<any>;
 }
 
 export interface IWalletsConf {

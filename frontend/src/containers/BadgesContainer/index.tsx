@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Col, Empty, Row } from "antd";
 import { FormattedMessage } from "react-intl";
 
 import { useSelector } from "react-redux";
@@ -6,15 +8,16 @@ import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../components/PageTitle";
 import ContentCard from "./ContentCard";
 import BaseButton from "../../components/BaseButton";
-import "./styles.sass";
+import BadgePage from "./BadgePage";
 
 import CreateBadgeForm from "./CreateBadgeForm";
-import BadgePage from "./BadgePage";
-import { IBadgeData, initBadgeData } from "../../types";
-import { addNotification, currBlockchain } from "../../utils";
-import { Col, Empty, Row } from "antd";
+import { IBadge, IBadgeData, initBadgeData } from "../../types";
+import { addNotification, currBlockchain, walletsConf } from "../../utils";
+import "./styles.sass";
+import { makeStorageClient } from "./utils";
 
 const BadgesContainer = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const user = useSelector((state: any) => state.user);
   const notifications: any[] = useSelector((state: any) => state.notifications);
 
@@ -25,15 +28,70 @@ const BadgesContainer = () => {
   const [isOpenCreateForm, setIsOpenCreateForm] = useState<boolean>(false);
   const [isOpenBadgePage, setIsOpenBadgePage] = useState<boolean>(false);
 
+  const queryID = searchParams.get("id");
+
   const getBadges = async (id: number) => {
     const url =
       user.roleplay === "creators"
-        ? `${baseURL}/api/badge/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}`
-        : `${baseURL}/api/badge/badges-backer/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}`;
+        ? `${baseURL}/api/badge/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}&status=success`
+        : `${baseURL}/api/badge/badges-backer/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}&status=success`;
 
     const { data } = await axiosClient.get(url);
     if (Array.isArray(data) && data.length) {
       setBadgesList(data);
+    }
+  };
+
+  const getBadgeData = async (badge: IBadge) => {
+    try {
+      const walletKey = process.env.REACT_APP_WALLET || "metamask";
+      const wallet = walletsConf[walletKey];
+      const { contract_address, creator_id } = badge;
+
+      const rootCid = await wallet.getBadgeURI(contract_address);
+
+      const quantity = await wallet.getQuantityBalance({
+        contract_address,
+        supporter_address: user[`${walletKey}_token`],
+        isCreator: user.id === creator_id,
+      });
+
+      if (user.roleplay === "backers" && quantity < 1) return;
+
+      if (rootCid) {
+        // const rootCid = currentToken.split("//")[1];
+        const dataBadgeJSON = await axiosClient.get(
+          `https://${rootCid}.ipfs.w3s.link/metadata.json`
+        );
+
+        if (dataBadgeJSON.status === 200) {
+          const client = makeStorageClient();
+          const imgCid = dataBadgeJSON.data.URI; //.split("//")[1];
+          const res = await client.get(imgCid); // Web3Response
+
+          if (res) {
+            const files = await res.files(); // Web3File[]
+
+            const fileImage = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(files[0]);
+              reader.onload = ({ target }) => target && resolve(target.result);
+              reader.onerror = reject;
+            });
+
+            return {
+              ...dataBadgeJSON.data,
+              image: {
+                preview: (fileImage as string) || "",
+              },
+              contract_address,
+              quantity,
+            };
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -55,8 +113,7 @@ const BadgesContainer = () => {
           message: "Badge removal is not possible (contributor users > 0)",
         });
         return false;
-      } 
-      else {
+      } else {
         addNotification({
           type: "warning",
           title: "Badge removal is not possible",
@@ -75,6 +132,29 @@ const BadgesContainer = () => {
       return false;
     }
   };
+
+  const removeQueryParams = () => {
+    searchParams.delete("id");
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    const goToQueryActiveBadge = async () => {
+      if (queryID) {
+        const findActiveBadge = badgesList.find(
+          (badge) => badge.id === +queryID
+        );
+        if (findActiveBadge) {
+          const badgeInfo = await getBadgeData(findActiveBadge);
+          setActiveBadge({ ...activeBadge, ...badgeInfo });
+          setIsOpenBadgePage(true);
+          removeQueryParams();
+        }
+      }
+    };
+
+    goToQueryActiveBadge();
+  }, [queryID, badgesList]);
 
   useEffect(() => {
     if (user.id && user.roleplay && !isOpenCreateForm) {
@@ -138,6 +218,7 @@ const BadgesContainer = () => {
                       setIsOpenBadgePage(true);
                     }}
                     deleteBadge={deleteBadge}
+                    getBadgeData={getBadgeData}
                   />
                 </div>
               </Col>

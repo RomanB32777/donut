@@ -4,10 +4,7 @@ import { AnyAction, Dispatch } from "redux";
 import { io, Socket } from "socket.io-client";
 import { baseURL } from "../../axiosClient";
 import { getNotifications } from "../../store/types/Notifications";
-import {
-  addNotification,
-  getNotificationMessage,
-} from "../../utils";
+import { addNotification, getNotificationMessage } from "../../utils";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -22,17 +19,17 @@ export const connectSocket = (
     query: {
       userName: username,
     },
-  })
+  });
 
   socket.on("new_notification", (data) => {
     const { type } = data;
     switch (type) {
       case "donat":
-        let messageDonat = getNotificationMessage(
-          "donat_creator",
-          data.supporter,
-          data.additional
-        );
+        let messageDonat = getNotificationMessage({
+          type: "donat_creator",
+          user: data.supporter,
+          data: data.additional,
+        });
         addNotification({
           type: "info",
           title: "New donut",
@@ -41,11 +38,11 @@ export const connectSocket = (
         break;
 
       case "add_badge":
-        let messageAddBadge = getNotificationMessage(
-          "add_badge_supporter",
-          data.supporter,
-          data.badgeName
-        );
+        let messageAddBadge = getNotificationMessage({
+          type: "add_badge_supporter",
+          user: data.supporter,
+          data: data.badgeName,
+        });
         addNotification({
           type: "info",
           title: "New badge",
@@ -54,16 +51,40 @@ export const connectSocket = (
         break;
 
       case "remove_badge":
-        let messageRemoveBadge = getNotificationMessage(
-          "remove_badge_supporter",
-          data.supporter
-        );
+        let messageRemoveBadge = getNotificationMessage({
+          type: "remove_badge_supporter",
+          user: data.supporter,
+        });
         addNotification({
           type: "info",
           title: "Remove badge",
           message: messageRemoveBadge,
         });
         break;
+
+      case "failed_badge":
+        let messageFailedBadge = getNotificationMessage({
+          type: "failed_badge",
+          data: data.badge.transaction_hash,
+        });
+        addNotification({
+          type: "danger",
+          title: "Failed badge",
+          message: messageFailedBadge,
+        });
+        break;
+
+      case "successed_badge":
+        let messageSuccessedBadge = getNotificationMessage({
+          type: "success_badge",
+          data: data.badge.badge_id,
+        });
+        addNotification({
+          type: "success",
+          title: "Successed badge",
+          message: messageSuccessedBadge,
+        });
+      break;
 
       default:
         break;

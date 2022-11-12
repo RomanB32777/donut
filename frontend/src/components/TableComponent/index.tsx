@@ -1,6 +1,6 @@
 import React from "react";
 import { Table } from "antd";
-import type { ColumnsType, TablePaginationConfig, TableProps } from "antd/es/table";
+import type { TableProps } from "antd/es/table";
 import "./styles.sass";
 
 interface ITableData<T> extends TableProps<T> {}

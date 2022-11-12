@@ -2,7 +2,6 @@ import { Col, Row } from "antd";
 import { Header } from "antd/lib/layout/layout";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { MenuMobileIcon } from "../../../icons/icons";
 import { shortStr } from "../../../utils";
 import HeaderSelect from "../HeaderSelect";
@@ -38,7 +37,6 @@ export const HeaderComponent = ({
   children,
   onClick,
 }: IHeaderComponent) => {
-  const { isMobile } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
   const mainWallet = useSelector((state: any) => state.wallet);
 

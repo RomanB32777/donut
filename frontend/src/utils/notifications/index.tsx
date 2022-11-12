@@ -1,4 +1,5 @@
 import { Store } from "react-notifications-component";
+import { baseURL } from "../../axiosClient";
 import {
   INotification,
   INotificationWithoutType,
@@ -15,7 +16,7 @@ export const addNotification = ({ type, title, message }: INotification) => {
     animationIn: ["animate__animated", "animate__fadeIn"],
     animationOut: ["animate__animated", "animate__fadeOut"],
     dismiss: {
-      duration: 5000,
+      duration: 500000,
       onScreen: true,
     },
   });
@@ -85,11 +86,15 @@ export const addInstallWalletNotification = (
   });
 };
 
-export const getNotificationMessage = (
-  type: typeNotification,
-  user: any,
-  data?: any
-) => {
+export const getNotificationMessage = ({
+  type,
+  user,
+  data,
+}: {
+  type: typeNotification;
+  user?: any;
+  data?: any;
+}) => {
   switch (type) {
     case "donat_creator":
       return `${user} sent you ${data.sum} ${data.blockchain}!`;
@@ -102,6 +107,35 @@ export const getNotificationMessage = (
 
     case "add_badge_supporter":
       return `You received a badge ${data || ""} from ${user}`;
+
+    case "failed_badge":
+      return (
+        <span>
+          Error occurred while creating your badge.
+          <a
+            href={`https://nile.tronscan.org/#/transaction/${data}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: "#fff", textDecoration: "underline" }}
+          >
+            Click here
+          </a>{" "}
+          to check!
+        </span>
+      );
+
+    case "success_badge":
+      return (
+        <span>
+          <a
+            href={`${baseURL}/badges?id=${data}`}
+            style={{ color: "#fff", textDecoration: "underline" }}
+          >
+            New badge
+          </a>{" "}
+          was created successfully!
+        </span>
+      );
 
     default:
       return `notification`;

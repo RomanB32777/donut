@@ -84,8 +84,8 @@ const CreateBadgeForm = ({
     ...initBadgeData,
   });
 
-  const createJSON = (_title: string, _description: string, _uri: string) => {
-    const dict = { title: _title, description: _description, URI: _uri };
+  const createJSON = (title: string, description: string, _uri: string) => {
+    const dict = { title, description, URI: _uri };
     const jsonDict = JSON.stringify(dict);
     const file = new File([jsonDict], "metadata.json", {
       type: "text/plain;charset=utf-8",
@@ -99,7 +99,7 @@ const CreateBadgeForm = ({
     console.log("stored files with cid:", cid);
     const ipfsLink = "ipfs://" + cid;
     console.log(ipfsLink);
-    return ipfsLink;
+    return cid; //ipfsLink;
   };
 
   const uploadToIpfs = async () => {
@@ -108,6 +108,7 @@ const CreateBadgeForm = ({
       const _uri = await storeFiles([image.file]);
       const badgeDict = createJSON(title, description, _uri);
       const new_uri = await storeFiles(badgeDict);
+      console.log(new_uri);
       return new_uri;
     }
   };
@@ -208,12 +209,13 @@ const CreateBadgeForm = ({
               setLoadingStep: setLoadingCurrStep,
             });
 
-            if (badgeContract) {
+            if (badgeContract && badgeContract?.contract_address) {
               console.log(badgeContract);
               await axiosClient.post("/api/badge/", {
                 creator_id: user.id,
-                contract_address: badgeContract,
+                contract_address: badgeContract.contract_address,
                 blockchain,
+                transaction_hash: badgeContract?.transaction_hash || "",
               });
               setIsOpenSuccessModal(true);
             }

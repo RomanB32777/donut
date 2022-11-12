@@ -1,4 +1,4 @@
-create TABLE users(
+CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     tronlink_token VARCHAR(255) DEFAULT '',
     metamask_token VARCHAR(255) DEFAULT '',
@@ -7,7 +7,7 @@ create TABLE users(
     roleplay VARCHAR(15) DEFAULT ''
 );
 
-create TABLE creators(
+CREATE TABLE creators(
     id SERIAL PRIMARY KEY,
     avatarLink VARCHAR(255) DEFAULT '',
     backgroundLink VARCHAR(255) DEFAULT '',
@@ -21,7 +21,7 @@ create TABLE creators(
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-create TABLE backers(
+CREATE TABLE backers(
     id SERIAL PRIMARY KEY,
     avatarLink VARCHAR(255) DEFAULT '',
     creation_date VARCHAR(255) DEFAULT '',
@@ -30,7 +30,7 @@ create TABLE backers(
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-create TABLE supporters(
+CREATE TABLE supporters(
     id SERIAL PRIMARY KEY,
     backer_id INTEGER,
     FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE SET NULL,
@@ -40,16 +40,20 @@ create TABLE supporters(
     amount_donations NUMERIC
 );
 
-create TABLE badges(
+CREATE TYPE BadgeStatus AS ENUM('success', 'failed', 'pending');
+
+CREATE TABLE badges(
     id SERIAL PRIMARY KEY,
     contract_address VARCHAR(255) DEFAULT '',
     blockchain VARCHAR(255) DEFAULT '',
     contributor_user_id_list VARCHAR(2047) DEFAULT '',
+    transaction_hash VARCHAR DEFAULT '',
+    transaction_status BadgeStatus DEFAULT NULL,
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-create TABLE alerts (
+CREATE TABLE alerts (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,
     banner_link VARCHAR(255) DEFAULT '',
     message_color  VARCHAR(10) DEFAULT '#ffffff',
@@ -63,7 +67,7 @@ create TABLE alerts (
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-create TABLE goals (
+CREATE TABLE goals (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,
     title VARCHAR(255) DEFAULT '',
     amount_goal NUMERIC DEFAULT 1,
@@ -77,7 +81,7 @@ create TABLE goals (
     CHECK (amount_goal >= amount_raised)
 );
 
-create TABLE stats (
+CREATE TABLE stats (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,
     title VARCHAR(255) DEFAULT '',
     stat_description VARCHAR(255) DEFAULT '',
@@ -92,7 +96,7 @@ create TABLE stats (
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-create TABLE donations(
+CREATE TABLE donations(
     id SERIAL PRIMARY KEY,
     donation_date VARCHAR(63) DEFAULT '',
     backer_id INTEGER,
@@ -106,7 +110,7 @@ create TABLE donations(
     FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE SET NULL
 );
 
-create TABLE notifications (
+CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     sender INTEGER,

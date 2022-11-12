@@ -1,4 +1,4 @@
-import { Col, DatePicker, Row } from "antd";
+import { DatePicker } from "antd";
 import "./styles.sass";
 
 const { RangePicker } = DatePicker;
@@ -6,16 +6,13 @@ const { RangePicker } = DatePicker;
 const DatesPicker = ({
   setValue,
   toFormat,
-}: // startDate,
-// endDate,
+}:
 {
   setValue: (startDate: string, endDate: string) => void;
   toFormat?: string;
-  // startDate?: string;
-  // endDate?: string;
 }) => {
   return (
-    <div className="colorPicker">
+    <div className="datesPicker">
       <RangePicker
         format={toFormat || "DD/MM/YYYY"}
         bordered={false}

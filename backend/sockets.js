@@ -77,6 +77,50 @@ const socketHandler = async (socket, io) => {
       }
     }
   });
+
+  socket.on("check_badge", async (data) => {
+    const { username, user_id, result, badge_id, transaction_hash } = data;
+
+    const rooms = getActiveRooms(io);
+    if (rooms.length) {
+      const userRoom = rooms.find(({ room }) => room === username);
+
+      if (userRoom) {
+        const userSockets = userRoom.sockets;
+
+        const isFailed = result === "FAILED" || result === "OUT_OF_ENERGY";
+        const isSuccesed = result === "SUCCESS";
+        const failedType = isFailed && "failed_badge";
+        const succesedType = isSuccesed && "success_badge";
+
+        if (userSockets && userSockets.length) {
+          userSockets.forEach((socketID) =>
+            socket.to(socketID).emit("new_notification", {
+              type: failedType || succesedType,
+              badge: { badge_id, transaction_hash },
+            })
+          );
+        }
+
+        await db.query(
+          `INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3)`,
+          [badge_id, user_id, user_id]
+        );
+
+        isFailed &&
+          (await db.query(
+            `UPDATE badges SET transaction_status = 'failed' where id = $1`,
+            [badge_id]
+          ));
+
+        isSuccesed &&
+          (await db.query(
+            `UPDATE badges SET transaction_status = 'success' where id = $1`,
+            [badge_id]
+          ));
+      }
+    }
+  });
 };
 
 module.exports = socketHandler;

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { BackTop, Layout, Menu } from "antd";
@@ -8,10 +8,12 @@ import clsx from "clsx";
 import { IRoute, Pages, routers } from "../../routes";
 import { AlertIcon, EmailIcon } from "../../icons/icons";
 
+import { WebSocketContext } from "../../components/Websocket";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import Logo from "../../components/HeaderComponents/LogoComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import NotificationsPopup from "../../components/HeaderComponents/NotificationsPopup";
+import { getBadgesStatus } from "../../utils";
 import "./styles.sass";
 
 const { Content, Sider } = Layout;
@@ -67,6 +69,7 @@ const LayoutApp = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const user = useSelector((state: any) => state.user);
+  const socket = useContext(WebSocketContext);
   const { width, isTablet } = useWindowDimensions();
 
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
@@ -95,6 +98,10 @@ const LayoutApp = () => {
   useEffect(() => {
     isTablet ? setCollapsed(true) : setCollapsed(false);
   }, [width]);
+
+  useEffect(() => {
+    user.id && socket && getBadgesStatus(user, socket);
+  }, [user, socket]);
 
   const menuItems: IRoute[] = useMemo(() => {
     const menuShowItems = routers.reduce((acc, route) => {
@@ -267,10 +274,10 @@ const LayoutApp = () => {
             onClick={() => closeAllHeaderPopups()}
             isOpenHeaderSelect={isOpenHeaderSelect}
             handlerHeaderSelect={handlerHeaderSelect}
-            visibleGamburger={true}
             collapsedSidebar={collapsed}
             setCollapsedSidebar={setCollapsed}
             modificator="layout-header"
+            visibleGamburger
           >
             {user.id && (
               <div className="notifications">

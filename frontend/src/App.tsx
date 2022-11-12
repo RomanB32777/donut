@@ -30,8 +30,8 @@ function App() {
       const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
       const walletData = await wallet.getWalletData(
         process.env.REACT_APP_BLOCKCHAIN
-      );   
-      
+      );
+
       if (walletData) {
         dispatch(
           setMainWallet({
@@ -42,12 +42,12 @@ function App() {
         );
 
         dispatch(tryToGetUser(walletData.address));
-        var refreshId = setInterval(function () {
-          if (wallet) {
-            dispatch(tryToGetUser(walletData.address));
-            clearInterval(refreshId);
-          }
-        }, 1000);
+        // var refreshId = setInterval(function () {
+        //   if (wallet) {
+        //     dispatch(tryToGetUser(walletData.address));
+        //     clearInterval(refreshId);
+        //   }
+        // }, 1000);
       } else {
         dispatch(setLoading(false));
       }

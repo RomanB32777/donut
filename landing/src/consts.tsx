@@ -29,11 +29,11 @@ export const wallets: IWallet = {
     installLink:
       "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn",
     blockchains: [
-      {
-        name: "tEVMOS Testnet",
-        appLink: "https://evmos.cryptodonutz.xyz/",
-        img: EvmosBig,
-      },
+      // {
+      //   name: "tEVMOS Testnet",
+      //   appLink: "https://evmos.cryptodonutz.xyz/",
+      //   img: EvmosBig,
+      // },
       {
         name: "Klaytn Testnet",
         appLink: "https://klaytn.cryptodonutz.xyz/",

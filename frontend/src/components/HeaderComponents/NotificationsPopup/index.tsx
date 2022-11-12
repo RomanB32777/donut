@@ -10,33 +10,56 @@ const NotificationsPopup = ({ user }: { user: number }) => {
   const dispatch = useDispatch();
   const notifications: any[] = useSelector((state: any) => state.notifications);
   const { isLoading } = useSelector((state: any) => state.loading);
-  
+
   const [moreVisibleList, setMoreVisibleList] = useState(false);
 
   useEffect(() => {
     dispatch(getNotifications(user));
   }, [user]);
 
-  const renderNotifList = (n: any) => (
-    <div className="notifications-popup__content-item" key={n.id}>
-      {n.donation &&
-        getNotificationMessage(
-          n.donation.creator_id === user ? "donat_creator" : "donat_supporter",
-          n.donation.username,
-          { sum: n.donation.sum_donation, blockchain: n.donation.blockchain }
-        )}
-      {n.badge &&
-        getNotificationMessage(
-          n.badge.creator_id === user
-            ? "add_badge_creator"
-            : "add_badge_supporter",
-          n.badge.creator_id === user
-            ? n.badge.supporter_username
-            : n.badge.creator_username
-          // n.badge.badge_name
-        )}
-    </div>
-  );
+  const renderNotifList = (n: any) => {
+    const badgeType =
+      n.badge &&
+      ((n.badge.transaction_status !== "pending" &&
+        `${n.badge.transaction_status}_badge`) ||
+        (n.badge.creator_id === user
+          ? "add_badge_creator"
+          : "add_badge_supporter"));
+
+    const badgeData =
+      n.badge &&
+      n.badge.transaction_status !== "pending" &&
+      (n.badge.transaction_status === "success"
+        ? n.badge.badge_id
+        : n.badge.transaction_hash);
+
+    return (
+      <div className="notifications-popup__content-item" key={n.id}>
+        {n.donation &&
+          getNotificationMessage({
+            type:
+              n.donation.creator_id === user
+                ? "donat_creator"
+                : "donat_supporter",
+            user: n.donation.username,
+            data: {
+              sum: n.donation.sum_donation,
+              blockchain: n.donation.blockchain,
+            },
+          })}
+        {n.badge &&
+          getNotificationMessage({
+            type: badgeType,
+            user:
+              n.badge.creator_id === user
+                ? n.badge.supporter_username
+                : n.badge.creator_username,
+            // n.badge.badge_name
+            data: badgeData,
+          })}
+      </div>
+    );
+  };
 
   return (
     <div

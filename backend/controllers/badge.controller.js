@@ -3,14 +3,25 @@ const db = require("../db");
 class BadgeController {
   async createBadge(req, res) {
     try {
-      const { creator_id, contract_address, blockchain } = req.body;
+      const { creator_id, contract_address, blockchain, transaction_hash } =
+        req.body;
       const creator = await db.query("SELECT * FROM users WHERE id = $1", [
         creator_id,
       ]);
       if (creator) {
+        const transaction_status = Boolean(transaction_hash)
+          ? "pending"
+          : "success";
+
         const newBadge = await db.query(
-          `INSERT INTO badges (creator_id, contract_address, blockchain) values ($1, $2, $3) RETURNING id`,
-          [creator.rows[0].id, contract_address, blockchain]
+          `INSERT INTO badges (creator_id, contract_address, blockchain, transaction_hash, transaction_status) values ($1, $2, $3, $4, $5) RETURNING id`,
+          [
+            creator.rows[0].id,
+            contract_address,
+            blockchain,
+            transaction_hash,
+            transaction_status,
+          ]
         );
         res.status(200).json(newBadge.rows[0]);
       }
@@ -24,12 +35,13 @@ class BadgeController {
   async getBadges(req, res) {
     try {
       const { creator_id } = req.params;
-      const { blockchain } = req.query;
+      const { blockchain, status } = req.query;
       const badges = await db.query(
         `
             SELECT * FROM badges 
             WHERE creator_id = $1
             ${blockchain ? ` AND blockchain = '${blockchain}'` : ""}
+            ${status ? ` AND transaction_status = '${status}'` : ""}
             `,
         [creator_id]
       );
@@ -124,11 +136,13 @@ class BadgeController {
   async getBadgesByBacker(req, res) {
     try {
       const { user_id } = req.params;
-      const { blockchain } = req.query;
+      const { blockchain, status } = req.query;
       const badges = await db.query(
         `SELECT * FROM badges 
         WHERE contributor_user_id_list LIKE '%${user_id}%'
-        ${blockchain ? ` AND blockchain = '${blockchain}'` : ""}`
+        ${blockchain ? ` AND blockchain = '${blockchain}'` : ""}
+        ${status ? ` AND transaction_status = '${status}'` : ""}
+        `
       );
       res.status(200).json(badges.rows);
     } catch (error) {

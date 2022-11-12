@@ -29,6 +29,7 @@ interface IWidgetStatData {
   time_period: string;
   id?: number;
 }
+
 const initWidgetStatData: IWidgetStatData = {
   id: 0,
   title: "",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import clsx from "clsx";
 
@@ -10,7 +10,6 @@ import bigImg from "../../../assets/big_don.png";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { IAlertData, initAlertData } from "../../../types";
 import { url } from "../../../consts";
-import { walletsConf } from "../../../utils";
 import { soundsList } from "../../../assets/sounds";
 import "./styles.sass";
 
@@ -68,7 +67,7 @@ const DonatMessageContainer = () => {
       );
       const userData: IAlertData = {
         banner: {
-          preview: `${url + data.banner_link}`,
+          preview: data.banner_link,
           file: alertWidgetData.banner.file,
         },
         message_color: data.message_color,
@@ -99,13 +98,13 @@ const DonatMessageContainer = () => {
     );
   }, [name]);
 
-  const blockchainImg = useMemo(() => {
-    const currBlockchain = walletsConf[
-      process.env.REACT_APP_WALLET || "metamask"
-    ].blockchains.find((b) => b.nativeCurrency.symbol === lastNotif.blockchain);
-    if (currBlockchain) return currBlockchain.icon;
-    return "";
-  }, [lastNotif]);
+  // const blockchainImg = useMemo(() => {
+  //   const currBlockchain = walletsConf[
+  //     process.env.REACT_APP_WALLET || "metamask"
+  //   ].blockchains.find((b) => b.nativeCurrency.symbol === lastNotif.blockchain);
+  //   if (currBlockchain) return currBlockchain.icon;
+  //   return "";
+  // }, [lastNotif]);
 
   const { banner, message_color, name_color, sum_color, sound } =
     alertWidgetData;
@@ -117,7 +116,7 @@ const DonatMessageContainer = () => {
       {Boolean(Object.keys(lastNotif).length) && (
         <>
           <img
-            src={banner.preview || bigImg}
+            src={banner.preview ? url + banner.preview : bigImg}
             alt="banner"
             className={clsx("donat-messsage-container_banner", {
               rotate: !Boolean(banner.preview),
@@ -145,7 +144,7 @@ const DonatMessageContainer = () => {
                 </>
               )}
             </span>
-            <img src={blockchainImg} alt="evmos" />
+            {/* <img src={blockchainImg} alt="" /> */}
           </div>
           <p
             className="donat-messsage-container_message"
