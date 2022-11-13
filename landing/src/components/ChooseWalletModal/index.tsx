@@ -1,6 +1,6 @@
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
-import { wallets } from "../../consts";
+import { IWallet, wallets } from "../../consts";
 import { addInstallWalletNotification } from "../../utils";
 
 import "./styles.sass";
@@ -9,9 +9,20 @@ const ChooseBlockchainsModal = () => {
   const navigate = useNavigate();
 
   const registrationWalletClick = async (name: string) => {
-    const { installLink, isInstallMethod } = wallets[name];
+    const {
+      installLink,
+      isWithoutChooseBlockchain,
+      blockchains,
+      isInstallMethod,
+    } = wallets[name];
+
+    const navigateMethod = () =>
+      isWithoutChooseBlockchain
+        ? window.open(blockchains[0].appLink, "_blank")
+        : navigate(`/blockchains/${name}`);
+
     isInstallMethod()
-      ? navigate(`/blockchains/${name}`)
+      ? navigateMethod()
       : addInstallWalletNotification(name, installLink);
   };
 

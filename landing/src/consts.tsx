@@ -5,15 +5,15 @@ import {
 
 import MetaMaskFoxBig from "./assets/MetaMask_Fox_big.png";
 import TronlinkBig from "./assets/tronlink_big.png";
-import EvmosBig from "./assets/evmos_big.png";
 import KlaytnBig from "./assets/klaytn_big.png";
 import TrxBig from "./assets/trx_big.png";
 
-interface IWallet {
+export interface IWallet {
   [walletName: string]: {
     img: string;
     isInstallMethod: () => boolean;
     installLink: string;
+    isWithoutChooseBlockchain?: boolean;
     blockchains: {
       name: string;
       appLink: string;
@@ -46,11 +46,12 @@ export const wallets: IWallet = {
     isInstallMethod: isInstallTronWallet,
     installLink:
       "https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec",
+    isWithoutChooseBlockchain: true,
     blockchains: [
       {
-        name: "Tron Nile Testnet",
+        name: "Tron Mainnet",
         appLink: "https://tron.cryptodonutz.xyz/",
-        img: TrxBig
+        img: TrxBig,
       },
     ],
   },

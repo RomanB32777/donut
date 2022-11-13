@@ -13,8 +13,9 @@ import BadgePage from "./BadgePage";
 import CreateBadgeForm from "./CreateBadgeForm";
 import { IBadge, IBadgeData, initBadgeData } from "../../types";
 import { addNotification, currBlockchain, walletsConf } from "../../utils";
-import "./styles.sass";
 import { makeStorageClient } from "./utils";
+import { ipfsFileformat, ipfsFilename } from "../../consts";
+import "./styles.sass";
 
 const BadgesContainer = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -65,29 +66,32 @@ const BadgesContainer = () => {
         );
 
         if (dataBadgeJSON.status === 200) {
-          const client = makeStorageClient();
-          const imgCid = dataBadgeJSON.data.URI; //.split("//")[1];
-          const res = await client.get(imgCid); // Web3Response
+          // const client = makeStorageClient();
+          const imgURI = dataBadgeJSON.data.URI;
+          const rootCid = imgURI.split("//")[1];
+          const fileImage = `https://${rootCid}.ipfs.w3s.link/${ipfsFilename}.${ipfsFileformat}`;
 
-          if (res) {
-            const files = await res.files(); // Web3File[]
+          // const res = await client.get(imgCid);          
 
-            const fileImage = await new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.readAsDataURL(files[0]);
-              reader.onload = ({ target }) => target && resolve(target.result);
-              reader.onerror = reject;
-            });
+          // if (res) {
+          // const files = await res.files(); // Web3File[]
 
-            return {
-              ...dataBadgeJSON.data,
-              image: {
-                preview: (fileImage as string) || "",
-              },
-              contract_address,
-              quantity,
-            };
-          }
+          // const fileImage = await new Promise((resolve, reject) => {
+          //   const reader = new FileReader();
+          //   reader.readAsDataURL(files[0]);
+          //   reader.onload = ({ target }) => target && resolve(target.result);
+          //   reader.onerror = reject;
+          // });
+
+          return {
+            ...dataBadgeJSON.data,
+            image: {
+              preview: (fileImage as string) || "",
+            },
+            contract_address,
+            quantity,
+          };
+          // }
         }
       }
     } catch (error) {

@@ -16,7 +16,7 @@ export const addNotification = ({ type, title, message }: INotification) => {
     animationIn: ["animate__animated", "animate__fadeIn"],
     animationOut: ["animate__animated", "animate__fadeOut"],
     dismiss: {
-      duration: 500000,
+      duration: 5000,
       onScreen: true,
     },
   });

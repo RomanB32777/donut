@@ -17,6 +17,7 @@ import ModalComponent, {
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
 import { addNotification, currBlockchain, walletsConf } from "../../../utils";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
+import { ipfsFileformat, ipfsFilename } from "../../../consts";
 
 const { Step } = Steps;
 
@@ -99,13 +100,17 @@ const CreateBadgeForm = ({
     console.log("stored files with cid:", cid);
     const ipfsLink = "ipfs://" + cid;
     console.log(ipfsLink);
-    return cid; //ipfsLink;
+    return ipfsLink; //cid;
   };
 
   const uploadToIpfs = async () => {
     const { image, title, description } = formBadge;
     if (image.file && title && description) {
-      const _uri = await storeFiles([image.file]);
+      const origFile = image.file
+      const sendFile = new File([origFile], `${ipfsFilename}.${ipfsFileformat}`, {
+        type: origFile.type,
+      });
+      const _uri = await storeFiles([sendFile]);
       const badgeDict = createJSON(title, description, _uri);
       const new_uri = await storeFiles(badgeDict);
       console.log(new_uri);
@@ -267,7 +272,7 @@ const CreateBadgeForm = ({
             <div className="upload-block">
               <UploadImage
                 label="Upload Image"
-                formats={["PNG", "JPG"]}
+                formats={["JPG"]} // "PNG"
                 sizeStr="5 MB"
                 filePreview={image.preview}
                 setFile={({ preview, file }) =>
