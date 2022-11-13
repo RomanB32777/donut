@@ -47,11 +47,12 @@ const getBadgesStatus = async (user: any, socket?: any) => {
           const transactionInfo = await wallet.getTransactionInfo(
             badge.transaction_hash
           );
-          if (transactionInfo) {
-            const result = transactionInfo?.result;
+          if (transactionInfo?.receipt) {
+            const result = transactionInfo.receipt?.result;
+
             if (result) {
               const resultObj = {
-                result: transactionInfo.result,
+                result,
                 badge_id: badge.id,
                 transaction_hash: badge.transaction_hash,
                 username: user.username,

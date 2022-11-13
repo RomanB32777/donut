@@ -21,6 +21,18 @@ export const connectSocket = (
     },
   });
 
+  socket.on("connect", () => {
+    console.log("connect");
+  });
+
+  socket.on("connect_error", () => {
+    console.log("connect_error");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("disconnect");
+  });
+
   socket.on("new_notification", (data) => {
     const { type } = data;
     switch (type) {
@@ -84,7 +96,7 @@ export const connectSocket = (
           title: "Successed badge",
           message: messageSuccessedBadge,
         });
-      break;
+        break;
 
       default:
         break;

@@ -2,9 +2,10 @@ import {
   IFilterCurrentPeriodItems,
   IFilterPeriodItems,
   IStatsDataType,
+  stringFormatTypes,
 } from "./types";
 
-export const filterPeriodItems: IFilterPeriodItems = {
+export const filterPeriodItems: IFilterPeriodItems<stringFormatTypes> = {
   today: "Today",
   "7days": "Last 7 days",
   "30days": "Last 30 days",

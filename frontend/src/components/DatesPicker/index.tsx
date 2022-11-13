@@ -24,6 +24,7 @@ const DatesPicker = ({
               )
             : setValue("", "")
         }
+        disabledDate={(d) => !d || d.isAfter()}
       />
     </div>
   );

@@ -382,8 +382,8 @@ const CreateBadgeForm = ({
       <SuccessModalComponent
         open={isOpenSuccessModal}
         onClose={closeSuccessPopup}
-        message={`Your ERC-1155 NFT Badge was created successfully!`}
-        description="Usually it takes around 30-60 seconds for it to be displayed in Badges section"
+        message="Congratulations! You’ve created new badge!"
+        description="Once the transaction is confirmed your badge will appear in Badges section."
       />
     </div>
   );

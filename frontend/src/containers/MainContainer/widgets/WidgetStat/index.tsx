@@ -5,12 +5,26 @@ import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
-import { currBlockchain, getTimePeriodQuery, DateFormatter } from "../../../../utils";
+import {
+  currBlockchain,
+  getTimePeriodQuery,
+  DateFormatter,
+} from "../../../../utils";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import axiosClient from "../../../../axiosClient";
-import { dateFormat, options } from "./graphData";
+import {
+  dateFormat,
+  enumerateBetweenDates,
+  options,
+  subtractDate,
+} from "./graphData";
+import {
+  periodItemsTypes,
+  stringFormatTypes,
+} from "../../../../utils/dateMethods/types";
 import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
+import moment from "moment";
 
 Chart.register(...registerables);
 
@@ -36,7 +50,7 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
-  const getLatestDonations = async (timePeriod: string) => {
+  const getLatestDonations = async (timePeriod: periodItemsTypes) => {
     try {
       setLoading(true);
       const blockchain = currBlockchain?.nativeCurrency.symbol;
@@ -44,12 +58,30 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
         `${widgetApiUrl}/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${blockchain}`
       );
       if (data) {
-        const labels = data.map((donat: any) =>
-          DateFormatter(donat.date_group, dateFormat[activeFilterItem])
-        );
-        const values = data.map(
-          (donat: any) => +(+donat.sum_donation * usdtKoef).toFixed(0)
-        );
+        const filteredDates = {
+          start: moment()
+            .subtract(...subtractDate[timePeriod].split("_"))
+            .startOf("day")
+            .valueOf(),
+          end: moment().endOf("day").valueOf(),
+        };
+
+        const initGroupDates = enumerateBetweenDates({
+          startDate: filteredDates.start,
+          endDate: filteredDates.end,
+          timePeriod: timePeriod,
+        }).reduce((acc, i) => ({ ...acc, [i]: 0 }), {});
+
+        const groupDonats = data.reduce((acc: any, d: any) => {
+          const date = DateFormatter(d.date_group, dateFormat[timePeriod]);
+          return {
+            ...acc,
+            [date]: +(+d.sum_donation * usdtKoef).toFixed(2),
+          };
+        }, initGroupDates as { [key: string]: number });
+
+        const labels = Object.keys(groupDonats).map((date: string) => date);
+        const values = Object.values(groupDonats).map((sum: any) => sum);
 
         setDataChart({
           ...dataChart,
@@ -88,7 +120,9 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
               <SelectComponent
                 title={activeFilterItem}
                 list={Object.values(filterPeriodItems)}
-                selectItem={(selected) => setActiveFilterItem(selected)}
+                selectItem={(selected) =>
+                  setActiveFilterItem(selected as stringFormatTypes)
+                }
               />
             </div>
           </div>

@@ -100,15 +100,11 @@ const createTronContract = async ({
 
   const signedTransaction = await (window as any).tronWeb.trx.sign(transaction);
 
-  console.log("signedTransaction", signedTransaction);
-
   setLoadingStep({ finishedStep: 1, loadingStep: 2 });
 
   const contract_instance = await (
     window as any
   ).tronWeb.trx.sendRawTransaction(signedTransaction);
-
-  console.log("contract_instance", contract_instance);
 
   setLoadingStep({ finishedStep: 2 });
 
@@ -147,7 +143,6 @@ const getBadgeURITron = async (
     );
 
     const getURInew = await instance.uri(1).call();
-    console.log("instance", getURInew);
     return getURInew;
   }
   return "";

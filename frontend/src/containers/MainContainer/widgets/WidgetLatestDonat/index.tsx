@@ -7,6 +7,7 @@ import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import axiosClient from "../../../../axiosClient";
 import { widgetApiUrl } from "../../../../consts";
+import { stringFormatTypes } from "../../../../utils/dateMethods/types";
 import "./styles.sass";
 
 const LIMIT_LATEST = 6;
@@ -45,7 +46,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
           <SelectComponent
             title={activeFilterItem}
             list={Object.values(filterPeriodItems)}
-            selectItem={(selected) => setActiveFilterItem(selected)}
+            selectItem={(selected) => setActiveFilterItem(selected as stringFormatTypes)}
           />
         </div>
       </div>

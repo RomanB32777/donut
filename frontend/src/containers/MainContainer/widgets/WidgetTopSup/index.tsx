@@ -4,6 +4,7 @@ import { Col, Empty, Row } from "antd";
 import SelectComponent from "../../../../components/SelectComponent";
 import axiosClient from "../../../../axiosClient";
 import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
+import { stringFormatTypes } from "../../../../utils/dateMethods/types";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
@@ -48,7 +49,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
           <SelectComponent
             title={activeFilterItem}
             list={Object.values(filterPeriodItems)}
-            selectItem={(selected) => setActiveFilterItem(selected)}
+            selectItem={(selected) => setActiveFilterItem(selected as stringFormatTypes)}
           />
         </div>
       </div>

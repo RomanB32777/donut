@@ -49,7 +49,7 @@ const BadgesContainer = () => {
       const wallet = walletsConf[walletKey];
       const { contract_address, creator_id } = badge;
 
-      const rootCid = await wallet.getBadgeURI(contract_address);
+      const badgeURI = await wallet.getBadgeURI(contract_address);
 
       const quantity = await wallet.getQuantityBalance({
         contract_address,
@@ -59,8 +59,8 @@ const BadgesContainer = () => {
 
       if (user.roleplay === "backers" && quantity < 1) return;
 
-      if (rootCid) {
-        // const rootCid = currentToken.split("//")[1];
+      if (badgeURI) {
+        const rootCid = badgeURI.split("//")[1];
         const dataBadgeJSON = await axiosClient.get(
           `https://${rootCid}.ipfs.w3s.link/metadata.json`
         );
@@ -68,8 +68,8 @@ const BadgesContainer = () => {
         if (dataBadgeJSON.status === 200) {
           // const client = makeStorageClient();
           const imgURI = dataBadgeJSON.data.URI;
-          const rootCid = imgURI.split("//")[1];
-          const fileImage = `https://${rootCid}.ipfs.w3s.link/${ipfsFilename}.${ipfsFileformat}`;
+          const imageCid = imgURI.split("//")[1];
+          const fileImage = `https://${imageCid}.ipfs.w3s.link/${ipfsFilename}.${ipfsFileformat}`;
 
           // const res = await client.get(imgCid);          
 

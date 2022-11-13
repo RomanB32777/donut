@@ -36,7 +36,7 @@ const socketHandler = async (socket, io) => {
           userSockets &&
           userSockets.length &&
           userSockets.forEach((socketID) =>
-            socket.to(socketID).emit("new_notification", {
+            io.sockets.to(socketID).emit("new_notification", {
               type: "donat",
               supporter: supporter.username,
               additional: {
@@ -64,7 +64,7 @@ const socketHandler = async (socket, io) => {
         userSockets &&
           userSockets.length &&
           userSockets.forEach((socketID) =>
-            socket.to(socketID).emit("new_notification", {
+            io.sockets.to(socketID).emit("new_notification", {
               type: "add_badge",
               supporter: supporter.username,
               badgeName,
@@ -93,15 +93,6 @@ const socketHandler = async (socket, io) => {
         const failedType = isFailed && "failed_badge";
         const succesedType = isSuccesed && "success_badge";
 
-        if (userSockets && userSockets.length) {
-          userSockets.forEach((socketID) =>
-            socket.to(socketID).emit("new_notification", {
-              type: failedType || succesedType,
-              badge: { badge_id, transaction_hash },
-            })
-          );
-        }
-
         await db.query(
           `INSERT INTO notifications (badge, sender, recipient) values ($1, $2, $3)`,
           [badge_id, user_id, user_id]
@@ -118,6 +109,15 @@ const socketHandler = async (socket, io) => {
             `UPDATE badges SET transaction_status = 'success' where id = $1`,
             [badge_id]
           ));
+
+        if (userSockets && userSockets.length) {
+          userSockets.forEach((socketID) =>
+            io.sockets.to(socketID).emit("new_notification", {
+              type: failedType || succesedType,
+              badge: { badge_id, transaction_hash },
+            })
+          );
+        }
       }
     }
   });
