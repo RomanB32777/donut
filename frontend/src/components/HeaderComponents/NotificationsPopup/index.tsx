@@ -18,19 +18,21 @@ const NotificationsPopup = ({ user }: { user: number }) => {
   }, [user]);
 
   const renderNotifList = (n: any) => {
+    const isNotificationBadgeStatus = n.badge && n.recipient === n.sender;
     const badgeType =
       n.badge &&
-      ((n.badge.transaction_status !== "pending" &&
-        `${n.badge.transaction_status}_badge`) ||
-        (n.badge.creator_id === user
-          ? "add_badge_creator"
-          : "add_badge_supporter"));
+      (isNotificationBadgeStatus
+        ? n.badge.transaction_status !== "pending" &&
+          `${n.badge.transaction_status}_badge`
+        : n.badge.creator_id === user
+        ? "add_badge_creator"
+        : "add_badge_supporter");
 
     const badgeData =
       n.badge &&
       n.badge.transaction_status !== "pending" &&
       (n.badge.transaction_status === "success"
-        ? n.badge.badge_id
+        ? n.badge.id
         : n.badge.transaction_hash);
 
     return (
