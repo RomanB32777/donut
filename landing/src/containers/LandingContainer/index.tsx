@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
@@ -11,7 +11,6 @@ import {
   WidgetsLandingIcon,
 } from "../../icons/icons";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
-import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import BaseButton from "../../components/BaseButton";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import bigImg from "../../assets/big_don.png";
@@ -62,7 +61,7 @@ const features = [
 
 const LandingContainer = () => {
   const navigate = useNavigate();
-  const { isMobile, isTablet } = useWindowDimensions();
+  const { isMobile } = useWindowDimensions();
   const user: any = useSelector((state: any) => state.user);
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
@@ -75,15 +74,14 @@ const LandingContainer = () => {
     user.id ? navigate("/") : navigate("/wallets");
   };
 
-  const videoWidth = useMemo(() => {
-    if (isMobile) return 300;
-    if (isTablet) return 500;
-    return 630;
-  }, [isTablet, isMobile]);
+  // const videoWidth = useMemo(() => {
+  //   if (isMobile) return 300;
+  //   if (isTablet) return 500;
+  //   return 630;
+  // }, [isTablet, isMobile]);
 
   return (
     <>
-      {/* <HeaderBanner /> */}
       <HeaderComponent
         visibleLogo
         isOpenHeaderSelect={isOpenHeaderSelect}
@@ -116,7 +114,7 @@ const LandingContainer = () => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className="landing-container__video-wrapper"
           style={{
             marginBottom: "0px",
@@ -134,7 +132,7 @@ const LandingContainer = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen={true}
           />
-        </div>
+        </div> */}
 
         <div className="landing-container__row-panel">
           <span className="block-title">

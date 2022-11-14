@@ -10,6 +10,7 @@ import { IStatData } from "../../../types";
 import StatsItem from "./StatsItem";
 import DatesPicker from "../../../components/DatesPicker";
 import axiosClient from "../../../axiosClient";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { addNotification, addSuccessNotification } from "../../../utils";
 import { getStats } from "../../../store/types/Stats";
 import {
@@ -19,14 +20,18 @@ import {
 import "./styles.sass";
 import {
   allPeriodItemsTypes,
+  IFilterCurrentPeriodItems,
   statsDataTypes,
 } from "../../../utils/dateMethods/types";
+
+type keyPeriodItems = keyof IFilterCurrentPeriodItems;
 interface IWidgetStatData {
   title: string;
   stat_description: string;
   template: string | string[];
   data_type: string; // value of statsDataTypes ???
-  time_period: string;
+  time_period: keyPeriodItems;
+  custom_period?: string;
   id?: number;
 }
 
@@ -37,6 +42,7 @@ const initWidgetStatData: IWidgetStatData = {
   template: [],
   data_type: "top-donations", // filterDataTypeItems["top-donations"]
   time_period: "today", // "Today"
+  custom_period: "",
 };
 
 const templates = ["{username}", "{sum}", "{message}"];
@@ -56,6 +62,7 @@ const StreamStatsContainer = () => {
   const [formData, setFormData] = useState<IWidgetStatData>({
     ...initWidgetStatData,
   });
+  const { isMobile } = useWindowDimensions();
 
   const openEditModal = (widget: IWidgetStatData) => {
     const { id, title, stat_description, template, data_type, time_period } =
@@ -81,8 +88,17 @@ const StreamStatsContainer = () => {
   const sendData = async () => {
     try {
       setLoading(true);
-      const { id, title, stat_description, template, data_type, time_period } =
-        formData;
+      const {
+        id,
+        title,
+        stat_description,
+        template,
+        data_type,
+        time_period,
+        custom_period,
+      } = formData;
+
+      const timePeriod = time_period === "custom" ? custom_period : time_period;
 
       id
         ? await axiosClient.put("/api/widget/stats-widget/", {
@@ -91,7 +107,7 @@ const StreamStatsContainer = () => {
               stat_description,
               template: (template as string[]).join(" "),
               data_type,
-              time_period,
+              time_period: timePeriod,
             },
             id,
           })
@@ -100,7 +116,7 @@ const StreamStatsContainer = () => {
             stat_description,
             template: (template as string[]).join(" "),
             data_type,
-            time_period,
+            time_period: timePeriod,
             creator_id: user.id,
           });
       dispatch(getStats(user.id));
@@ -248,22 +264,23 @@ const StreamStatsContainer = () => {
                   setValue={(value) =>
                     setFormData({
                       ...formData,
-                      time_period: value as string,
+                      time_period: value as keyPeriodItems,
                     })
                   }
                   labelCol={6}
                   selectCol={16}
                   gutter={[0, 18]}
                 />
-                {time_period === "Custom date" && (
+                {time_period === "custom" && (
                   <div className="customDatesPicker">
                     <Row>
-                      <Col offset={6}>
+                      <Col offset={isMobile ? 0 : 6}>
                         <DatesPicker
                           setValue={(startDate, endDate) =>
                             setFormData({
                               ...formData,
-                              time_period: `${startDate}-${endDate}`,
+                              time_period: "custom",
+                              custom_period: `${startDate}-${endDate}`,
                             })
                           }
                         />
@@ -285,7 +302,9 @@ const StreamStatsContainer = () => {
                       template: value as string[],
                     })
                   }
-                  descriptionSelect={currTemplateList.map(t => t.value).join(", ")}
+                  descriptionSelect={currTemplateList
+                    .map((t) => t.value)
+                    .join(", ")}
                   selectCol={16}
                   labelCol={6}
                   gutter={[0, 18]}

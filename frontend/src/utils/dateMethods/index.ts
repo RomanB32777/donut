@@ -33,17 +33,21 @@ export const getTimePeriodQuery: (timePeriod: string) => periodItemsTypes = (
 };
 
 // period-current-time
-export const getCurrentTimePeriodQuery: (
-  timePeriod: string
-) => string = (timePeriod) => {
+export const getCurrentTimePeriodQuery: (timePeriod: string) => string = (
+  timePeriod
+) => {
   const findKey = Object.keys(filterCurrentPeriodItems).find(
     (key) => key === timePeriod
   );
-  return findKey ? filterCurrentPeriodItems[findKey as allPeriodItemsTypes] : "";
+  const isCustomPeriod = timePeriod.split("-").length > 1;
+  if (findKey) return filterCurrentPeriodItems[findKey as allPeriodItemsTypes];
+  else if (isCustomPeriod) return timePeriod; //filterCurrentPeriodItems["custom"]
+  return "";
 };
 
 // stats-data
-export const getStatsDataTypeQuery: (dataType: string) => string = ( // statsDataTypes
+export const getStatsDataTypeQuery: (dataType: string) => string = (
+  // statsDataTypes
   dataType
 ) => {
   const findKey = Object.keys(filterDataTypeItems).find(

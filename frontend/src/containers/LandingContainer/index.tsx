@@ -11,7 +11,6 @@ import {
   WidgetsLandingIcon,
 } from "../../icons/icons";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
-import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import BaseButton from "../../components/BaseButton";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import bigImg from "../../assets/big_don.png";
@@ -83,7 +82,7 @@ const LandingContainer = () => {
 
   return (
     <>
-      <HeaderBanner />
+      {/* <HeaderBanner /> */}
       <HeaderComponent
         visibleLogo
         isOpenHeaderSelect={isOpenHeaderSelect}

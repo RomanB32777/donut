@@ -23,7 +23,6 @@ import {
   LoadingModalComponent,
   SuccessModalComponent,
 } from "../../components/ModalComponent";
-import { HeaderBanner } from "../../components/HeaderComponents/HeaderBanner";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
@@ -320,7 +319,7 @@ const DonatContainer = () => {
 
   return (
     <>
-      <HeaderBanner />
+      {/* <HeaderBanner /> */}
       <div
         className="donat-container"
         style={{

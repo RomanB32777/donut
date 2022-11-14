@@ -13,7 +13,6 @@ import BadgePage from "./BadgePage";
 import CreateBadgeForm from "./CreateBadgeForm";
 import { IBadge, IBadgeData, initBadgeData } from "../../types";
 import { addNotification, currBlockchain, walletsConf } from "../../utils";
-import { makeStorageClient } from "./utils";
 import { ipfsFileformat, ipfsFilename } from "../../consts";
 import "./styles.sass";
 
@@ -71,7 +70,7 @@ const BadgesContainer = () => {
           const imageCid = imgURI.split("//")[1];
           const fileImage = `https://${imageCid}.ipfs.w3s.link/${ipfsFilename}.${ipfsFileformat}`;
 
-          // const res = await client.get(imgCid);          
+          // const res = await client.get(imgCid);
 
           // if (res) {
           // const files = await res.files(); // Web3File[]

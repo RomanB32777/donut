@@ -114,7 +114,7 @@ const socketHandler = async (socket, io) => {
           userSockets.forEach((socketID) =>
             io.sockets.to(socketID).emit("new_notification", {
               type: failedType || succesedType,
-              badge: { badge_id, transaction_hash },
+              badge: { id: badge_id, transaction_hash },
             })
           );
         }

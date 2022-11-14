@@ -103,17 +103,51 @@ export const getNotificationMessage = ({
       return `You sent ${data.sum} ${data.blockchain} to ${user}!`;
 
     case "add_badge_creator":
-      return `You sent a badge ${data || ""} to ${user}`;
+      return (
+        <span>
+          You sent{" "}
+          {data ? (
+            <a
+              href={`${baseURL}/badges?id=${data}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#fff", textDecoration: "underline" }}
+            >
+              a badge
+            </a>
+          ) : (
+            "a badge"
+          )}{" "}
+          to {user}
+        </span>
+      );
 
     case "add_badge_supporter":
-      return `You received a badge ${data || ""} from ${user}`;
+      return (
+        <span>
+          You received{" "}
+          {data ? (
+            <a
+              href={`${baseURL}/badges?id=${data}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#fff", textDecoration: "underline" }}
+            >
+              a badge
+            </a>
+          ) : (
+            "a badge"
+          )}{" "}
+          from {user};
+        </span>
+      );
 
     case "failed_badge":
       return (
         <span>
           Error occurred while creating your badge.
           <a
-            href={`https://nile.tronscan.org/#/transaction/${data}`}
+            href={`https://tronscan.org/#/transaction/${data}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: "#fff", textDecoration: "underline" }}
@@ -129,6 +163,8 @@ export const getNotificationMessage = ({
         <span>
           <a
             href={`${baseURL}/badges?id=${data}`}
+            target="_blank"
+            rel="noreferrer"
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             New badge

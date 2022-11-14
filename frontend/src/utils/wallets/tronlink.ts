@@ -87,7 +87,7 @@ const createTronContract = async ({
     {
       abi,
       bytecode,
-      feeLimit: 10000000,
+      feeLimit: 1000000000,
       callValue: 0,
       userFeePercentage: 30,
       originEnergyLimit: 1e7,

@@ -139,8 +139,11 @@ const BadgePage = ({
         setSelectedUser("");
       }
     } catch (error) {
-      const errorObj = (error as any); // Error
-      addErrorNotification({ message: errorObj?.message, title: errorObj?.error });
+      const errorObj = error as any; // Error
+      addErrorNotification({
+        message: errorObj?.message,
+        title: errorObj?.error,
+      });
     } finally {
       setLoading(false);
     }
@@ -363,7 +366,7 @@ const BadgePage = ({
       </div>
       <LoadingModalComponent
         open={loading}
-        message="Please sign the transaction in your wallet"
+        message="Please sign the transaction in your wallet and wait for the confirmation. Don't close this window"
       />
       <SuccessModalComponent
         open={isOpenSuccessModal}

@@ -86,10 +86,10 @@ export const connectSocket = (
         });
         break;
 
-      case "successed_badge":
+      case "success_badge":
         let messageSuccessedBadge = getNotificationMessage({
           type: "success_badge",
-          data: data.badge.badge_id,
+          data: data.badge.id,
         });
         addNotification({
           type: "success",

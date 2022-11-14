@@ -42,7 +42,7 @@ const DonatStatContainer = () => {
         const { data } = await axiosClient.get(
           `${widgetApiUrl}/${data_type}/${user.user_id}?limit=${LIMIT}&${
             Boolean(customPeriod.length > 1)
-              ? `timePeriod=${time_period}&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
+              ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
               : `timePeriod=${time_period}`
           }&isStatPage=true&blockchain=${currBlockchain?.nativeCurrency.symbol}`
         );
