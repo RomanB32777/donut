@@ -1,9 +1,10 @@
 import { Col, Row, StepProps, Steps, StepsProps } from "antd";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import FormInput from "../../../components/FormInput";
 
+import { WebSocketContext } from "../../../components/Websocket";
 import PageTitle from "../../../components/PageTitle";
 import { LeftArrowIcon } from "../../../icons/icons";
 import { IBadgeData, initBadgeData } from "../../../types";
@@ -73,8 +74,9 @@ const CreateBadgeForm = ({
   setActiveBadge?: (activeBadge: IBadgeData) => void;
   openBadgePage?: () => void;
 }) => {
-  const { isTablet } = useWindowDimensions();
+  const socket = useContext(WebSocketContext);
   const user = useSelector((state: any) => state.user);
+  const { isTablet } = useWindowDimensions();
   const [loading, setLoading] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
   const [loadingSteps, setLoadingSteps] = useState<StepProps[]>([
@@ -106,10 +108,14 @@ const CreateBadgeForm = ({
   const uploadToIpfs = async () => {
     const { image, title, description } = formBadge;
     if (image.file && title && description) {
-      const origFile = image.file
-      const sendFile = new File([origFile], `${ipfsFilename}.${ipfsFileformat}`, {
-        type: origFile.type,
-      });
+      const origFile = image.file;
+      const sendFile = new File(
+        [origFile],
+        `${ipfsFilename}.${ipfsFileformat}`,
+        {
+          type: origFile.type,
+        }
+      );
       const _uri = await storeFiles([sendFile]);
       const badgeDict = createJSON(title, description, _uri);
       const new_uri = await storeFiles(badgeDict);
@@ -215,19 +221,45 @@ const CreateBadgeForm = ({
             });
 
             if (badgeContract && badgeContract?.contract_address) {
-              console.log(badgeContract);
-              await axiosClient.post("/api/badge/", {
+              const transactionResult = badgeContract?.result;
+
+              console.log(transactionResult);
+
+              if (transactionResult && transactionResult !== "SUCCESS")
+                throw new Error(transactionResult);
+
+              const newBadge = await axiosClient.post("/api/badge/", {
                 creator_id: user.id,
                 contract_address: badgeContract.contract_address,
                 blockchain,
                 transaction_hash: badgeContract?.transaction_hash || "",
+                result: transactionResult ? "success" : null, // success status here or null (if transactionResult = undefined)
               });
+
+              if (transactionResult && newBadge.status === 200) {
+                // if success status
+                const newBadgeData = newBadge.data;
+                const notifObj = {
+                  result: transactionResult,
+                  badge_id: newBadgeData.id,
+                  transaction_hash: newBadgeData.transaction_hash,
+                  username: user.username,
+                  user_id: user.id,
+                };
+                socket && socket.emit("check_badge", notifObj);
+              }
+
               setIsOpenSuccessModal(true);
-            }
+            } // else ??? 
           }
         }
       } catch (error) {
-        console.log(error);
+        const errorMessage = (error as Error).message;
+        errorMessage &&
+          addNotification({
+            type: "danger",
+            title: errorMessage,
+          });
       } finally {
         setLoading(false);
         setLoadingSteps([...initLoadingSteps]);

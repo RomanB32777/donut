@@ -13,6 +13,7 @@ import {
 } from "../../utils";
 import { fromHexToString } from "../stringMethods";
 import tronlinkIcon from "../../assets/tronlinkIcon.png";
+import { isProduction } from "../../axiosClient";
 
 // enum TRON_WALLET_ERR {
 //   BANDWITH_ERROR = "There is not enough bandwidth or TRX to burn to send a transaction.",
@@ -46,19 +47,33 @@ const getTronWallet = (blockchainName?: any) =>
 
 const payByTron = async ({ contract, addressTo, sum }: IPayObj) => {
   let instance = await (window as any).tronWeb.contract().at(contract);
-  const res = await instance.transferMoney(addressTo).send({
+  const resHash = await instance.transferMoney(addressTo).send({
     feeLimit: 100_000_000,
     callValue: 1000000 * parseFloat(sum),
     shouldPollResponse: false,
   });
-  return res;
+
+  if (resHash) {
+    const transactionInfo = await (window as any).tronWeb.trx.getTransaction(
+      resHash
+    );
+
+    if (transactionInfo?.ret) {
+      const result = transactionInfo.ret[0]?.contractRet;
+      if (result !== "SUCCESS") throw new Error(result);
+      return { resHash, result };
+    } else return resHash;
+  }
+  return null;
 };
 
 const getTronBalance = async ({ walletData, setBalance }: IBalanceObj) => {
   const tronWeb = (window as any).tronWeb;
   const tronBalance = await tronWeb.trx.getBalance(walletData.address);
+  
   if (tronBalance) {
     const formatTronBalance = tronWeb.fromSun(tronBalance);
+    console.log("balance", formatTronBalance);
     setBalance &&
       formatTronBalance &&
       setBalance(parseFloat(formatTronBalance));
@@ -71,6 +86,7 @@ const getTronTransactionInfo = async (hash: string) => {
   const transactionResult = await (
     window as any
   ).tronWeb.trx.getTransactionInfo(hash);
+
   if (transactionResult) return transactionResult;
   return null;
 };
@@ -87,7 +103,7 @@ const createTronContract = async ({
     {
       abi,
       bytecode,
-      feeLimit: 10000000,
+      feeLimit: 1000000000,
       callValue: 0,
       userFeePercentage: 30,
       originEnergyLimit: 1e7,
@@ -106,22 +122,37 @@ const createTronContract = async ({
     window as any
   ).tronWeb.trx.sendRawTransaction(signedTransaction);
 
-  setLoadingStep({ finishedStep: 2 });
-
   if (contract_instance.transaction) {
     const contract_address = (window as any).tronWeb.address.fromHex(
       contract_instance.transaction.contract_address
     );
     const transactionHashID = contract_instance.transaction.txID;
 
-    const transactionInfo = await (
-      window as any
-    ).tronWeb.trx.getTransactionInfo(transactionHashID);
+    const transactionInfo = await (window as any).tronWeb.trx.getTransaction(
+      transactionHashID
+    );
 
-    if (transactionInfo?.__payload__) {
-      const hash = transactionInfo.__payload__?.value;
-      return { transaction_hash: hash || "", contract_address };
-    } else return { contract_address };
+    setLoadingStep({ finishedStep: 2 });
+
+    if (transactionInfo?.ret) {
+      const result = transactionInfo.ret[0]?.contractRet;
+
+      return {
+        transaction_hash: transactionHashID || "",
+        contract_address,
+        result,
+      };
+    } else {
+      const transactionInfo = await (
+        window as any
+      ).tronWeb.trx.getTransactionInfo(transactionHashID);
+
+      if (transactionInfo?.__payload__) {
+        const hash = transactionInfo.__payload__?.value;
+        return { transaction_hash: hash || "", contract_address };
+      }
+    }
+    return { contract_address };
   } else if (contract_instance.code) {
     const message = fromHexToString(contract_instance.message); // txid
     addErrorNotification({ message });
@@ -186,7 +217,9 @@ const tronAbi =
 const tronlinkConf: IWalletConf = {
   blockchains: [
     {
-      address: "TX6dd8YNKRCKZazcBZUHZQjyckzxvPKYJU",
+      address: isProduction
+        ? "TAke85ayaVdsymmUjoaMC3w25zsQfQA7vk"
+        : "TX6dd8YNKRCKZazcBZUHZQjyckzxvPKYJU",
       name: "tron",
       icon: tronlinkIcon,
       chainName: "Tron Nile Testnet",

@@ -205,8 +205,7 @@ const DonatContainer = () => {
                   signer,
                 });
 
-                console.log(res);
-                await sendDonation();
+                res && (await sendDonation());
               }
             } else {
               addNotification({
@@ -231,6 +230,7 @@ const DonatContainer = () => {
           title: "Error",
           message:
             (error as any)?.response?.data?.message ||
+            (error as Error).message ||
             `An error occurred while sending data`,
         });
       } finally {
