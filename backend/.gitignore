@@ -12,6 +12,8 @@
 *.vi
 *.zip
 *.dump
+*.env
+serviceaccount.json
 *~
 
 # OS or Editor folders

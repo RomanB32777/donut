@@ -1,5 +1,5 @@
 import { Store } from "react-notifications-component";
-import { baseURL } from "../../axiosClient";
+import { baseURL, isProduction } from "../../axiosClient";
 import {
   INotification,
   INotificationWithoutType,
@@ -147,7 +147,7 @@ export const getNotificationMessage = ({
         <span>
           Error occurred while creating your badge.
           <a
-            href={`https://tronscan.org/#/transaction/${data}`}
+            href={`https://${isProduction ? "" : "nile."}tronscan.org/#/transaction/${data}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: "#fff", textDecoration: "underline" }}

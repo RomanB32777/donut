@@ -106,7 +106,7 @@ const createMetamaskContract = async ({
   const badgeContract = await Badge.deploy(_uri); // deploy contracts
   console.log(badgeContract);
   setLoadingStep({ finishedStep: 2 });
-  return { contract_address: badgeContract.address };
+  return { contract_address: badgeContract.address, result: "SUCCESS" };
 };
 
 const getBadgeURIMetamask = async (

@@ -17,7 +17,6 @@ import { walletsConf } from "./utils";
 import "react-notifications-component/dist/theme.css";
 import "antd/dist/antd.css";
 import "./commonStyles/main.sass";
-
 // import moment from 'moment';
 // moment.locale();
 

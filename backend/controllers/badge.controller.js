@@ -3,15 +3,19 @@ const db = require("../db");
 class BadgeController {
   async createBadge(req, res) {
     try {
-      const { creator_id, contract_address, blockchain, transaction_hash } =
-        req.body;
+      const {
+        creator_id,
+        contract_address,
+        blockchain,
+        transaction_hash,
+        result,
+      } = req.body;
       const creator = await db.query("SELECT * FROM users WHERE id = $1", [
         creator_id,
       ]);
       if (creator) {
-        const transaction_status = Boolean(transaction_hash)
-          ? "pending"
-          : "success";
+        const transaction_status =
+          !result && Boolean(transaction_hash) ? "pending" : result; //"success";
 
         const newBadge = await db.query(
           `INSERT INTO badges (creator_id, contract_address, blockchain, transaction_hash, transaction_status) values ($1, $2, $3, $4, $5) RETURNING id`,

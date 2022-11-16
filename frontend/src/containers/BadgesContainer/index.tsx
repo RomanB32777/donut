@@ -149,7 +149,7 @@ const BadgesContainer = () => {
         );
         if (findActiveBadge) {
           const badgeInfo = await getBadgeData(findActiveBadge);
-          setActiveBadge({ ...activeBadge, ...badgeInfo });
+          setActiveBadge({ ...findActiveBadge, ...badgeInfo });
           setIsOpenBadgePage(true);
           removeQueryParams();
         }
