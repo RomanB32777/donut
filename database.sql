@@ -113,6 +113,7 @@ CREATE TABLE donations(
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    read BOOLEAN DEFAULT 'false',
     sender INTEGER,
     FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
     recipient INTEGER,
