@@ -70,7 +70,7 @@ const payByTron = async ({ contract, addressTo, sum }: IPayObj) => {
 const getTronBalance = async ({ walletData, setBalance }: IBalanceObj) => {
   const tronWeb = (window as any).tronWeb;
   const tronBalance = await tronWeb.trx.getBalance(walletData.address);
-  
+
   if (tronBalance) {
     const formatTronBalance = tronWeb.fromSun(tronBalance);
     console.log("balance", formatTronBalance);
@@ -222,7 +222,7 @@ const tronlinkConf: IWalletConf = {
         : "TX6dd8YNKRCKZazcBZUHZQjyckzxvPKYJU",
       name: "tron",
       icon: tronlinkIcon,
-      chainName: "Tron Nile Testnet",
+      chainName: isProduction ? "Tron Mainnet" : "Tron Nile Testnet",
       badgeName: "Tron",
       nativeCurrency: {
         name: "tron",

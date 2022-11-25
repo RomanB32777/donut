@@ -6,7 +6,9 @@ import { setNotifications } from "../../store/types/Notifications";
 import { currBlockchain } from "../../utils";
 
 const asyncGetNotifications = async (user: number | string) => {
-  const response = await fetch(`${baseURL}/api/user/notifications/${user}?blockchain=${currBlockchain?.nativeCurrency.symbol}`);
+  const response = await fetch(
+    `${baseURL}/api/user/notifications/${user}?blockchain=${currBlockchain?.nativeCurrency.symbol}`
+  );
   if (response.status === 200) {
     const result = await response.json();
     return result;
@@ -17,9 +19,9 @@ function* NotificationsWorker(action: any): any {
   yield put(setLoading(true));
   const data: any = yield call(asyncGetNotifications, action.payload);
   if (data) {
-    const notifications = yield select((state: any) => state.notifications);
-    if (data.notifications.length > notifications.length)
-      yield put(setNotifications(data.notifications));
+    // const notifications = yield select((state: any) => state.notifications);
+    // if (data.notifications.length > notifications.length)
+    yield put(setNotifications(data.notifications));
   }
   yield put(setLoading(false));
 }

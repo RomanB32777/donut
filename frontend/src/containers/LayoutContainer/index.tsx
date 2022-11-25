@@ -1,18 +1,19 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { BackTop, Layout, Menu } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
 import { IRoute, Pages, routers } from "../../routes";
-import { AlertIcon, EmailIcon } from "../../icons/icons";
+import { EmailIcon } from "../../icons/icons";
 
 import { WebSocketContext } from "../../components/Websocket";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import Logo from "../../components/HeaderComponents/LogoComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import NotificationsPopup from "../../components/HeaderComponents/NotificationsPopup";
+import { getNotifications } from "../../store/types/Notifications";
 import { getBadgesStatus } from "../../utils";
 import "./styles.sass";
 
@@ -67,8 +68,9 @@ const addToMenu = (
 
 const LayoutApp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const user = useSelector((state: any) => state.user);
+  const { user, notifications } = useSelector((state: any) => state);
   const socket = useContext(WebSocketContext);
   const { width, isTablet } = useWindowDimensions();
 
@@ -100,7 +102,10 @@ const LayoutApp = () => {
   }, [width]);
 
   useEffect(() => {
-    user.id && socket && getBadgesStatus(user, socket);
+    if (user.id) {
+      socket && getBadgesStatus(user, socket);
+      dispatch(getNotifications(user.username));
+    }
   }, [user, socket]);
 
   const menuItems: IRoute[] = useMemo(() => {
@@ -179,7 +184,7 @@ const LayoutApp = () => {
 
     return currRoute ? currRoute.name : "";
   }, [menuItems, activeRoute]);
-
+  
   return (
     <DocumentTitle
       title={`Crypto Donutz${
@@ -280,17 +285,11 @@ const LayoutApp = () => {
             visibleGamburger
           >
             {user.id && (
-              <div className="notifications">
-                <div
-                  className="icon icon-notifications"
-                  onClick={handlerNotificationPopup}
-                >
-                  <AlertIcon />
-                </div>
-                {isNotificationPopupOpened && user.id && (
-                  <NotificationsPopup user={user.id} />
-                )}
-              </div>
+              <NotificationsPopup
+                user={user.id}
+                handlerNotificationPopup={handlerNotificationPopup}
+                isNotificationPopupOpened={isNotificationPopupOpened}
+              />
             )}
           </HeaderComponent>
           <Content

@@ -7,7 +7,7 @@
     &-popup-wrapper
         display: flex
         flex-direction: column
-        width: 350px
+        width: 380px
         background: variables.$grey-background-color
         border: 1px solid variables.$black-color
         border-radius: variables.$border-radius
@@ -22,26 +22,42 @@
     &-popup
         &__content
             width: 100%
-            font-family: variables.$jakarta-font
-            font-style: normal
-            font-weight: 500
-            font-size: 18px
-            line-height: 24px
-            color: variables.$white-color
             overflow: hidden
             text-overflow: ellipsis
 
             &-list
-                max-height: 250px
+                max-height: 280px
 
             &-item
                 margin-bottom: 5px
-                margin-right: 20px
-                padding: 5px 0
-                border-bottom: 1px solid variables.$grey-color
+                margin-right: 10px
+                padding: 0 10px
+                display: flex
+
+                .dot
+                    padding: 5px 0
+                    width: 100%
+                    border-bottom: 1px solid variables.$grey-color
+                    font-family: variables.$jakarta-font
+                    font-style: normal
+                    font-weight: 500
+                    font-size: 18px
+                    line-height: 24px
+                    color: variables.$white-color
+
+                    .date
+                        color: variables.$grey-color
+                        font-weight: 400
+                        font-size: 14px
+                        line-height: 18px
+                        margin: 5px 0 0
+
+                    .ant-badge-dot
+                        left: -10px
 
                 &:last-child
-                    border-bottom: none
+                    .dot
+                        border-bottom: none
 
             &-link
                 margin-top: 15px
@@ -49,8 +65,24 @@
                 color: variables.$grey-color
                 cursor: pointer
 
+@media (max-width: 400px)
+    .notifications
+        &-popup-wrapper
+            width: 300px
+            padding: 20px 10px
+
+        &-popup
+            &__content
+                &-item
+                    .dot
+                        font-size: 16px
+                        line-height: 20px
+
+                        .date
+                            font-size: 12px
+                            line-height: 16px
 
 @media (max-width: 992px)
     .notifications
         &-popup-wrapper
-            right: -200px
+            right: -230px
