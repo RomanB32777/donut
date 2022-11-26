@@ -7,16 +7,13 @@ import {
   useState,
 } from "react";
 import { Badge, Row } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { InView } from "react-intersection-observer";
 import moment from "moment";
 import Loader from "../../Loader";
-import {
-  currBlockchain,
-  DateTimezoneFormatter,
-  getNotificationMessage,
-} from "../../../utils";
+import { currBlockchain, getNotificationMessage } from "../../../utils";
 import axiosClient, { baseURL } from "../../../axiosClient";
+import { getNotifications } from "../../../store/types/Notifications";
 import { AlertIcon } from "../../../icons/icons";
 import "./styles.sass";
 
@@ -25,6 +22,7 @@ const LIMIT_NOTIF = 10;
 interface INotificationStatus {
   id: number;
   read: boolean;
+  isRecipient: boolean;
 }
 
 const NotificationsPopup = ({
@@ -36,40 +34,56 @@ const NotificationsPopup = ({
   isNotificationPopupOpened: boolean;
   handlerNotificationPopup: (e: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
-  const notificationsApp = useSelector((state: any) => state.notifications);
-
+  const dispatch = useDispatch();
+  const notificationsApp = useSelector(
+    (state: any) => state.notifications.list
+  );
   const contentRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
-  const [fetching, setFetching] = useState(true);
+  const [fetching, setFetching] = useState(false);
 
-  const updateNotification = async ({ id, read }: INotificationStatus) => {
+  const checkIsRecipient = (recipient: number) => recipient === user;
+  const getNotificationUserRole = (recipient: number) =>
+    checkIsRecipient(recipient) ? "read_recipient" : "read_sender";
+
+  const updateNotification = async ({
+    id,
+    read,
+    isRecipient,
+  }: INotificationStatus) => {
     const { data, status } = await axiosClient.put(
       `${baseURL}/api/user/notifications/status`,
       {
         id,
         read,
+        isRecipient,
       }
     );
     if (status === 200) return data.updatedNotification;
   };
 
   const handleChange =
-    ({ id, read }: INotificationStatus) =>
+    ({ id, read, isRecipient }: INotificationStatus) =>
     async (status: boolean) => {
       if (!status) return;
       if (status && !read) {
         const updatedNotification = await updateNotification({
           id,
           read: status,
+          isRecipient,
         });
         if (updatedNotification) {
           setNotifications((prev) =>
             prev.map((n: any) => {
+              const readField = getNotificationUserRole(n.recipient);
               if (n.id === id) {
-                return { ...n, read: updatedNotification.read };
+                return {
+                  ...n,
+                  [readField]: updatedNotification[readField],
+                };
               }
               return n;
             })
@@ -93,32 +107,52 @@ const NotificationsPopup = ({
     [notifications, totalLength, isNotificationPopupOpened]
   );
 
-  useEffect(() => {
-    const getNotifications = async () => {
-      try {
-        setLoading(true);
-        const url = `${baseURL}/api/user/notifications/${user}?blockchain=${
-          currBlockchain?.nativeCurrency.symbol
-        }&limit=${LIMIT_NOTIF}&offset=${LIMIT_NOTIF * currentPage}`; // &sort=read&sortDirection=ASC
+  const getCurrentNotifications = async ({
+    updatePage,
+    currentPage,
+  }: {
+    updatePage?: boolean;
+    currentPage: number;
+  }) => {
+    try {
+      setLoading(true);
+      const url = `${baseURL}/api/user/notifications/${user}?blockchain=${
+        currBlockchain?.nativeCurrency.symbol
+      }&limit=${LIMIT_NOTIF}&offset=${LIMIT_NOTIF * currentPage}`; // &sort=read&sortDirection=ASC
 
-        const { data, status } = await axiosClient.get(url);
+      const { data, status } = await axiosClient.get(url);
 
-        if (status === 200) {
-          setCurrentPage((prev) => prev + 1);
-          setTotalLength(data.totalLength);
-          setNotifications([...notifications, ...data.notifications]);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-        setFetching(false);
+      if (status === 200) {
+        updatePage && setCurrentPage((prev) => prev + 1);
+        setTotalLength(data.totalLength);
+        setNotifications((prev) =>
+          updatePage && currentPage
+            ? [...prev, ...data.notifications]
+            : data.notifications
+        );
       }
-    };
-
-    if (fetching) {
-      getNotifications();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      setFetching(false);
     }
+  };
+
+  useEffect(() => {
+    if (isNotificationPopupOpened) {
+      dispatch(getNotifications({ user, shouldUpdateApp: false }));
+      setNotifications([]);
+      setTotalLength(0);
+      setCurrentPage(0);
+      getCurrentNotifications({ currentPage: 0 });
+    }
+  }, [isNotificationPopupOpened, user]);
+
+  useEffect(() => {
+    fetching &&
+      user &&
+      getCurrentNotifications({ updatePage: true, currentPage });
   }, [user, fetching, currentPage]);
 
   useLayoutEffect(() => {
@@ -131,22 +165,38 @@ const NotificationsPopup = ({
 
   const unreadedNotificationsCount = useMemo(() => {
     const all = notificationsApp.length;
-    const unreadedApp = notificationsApp.filter((n: any) => !n.read).length;
-    const unreaded = notifications.filter((n: any) => !n.read).length;
-    const readed = notifications.filter((n: any) => n.read).length;
+
+    const unreadedApp = notificationsApp.filter(
+      (n: any) => !n[getNotificationUserRole(n.recipient)]
+    ).length;
+
+    const unreaded = notifications.filter(
+      (n: any) => !n[getNotificationUserRole(n.recipient)]
+    ).length;
+
+    const readed = notifications.filter(
+      (n: any) => n[getNotificationUserRole(n.recipient)]
+    ).length;
+
+    const currentUnreaded = notificationsApp.filter(
+      (na: any) =>
+        !na[getNotificationUserRole(na.recipient)] &&
+        notifications.some((n: any) => n.id === na.id)
+    );
+
     if (unreadedApp === all && readed === 0) return unreadedApp;
 
-    if (
-      unreaded > 0 ||
-      (notifications.length >= readed && unreadedApp > all - readed)
-    )
-      return all - readed;
+    if (!loading) {
+      if (unreadedApp >= all - readed) return all - readed;
 
-    if (unreadedApp > 0 && unreaded === 0 && notifications.length !== all)
-      return unreadedApp - unreaded;
+      if (currentUnreaded.length) return unreaded;
+
+      if (unreadedApp > 0 && unreaded === 0 && notifications.length !== all)
+        return unreadedApp - unreaded;
+    }
 
     return 0;
-  }, [notificationsApp, notifications]);
+  }, [notificationsApp, notifications, loading]);
 
   const renderNotifList = (n: any) => {
     const isNotificationBadgeStatus = n.badge && n.recipient === n.sender;
@@ -167,10 +217,20 @@ const NotificationsPopup = ({
         : n.badge.transaction_hash);
 
     return (
-      <InView onChange={handleChange({ id: n.id, read: n.read })} key={n.id}>
+      <InView
+        onChange={handleChange({
+          id: n.id,
+          read: n[getNotificationUserRole(n.recipient)],
+          isRecipient: checkIsRecipient(n.recipient),
+        })}
+        key={n.id}
+      >
         {({ ref }) => (
           <div className="notifications-popup__content-item" ref={ref}>
-            <Badge dot={!n.read} className="dot">
+            <Badge
+              dot={!n[getNotificationUserRole(n.recipient)]}
+              className="dot"
+            >
               {n.donation &&
                 getNotificationMessage({
                   type:
@@ -194,12 +254,7 @@ const NotificationsPopup = ({
                   data: badgeData,
                 })}
               <p className="date">
-                {
-                  moment(DateTimezoneFormatter(n.creation_date))
-                    .startOf("minutes")
-                    .fromNow()
-                  // .format('DD MMMM YYYY, hh:mm')
-                }
+                {moment(n.creation_date).startOf("minutes").fromNow()}
               </p>
             </Badge>
           </div>

@@ -27,8 +27,9 @@ const initWidgetGoalData: IWidgetGoalData = {
 const DonationGoalsContainer = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const notifications = useSelector((state: any) => state.notifications);
-
+  const { list } = useSelector(
+    (state: any) => state.notifications
+  );
   const goals = useSelector((state: any) => state.goals);
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -93,7 +94,7 @@ const DonationGoalsContainer = () => {
 
   useEffect(() => {
     user.id && dispatch(getGoals(user.id));
-  }, [user, notifications]);
+  }, [user, list]);
 
   const { widgetAmount, widgetDescription } = formData;
 

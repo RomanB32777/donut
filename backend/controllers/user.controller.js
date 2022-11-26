@@ -208,9 +208,11 @@ class UserController {
 
   async updateStatusNotifications(req, res) {
     try {
-      const { read, id } = req.body;
+      const { read, id, isRecipient } = req.body;
       const updatedNotification = await db.query(
-        `UPDATE notifications SET read = $1 where id = $2 RETURNING *`,
+        `UPDATE notifications SET ${
+          isRecipient ? "read_recipient" : "read_sender"
+        } = $1 where id = $2 RETURNING *`,
         [read, id]
       );
       return res.status(200).json({

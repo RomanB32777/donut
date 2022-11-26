@@ -13,7 +13,9 @@ const LIMIT_SUPPORTERS = 6;
 
 const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);
-  const notifications = useSelector((state: any) => state.notifications);
+  const { list, shouldUpdateApp } = useSelector(
+    (state: any) => state.notifications
+  );
 
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
@@ -38,8 +40,8 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    user.id && timePeriod && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem, notifications]);
+    user.id && timePeriod && shouldUpdateApp && getLatestDonations(timePeriod);
+  }, [user, activeFilterItem, list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-topSup">
@@ -49,7 +51,9 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
           <SelectComponent
             title={activeFilterItem}
             list={Object.values(filterPeriodItems)}
-            selectItem={(selected) => setActiveFilterItem(selected as stringFormatTypes)}
+            selectItem={(selected) =>
+              setActiveFilterItem(selected as stringFormatTypes)
+            }
           />
         </div>
       </div>

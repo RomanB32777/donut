@@ -24,7 +24,9 @@ import "./styles.sass";
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.personInfo).main_info;
-  const notifications = useSelector((state: any) => state.notifications);
+  const { list } = useSelector(
+    (state: any) => state.notifications
+  );
   const { name } = useParams();
 
   const [lastNotif, setLastNotif] = useState<any>({
@@ -36,8 +38,8 @@ const DonatMessageContainer = () => {
   });
 
   useEffect(() => {
-    notifications.length && setLastNotif(notifications[0].donation);
-  }, [notifications]);
+    list.length && setLastNotif(list[0].donation);
+  }, [list]);
 
   useEffect(() => {
     const { voice, sound, gender_voice } = alertWidgetData;

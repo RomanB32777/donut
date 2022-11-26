@@ -113,7 +113,6 @@ CREATE TABLE donations(
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    read BOOLEAN DEFAULT 'false',
     sender INTEGER,
     FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
     recipient INTEGER,
@@ -121,5 +120,7 @@ CREATE TABLE notifications (
 	donation INTEGER,
 	FOREIGN KEY (donation) REFERENCES donations(id) ON DELETE CASCADE,
     badge INTEGER,
-	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE
+	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE,
+    read_sender BOOLEAN DEFAULT 'false',
+    read_recipient BOOLEAN DEFAULT 'false'
 );

@@ -17,11 +17,16 @@ const asyncGetNotifications = async (user: number | string) => {
 
 function* NotificationsWorker(action: any): any {
   yield put(setLoading(true));
-  const data: any = yield call(asyncGetNotifications, action.payload);
+  const data: any = yield call(asyncGetNotifications, action.payload.user);
   if (data) {
     // const notifications = yield select((state: any) => state.notifications);
     // if (data.notifications.length > notifications.length)
-    yield put(setNotifications(data.notifications));
+    yield put(
+      setNotifications({
+        list: data.notifications,
+        shouldUpdateApp: action.payload.shouldUpdateApp,
+      })
+    );
   }
   yield put(setLoading(false));
 }

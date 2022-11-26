@@ -18,6 +18,7 @@ import {
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
 import BaseButton from "../../components/BaseButton";
+import Loader from "../../components/Loader";
 import { connectSocket, WebSocketContext } from "../../components/Websocket";
 import {
   LoadingModalComponent,
@@ -33,6 +34,7 @@ import { walletsConf, currBlockchain } from "../../utils";
 import SpaceImg from "../../space.png";
 import { url } from "../../consts";
 import "./styles.sass";
+import { getNotifications } from "../../store/types/Notifications";
 
 const maxLengthDescription = 150;
 
@@ -169,6 +171,7 @@ const DonatContainer = () => {
             id: selectedGoal,
           }));
 
+        dispatch(getNotifications({ user: user.username || newUser.username }));
         setIsOpenSuccessModal(true);
       }
     }
@@ -258,19 +261,19 @@ const DonatContainer = () => {
 
   useEffect(() => {
     const setUser = async () => {
-      if (user.id) setForm({ ...form, username: user.username });
-      else {
-        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
-        const walletData = await wallet.getWalletData(
-          process.env.REACT_APP_BLOCKCHAIN
-        );
+      setLoading(true);
+      const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+      const walletData = await wallet.getWalletData(
+        process.env.REACT_APP_BLOCKCHAIN
+      );
 
-        if (walletData) {
-          await wallet.getBalance({
-            walletData,
-            setBalance,
-          });
-
+      if (walletData) {
+        await wallet.getBalance({
+          walletData,
+          setBalance,
+        });
+        if (user.id) setForm((prev) => ({ ...prev, username: user.username }));
+        else {
           dispatch(
             setMainWallet({
               token: walletData.address,
@@ -280,6 +283,7 @@ const DonatContainer = () => {
           );
         }
       }
+      setLoading(false);
     };
     setUser();
   }, [user]);
@@ -313,9 +317,21 @@ const DonatContainer = () => {
     [goals]
   );
 
+  const isValidateForm = useMemo(
+    () => Object.values(form).every((val) => Boolean(val)),
+    [form]
+  );
+
   const { username, message, amount, selectedBlockchain, selectedGoal } = form;
 
   if (personInfo.error) return null;
+
+  if (!isValidateForm && loading)
+    return (
+      <div className="loader-page">
+        <Loader size="big" />
+      </div>
+    );
 
   return (
     <>
@@ -399,7 +415,7 @@ const DonatContainer = () => {
                           });
                         }
                       }}
-                      disabled={Boolean(user.username)}
+                      disabled={Boolean(user.username) || loading}
                       modificator="donat-container__payment_inputs-name"
                       placeholder="Your username"
                     />
@@ -416,6 +432,7 @@ const DonatContainer = () => {
                       modificator="donat-container__payment_inputs-message"
                       placeholder="Type your message here..."
                       maxLength={maxLengthDescription}
+                      disabled={loading}
                       descriptionInput={`Number of input characters - ${message.length} /
                     ${maxLengthDescription}`}
                       isTextarea
@@ -430,6 +447,7 @@ const DonatContainer = () => {
                           amount,
                         });
                       }}
+                      // disabled={loading}
                       typeInput="number"
                       addonAfter={
                         <SelectComponent
@@ -521,7 +539,7 @@ const DonatContainer = () => {
           </div>
         </div>
         <LoadingModalComponent
-          open={loading}
+          open={isValidateForm && loading}
           message="Please don’t close this window untill donation confirmation"
         />
         <SuccessModalComponent

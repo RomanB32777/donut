@@ -73,7 +73,6 @@ const getTronBalance = async ({ walletData, setBalance }: IBalanceObj) => {
 
   if (tronBalance) {
     const formatTronBalance = tronWeb.fromSun(tronBalance);
-    console.log("balance", formatTronBalance);
     setBalance &&
       formatTronBalance &&
       setBalance(parseFloat(formatTronBalance));

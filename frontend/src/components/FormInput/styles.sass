@@ -63,7 +63,8 @@
         font-weight: 600
         box-sizing: border-box
         padding: 12px 24px
-        
+        transition: .3s
+
         &.withAddonBefore
             border-top-left-radius: 0
             border-bottom-left-radius: 0
@@ -89,6 +90,10 @@
         border-color: variables.$grey-color
         -webkit-opacity: 1
         opacity: 1
+
+    textarea:disabled
+        -webkit-opacity: .5
+        opacity: .5
 
     textarea
         resize: none

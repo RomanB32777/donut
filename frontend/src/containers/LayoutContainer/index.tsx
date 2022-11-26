@@ -70,7 +70,7 @@ const LayoutApp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { user, notifications } = useSelector((state: any) => state);
+  const { user } = useSelector((state: any) => state);
   const socket = useContext(WebSocketContext);
   const { width, isTablet } = useWindowDimensions();
 
@@ -104,7 +104,9 @@ const LayoutApp = () => {
   useEffect(() => {
     if (user.id) {
       socket && getBadgesStatus(user, socket);
-      dispatch(getNotifications(user.username));
+      dispatch(
+        getNotifications({ user: user.username })
+      );
     }
   }, [user, socket]);
 
@@ -184,7 +186,7 @@ const LayoutApp = () => {
 
     return currRoute ? currRoute.name : "";
   }, [menuItems, activeRoute]);
-  
+
   return (
     <DocumentTitle
       title={`Crypto Donutz${

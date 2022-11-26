@@ -22,7 +22,7 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
 
     socket.on("new_notification", (data) => {
       console.log(data);
-      dispatch(getNotifications(username));
+      dispatch(getNotifications({ user: username }));
     });
     return socket;
   };

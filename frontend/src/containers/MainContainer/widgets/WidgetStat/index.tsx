@@ -30,7 +30,9 @@ Chart.register(...registerables);
 
 const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
   const user: any = useSelector((state: any) => state.user);
-  const notifications = useSelector((state: any) => state.notifications);
+  const { list, shouldUpdateApp } = useSelector(
+    (state: any) => state.notifications
+  );
 
   const [loading, setLoading] = useState<boolean>(true);
   const [dataChart, setDataChart] = useState<ChartData<"line">>({
@@ -103,8 +105,12 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    user.id && timePeriod && usdtKoef && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem, usdtKoef, notifications]);
+    user.id &&
+      timePeriod &&
+      shouldUpdateApp &&
+      usdtKoef &&
+      getLatestDonations(timePeriod);
+  }, [user, activeFilterItem, usdtKoef, list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-stat">
