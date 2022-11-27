@@ -57,7 +57,7 @@ const initLoadingSteps: StepProps[] = [
   },
   {
     status: "wait",
-    title: "Creating ERC 1155 collection",
+    title: "Creating TRC 1155 collection",
   },
   {
     status: "wait",
@@ -157,7 +157,7 @@ const CreateBadgeForm = ({
         },
         {
           status: "process",
-          title: "Creating ERC 1155 collection",
+          title: "Creating TRC 1155 collection",
         },
         ...prev.slice(2, 3),
       ]);
@@ -166,7 +166,7 @@ const CreateBadgeForm = ({
         ...prev.slice(0, 1),
         {
           status: "finish",
-          title: "Creating ERC 1155 collection",
+          title: "Creating TRC 1155 collection",
         },
         {
           status: "process",
@@ -379,7 +379,7 @@ const CreateBadgeForm = ({
               <Col span={24}>
                 <div className="saveBottom">
                   <BaseButton
-                    title="Create contract"
+                    title="Deploy contract"
                     padding="6px 35px"
                     onClick={createContract}
                     fontSize="18px"

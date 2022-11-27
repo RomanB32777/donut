@@ -66,24 +66,26 @@ export const addInstallWalletNotification = (
   walletName: string,
   installUrl: string
 ) => {
-  addNotification({
-    type: "warning",
-    title: `You don't have the ${walletName} wallet extension installed`,
-    message: (
-      <a
-        href={installUrl}
-        target="_blank"
-        className="auth-modal__link"
-        rel="noreferrer"
-        style={{
-          color: "#fff",
-          textDecoration: "underline",
-        }}
-      >
-        Install {walletName}
-      </a>
-    ),
-  });
+  const withoutNotificationPages = window.location.pathname.includes("donat-"); // don't show notifications on widget pages
+  !withoutNotificationPages &&
+    addNotification({
+      type: "warning",
+      title: `You don't have the ${walletName} wallet extension installed`,
+      message: (
+        <a
+          href={installUrl}
+          target="_blank"
+          className="auth-modal__link"
+          rel="noreferrer"
+          style={{
+            color: "#fff",
+            textDecoration: "underline",
+          }}
+        >
+          Install {walletName}
+        </a>
+      ),
+    });
 };
 
 export const getNotificationMessage = ({
@@ -147,7 +149,9 @@ export const getNotificationMessage = ({
         <span>
           Error occurred while creating your badge.
           <a
-            href={`https://${isProduction ? "" : "nile."}tronscan.org/#/transaction/${data}`}
+            href={`https://${
+              isProduction ? "" : "nile."
+            }tronscan.org/#/transaction/${data}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: "#fff", textDecoration: "underline" }}

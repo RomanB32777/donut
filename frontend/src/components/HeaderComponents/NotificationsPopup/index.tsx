@@ -302,7 +302,9 @@ const NotificationsPopup = ({
                     textAlign: "center",
                   }}
                 >
-                  No notifications
+                  <Badge dot={false} className="dot">
+                    No notifications
+                  </Badge>
                 </div>
               )}
               {loading && (

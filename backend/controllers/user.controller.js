@@ -45,7 +45,11 @@ class UserController {
       const date = new Date();
       const newUser = await db.query(
         `INSERT INTO users (${typeWallet}_token, username, roleplay) values ($1, $2, $3) RETURNING *;`,
-        [token, username.toLowerCase(), role]
+        [
+          token,
+          (username.includes("@") ? username : "@" + username).toLowerCase(),
+          role,
+        ]
       );
       if (role === "creators") {
         const security_string = getRandomStr(10);
