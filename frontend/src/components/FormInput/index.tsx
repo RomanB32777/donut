@@ -68,7 +68,7 @@ const FormInput = ({
                   withAddonAfter: Boolean(addonAfter),
                   withAddonBefore: Boolean(addonBefore),
                 })}
-                disabled={!Boolean(setValue)}
+                disabled={disabled || !Boolean(setValue)}
                 name={name || ""}
                 placeholder={placeholder || ""}
                 maxLength={maxLength || 524288}

@@ -34,7 +34,7 @@ const messages = {
             mainpage_feature_two_title: 'In-stream widgets',
             mainpage_feature_two_subtitle: 'Display your donations, goals, top supporter - on your stream',
             mainpage_feature_three_title: 'Badges as NFT',
-            mainpage_feature_three_subtitle: 'Create and assign unique ERC-1155 NFTs to active your supporters with a few clicks',
+            mainpage_feature_three_subtitle: 'Create and assign unique TRC-1155 NFTs to active your supporters with a few clicks',
             mainpage_feature_four_title: 'Customization',
             mainpage_feature_four_subtitle: 'Customize your in-stream widgets and donation page',
             mainpage_feature_five_title: 'Donation page',

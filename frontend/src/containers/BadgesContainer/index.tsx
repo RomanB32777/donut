@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Col, Empty, Row } from "antd";
 import { FormattedMessage } from "react-intl";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../components/PageTitle";
 import ContentCard from "./ContentCard";
@@ -11,15 +11,19 @@ import BaseButton from "../../components/BaseButton";
 import BadgePage from "./BadgePage";
 
 import CreateBadgeForm from "./CreateBadgeForm";
+import { setUpdateAppNotifications } from "../../store/types/Notifications";
 import { IBadge, IBadgeData, initBadgeData } from "../../types";
 import { addNotification, currBlockchain, walletsConf } from "../../utils";
 import { ipfsFileformat, ipfsFilename } from "../../consts";
 import "./styles.sass";
 
 const BadgesContainer = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const notifications: any[] = useSelector((state: any) => state.notifications);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { list, shouldUpdateApp } = useSelector(
+    (state: any) => state.notifications
+  );
 
   const [badgesList, setBadgesList] = useState<IBadgeData[]>([]);
   const [activeBadge, setActiveBadge] = useState<IBadgeData>({
@@ -160,10 +164,14 @@ const BadgesContainer = () => {
   }, [queryID, badgesList]);
 
   useEffect(() => {
-    if (user.id && user.roleplay && !isOpenCreateForm) {
+    if (user.id && user.roleplay && !isOpenCreateForm && shouldUpdateApp) {
       getBadges(user.id);
     }
-  }, [user, isOpenCreateForm, notifications]);
+  }, [user, isOpenCreateForm, list, shouldUpdateApp]);
+
+  useEffect(() => {
+    dispatch(setUpdateAppNotifications(true));
+  }, []);
 
   if (isOpenBadgePage)
     return (

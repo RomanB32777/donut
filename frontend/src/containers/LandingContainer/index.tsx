@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
@@ -61,7 +61,7 @@ const features = [
 
 const LandingContainer = () => {
   const navigate = useNavigate();
-  const { isMobile, isTablet } = useWindowDimensions();
+  const { isMobile } = useWindowDimensions();
   const user: any = useSelector((state: any) => state.user);
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
@@ -71,29 +71,28 @@ const LandingContainer = () => {
   };
 
   const signUp = async () => {
-    user.id ? navigate("/") : navigate("/login");
+    user.id ? navigate("/") : navigate("/wallets");
   };
 
-  const videoWidth = useMemo(() => {
-    if (isMobile) return 300;
-    if (isTablet) return 500;
-    return 630;
-  }, [isTablet, isMobile]);
+  // const videoWidth = useMemo(() => {
+  //   if (isMobile) return 300;
+  //   if (isTablet) return 500;
+  //   return 630;
+  // }, [isTablet, isMobile]);
 
   return (
     <>
-      {/* <HeaderBanner /> */}
       <HeaderComponent
         visibleLogo
         isOpenHeaderSelect={isOpenHeaderSelect}
         handlerHeaderSelect={handlerHeaderSelect}
-        logoUrl="/" // user.id ? "/" : "/landing"
+        logoUrl="/"
       />
       <div className="landing-container">
         <div
           className="landing-container__first-mocup"
           style={{
-            height: "840px",
+            height: isMobile ? 550 : 840,
           }}
         >
           <div className="landing-container__first-mocup__background" />
@@ -115,7 +114,7 @@ const LandingContainer = () => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className="landing-container__video-wrapper"
           style={{
             marginBottom: "0px",
@@ -133,7 +132,7 @@ const LandingContainer = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen={true}
           />
-        </div>
+        </div> */}
 
         <div className="landing-container__row-panel">
           <span className="block-title">

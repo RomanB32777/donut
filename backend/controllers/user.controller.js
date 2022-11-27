@@ -45,7 +45,11 @@ class UserController {
       const date = new Date();
       const newUser = await db.query(
         `INSERT INTO users (${typeWallet}_token, username, roleplay) values ($1, $2, $3) RETURNING *;`,
-        [token, username.toLowerCase(), role]
+        [
+          token,
+          (username.includes("@") ? username : "@" + username).toLowerCase(),
+          role,
+        ]
       );
       if (role === "creators") {
         const security_string = getRandomStr(10);
@@ -128,7 +132,7 @@ class UserController {
   async getUserNotifications(req, res) {
     try {
       const { user } = req.params;
-      const { blockchain } = req.query;
+      const { blockchain, limit, offset, sort, sortDirection } = req.query;
 
       const userInfo = await db.query(
         `SELECT id, roleplay FROM users WHERE ${
@@ -138,9 +142,11 @@ class UserController {
       );
 
       const notifications = await db.query(
-        `SELECT * FROM notifications 
+        `SELECT COUNT(*) OVER() as total_count, * FROM notifications 
             WHERE sender = $1 OR recipient = $1 
-            ORDER BY creation_date DESC`,
+            ORDER BY ${sort || "creation_date"} ${sortDirection || "DESC"}
+            ${limit ? `LIMIT ${limit}` : ""}
+            ${offset ? `OFFSET ${offset}` : ""}`,
         [userInfo.rows[0].id]
       );
 
@@ -191,9 +197,33 @@ class UserController {
             }
           })
         );
-        return res.status(200).json({ notifications: notificationsAll });
+        return res.status(200).json({
+          notifications: notificationsAll,
+          totalLength: +notificationsAll[0].total_count,
+        });
       }
       return res.status(200).json({ notifications: [] });
+    } catch (error) {
+      res
+        .status(error.status || 500)
+        .json({ error: true, message: error.message || "Something broke!" });
+    }
+  }
+
+  async updateStatusNotifications(req, res) {
+    try {
+      const { read, id, isRecipient } = req.body;
+      const updatedNotification = await db.query(
+        `UPDATE notifications SET ${
+          isRecipient ? "read_recipient" : "read_sender"
+        } = $1 where id = $2 RETURNING *`,
+        [read, id]
+      );
+      return res.status(200).json({
+        updatedNotification: updatedNotification.rows.length
+          ? updatedNotification.rows[0]
+          : [],
+      });
     } catch (error) {
       res
         .status(error.status || 500)

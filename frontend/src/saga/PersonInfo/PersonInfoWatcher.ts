@@ -1,6 +1,5 @@
-import axiosClient, { baseURL } from "../../axiosClient";
+import { baseURL } from "../../axiosClient";
 import { fork , call, put, takeEvery } from "redux-saga/effects";
-import store from "../../store";
 import { setMainPersonInfo, TRY_TO_GET_PERSON_INFO } from "../../store/types/PersonInfo";
 import { setLoading } from "../../store/types/Loading";
 

@@ -22,6 +22,7 @@ import Loader from "./components/Loader";
 import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
 import DonatStatPage from "./pages/DonatStatPage";
+import LandingPage from "./pages/LandingPage";
 import NoPage from "./pages/NoPage";
 
 const routes = {
@@ -159,12 +160,12 @@ export const routers: IRoute[] = [
       },
     ],
   },
-  // {
-  //   path: "landing",
-  //   element: <LandingPage />,
-  //   hiddenLayoutElements: true,
-  //   noPaddingMainConteiner: true,
-  // },
+  {
+    path: "landing",
+    element: <LandingPage />,
+    hiddenLayoutElements: true,
+    noPaddingMainConteiner: true,
+  },
   // {
   //   path: "login",
   //   element: <ChooseWalletModal />,

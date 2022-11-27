@@ -101,7 +101,8 @@ export const connectSocket = (
       default:
         break;
     }
-    dispatch && dispatch(getNotifications(username));
+    dispatch &&
+      dispatch(getNotifications({ user: username }));
   });
   return socket;
 };

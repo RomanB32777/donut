@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, Col, Row } from "antd";
 import FileSaver from "file-saver";
 import { utils, write } from "xlsx";
@@ -17,6 +17,7 @@ import { getUsdKoef } from "../../utils";
 import axiosClient from "../../axiosClient";
 import { currBlockchain } from "../../utils";
 import { filterPeriodItems } from "../../utils/dateMethods/consts";
+import { setUpdateAppNotifications } from "../../store/types/Notifications";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { periodItemsTypes } from "../../utils/dateMethods/types";
 import "./styles.sass";
@@ -32,9 +33,13 @@ interface IQueryForm {
 const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
-  const { isMobile, isLaptop } = useWindowDimensions();
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const notifications = useSelector((state: any) => state.notifications);
+  const { isMobile, isLaptop } = useWindowDimensions();
+
+  const { list, shouldUpdateApp } = useSelector(
+    (state: any) => state.notifications
+  );
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
   const [queryForm, setQueryForm] = useState<IQueryForm>({
     timePeriod: "7days",
@@ -149,12 +154,13 @@ const DonationsContainer = () => {
   );
 
   useEffect(() => {
+    dispatch(setUpdateAppNotifications(true));
     getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
   }, []);
 
   useEffect(() => {
-    user.id && usdtKoef && getDonationsData();
-  }, [user, usdtKoef, notifications]);
+    user.id && usdtKoef && shouldUpdateApp && getDonationsData();
+  }, [user, usdtKoef, list, shouldUpdateApp]);
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",

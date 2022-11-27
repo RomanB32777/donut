@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
 import { Progress } from "antd";
@@ -10,8 +10,7 @@ import "./styles.sass";
 
 const DonatGoalContainer = () => {
   const { id, name } = useParams();
-  const notifications = useSelector((state: any) => state.notifications);
-
+  const { list } = useSelector((state: any) => state.notifications);
   const [lastNotif, setLastNotif] = useState<any>({});
 
   const [goalData, setGoalData] = useState<IGoalData>({
@@ -34,8 +33,8 @@ const DonatGoalContainer = () => {
   };
 
   useEffect(() => {
-    notifications.length && setLastNotif(notifications[0].donation);
-  }, [notifications]);
+    list.length && setLastNotif(list[0].donation);
+  }, [list]);
 
   useEffect(() => {
     if (lastNotif.goal_id && lastNotif.goal_id === id) {
