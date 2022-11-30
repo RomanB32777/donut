@@ -1,6 +1,7 @@
 import { Result } from "antd";
 import { useNavigate } from "react-router-dom";
 import BaseButton from "../../components/BaseButton";
+import { adminPath } from "../../consts";
 import "./styles.sass";
 
 const NoPageContainer = () => {
@@ -14,7 +15,7 @@ const NoPageContainer = () => {
         extra={
           <BaseButton
             title="Back to Dashboard"
-            onClick={() => navigate("/", { replace: true })}
+            onClick={() => navigate(`/${adminPath}`, { replace: true })}
             padding="8px 32px"
             fontSize="18px"
             isBlue

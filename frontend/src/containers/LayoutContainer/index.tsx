@@ -14,7 +14,8 @@ import Logo from "../../components/HeaderComponents/LogoComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import NotificationsPopup from "../../components/HeaderComponents/NotificationsPopup";
 import { getNotifications } from "../../store/types/Notifications";
-import { getBadgesStatus } from "../../utils";
+import { getBadgesStatus, scrollToPosition } from "../../utils";
+import { adminPath } from "../../consts";
 import "./styles.sass";
 
 const { Content, Sider } = Layout;
@@ -35,18 +36,6 @@ const getItem = ({
   children: children || null,
   label,
 });
-
-const scrollToPosition = (top = 0) => {
-  try {
-    window.scroll({
-      top: top,
-      left: 0,
-      behavior: "smooth",
-    });
-  } catch (_) {
-    window.scrollTo(0, top);
-  }
-};
 
 const addToMenu = (
   route: IRoute,
@@ -104,9 +93,7 @@ const LayoutApp = () => {
   useEffect(() => {
     if (user.id) {
       socket && getBadgesStatus(user, socket);
-      dispatch(
-        getNotifications({ user: user.username })
-      );
+      dispatch(getNotifications({ user: user.username }));
     }
   }, [user, socket]);
 
@@ -117,13 +104,19 @@ const LayoutApp = () => {
         : addToMenu(route, acc, user);
       return acc;
     }, [] as IRoute[]);
-    return menuShowItems.sort((n1, n2) => {
-      if (n1.menuOrder && n2.menuOrder) {
-        if (n1.menuOrder > n2.menuOrder) return 1;
-        if (n1.menuOrder < n2.menuOrder) return -1;
-      }
-      return 0;
-    });
+
+    return menuShowItems
+      .map(({ path, ...i }) => ({
+        ...i,
+        path: path ? `${adminPath}/${path}` : adminPath,
+      }))
+      .sort((n1, n2) => {
+        if (n1.menuOrder && n2.menuOrder) {
+          if (n1.menuOrder > n2.menuOrder) return 1;
+          if (n1.menuOrder < n2.menuOrder) return -1;
+        }
+        return 0;
+      });
   }, [user]);
 
   const activeRoute: string = useMemo(
@@ -284,7 +277,7 @@ const LayoutApp = () => {
             collapsedSidebar={collapsed}
             setCollapsedSidebar={setCollapsed}
             modificator="layout-header"
-            visibleGamburger
+            // visibleGamburger
           >
             {user.id && (
               <NotificationsPopup

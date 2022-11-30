@@ -13,6 +13,8 @@ import {
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import BaseButton from "../../components/BaseButton";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
+import { scrollToPosition, walletsConf } from "../../utils";
+import { adminPath } from "../../consts";
 import bigImg from "../../assets/big_don.png";
 import "./styles.sass";
 
@@ -71,14 +73,17 @@ const LandingContainer = () => {
   };
 
   const signUp = async () => {
-    user.id ? navigate("/") : navigate("/wallets");
+    if (user.id) navigate(`/${adminPath}`);
+    else {
+      const countBlockhains = Object.keys(walletsConf).reduce(
+        (count, walletName) =>
+          count + walletsConf[walletName].blockchains.length,
+        0
+      );
+      navigate(countBlockhains > 1 ? "/wallets" : "/register");
+    }
+    scrollToPosition();
   };
-
-  // const videoWidth = useMemo(() => {
-  //   if (isMobile) return 300;
-  //   if (isTablet) return 500;
-  //   return 630;
-  // }, [isTablet, isMobile]);
 
   return (
     <>
@@ -86,7 +91,7 @@ const LandingContainer = () => {
         visibleLogo
         isOpenHeaderSelect={isOpenHeaderSelect}
         handlerHeaderSelect={handlerHeaderSelect}
-        logoUrl="/"
+        logoUrl={`/${adminPath}`}
       />
       <div className="landing-container">
         <div

@@ -25,7 +25,6 @@ interface IHeaderComponent {
 
 export const HeaderComponent = ({
   isOpenHeaderSelect,
-  handlerHeaderSelect,
   hidden,
   visibleLogo,
   visibleGamburger,
@@ -33,8 +32,9 @@ export const HeaderComponent = ({
   modificator,
   backgroundColor,
   collapsedSidebar,
-  setCollapsedSidebar,
   children,
+  handlerHeaderSelect,
+  setCollapsedSidebar,
   onClick,
 }: IHeaderComponent) => {
   const user = useSelector((state: any) => state.user);

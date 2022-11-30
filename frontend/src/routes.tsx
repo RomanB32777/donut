@@ -23,14 +23,17 @@ import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
 import DonatStatPage from "./pages/DonatStatPage";
 import LandingPage from "./pages/LandingPage";
+import ChooseWalletPage from "./pages/ChooseWalletPage";
+import ChooseBlockchainPage from "./pages/ChooseBlockchainPage";
 import NoPage from "./pages/NoPage";
+import { adminPath } from "./consts";
 
 const routes = {
   main: "/",
 };
 
 interface IRoute extends RouteObject {
-  path: string;
+  path?: string;
   index?: boolean;
   name?: string;
   menu?: boolean;
@@ -78,18 +81,22 @@ const ProtectedRoutes = (props: ProtectedRouteType) => {
 export const routers: IRoute[] = [
   {
     path: "/",
+    element: <LandingPage />,
+    hiddenLayoutElements: true,
+    noPaddingMainConteiner: true,
+  },
+  {
+    path: adminPath,
     element: <ProtectedRoutes />,
     protected: true,
     children: [
       {
-        path: "/",
         element: <ProtectedRoutes roleRequired="creators" />,
         roleRequired: "creators",
         protected: true,
         children: [
           {
             index: true,
-            path: "/",
             element: <MainPage />,
             name: "Dashboard",
             icon: <PieChartOutlined />,
@@ -160,15 +167,14 @@ export const routers: IRoute[] = [
       },
     ],
   },
-  {
-    path: "landing",
-    element: <LandingPage />,
-    hiddenLayoutElements: true,
-    noPaddingMainConteiner: true,
-  },
   // {
-  //   path: "login",
-  //   element: <ChooseWalletModal />,
+  //   path: "wallets",
+  //   element: <ChooseWalletPage />,
+  //   hiddenLayoutElements: true,
+  // },
+  // {
+  //   path: "blockchains/:wallet",
+  //   element: <ChooseBlockchainPage />,
   //   hiddenLayoutElements: true,
   // },
   {
@@ -291,8 +297,8 @@ const addChildrenRoute = (currRoute: IRoute, routersAcc: IRoute[]) => {
       if (route.children) addChildrenRoute(route, routersAcc);
       return {
         path: route.path,
-        element: route.element
-      }
+        element: route.element,
+      };
     });
   }
   return routersAcc;

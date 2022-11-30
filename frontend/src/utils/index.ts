@@ -71,6 +71,18 @@ const getBadgesStatus = async (user: any, socket?: any) => {
   }
 };
 
+const scrollToPosition = (top = 0) => {
+  try {
+    window.scroll({
+      top: top,
+      left: 0,
+      behavior: "smooth",
+    });
+  } catch (_) {
+    window.scrollTo(0, top);
+  }
+};
+
 export {
   // notifications
   addNotification,
@@ -109,4 +121,7 @@ export {
 
   // async
   checkIsExistUser,
+
+  // app
+  scrollToPosition,
 };

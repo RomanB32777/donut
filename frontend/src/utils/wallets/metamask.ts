@@ -208,6 +208,8 @@ const metamaskConf: IWalletConf = {
     },
   ],
   icon: metamaskIcon,
+  linkInstall: "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn",
+  isInstall: metamaskWalletIsIntall,
   getWalletData(blockchainName) {
     return getMetamaskData(blockchainName, this);
   },

@@ -21,6 +21,8 @@ import { isProduction } from "../../axiosClient";
 //   CONTRACT_VALIDATE_ERROR = "Contract validate error",
 // }
 
+const isInstall = () => (window as any).hasOwnProperty('tronWeb')
+
 const getTronWallet = (blockchainName?: any) =>
   new Promise((resolve) => {
     setTimeout(async () => {
@@ -230,6 +232,8 @@ const tronlinkConf: IWalletConf = {
     },
   ],
   icon: tronlinkIcon,
+  linkInstall: "https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec",
+  isInstall,
   getWalletData: (blockchainName) => getTronWallet(blockchainName),
   paymentMethod: (objForPay) => payByTron({ ...objForPay }),
   getBalance: (objForBalance) => getTronBalance({ ...objForBalance }),

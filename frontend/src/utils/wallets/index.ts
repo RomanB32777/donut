@@ -18,7 +18,7 @@ export const getUsdKoef = async (
 
 export const walletsConf: IWalletsConf = {
   tronlink: tronlinkConf,
-  metamask: metamaskConf,
+  // metamask: metamaskConf,
 };
 
 export const currBlockchain = walletsConf[

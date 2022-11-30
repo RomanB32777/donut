@@ -25,16 +25,16 @@ import {
   SuccessModalComponent,
 } from "../../components/ModalComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
+import { getNotifications } from "../../store/types/Notifications";
 import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
 import { StarIcon } from "../../icons/icons";
 import { IGoalData } from "../../types";
 import { walletsConf, currBlockchain } from "../../utils";
 
+import { adminPath, url } from "../../consts";
 import SpaceImg from "../../space.png";
-import { url } from "../../consts";
 import "./styles.sass";
-import { getNotifications } from "../../store/types/Notifications";
 
 const maxLengthDescription = 150;
 
@@ -115,7 +115,7 @@ const DonatContainer = () => {
       ...initObj,
       username,
     });
-    navigate("/donations");
+    navigate(`/${adminPath}/donations`);
   };
 
   const sendDonation = async () => {
@@ -344,10 +344,12 @@ const DonatContainer = () => {
       >
         <HeaderComponent
           handlerHeaderSelect={() => {
-            user.username ? navigate("/settings") : copyStr(mainWallet.token);
+            user.username
+              ? navigate(`/${adminPath}/settings`)
+              : copyStr(mainWallet.token);
           }}
           modificator="donat-header"
-          logoUrl={user.id ? "/donations" : "/"}
+          logoUrl={user.id ? `/${adminPath}/donations` : `/${adminPath}`}
           backgroundColor={personInfo.background_color}
           visibleLogo
         />

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { url } from "../../../consts";
+import { adminPath, url } from "../../../consts";
 import { LogoutIcon, SmallToggleListArrowIcon } from "../../../icons/icons";
 import { setUser } from "../../../store/types/User";
 import { setMainWallet } from "../../../store/types/Wallet";
@@ -29,7 +29,7 @@ const HeaderSelect = ({
           className={clsx("header-select__image", {
             dNone: isNotVisibleAvatarInMobile,
           })}
-          onClick={() => navigate("/settings")}
+          onClick={() => navigate(`/${adminPath}/settings`)}
         >
           {user.avatarlink && <img src={url + user.avatarlink} alt="" />}
         </div>

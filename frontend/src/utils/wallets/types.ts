@@ -49,17 +49,19 @@ export interface IWalletConf {
     blockExplorerUrls?: string[];
   }[];
   icon: string;
+  linkInstall?: string;
   abi?: any[];
   bytecode: string;
+  isInstall: () => boolean;
   getWalletData: (blockchainName?: string) => Promise<any>;
   paymentMethod: (objForPay: IPayObj) => Promise<any>;
   getBalance: (objForBalance: IBalanceObj) => Promise<number>;
-  createContract: (
-    objForContract: ICreateContractObj
-  ) => Promise<any>;
+  createContract: (objForContract: ICreateContractObj) => Promise<any>;
   getBadgeURI: (contract_address: string) => Promise<string | null>;
   mintBadge: (objForMint: IMintBadgeObj) => Promise<any>;
-  getQuantityBalance: (objForQuantityBalance: IQuantityBalanceObj) => Promise<any>;
+  getQuantityBalance: (
+    objForQuantityBalance: IQuantityBalanceObj
+  ) => Promise<any>;
   getTransactionInfo: (hash: string) => Promise<any>;
 }
 

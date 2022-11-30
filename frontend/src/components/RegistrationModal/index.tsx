@@ -11,6 +11,7 @@ import FormInput from "../FormInput";
 import { walletsConf } from "../../utils";
 import { setMainWallet } from "../../store/types/Wallet";
 import registerImg from "../../assets/registerImg.png";
+import { adminPath } from "../../consts";
 import "./styles.sass";
 
 const RegistrationModal = () => {
@@ -23,7 +24,7 @@ const RegistrationModal = () => {
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
 
   useEffect(() => {
-    user.id && navigate("/");
+    user.id && navigate(`/${adminPath}`);
   }, [user]);
 
   const tryToLogin = async () => {
@@ -53,7 +54,7 @@ const RegistrationModal = () => {
               typeWallet: process.env.REACT_APP_WALLET || "metamask",
             }).then(() => {
               dispatch(tryToGetUser(address as string));
-              navigate("/");
+              navigate(`/${adminPath}`);
             });
           }
         }

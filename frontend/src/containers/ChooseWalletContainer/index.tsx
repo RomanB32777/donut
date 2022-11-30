@@ -1,35 +1,30 @@
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
-import { wallets } from "../../consts";
-import { addInstallWalletNotification } from "../../utils";
+// import { IWallet, wallets } from "../../consts";
+import { addInstallWalletNotification, walletsConf } from "../../utils";
 
 import "./styles.sass";
 
-const ChooseBlockchainsModal = () => {
+const ChooseWalletContainer = () => {
   const navigate = useNavigate();
 
   const registrationWalletClick = async (name: string) => {
-    const {
-      installLink,
-      isWithoutChooseBlockchain,
-      blockchains,
-      isInstallMethod,
-    } = wallets[name];
+    const { linkInstall, blockchains, isInstall } = walletsConf[name];
 
-    const navigateMethod = () =>
-      isWithoutChooseBlockchain
-        ? window.open(blockchains[0].appLink, "_blank")
-        : navigate(`/blockchains/${name}`);
+    // const navigateMethod = () =>
+    // isWithoutChooseBlockchain
+    //   ? window.open(blockchains[0].appLink, "_blank")
+    //   : navigate(`/blockchains/${name}`);
 
-    isInstallMethod()
-      ? navigateMethod()
-      : addInstallWalletNotification(name, installLink);
+    // isInstall()
+    //   ? navigateMethod()
+    //   : addInstallWalletNotification(name, linkInstall);
   };
 
   return (
     <div className="donat-popup">
       <p className="donat-popup__main-title">Choose the wallet</p>
-      <div className="donat-popup__registration_wallets">
+      {/* <div className="donat-popup__registration_wallets">
         {Object.keys(wallets).map((name) => {
           const { img, blockchains } = wallets[name];
           return (
@@ -51,9 +46,9 @@ const ChooseBlockchainsModal = () => {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 };
 
-export default ChooseBlockchainsModal;
+export default ChooseWalletContainer;
