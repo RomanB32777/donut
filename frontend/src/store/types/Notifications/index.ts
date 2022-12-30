@@ -1,15 +1,17 @@
+import { INotificationsState } from "../../../types/notifications";
+
 export const SET_NOTIF = "SET_NOTIF";
 export const SET_UPDATE_FLAG = "SET_UPDATE_FLAG";
 export const GET_NOTIF = "GET_NOTIF";
 
-export const setNotifications = (payload: any) => ({
+export const setNotifications = (payload: INotificationsState) => ({
   type: SET_NOTIF,
   payload,
 });
 
-export const setUpdateAppNotifications = (payload: boolean) => ({
+export const setUpdateAppNotifications = (shouldUpdateApp: boolean) => ({
   type: SET_UPDATE_FLAG,
-  payload,
+  payload: { shouldUpdateApp },
 });
 
 export const getNotifications = ({

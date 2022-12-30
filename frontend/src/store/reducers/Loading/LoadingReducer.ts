@@ -1,18 +1,16 @@
-import { SET_LOADING } from "../../types/Loading"
+import { ILoadingAction } from "../../../types";
+import { SET_LOADING } from "../../types/Loading";
 
-const initialState = {
-    isLoading: true
-}
+const initialState = true;
 
-const LoadingReducer = (state = initialState, action: any) => {
+const LoadingReducer = (state = initialState, action: ILoadingAction) => {
+  switch (action.type) {
+    case SET_LOADING:
+      return action.payload;
 
-    switch (action.type) {
-        case SET_LOADING:
-            return {isLoading: action.payload}
+    default:
+      return state;
+  }
+};
 
-        default:
-            return state
-    }
-}
-
-export default LoadingReducer
+export default LoadingReducer;

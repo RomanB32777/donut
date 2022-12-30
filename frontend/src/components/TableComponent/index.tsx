@@ -9,10 +9,11 @@ const TableComponent = <T extends object>({
   dataSource,
   columns,
   pagination,
-  loading
+  loading,
 }: React.PropsWithChildren<ITableData<T>>): React.ReactElement => {
   return (
     <Table
+      className="app-table"
       columns={columns}
       dataSource={dataSource}
       pagination={pagination}

@@ -1,6 +1,6 @@
 import { ChartOptions } from "chart.js";
 import moment from "moment";
-import { periodItemsTypes } from "../../../../utils/dateMethods/types";
+import { periodItemsTypes } from "types";
 
 export const options: ChartOptions<"line"> = {
   scales: {

@@ -2,37 +2,41 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
+import { IGoalData } from "types";
 
 import axiosClient from "../../axiosClient";
 import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import { Socket } from "socket.io-client";
 
 import { tryToGetPersonInfo } from "../../store/types/PersonInfo";
-import { setMainWallet } from "../../store/types/Wallet";
+import { setSelectedBlockchain } from "../../store/types/Wallet";
 import {
   addNotFoundUserNotification,
   addNotification,
   copyStr,
   getUsdKoef,
 } from "../../utils";
+import WalletBlock from "../../components/HeaderComponents/WalletBlock";
 import FormInput from "../../components/FormInput";
 import SelectComponent from "../../components/SelectComponent";
 import BaseButton from "../../components/BaseButton";
 import Loader from "../../components/Loader";
+import { WalletContext } from "../../contexts/Wallet";
 import { connectSocket, WebSocketContext } from "../../components/Websocket";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
 } from "../../components/ModalComponent";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
+import SwitchForm from "../../components/SwitchForm";
+import { TabsComponent } from "../../components/TabsComponent";
 import { getNotifications } from "../../store/types/Notifications";
 import { getGoals } from "../../store/types/Goals";
 import { tryToGetUser } from "../../store/types/User";
-import { StarIcon } from "../../icons/icons";
-import { IGoalData } from "../../types";
-import { walletsConf, currBlockchain } from "../../utils";
+import { StarIcon } from "../../icons";
+import { INewDonatSocketObj } from "types";
 
-import { adminPath, url } from "../../consts";
+import { adminPath } from "../../consts";
 import SpaceImg from "../../space.png";
 import "./styles.sass";
 
@@ -44,6 +48,7 @@ interface IDonatForm {
   amount: string;
   selectedBlockchain: string;
   selectedGoal: string;
+  isAnonymous: boolean;
 }
 
 const initObj: IDonatForm = {
@@ -52,7 +57,10 @@ const initObj: IDonatForm = {
   amount: "",
   selectedBlockchain: "",
   selectedGoal: "0",
+  isAnonymous: true,
 };
+
+const tabCountTypes = [5, 10, 15];
 
 const DonatContainer = () => {
   const dispatch = useDispatch();
@@ -66,7 +74,9 @@ const DonatContainer = () => {
   const [usdtKoef, setUsdtKoef] = useState(0);
   const [balance, setBalance] = useState(0);
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
+  const [tabCount, setTabCount] = useState(""); // String(tabCountTypes[0])
 
+  const { walletConf } = useContext(WalletContext);
   const socket = useContext(WebSocketContext);
 
   const [form, setForm] = useState<IDonatForm>({
@@ -76,6 +86,15 @@ const DonatContainer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
 
+  const {
+    username,
+    message,
+    amount,
+    selectedBlockchain,
+    selectedGoal,
+    isAnonymous,
+  } = form;
+
   const onChangeRadio = (e: RadioChangeEvent) => {
     setForm({
       ...form,
@@ -84,16 +103,16 @@ const DonatContainer = () => {
   };
 
   const registerSupporter = async () => {
-    const { data } = await axiosClient.post("/api/user/check-username", {
-      username,
-    });
+    const { data } = await axiosClient.get(
+      `/api/user/check-username/${username}`
+    );
     if (data.error) {
       console.log(data.error);
       return;
     } else {
       const { data, status } =
         mainWallet.token &&
-        (await axiosClient.post("/api/user/create-user", {
+        (await axiosClient.post("/api/user/", {
           role: "backers",
           username: username,
           token: mainWallet.token,
@@ -127,10 +146,10 @@ const DonatContainer = () => {
       newUser = await registerSupporter();
       newSocket = connectSocket(newUser.username, dispatch);
     }
-    const tokenField = `${process.env.REACT_APP_WALLET}_token`;
+    const tokenField = "wallet_address";
 
     if (tokenField && selectedBlockchain) {
-      const { data } = await axiosClient.post("/api/donation/create/", {
+      const { data } = await axiosClient.post("/api/donation/", {
         creator_token: personInfo[tokenField],
         backer_token: user[tokenField] || newUser[tokenField],
         sum: +amount,
@@ -141,17 +160,18 @@ const DonatContainer = () => {
       });
 
       if (data.donation && (user || newUser)) {
-        const emitObj = {
+        const emitObj: INewDonatSocketObj = {
           supporter: {
             username: user.username || newUser.username,
             id: user.user_id || newUser.id,
           },
-          wallet: process.env.REACT_APP_WALLET || "metamask",
+          creator: {
+            username: personInfo.username,
+            id: data.donation.creator_id,
+          },
           blockchain: selectedBlockchain, // "tEVMOS"
-          creator_id: data.donation.creator_id,
-          creator_username: personInfo.username,
-          sum: amount,
-          donationID: data.donation.id,
+          sum: +amount,
+          donation_id: data.donation.id,
         };
 
         if (socket) {
@@ -181,27 +201,23 @@ const DonatContainer = () => {
     const { amount, username } = form;
     if (Boolean(+amount) && username.length) {
       try {
-        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
+        const blockchainData = await walletConf.getBlockchainData();
 
-        const walletData = await wallet.getWalletData(
-          process.env.REACT_APP_BLOCKCHAIN
-        ); // await getMetamaskData();
+        if (blockchainData && blockchainData.address) {
+          const { signer, address } = blockchainData;
 
-        if (walletData && walletData.address) {
-          const { signer, address } = walletData;
-
-          const tokenField = `${process.env.REACT_APP_WALLET}_token`;
+          const tokenField = "wallet_address";
 
           if (address !== personInfo[tokenField]) {
             setLoading(true);
 
             if (balance >= Number(amount)) {
-              const currentBlockchain = wallet.blockchains.find(
+              const currentBlockchain = walletConf.blockchains.find(
                 (b) => b.name === process.env.REACT_APP_BLOCKCHAIN
               );
 
               if (currentBlockchain) {
-                const res = await wallet.paymentMethod({
+                const res = await walletConf.paymentMethod({
                   contract: currentBlockchain.address,
                   addressTo: personInfo[tokenField],
                   sum: amount,
@@ -256,31 +272,20 @@ const DonatContainer = () => {
   }, [name]);
 
   useEffect(() => {
-    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
-  }, []); // form
-
-  useEffect(() => {
     const setUser = async () => {
       setLoading(true);
-      const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
-      const walletData = await wallet.getWalletData(
-        process.env.REACT_APP_BLOCKCHAIN
-      );
+      const blockchainData = await walletConf.getBlockchainData();
 
-      if (walletData) {
-        await wallet.getBalance({
-          walletData,
-          setBalance,
-        });
+      if (blockchainData) {
+        await walletConf.getBalance(setBalance);
         if (user.id) setForm((prev) => ({ ...prev, username: user.username }));
         else {
-          dispatch(
-            setMainWallet({
-              token: walletData.address,
-              wallet: process.env.REACT_APP_WALLET || "metamask",
-              blockchain: process.env.REACT_APP_BLOCKCHAIN,
-            })
-          );
+          // dispatch(
+          //   setSelectedBlockchain({
+          //     token: blockchainData.address,
+          //     blockchain: process.env.REACT_APP_BLOCKCHAIN, // !!!!
+          //   })
+          // );
         }
       }
       setLoading(false);
@@ -298,16 +303,34 @@ const DonatContainer = () => {
   //   []
   // );
 
-  const blockchainList = useMemo(() => {
-    if (currBlockchain) {
-      setForm({
-        ...initObj,
-        selectedBlockchain: currBlockchain.nativeCurrency.symbol,
-      });
-      return currBlockchain.nativeCurrency.symbol;
-    }
-    return "";
-  }, []);
+  useEffect(() => {
+    const setInitSelectedBlockchain = async () => {
+      const currBlockchain = await walletConf.getCurrentBlockchain();
+      currBlockchain &&
+        setForm({
+          ...initObj,
+          selectedBlockchain: currBlockchain.nativeCurrency.symbol,
+        });
+    };
+
+    setInitSelectedBlockchain();
+  }, [walletConf]);
+
+  useEffect(() => {
+    const setSelectedBlockchain = async () => {
+      if (selectedBlockchain) {
+        const blockchainInfo = walletConf.blockchains.find(
+          (b) => b.nativeCurrency.symbol === selectedBlockchain
+        );
+        blockchainInfo &&
+          (await getUsdKoef(
+            blockchainInfo.nativeCurrency.exchangeName,
+            setUsdtKoef
+          ));
+      }
+    };
+    setSelectedBlockchain();
+  }, [selectedBlockchain]);
 
   const goalsActive = useMemo(
     () =>
@@ -322,7 +345,25 @@ const DonatContainer = () => {
     [form]
   );
 
-  const { username, message, amount, selectedBlockchain, selectedGoal } = form;
+  const selectedBlockchainIconInfo = useMemo(() => {
+    const info = walletConf.blockchains.find(
+      (b) => b.nativeCurrency.symbol === selectedBlockchain
+    );
+    if (info)
+      return {
+        icon: info.icon,
+        color: info.color,
+      };
+  }, [selectedBlockchain]);
+
+  const countTabs = useMemo(
+    () =>
+      tabCountTypes.map((tab) => ({
+        key: String(tab),
+        label: `${tab} ${selectedBlockchain}`,
+      })),
+    [selectedBlockchain]
+  );
 
   if (personInfo.error) return null;
 
@@ -336,47 +377,31 @@ const DonatContainer = () => {
   return (
     <>
       {/* <HeaderBanner /> */}
+      <HeaderComponent
+        contentModificator="donat-header"
+        logoUrl={user.id ? `/${adminPath}/donations` : `/${adminPath}`}
+        backgroundColor={personInfo.background_color}
+        visibleLogo
+      >
+        <WalletBlock />
+      </HeaderComponent>
       <div
         className="donat-container"
         style={{
           background: personInfo.background_color,
         }}
       >
-        <HeaderComponent
-          handlerHeaderSelect={() => {
-            user.username
-              ? navigate(`/${adminPath}/settings`)
-              : copyStr(mainWallet.token);
-          }}
-          modificator="donat-header"
-          logoUrl={user.id ? `/${adminPath}/donations` : `/${adminPath}`}
-          backgroundColor={personInfo.background_color}
-          visibleLogo
-        />
         <div className="donat-info-container">
           <div className="donat-info-container__background">
-            <img
-              src={
-                personInfo.backgroundlink
-                  ? `${url + personInfo.backgroundlink}`
-                  : SpaceImg
-              }
-              alt="banner"
-            />
+            <img src={personInfo.header_banner || SpaceImg} alt="banner" />
           </div>
 
           <div className="donat-info-container__information-wrapper">
             <div className="donat-info-container__information-wrapper__information">
               <div className="donat-main-info">
                 <div className="donat-main-info__picture">
-                  {personInfo.avatarlink && personInfo.avatarlink.length > 0 ? (
-                    <img
-                      src={
-                        personInfo.avatarlink &&
-                        `${url + personInfo.avatarlink}`
-                      }
-                      alt="avatar"
-                    />
+                  {personInfo.avatar && personInfo.avatar.length > 0 ? (
+                    <img src={personInfo.avatar} alt="avatar" />
                   ) : (
                     <div className="icon" />
                   )}
@@ -419,7 +444,24 @@ const DonatContainer = () => {
                       }}
                       disabled={Boolean(user.username) || loading}
                       modificator="donat-container__payment_inputs-name"
+                      addonsModificator="input-addon"
                       placeholder="Your username"
+                      addonAfter={
+                        <div className="username-switch">
+                          <SwitchForm
+                            label="Turn off to be anonymous"
+                            checked={isAnonymous}
+                            setValue={(flag) =>
+                              setForm({ ...form, isAnonymous: flag })
+                            }
+                            labelModificator="switch-label"
+                            maxWidth={250}
+                            labelCol={18}
+                            switchCol={6}
+                            gutter={[0, 18]}
+                          />
+                        </div>
+                      }
                     />
                   </div>
                   <div className="donat-container__payment_inputs-item">
@@ -432,11 +474,10 @@ const DonatContainer = () => {
                         });
                       }}
                       modificator="donat-container__payment_inputs-message"
-                      placeholder="Type your message here..."
+                      placeholder={`Message to ${username}`}
                       maxLength={maxLengthDescription}
                       disabled={loading}
-                      descriptionInput={`Number of input characters - ${message.length} /
-                    ${maxLengthDescription}`}
+                      isVisibleLength
                       isTextarea
                     />
                   </div>
@@ -453,8 +494,28 @@ const DonatContainer = () => {
                       typeInput="number"
                       addonAfter={
                         <SelectComponent
-                          title={blockchainList}
-                          list={[blockchainList]}
+                          title={
+                            <div className="selected-blockchain">
+                              {selectedBlockchainIconInfo && (
+                                <div
+                                  className="blockchain-icon"
+                                  style={{
+                                    background:
+                                      selectedBlockchainIconInfo.color,
+                                  }}
+                                >
+                                  <img
+                                    src={selectedBlockchainIconInfo.icon}
+                                    alt={selectedBlockchain}
+                                  />
+                                </div>
+                              )}
+                              <span>{selectedBlockchain}</span>
+                            </div>
+                          }
+                          list={walletConf.blockchains.map(
+                            ({ nativeCurrency }) => nativeCurrency.symbol
+                          )}
                           selectItem={(selected) =>
                             setForm({
                               ...form,
@@ -464,11 +525,30 @@ const DonatContainer = () => {
                           modificator="donat-container__payment_inputs-select"
                         />
                       }
+                      addonsModificator="select-blockchain"
                       modificator="donat-container__payment_inputs-amount"
                       placeholder="Donation amount"
-                      descriptionInput={`Equal to ${parseFloat(
-                        String(+amount * usdtKoef)
-                      ).toFixed(2)} USD`}
+                      descriptionInput={
+                        <>
+                          <TabsComponent
+                            setTabContent={(key) => {
+                              setTabCount(key);
+                              setForm({
+                                ...form,
+                                amount: key,
+                              });
+                            }}
+                            activeKey={tabCount}
+                            tabs={countTabs}
+                          />
+                          <p className="usd-equal">
+                            Equal to&nbsp;
+                            {parseFloat(String(+amount * usdtKoef)).toFixed(1)}
+                            &nbsp;USD
+                          </p>
+                        </>
+                      }
+                      descriptionModificator="count-modificator"
                     />
                   </div>
                 </div>
@@ -500,7 +580,7 @@ const DonatContainer = () => {
                               value={selectedGoal}
                             >
                               <Space direction="vertical">
-                                <Radio value={"0"}>Don’t participate</Radio>
+                                <Radio value={"0"}>Don't participate</Radio>
                                 {goalsActive &&
                                   goalsActive.map(
                                     ({
@@ -510,8 +590,8 @@ const DonatContainer = () => {
                                       amount_goal,
                                     }: IGoalData) => (
                                       <Radio key={id} value={id}>
-                                        {title} ({amount_raised}/{amount_goal}{" "}
-                                        USD)
+                                        {title} ({amount_raised}/{amount_goal}
+                                        &nbsp; USD)
                                       </Radio>
                                     )
                                   )}
@@ -525,16 +605,17 @@ const DonatContainer = () => {
                 )}
                 <div className="donat-container__payment_bottom">
                   <BaseButton
-                    title={personInfo.btn_text || "Donate"}
+                    title={personInfo.btn_text || "Send donations"}
                     onClick={triggerContract}
                     padding="10px 25px"
                     fontSize="21px"
                     color={personInfo.main_color}
                     disabled={loading}
+                    isMain
                   />
-                  <div className="donat-container__payment_balance">
+                  {/* <div className="donat-container__payment_balance">
                     Your balance: {(balance * usdtKoef).toFixed(2)} USD
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

@@ -19,17 +19,18 @@ export const shortStr = (str: string, length: number) => {
     : str;
 };
 
-export const copyStr = (str: string) => {
+export const copyStr = (str: string, copyObject: string = "link") => {
   try {
     navigator.clipboard.writeText(str);
+    const formatCopyObject = copyObject[0].toUpperCase() + copyObject.slice(1);
     addNotification({
       type: "success",
-      title: "Link successfully copied",
+      title: `${formatCopyObject} successfully copied`,
     });
   } catch (error) {
     addNotification({
       type: "warning",
-      title: "An error occurred while copying the link",
+      title: `An error occurred while copying the ${copyObject.toLowerCase()}`,
     });
   }
 };

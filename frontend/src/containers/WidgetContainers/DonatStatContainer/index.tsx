@@ -1,23 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { IStatData } from "types";
+
 import axiosClient, { baseURL } from "../../../axiosClient";
+import { WalletContext } from "../../../contexts/Wallet";
 import {
-  alignFlextItemsList,
-  alignItemsList,
-  AlignText,
-  IStatData,
-} from "../../../types";
-import {
-  currBlockchain,
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
   getUsdKoef,
   renderStatItem,
 } from "../../../utils";
 import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
-import { widgetApiUrl } from "../../../consts";
+import { AlignText } from "../../../types";
+import {
+  alignFlextItemsList,
+  alignItemsList,
+  widgetApiUrl,
+} from "../../../consts";
 import "./styles.sass";
 
 const LIMIT = 3;
@@ -25,10 +26,10 @@ const LIMIT = 3;
 const DonatStatContainer = () => {
   const dispatch = useDispatch();
   const { id, name } = useParams();
+  const { walletConf } = useContext(WalletContext);
+
   const user = useSelector((state: any) => state.personInfo).main_info;
-  const { list } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { list } = useSelector((state: any) => state.notifications);
   const [lastNotif, setLastNotif] = useState<any>({});
   const [renderList, setRenderList] = useState<any[]>([]);
   const [statData, setStatData] = useState<IStatData | null>(null);
@@ -40,14 +41,20 @@ const DonatStatContainer = () => {
         const { time_period, data_type } = statData;
         const customPeriod = time_period.split("-");
 
-        const { data } = await axiosClient.get(
-          `${widgetApiUrl}/${data_type}/${user.user_id}?limit=${LIMIT}&${
-            Boolean(customPeriod.length > 1)
-              ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
-              : `timePeriod=${time_period}`
-          }&isStatPage=true&blockchain=${currBlockchain?.nativeCurrency.symbol}`
-        );
-        data && data.length && setRenderList(data);
+        const currBlockchain = await walletConf.getCurrentBlockchain();
+
+        if (currBlockchain) {
+          const { data } = await axiosClient.get(
+            `${widgetApiUrl}/${data_type}/${user.user_id}?limit=${LIMIT}&${
+              Boolean(customPeriod.length > 1)
+                ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
+                : `timePeriod=${time_period}`
+            }&isStatPage=true&blockchain=${
+              currBlockchain.name
+            }`
+          );
+          data && data.length && setRenderList(data);
+        }
       } catch (error) {
         console.log(error);
       }

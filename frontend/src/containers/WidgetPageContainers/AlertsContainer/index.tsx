@@ -1,28 +1,72 @@
 import React, { useEffect, useMemo, useState } from "react";
-// import { ChromePicker } from "react-color";
-import { Col, Row, Switch } from "antd";
-import { useSelector } from "react-redux";
-import useSound from "use-sound";
+import { Col, Row } from "antd";
+import styled from "styled-components";
+import FontFaceObserver from "fontfaceobserver";
+import { ISoundInfo } from "types";
+
+import { useAppSelector } from "../../../hooks/reduxHooks";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import PageTitle from "../../../components/PageTitle";
-import { addNotification, addSuccessNotification } from "../../../utils";
 import ColorPicker from "../../../components/ColorPicker";
-import UploadImage from "../../../components/UploadImage";
-import donImg from "../../../assets/big_don.png";
+import UploadImage, { UploadAfterEl } from "../../../components/UploadImage";
 import BaseButton from "../../../components/BaseButton";
 import LinkCopy from "../../../components/LinkCopy";
 import SelectComponent from "../../../components/SelectComponent";
+import SelectInput, { ISelectItem } from "../../../components/SelectInput";
 import SliderForm from "../../../components/SliderForm";
 import SwitchForm from "../../../components/SwitchForm";
 import { TabsComponent } from "../../../components/TabsComponent";
 import WidgetMobileWrapper from "../../../components/WidgetMobileWrapper";
-import { IAlertData, initAlertData } from "../../../types";
-import { url } from "../../../consts";
-import { soundsList } from "../../../assets/sounds";
+import ModalComponent from "../../../components/ModalComponent";
+import {
+  addNotification,
+  addSuccessNotification,
+  getDefaultImages,
+  getFontsList,
+  getSounds,
+  sendFile,
+} from "../../../utils";
+import { IAlert, IDefaultImagesModal } from "../../../types";
+import { initAlertData } from "../../../consts";
+import donImg from "../../../assets/big_don.png";
+// import { soundsList } from "../../../assets/sounds";
 import "./styles.sass";
 
-const PreviewAlertsBlock = ({ formData }: { formData: IAlertData }) => {
-  const { banner, message_color, name_color, sum_color } = formData;
+const alertSound = new Audio();
+
+const StyledText = styled.span<{
+  color?: string;
+  font: string;
+  fontLink: string;
+}>`
+  @font-face {
+    font-family: "${({ font }) => font}";
+    font-weight: 400;
+    font-style: normal;
+    src: url("${({ fontLink }) => fontLink}");
+  }
+  font-family: "${({ font }) => font}", sans-serif;
+  color: ${({ color }) => color};
+`;
+
+const SelectDropdownOption = (item: ISelectItem) => (
+  <StyledText font={item.value} fontLink={item.key}>
+    {item.value}
+  </StyledText>
+);
+
+const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
+  const {
+    banner,
+    message_color,
+    message_font,
+    name_color,
+    name_font,
+    sum_color,
+    sum_font,
+  } = formData;
+
   return (
     <Col
       xl={10}
@@ -35,32 +79,34 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlertData }) => {
         <div className="preview-block_img">
           <img src={banner.preview || donImg} alt="preview logo" />
         </div>
+
         <div className="preview-block_title">
           <p>
-            <span
-              style={{
-                color: name_color,
-              }}
+            <StyledText
+              color={name_color}
+              font={name_font.name}
+              fontLink={name_font.link}
             >
               MrBeast
-            </span>{" "}
-            -{" "}
-            <span
-              style={{
-                color: sum_color,
-              }}
+            </StyledText>
+            &nbsp; -&nbsp;
+            <StyledText
+              color={sum_color}
+              font={sum_font.name}
+              fontLink={sum_font.link}
             >
               10 USD
-            </span>
+            </StyledText>
           </p>
         </div>
-        <p
-          className="preview-block_message"
-          style={{
-            color: message_color,
-          }}
-        >
-          Thank you for your stream!
+        <p className="preview-block_message">
+          <StyledText
+            color={message_color}
+            font={message_font.name}
+            fontLink={message_font.link}
+          >
+            Thank you for your stream!
+          </StyledText>
         </p>
       </div>
     </Col>
@@ -69,23 +115,78 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlertData }) => {
 
 const SettingsAlertsBlock = ({
   formData,
+  fonts,
   setFormData,
 }: {
-  formData: IAlertData;
-  setFormData: (formData: IAlertData) => void;
+  formData: IAlert;
+  fonts: ISelectItem[];
+  setFormData: (formData: IAlert) => void;
 }) => {
   const {
     banner,
     message_color,
+    message_font,
     name_color,
+    name_font,
     sum_color,
+    sum_font,
     duration,
     sound,
     voice,
     gender_voice,
   } = formData;
 
-  const [play] = useSound(soundsList[sound]);
+  const { id } = useAppSelector(({ user }) => user);
+
+  // const [play] = useSound(soundsList[sound]);
+  const [soundsList, setSoundsList] = useState<ISoundInfo[]>([]);
+  const [modalInfo, setModalInfo] = useState<IDefaultImagesModal>({
+    isOpen: false,
+    images: [],
+  });
+
+  const { isOpen, images } = modalInfo;
+
+  const openDefaultImages = async () => {
+    const images = await getDefaultImages("alerts");
+    images.length &&
+      setModalInfo({
+        isOpen: true,
+        images,
+      });
+  };
+
+  const closeModal = () => setModalInfo({ isOpen: false, images: [] });
+
+  const selectDefaultBanner = (image: string) => {
+    setFormData({
+      ...formData,
+      banner: {
+        file: null,
+        preview: image,
+      },
+    });
+    closeModal();
+  };
+
+  useEffect(() => {
+    const initSounds = async () => {
+      const sounds = await getSounds(id);
+      sounds.length && setSoundsList(sounds);
+    };
+    id && initSounds();
+  }, [id]);
+
+  useEffect(() => {
+    if (sound) {
+      const soundInfo = soundsList.find((s) => s.name === sound);
+      if (alertSound && soundInfo) {
+        alertSound.pause();
+        alertSound.src = soundInfo.link;
+        alertSound.play();
+      }
+    }
+  }, [sound]);
 
   return (
     <Col xl={13} md={24}>
@@ -105,6 +206,14 @@ const SettingsAlertsBlock = ({
                   },
                 })
               }
+              afterEl={
+                <UploadAfterEl
+                  size="1200*800"
+                  openBanners={openDefaultImages}
+                />
+              }
+              labelCol={8}
+              inputCol={8}
             />
           </div>
         </Col>
@@ -116,6 +225,8 @@ const SettingsAlertsBlock = ({
               }
               color={message_color}
               label="Message color:"
+              labelCol={8}
+              inputCol={14}
               gutter={[0, 18]}
             />
           </div>
@@ -128,6 +239,8 @@ const SettingsAlertsBlock = ({
               }
               color={name_color}
               label="Donor name color:"
+              labelCol={8}
+              inputCol={14}
               gutter={[0, 18]}
             />
           </div>
@@ -140,7 +253,81 @@ const SettingsAlertsBlock = ({
               }
               color={sum_color}
               label="Donation sum color:"
+              labelCol={8}
+              inputCol={14}
               gutter={[0, 18]}
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SelectInput
+              label="Message font:"
+              value={message_font.name}
+              list={fonts}
+              modificator="form-select"
+              setValue={(selected, option) =>
+                setFormData({
+                  ...formData,
+                  message_font: {
+                    name: option?.title,
+                    link: selected as string,
+                  },
+                })
+              }
+              renderOption={SelectDropdownOption}
+              labelCol={8}
+              selectCol={14}
+              gutter={[0, 18]}
+              showSearch
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SelectInput
+              label="Supporter font: "
+              value={name_font.name}
+              list={fonts}
+              modificator="form-select"
+              setValue={(selected, option) =>
+                setFormData({
+                  ...formData,
+                  name_font: {
+                    name: option?.title,
+                    link: selected as string,
+                  },
+                })
+              }
+              renderOption={SelectDropdownOption}
+              labelCol={8}
+              selectCol={14}
+              gutter={[0, 18]}
+              showSearch
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SelectInput
+              label="Donation sum font:"
+              value={sum_font.name}
+              list={fonts}
+              modificator="form-select"
+              setValue={(selected, option) =>
+                setFormData({
+                  ...formData,
+                  sum_font: {
+                    name: option?.title,
+                    link: selected as string,
+                  },
+                })
+              }
+              renderOption={SelectDropdownOption}
+              labelCol={8}
+              selectCol={14}
+              gutter={[0, 18]}
+              showSearch
             />
           </div>
         </Col>
@@ -153,10 +340,11 @@ const SettingsAlertsBlock = ({
               min={15}
               setValue={(num) => setFormData({ ...formData, duration: num })}
               value={+duration}
-              maxWidth={185}
+              maxWidth={250}
               description={`${duration} sec`}
+              labelCol={8}
+              sliderCol={14}
               gutter={[0, 18]}
-              // labelCol={10}
             />
           </div>
         </Col>
@@ -169,18 +357,26 @@ const SettingsAlertsBlock = ({
               gutter={[0, 18]}
               align="middle"
             >
-              <Col md={12} sm={8} xs={12}>
+              <Col sm={8} xs={12}>
                 <span className="form-element__label">Alert sound:</span>
               </Col>
               <Col md={4}>
                 <SelectComponent
                   title={sound}
-                  list={Object.keys(soundsList)}
-                  selectItem={(selected) => {
-                    setFormData({ ...formData, sound: selected });
-                    play();
-                  }}
+                  list={soundsList.map((s) => s.name)}
+                  selectItem={(selected) =>
+                    setFormData({ ...formData, sound: selected })
+                  }
+                  // play();
                   modificator="select-sound"
+                  listModificator="list-sound"
+                  listItemModificator="listItem-sound"
+                  headerList={
+                    <div className="select-header">Donation sounds</div>
+                  }
+                  footerList={
+                    <div className="select-footer">Upload custom sound +</div>
+                  }
                 />
               </Col>
             </Row>
@@ -192,56 +388,91 @@ const SettingsAlertsBlock = ({
               label="Voice alerts:"
               checked={voice}
               setValue={(flag) => setFormData({ ...formData, voice: flag })}
-              maxWidth={185}
+              maxWidth={250}
+              labelCol={8}
+              switchCol={14}
               gutter={[0, 18]}
               afterComponent={
-                <TabsComponent
-                  setTabContent={(gender_voice) =>
-                    setFormData({ ...formData, gender_voice })
-                  }
-                  activeKey={gender_voice}
-                  tabs={[
-                    {
-                      key: "MALE",
-                      label: "Male",
-                    },
-                    {
-                      key: "FEMALE",
-                      label: "Female",
-                    },
-                  ]}
-                />
+                voice ? (
+                  <TabsComponent
+                    setTabContent={(gender_voice) =>
+                      setFormData({ ...formData, gender_voice })
+                    }
+                    activeKey={gender_voice}
+                    tabs={[
+                      {
+                        key: "MALE",
+                        label: "Male",
+                      },
+                      {
+                        key: "FEMALE",
+                        label: "Female",
+                      },
+                    ]}
+                  />
+                ) : null
               }
+              isVisibleStatus
             />
           </div>
         </Col>
+        <ModalComponent
+          open={isOpen}
+          title="Default donation alert banners"
+          width={900}
+          onCancel={closeModal}
+          className="alert-modal"
+          topModal
+        >
+          <Row gutter={[16, 32]} justify="space-between">
+            {images.map((image, key) => (
+              <Col md={8} key={`banner-${image}-${key}`}>
+                <div
+                  className="default-banner"
+                  onClick={() => selectDefaultBanner(image)}
+                >
+                  <img src={image} alt={`banner-${key}`} />
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </ModalComponent>
       </Row>
     </Col>
   );
 };
 
 const AlertsContainer = () => {
-  const user = useSelector((state: any) => state.user);
+  const { id, username, donat_page } = useAppSelector(({ user }) => user);
+  const { isLaptop } = useWindowDimensions();
   const [loading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState<IAlertData>({ ...initAlertData });
+  const [formData, setFormData] = useState<IAlert>({ ...initAlertData });
+  const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
-  const getAlertsWidgetData = async (user: any) => {
-    if (user.id) {
+  const getAlertsWidgetData = async () => {
+    if (id && fonts) {
       const { data } = await axiosClient.get(
-        "/api/widget/get-alerts-widget/" + user.id
+        "/api/widget/get-alerts-widget/" + id
       );
-      const userData: IAlertData = {
+
+      const userData: IAlert = {
+        ...data,
+        name_font: {
+          name: data.name_font,
+          link: fonts.find(({ value }) => value === data.name_font)?.key,
+        },
+        message_font: {
+          name: data.message_font,
+          link: fonts.find(({ value }) => value === data.message_font)?.key,
+        },
+        sum_font: {
+          name: data.sum_font,
+          link: fonts.find(({ value }) => value === data.sum_font)?.key,
+        },
         banner: {
-          preview: data.banner_link ? `${url + data.banner_link}` : "",
+          preview: data.banner_link || "",
           file: formData.banner.file,
         },
-        message_color: data.message_color,
-        name_color: data.name_color,
-        sum_color: data.sum_color,
-        duration: data.duration,
-        sound: data.sound,
-        voice: data.voice,
-        gender_voice: data.gender_voice,
       };
 
       setFormData({
@@ -257,30 +488,41 @@ const AlertsContainer = () => {
       const {
         banner,
         message_color,
+        message_font,
         name_color,
+        name_font,
         sum_color,
+        sum_font,
         duration,
         sound,
         voice,
         gender_voice,
       } = formData;
 
-      const form = new FormData();
-      banner.file && form.append("file", banner.file);
-      form.append(
-        "alertData",
-        JSON.stringify({
-          message_color,
-          name_color,
-          sum_color,
-          duration,
-          sound,
-          voice,
-          gender_voice,
-        })
-      );
-      form.append("creator_id", user.id);
-      await axiosClient.put("/api/widget/edit-alerts-widget/", form);
+      (banner.file || banner.preview) &&
+        (await sendFile({
+          file: banner.file,
+          filelink: banner.preview,
+          username,
+          userId: id,
+          data: {
+            key: "alertData",
+            body: JSON.stringify({
+              message_color,
+              message_font: message_font.name,
+              name_color,
+              name_font: name_font.name,
+              sum_color,
+              sum_font: sum_font.name,
+              duration,
+              sound,
+              voice,
+              gender_voice,
+            }),
+          },
+          url: "/api/widget/edit-alerts-widget/",
+        }));
+
       addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
       addNotification({
@@ -296,23 +538,68 @@ const AlertsContainer = () => {
   };
 
   useEffect(() => {
-    getAlertsWidgetData(user);
-  }, [user]);
+    id && fonts.length && getAlertsWidgetData();
+  }, [id, fonts]);
+
+  // useEffect(() => {
+  //   console.log("loaded", fonts.length);
+  //   if (fonts.length) {
+  //     const fontObservers = fonts.map(
+  //       (font) => new FontFaceObserver(font.value)
+  //     );
+  //     console.log(fontObservers);
+
+  //     fontObservers[0].load().then(function () {
+  //       console.log("Family A");
+  //     });
+
+  //     // fontA.load(), fontB.load()
+
+  //     Promise.all(fontObservers.map((font) => font.load())).then(function () {
+  //       console.log("Family A & B have loaded");
+  //     });
+  //   }
+  // }, [fonts]);
+
+  useEffect(() => {
+    const initFonts = async () => {
+      const fonts = await getFontsList();
+      setFonts(fonts);
+    };
+    initFonts();
+  }, []);
 
   const linkForStream = useMemo(
-    () => `${baseURL}/donat-message/${user.username}/${user.security_string}`,
-    [user]
+    () => `${baseURL}/donat-message/${username}/${donat_page.security_string}`,
+    [username, donat_page]
   );
+
+  // const testFonts =
+
+  // console.log(testFonts);
+
+  // const fontA = new FontFaceObserver(message_font.name);
+  // var fontB = new FontFaceObserver("Family B");
+
+  // fontA.load().then(function () {
+  //   console.log("Family A is available");//   сщтыщдуюдщп(ЭАфьшдн Ф шы фмфшдфидуЭ)ж
+
+  // });
 
   return (
     <div className="alerts-container">
+      {/* {fonts.length &&
+        fonts.map((font) => (
+          <StyledText font={font.value} fontLink={font.key} />
+        ))} */}
       <PageTitle formatId="page_title_alerts" />
-      <LinkCopy
-        link={linkForStream}
-        description={
-          "Via the link below you can insert «New donation» widget on your stream"
-        }
-      />
+      <div className="link-top">
+        <p>
+          Paste this link into broadcasting software you use and display your
+          incoming donations
+        </p>
+        <LinkCopy link={linkForStream} isSimple={!isLaptop} />
+      </div>
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />
         <WidgetMobileWrapper
@@ -322,6 +609,7 @@ const AlertsContainer = () => {
           settingsBlock={
             <SettingsAlertsBlock
               key="settings"
+              fonts={fonts}
               formData={formData}
               setFormData={setFormData}
             />
@@ -334,7 +622,7 @@ const AlertsContainer = () => {
             onClick={sendData}
             fontSize="18px"
             disabled={loading}
-            isBlue
+            isMain
           />
         </div>
       </div>

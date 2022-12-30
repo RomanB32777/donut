@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Col, Empty, Row } from "antd";
+import { stringFormatTypes } from "types";
+
+import { WalletContext } from "../../../../contexts/Wallet";
 import SelectComponent from "../../../../components/SelectComponent";
 import axiosClient from "../../../../axiosClient";
-import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
-import { stringFormatTypes } from "../../../../utils/dateMethods/types";
+
+import { getTimePeriodQuery } from "../../../../utils";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
@@ -16,6 +19,7 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   const { list, shouldUpdateApp } = useSelector(
     (state: any) => state.notifications
   );
+  const { walletConf } = useContext(WalletContext);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
@@ -26,11 +30,15 @@ const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
   const getLatestDonations = async (timePeriod: string) => {
     try {
       setLoading(true);
-      const blockchain = currBlockchain?.nativeCurrency.symbol;
-      const { data } = await axiosClient.get(
-        `${widgetApiUrl}/top-supporters/${user.id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}&blockchain=${blockchain}`
-      );
-      data && setTopSupporters(data);
+      const currBlockchain = await walletConf.getCurrentBlockchain();
+
+      if (currBlockchain) {
+        const blockchain = currBlockchain.name;
+        const { data } = await axiosClient.get(
+          `${widgetApiUrl}/top-supporters/${user.id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}&blockchain=${blockchain}`
+        );
+        data && setTopSupporters(data);
+      }
     } catch (error) {
       console.log(error);
     } finally {

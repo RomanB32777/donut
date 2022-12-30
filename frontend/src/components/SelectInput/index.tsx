@@ -1,4 +1,5 @@
 import { Col, Row, Select } from "antd";
+import { BaseOptionType, DefaultOptionType } from "antd/lib/select";
 import clsx from "clsx";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import "./styles.sass";
@@ -20,8 +21,14 @@ const SelectInput = ({
   labelCol,
   selectCol,
   isTags,
+  disabled,
+  showSearch,
+  labelInValue,
   descriptionSelect,
+  dropdownClassName,
   setValue,
+  renderOption,
+  dropdownRender,
 }: {
   value: string | string[];
   list: ISelectItem[] | null; // string[]
@@ -32,8 +39,14 @@ const SelectInput = ({
   labelCol?: number;
   selectCol?: number;
   isTags?: boolean;
+  disabled?: boolean;
+  showSearch?: boolean;
+  labelInValue?: boolean;
   descriptionSelect?: string;
-  setValue?: (value: string | string[]) => void;
+  dropdownClassName?: string;
+  setValue?: (value: string | string[], option?: any) => void;
+  renderOption?: (item: ISelectItem) => React.ReactNode;
+  dropdownRender?: (menu: React.ReactElement) => JSX.Element;
 }) => {
   const { isMobile } = useWindowDimensions();
 
@@ -63,13 +76,20 @@ const SelectInput = ({
             placeholder={placeholder || ""}
             mode={isTags ? "tags" : undefined}
             onChange={setValue}
+            disabled={(list && Boolean(list.length)) || disabled ? false : true}
+            dropdownRender={dropdownRender}
+            popupClassName={dropdownClassName}
+            optionLabelProp="title"
+            showSearch={showSearch}
+            labelInValue={labelInValue}
             showArrow
-            disabled={list && Boolean(list.length) ? false : true}
+            // bordered={false}
+            // open={true}
           >
             {list &&
               list.map(({ key, value }) => (
-                <Option value={key} key={key}>
-                  {value}
+                <Option value={key} key={key} title={value}>
+                  {renderOption ? renderOption({ value, key }) : value}
                 </Option>
               ))}
           </Select>

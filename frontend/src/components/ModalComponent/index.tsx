@@ -22,6 +22,7 @@ const ModalComponent = ({
   noPadding,
   closable,
   children,
+  className,
 }: IModalComponent) => (
   <Modal
     title={title}
@@ -36,7 +37,7 @@ const ModalComponent = ({
       padding: noPadding ? 0 : 24,
     }}
     centered={centered || false}
-    className="app-modal"
+    className={clsx("app-modal", className)}
   >
     <div
       className={clsx("modal-content-wrapper", {

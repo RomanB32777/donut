@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
 import { useDispatch } from "react-redux";
 import { io, Socket } from "socket.io-client";
-import { baseURL } from "../../axiosClient";
+import { baseURL, isProduction, socketsBaseUrl } from "../../axiosClient";
 import { getNotifications } from "../../store/types/Notifications";
 import { useParams } from "react-router";
 
@@ -13,7 +13,7 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
   const [valueContext, setValueContext] = useState<null | Socket>(null);
 
   const setUnloginUserSocket = (username: string) => {
-    const socket = io(baseURL, {
+    const socket = io(isProduction ? baseURL : socketsBaseUrl, {
       path: "/sockt/",
       query: {
         userName: username,

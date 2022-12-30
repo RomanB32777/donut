@@ -50,7 +50,7 @@ const WidgetMobileWrapper = ({
     <div className="tabs-wrapper">
       {tabContent !== "All" && (
         <TabsComponent
-          setTabContent={setTabContent}
+          setTabContent={(key) => setTabContent(key as typesTabContent)}
           tabs={[
             {
               key: "Settings",

@@ -17,7 +17,7 @@ const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
                 <div className="widget__item_header_sum sum">
                   {(
                     Number(donat.sum_donation) * usdtKoef
-                  ).toFixed(2)}{" "}
+                  ).toFixed(2)}&nbsp;
                   USD
                 </div>
               </div>
@@ -25,7 +25,7 @@ const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
             <Col xs={5} md={4}>
               <div className="widget__item_header_time time">
                 {moment(
-                  DateTimezoneFormatter(donat.donation_date)
+                  DateTimezoneFormatter(donat.created_at)
                 )
                   .startOf("minutes")
                   .fromNow()}

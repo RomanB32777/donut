@@ -1,11 +1,11 @@
 import { Navigate, useRoutes, Outlet, RouteObject } from "react-router";
-import { useSelector } from "react-redux";
-import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons/icons";
+import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons";
 import {
   PieChartOutlined,
   SettingOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
+import { useAppSelector } from "./hooks/reduxHooks";
 
 import MainPage from "./pages/MainPage";
 import BadgesPage from "./pages/BadgesPage";
@@ -17,13 +17,12 @@ import DonationPage from "./pages/DonationPage";
 import StreamStatsPage from "./pages/StreamStatsPage";
 import DonationGoalsPage from "./pages/DonationGoalsPage";
 import SettingsPage from "./pages/SettingsPage";
-import RegistrationModal from "./components/RegistrationModal";
+import RegistrationContainer from "./containers/RegistrationContainer";
 import Loader from "./components/Loader";
 import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
 import DonatStatPage from "./pages/DonatStatPage";
 import LandingPage from "./pages/LandingPage";
-import ChooseWalletPage from "./pages/ChooseWalletPage";
 import ChooseBlockchainPage from "./pages/ChooseBlockchainPage";
 import NoPage from "./pages/NoPage";
 import { adminPath } from "./consts";
@@ -57,10 +56,9 @@ type ProtectedRouteType = {
 };
 
 const ProtectedRoutes = (props: ProtectedRouteType) => {
-  const user = useSelector((state: any) => state.user);
-  const { isLoading } = useSelector((state: any) => state.loading);
+  const { user, loading } = useAppSelector((state) => state);
 
-  if (!user.id && isLoading) return <Loader size="big" />;
+  if (!user.id && loading) return <Loader size="big" />;
 
   //if the role required is there or not
   if (props.roleRequired) {
@@ -68,7 +66,7 @@ const ProtectedRoutes = (props: ProtectedRouteType) => {
       props.roleRequired === user.roleplay ? (
         <Outlet />
       ) : (
-        <Navigate to="/donations" />
+        <Navigate to={`/${adminPath}/donations`} />
       )
     ) : (
       <Navigate to="/register" />
@@ -167,19 +165,14 @@ export const routers: IRoute[] = [
       },
     ],
   },
-  // {
-  //   path: "wallets",
-  //   element: <ChooseWalletPage />,
-  //   hiddenLayoutElements: true,
-  // },
-  // {
-  //   path: "blockchains/:wallet",
-  //   element: <ChooseBlockchainPage />,
-  //   hiddenLayoutElements: true,
-  // },
+  {
+    path: "blockchains",
+    element: <ChooseBlockchainPage />,
+    hiddenLayoutElements: true,
+  },
   {
     path: "register",
-    element: <RegistrationModal />,
+    element: <RegistrationContainer />,
   },
   {
     path: "support/:name",

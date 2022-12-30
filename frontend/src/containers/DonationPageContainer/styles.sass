@@ -1,57 +1,96 @@
 @use '../././../commonStyles/variables'
 
-.qr
-    margin-top: 40px
-
-    &-title
+.donationPage-container
+    .link-top
         display: flex
+        justify-content: space-between
         align-items: center
-        margin-bottom: 15px
-        cursor: pointer
+        width: 100%
 
-        span
-            font-family: variables.$jakarta-font
-            font-style: normal
-            font-weight: 400
-            font-size: 20px
-            line-height: 25px
-            color: variables.$white-color
+        p
+            font-family: variables.$pt-font
+            font-size: 18px
+            line-height: 22px
+            margin: 0
 
-        svg
-            transition: transform .4s
+        .link-wrapper
+            width: fit-content
 
-        &.rotated
-            svg
-                transform: rotate(180deg)
-
-    &-wrapper
-        display: flex
-        align-items: center
-
-        @media (max-width: 480px)
+        @media (max-width: 768px)
             flex-direction: column
             align-items: flex-start
 
-    &-block
-        background: variables.$white-color
-        padding: 8px 8px 4px
-        width: fit-content
-        margin-right: 50px
+            .link-wrapper
+                margin-top: 10px
 
-        @media (max-width: 480px)
-            margin-right: 0
-            margin-bottom: 25px
+    .qr
+        margin-top: 40px
 
-.designSettings
-    margin-top: 40px
-    max-width: 750px
+        &-title
+            display: flex
+            align-items: center
+            margin-bottom: 15px
+            cursor: pointer
 
-.form
-    &-element
+            span
+                font-family: variables.$pt-font
+                font-style: normal
+                font-weight: 400
+                font-size: 20px
+                line-height: 25px
+                color: variables.$white-color
+
+            svg
+                transition: transform .4s
+
+            &.rotated
+                svg
+                    transform: rotate(180deg)
+
+        &-wrapper
+            display: flex
+            align-items: center
+
+            @media (max-width: 480px)
+                flex-direction: column
+                align-items: flex-start
+
+        &-block
+            background: variables.$white-color
+            padding: 8px 8px 4px
+            width: fit-content
+            margin-right: 50px
+
+            @media (max-width: 480px)
+                margin-right: 0
+                margin-bottom: 25px
+
+    .designSettings
+        margin-top: 40px
+        // max-width: 750px
+
+    .form
+        &-element
+            width: 100%
+
+            textarea
+                height: 150px
+
+    .saveBottom
+        margin-top: 50px
+
+.donat-modal
+    .default-banner
         width: 100%
+        height: 215px
 
-        textarea
-            height: 150px
+        img
+            width: 100%
+            height: 100%
+            object-fit: cover
+            border-radius: variables.$border-radius
+            cursor: pointer
 
-.saveBottom
-    margin-top: 50px
+        &.long
+            width: auto
+            height: 120px

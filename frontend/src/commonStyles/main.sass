@@ -2,6 +2,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap')
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap')
 
 html
   box-sizing: border-box
@@ -29,7 +31,6 @@ body
   display: flex
   flex-direction: column
   align-items: center
-
   overflow-x: hidden
   overflow-y: scroll
 
@@ -55,39 +56,49 @@ body
   border-radius: 2px
   background: variables.$black-color
 ::-webkit-scrollbar-thumb
-  background: variables.$blue-color
+  background: variables.$main-color
   border-radius: 2px
   width: 2px
 
 .rnc__notification-item--info
-  background-color: variables.$blue-color !important
+  background-color: variables.$main-color !important
   border-left: 8px solid #0c078c !important
 
 .rnc__notification-content
-  font-family: variables.$jakarta-font, sans-serif
+  font-family: variables.$pt-font, sans-serif
 
 .ant-layout-sider,
-.ant-menu.ant-menu-dark,
 .ant-layout-sider-trigger,
-.ant-layout-header,
+.ant-layout-header
+  background: variables.$black-transparent-color
+
+.ant-menu.ant-menu-dark,
 .ant-menu-dark .ant-menu-inline.ant-menu-sub
-  background: variables.$grey-background-color
+  background: none
 
-.ant-layout,
-.site-layout
-  background: variables.$black-color
+body,
+.ant-layout
+  background: variables.$blue-dark-color
 
-  &.transparent
-    background: rgba(0, 0, 0, 0)
-    padding-bottom: 0
-    overflow: hidden
+  &.layout-container
+    min-height: 100vh
+    position: relative
 
-.ant-layout-sider
-  border-right: 1px solid variables.$black-color
+  &.site-layout
+    background-image: url('../assets/blue-gradient.png')
+    background-repeat: no-repeat
+    background-position: -25% -100%
+    background-size: 800px
+    background-attachment: fixed
+
+.transparent
+  background: rgba(0, 0, 0, 0)
+  padding-bottom: 0
+  overflow: hidden
 
 .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected,
 .ant-menu.ant-menu-dark .ant-menu-item-selected
-  background-color: variables.$blue-color
+  background-color: transparent
 
 .ant-menu
   font-family: variables.$inter-font
@@ -128,25 +139,31 @@ body
 
 .ant-slider:hover .ant-slider-track,
 .ant-slider-track
-  background-color: variables.$blue-color
+  background-color: variables.$main-color
 
 .ant-slider-handle,
 .ant-slider-handle:focus,
-.ant-slider-handle:hover
-  border-color: variables.$blue-color
+.ant-slider-handle:hover,
+.ant-slider:hover .ant-slider-handle:not(.ant-tooltip-open)
+  border: solid 2px variables.$main-color
+  border-color: variables.$main-color
+  background: variables.$main-color
+
+.ant-slider-dot
+  display: none
 
 .ant-back-top
   right: 25px
   bottom: 20px
 
 .ant-btn-default:hover
-  border-color: variables.$blue-color
-  color: variables.$blue-color
+  border-color: variables.$main-color
+  color: variables.$main-color
 
 .ant-btn-primary,
 .ant-btn-primary:hover
-  border-color: variables.$blue-color
-  background-color: variables.$blue-color
+  border-color: variables.$main-color
+  background-color: variables.$main-color
 
 .ant-steps
   .ant-steps-item
@@ -180,7 +197,7 @@ body
 .form
   &-element
     &__label
-      font-family: variables.$jakarta-font
+      font-family: variables.$pt-font
       font-style: normal
       font-weight: 400
       font-size: 20px
@@ -196,21 +213,46 @@ body
   bottom: 0
   z-index: 2
   transition: all .4s
+  backdrop-filter: blur(15px)
 
 .layout-header
   position: fixed
-  width: 100%
   top: 0
   left: 0
   z-index: 1
-  border-bottom: 1px solid variables.$black-color
+  width: calc(100% - 250px)
+  margin-left: 250px
+
+  &::before
+    content: ""
+    display: block
+    height: 100%
+    width: 100%
+    position: absolute
+    left: 0
+    top: 0
+    backdrop-filter: blur(10px)
 
 .hidden
   display: none !important
 
+.inter
+  font-family: variables.$inter-font
+
+.jakarta
+  font-family: variables.$jakarta-font
+
+.vt
+  font-family: variables.$vt-font
+
+.pt
+  font-family: variables.$pt-font
+
 @media (max-width: 992px)
   .layout-header
     z-index: 100
+    width: 100%
+    margin-left: 0
 
   .layout-sidebar
     top: 68px

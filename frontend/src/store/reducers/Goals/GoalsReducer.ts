@@ -1,18 +1,17 @@
-import { SET_GOALS } from './../../types/Goals/index';
+import { IGoalData } from "types";
+import { IGoalAction } from "../../../types";
+import { SET_GOALS } from "./../../types/Goals/index";
 
-const initialState = {
-    
-}
+const initialState: IGoalData[] = [];
 
-const GoalsReducer = (state = initialState, action: any) => {
+const GoalsReducer = (state = initialState, action: IGoalAction) => {
+  switch (action.type) {
+    case SET_GOALS:
+      return action.payload;
 
-    switch (action.type) {
-        case SET_GOALS:
-            return action.payload
-        
-        default:
-            return state
-    }
-}
+    default:
+      return state;
+  }
+};
 
-export default GoalsReducer
+export default GoalsReducer;

@@ -2,9 +2,10 @@ import { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
+import { IGoalData } from "types";
 import LinkCopy from "../../../../components/LinkCopy";
 import WidgetMobileWrapper from "../../../../components/WidgetMobileWrapper";
-import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons/icons";
+import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons";
 import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
 import BaseButton from "../../../../components/BaseButton";
@@ -16,7 +17,6 @@ import {
   addSuccessNotification,
   copyStr,
 } from "../../../../utils";
-import { IGoalData } from "../../../../types";
 
 interface IEditGoalData {
   title_color: string;
@@ -92,7 +92,7 @@ const PreviewGoalBlock = ({
             onClick={sendColorsData}
             fontSize="18px"
             disabled={loading}
-            isBlue
+            isMain
           />
         </div>
       )}
@@ -166,7 +166,7 @@ const SettingsGoalBlock = ({
           onClick={sendColorsData}
           fontSize="18px"
           disabled={loading}
-          isBlue
+          isMain
         />
       </div>
     </Col>

@@ -1,13 +1,13 @@
 import { Col, Empty, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { IGoalData } from "types";
 import axiosClient from "../../../axiosClient";
 import BaseButton from "../../../components/BaseButton";
 import PageTitle from "../../../components/PageTitle";
 import FormInput from "../../../components/FormInput";
 import ModalComponent from "../../../components/ModalComponent";
 import { getGoals } from "../../../store/types/Goals";
-import { IGoalData } from "../../../types";
 import { addNotification, addSuccessNotification } from "../../../utils";
 import GoalItem from "./GoalItem";
 
@@ -110,7 +110,7 @@ const DonationGoalsContainer = () => {
           padding="6px 35px"
           onClick={() => setIsOpenModal(true)}
           fontSize="18px"
-          isBlue
+          isMain
         />
       </div>
       <div className="goals-wrapper">
@@ -162,7 +162,7 @@ const DonationGoalsContainer = () => {
                     setFormData({ ...formData, widgetDescription: value })
                   }
                   labelCol={6}
-                  InputCol={14}
+                  inputCol={14}
                   gutter={[0, 18]}
                 />
               </div>
@@ -179,7 +179,7 @@ const DonationGoalsContainer = () => {
                   }
                   addonAfter={<span>USD</span>}
                   labelCol={6}
-                  InputCol={10}
+                  inputCol={10}
                   gutter={[0, 18]}
                 />
               </div>
@@ -193,7 +193,7 @@ const DonationGoalsContainer = () => {
                 onClick={sendData}
                 fontSize="18px"
                 disabled={loading}
-                isBlue
+                isMain
               />
             </div>
             <div className="goals-modal__btns_cancel">

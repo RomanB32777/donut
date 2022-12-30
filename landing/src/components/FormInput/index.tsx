@@ -15,7 +15,7 @@ const FormInput = ({
   descriptionInput,
   maxLength,
   isTextarea,
-  InputCol,
+  inputCol,
   labelCol,
   gutter,
   addonBefore,
@@ -32,7 +32,7 @@ const FormInput = ({
   descriptionInput?: string;
   maxLength?: number;
   isTextarea?: boolean;
-  InputCol?: number;
+  inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
   addonBefore?: React.ReactNode;
@@ -54,7 +54,7 @@ const FormInput = ({
           <span className="formInput__label">{label}</span>
         </Col>
         <Col
-          md={InputCol || (label ? 12 : 24)}
+          md={inputCol || (label ? 12 : 24)}
           xs={24}
           className={clsx("formInput__input", {
             [modificator as string]: modificator,
@@ -102,7 +102,7 @@ const FormInput = ({
         <Row>
           <Col
             offset={(!isMobile ? labelCol : 0) || (label && !isMobile ? 12 : 0)}
-            md={InputCol || (label ? 12 : 24)}
+            md={inputCol || (label ? 12 : 24)}
           >
             <p className="formInput__description">{descriptionInput}</p>
           </Col>

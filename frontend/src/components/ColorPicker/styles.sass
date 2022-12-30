@@ -8,7 +8,7 @@
 
     &-label,
     &-inputWrapper span
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 400
         font-size: 20px
@@ -18,17 +18,18 @@
     &-inputWrapper
         display: flex
         justify-content: space-between
-        max-width: 185px
+        max-width: 250px
         width: 100%
-        border: 1px solid variables.$white-color
-        border-radius: 10px
-        padding: 13px
+        background: variables.$black-transparent-color
+        border: none
+        border-radius: variables.$border-radius
+        padding: 13px 24px
         cursor: pointer
 
         span
             text-transform: uppercase
-        
-        input[type="color"] 
+
+        input[type="color"]
             cursor: pointer
             -webkit-appearance: none
             padding: 0
@@ -36,18 +37,14 @@
             height: 29px
             border: none
             border-radius: 5px
+            background-color: transparent
 
-        input[type="color"]::-webkit-color-swatch-wrapper 
+        input[type="color"]::-webkit-color-swatch-wrapper
             border: none
             border-radius: 5px
             padding: 0
 
-        input[type="color"]::-webkit-color-swatch 
+        input[type="color"]::-webkit-color-swatch
             border: none
             border-radius: 5px
             padding: 0
-
-    
-
- 
-

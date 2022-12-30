@@ -1,7 +1,10 @@
-import postData from "../../functions/postData";
+import axiosClient from "../../axiosClient";
 
-export const checkIsExistUser = async (token: string) => {
-  const data = await postData("/api/user/check-user-exist/", { token });
+export const checkIsExistUser = async (address: string) => {
+  const { data } = await axiosClient.get(
+    `/api/user/check-user-exist/${address}`
+  );
+
   if (data.notExist) return false;
   return true;
 };

@@ -1,11 +1,12 @@
 import clsx from "clsx";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { adminPath, url } from "../../../consts";
-import { LogoutIcon, SmallToggleListArrowIcon } from "../../../icons/icons";
+import { useAppDispatch, useAppSelector } from "../../../hooks/reduxHooks";
+import WalletBlock from "../WalletBlock";
+import { LogoutIcon, SmallToggleListArrowIcon } from "../../../icons";
 import { setUser } from "../../../store/types/User";
-import { setMainWallet } from "../../../store/types/Wallet";
+import { setSelectedBlockchain } from "../../../store/types/Wallet";
 import "./styles.sass";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const HeaderSelect = ({
   title,
@@ -18,62 +19,69 @@ const HeaderSelect = ({
   isNotVisibleAvatarInMobile?: boolean;
   handlerHeaderSelect?: (e?: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: any) => state.user);
+  const { id, avatar } = useAppSelector(({ user }) => user);
+  const { isMobile } = useWindowDimensions();
 
   return (
     <div className="header-select">
-      {user.id && (
-        <div
-          className={clsx("header-select__image", {
-            dNone: isNotVisibleAvatarInMobile,
-          })}
-          onClick={() => navigate(`/${adminPath}/settings`)}
-        >
-          {user.avatarlink && <img src={url + user.avatarlink} alt="" />}
-        </div>
-      )}
+      {!isMobile && <WalletBlock />}
       <div
-        className={clsx("header-select__info", {
+        className={clsx("info", {
           withoutArrow: isOpenSelect === undefined,
+          withWalletBlock: !isMobile
         })}
         onClick={(e: React.MouseEvent<HTMLDivElement>) =>
           handlerHeaderSelect && handlerHeaderSelect(e)
         }
       >
-        <span className="header-select__info__name">{title}</span>
+        {Boolean(id) && (
+          <div
+            className={clsx("image", {
+              dNone: isNotVisibleAvatarInMobile,
+            })}
+          >
+            {avatar && <img src={avatar} alt="avatar" />}
+          </div>
+        )}
+        <span className="title">{title}</span>
         {isOpenSelect !== undefined && (
           <div
-            className={clsx("icon", "header-select__info__icon", {
+            className={clsx("icon", {
               rotated: isOpenSelect,
             })}
           >
             <SmallToggleListArrowIcon />
           </div>
         )}
-      </div>
-      {isOpenSelect && (
-        <div className="header-select__info-popup">
-          <div className="header-select__info-item">
-            <div
-              className="header-select__info-item__content"
-              onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                handlerHeaderSelect && handlerHeaderSelect(e);
-                dispatch(setUser(""));
-                localStorage.removeItem("main_wallet");
-                dispatch(setMainWallet({}));
-                navigate("/");
-              }}
-            >
-              <div className="header-select__info-item__img icon">
-                <LogoutIcon />
+        {Boolean(isOpenSelect) && (
+          <div className="popup">
+            {isMobile && (
+              <div className="item">
+                <WalletBlock />
               </div>
-              <span className="header-select__info-item__name">Sign-out</span>
+            )}
+            <div className="item">
+              <div
+                className="content"
+                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                  handlerHeaderSelect && handlerHeaderSelect(e);
+                  dispatch(setUser(""));
+                  localStorage.removeItem("main_blockchain");
+                  dispatch(setSelectedBlockchain(""));
+                  navigate("/");
+                }}
+              >
+                <div className="img icon">
+                  <LogoutIcon />
+                </div>
+                <span className="name">Sign-out</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

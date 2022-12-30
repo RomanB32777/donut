@@ -1,18 +1,21 @@
-import { SET_MAIN_WALLET } from "../../types/Wallet"
+import { blockchainPayload, IBlockchainAction } from "../../../types";
+import { SET_MAIN_WALLET } from "../../types/Wallet";
 
-const initialState = {
-    
-}
+const initialState: blockchainPayload = null;
 
-const WalletReducer = (state = initialState, action: any) => {
+const WalletReducer = (
+  state: blockchainPayload = initialState,
+  action: IBlockchainAction
+) => {
+  switch (action.type) {
+    case SET_MAIN_WALLET:
+      return action.payload;
 
-    switch (action.type) {
-        case SET_MAIN_WALLET:
-            return action.payload
+    default:
+      return state;
+  }
+};
 
-        default:
-            return state
-    }
-}
+export default WalletReducer;
 
-export default WalletReducer
+// const UserReducer: (state: IUser | undefined, action: IUserAction) => IUser

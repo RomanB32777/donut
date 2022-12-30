@@ -3,22 +3,17 @@ import { useSelector, useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import { SliderMarks } from "antd/lib/slider";
+import { IStatData, typeAligmnet } from "types";
 import LinkCopy from "../../../../components/LinkCopy";
-import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons/icons";
+import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons";
 import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
 import BaseButton from "../../../../components/BaseButton";
 import SliderForm from "../../../../components/SliderForm";
 import useWindowDimensions from "../../../../hooks/useWindowDimensions";
 import WidgetMobileWrapper from "../../../../components/WidgetMobileWrapper";
+import { getStats } from "../../../../store/types/Stats";
 import axiosClient, { baseURL } from "../../../../axiosClient";
-import {
-  alignFlextItemsList,
-  alignItemsList,
-  AlignText,
-  IStatData,
-  typeAligmnet,
-} from "../../../../types";
 import {
   addNotification,
   addSuccessNotification,
@@ -27,7 +22,8 @@ import {
   getStatsDataTypeQuery,
   renderStatItem,
 } from "../../../../utils";
-import { getStats } from "../../../../store/types/Stats";
+import { AlignText } from "../../../../types";
+import { alignFlextItemsList, alignItemsList } from "../../../../consts";
 
 const marksSlider: { [key: number]: typeAligmnet } = {
   0: "Left",
@@ -66,7 +62,7 @@ const PreviewStatBlock = ({
     () => getStatsDataTypeQuery(data_type),
     [data_type]
   );
-  
+
   return (
     <Col
       xl={10}
@@ -137,7 +133,7 @@ const PreviewStatBlock = ({
             onClick={sendColorsData}
             fontSize="18px"
             disabled={loading}
-            isBlue
+            isMain
           />
         </div>
       )}
@@ -224,7 +220,7 @@ const SettingsStatBlock = ({
                 })
               }
               defaultValue={valueSlider ? +valueSlider : 1}
-              maxWidth={185}
+              maxWidth={250}
               tooltipVisible={false}
               labelCol={10}
               gutter={[0, 18]}
@@ -239,7 +235,7 @@ const SettingsStatBlock = ({
           onClick={sendColorsData}
           fontSize="18px"
           disabled={loading}
-          isBlue
+          isMain
         />
       </div>
     </Col>
@@ -313,7 +309,7 @@ const StatsItem = ({
       const { id } = statData;
       await axiosClient.delete("/api/widget/stats-widget/" + id);
       dispatch(getStats(user.id));
-      addSuccessNotification({message: "Widget deleted successfully"});
+      addSuccessNotification({ message: "Widget deleted successfully" });
     } catch (error) {
       addNotification({
         type: "danger",

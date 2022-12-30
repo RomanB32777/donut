@@ -1,0 +1,76 @@
+@use '../../../commonStyles/variables'
+
+.wallet-block
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
+    border-radius: variables.$border-radius
+    font-family: variables.$pt-font
+    color: variables.$white-color
+    font-style: normal
+    padding: 4px 8px
+
+    &.loaded
+        background: variables.$blue-dark-color
+        box-shadow: variables.$shadow
+
+    p
+        margin: 0
+
+    .icon
+        background: variables.$orange-transparent-color
+        display: flex
+        justify-content: center
+        align-items: center
+        overflow: hidden
+        width: 30px
+        height: 30px
+        border-radius: 50%
+        margin-right: 8px
+
+        img
+            width: 26px
+            height: 26px
+
+    .balance
+        font-size: 17px
+        line-height: 22px
+        margin-right: 8px
+
+    .address
+        background: #8B3442
+        border-radius: 5px
+        padding: 4px 8px
+        font-size: 15px
+        line-height: 18px
+        cursor: pointer
+
+    @media (max-width: 768px)
+        margin-right: 0
+        border-radius: 5px
+        width: 100%
+        padding: 4px 6px
+
+        &.loaded
+            box-shadow: none
+
+        .icon
+            width: 15px
+            height: 15px
+
+            img
+                width: 13px
+                height: 13px
+
+        .balance,
+        .address
+            font-size: 10px
+            line-height: 12px
+
+        .icon,
+        .balance
+            margin-right: 5px
+
+        .address
+            padding: 2px 4px

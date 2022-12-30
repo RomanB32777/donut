@@ -18,7 +18,7 @@ const NoPageContainer = () => {
             onClick={() => navigate(`/${adminPath}`, { replace: true })}
             padding="8px 32px"
             fontSize="18px"
-            isBlue
+            isMain
           />
         }
       />

@@ -1,5 +1,5 @@
-import { allPeriodItemsTypes, periodItemsTypes, statsDataTypes } from "./types";
 import moment from "moment";
+import { allPeriodItemsTypes, periodItemsTypes, statsDataTypes } from "types";
 import {
   filterCurrentPeriodItems,
   filterDataTypeItems,

@@ -1,24 +1,26 @@
-import { Col, Row, StepProps, Steps, StepsProps } from "antd";
 import { useContext, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { Col, Row, StepProps, Steps, StepsProps } from "antd";
+import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
+import { IBadgeInfo } from "types";
+
+import { WalletContext } from "../../../contexts/Wallet";
+import { WebSocketContext } from "../../../components/Websocket";
 import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import FormInput from "../../../components/FormInput";
-
-import { WebSocketContext } from "../../../components/Websocket";
 import PageTitle from "../../../components/PageTitle";
-import { LeftArrowIcon } from "../../../icons/icons";
-import { IBadgeData, initBadgeData } from "../../../types";
+import { LeftArrowIcon } from "../../../icons";
 import SelectInput from "../../../components/SelectInput";
-import axiosClient from "../../../axiosClient";
-import { useSelector } from "react-redux";
-import { makeStorageClient } from "../utils";
 import ModalComponent, {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
-import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
-import { addNotification, currBlockchain, walletsConf } from "../../../utils";
+import axiosClient from "../../../axiosClient";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { ipfsFileformat, ipfsFilename } from "../../../consts";
+import { makeStorageClient } from "../utils";
+import { addNotification } from "../../../utils";
+import { IBadge } from "../../../types";
+import { initBadgeData, ipfsFileformat, ipfsFilename } from "../../../consts";
 
 const { Step } = Steps;
 
@@ -71,11 +73,14 @@ const CreateBadgeForm = ({
 // openBadgePage,
 {
   backBtn: () => void;
-  setActiveBadge?: (activeBadge: IBadgeData) => void;
+  setActiveBadge?: (activeBadge: IBadge) => void;
   openBadgePage?: () => void;
 }) => {
-  const socket = useContext(WebSocketContext);
   const user = useSelector((state: any) => state.user);
+
+  const { walletConf } = useContext(WalletContext);
+  const socket = useContext(WebSocketContext);
+
   const { isTablet } = useWindowDimensions();
   const [loading, setLoading] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
@@ -83,7 +88,7 @@ const CreateBadgeForm = ({
     ...initLoadingSteps,
   ]);
 
-  const [formBadge, setFormBadge] = useState<IBadgeData>({
+  const [formBadge, setFormBadge] = useState<IBadge>({
     ...initBadgeData,
   });
 
@@ -201,57 +206,52 @@ const CreateBadgeForm = ({
       try {
         setLoading(true);
         setLoadingCurrStep({ loadingStep: 0 });
-        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
 
-        const walletData = await wallet.getWalletData(
-          process.env.REACT_APP_BLOCKCHAIN
-        );
+        const _uri = await uploadToIpfs();
 
-        if (walletData) {
-          const _uri = await uploadToIpfs();
+        setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 });
 
-          setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 });
+        if (_uri) {
+          const badgeContract = await walletConf.createContract({
+            _uri,
+            abi: walletConf.abi,
+            bytecode: walletConf.bytecode,
+            setLoadingStep: setLoadingCurrStep,
+          });
 
-          if (_uri) {
-            const badgeContract = await wallet.createContract({
-              _uri,
-              abi: wallet.abi,
-              bytecode: wallet.bytecode,
-              setLoadingStep: setLoadingCurrStep,
-            });
+          if (badgeContract && badgeContract?.contract_address) {
+            const transactionResult = badgeContract?.result;
 
-            if (badgeContract && badgeContract?.contract_address) {
-              const transactionResult = badgeContract?.result;
+            console.log(transactionResult);
 
-              console.log(transactionResult);
+            if (transactionResult && transactionResult !== "SUCCESS")
+              throw new Error(transactionResult);
 
-              if (transactionResult && transactionResult !== "SUCCESS")
-                throw new Error(transactionResult);
+            const badgeData: IBadgeInfo = {
+              creator_id: user.id,
+              contract_address: badgeContract.contract_address,
+              blockchain,
+              transaction_hash: badgeContract?.transaction_hash || "",
+              result: transactionResult ? "success" : null, // success status here or null (if transactionResult = undefined)
+            };
 
-              const newBadge = await axiosClient.post("/api/badge/", {
-                creator_id: user.id,
-                contract_address: badgeContract.contract_address,
-                blockchain,
-                transaction_hash: badgeContract?.transaction_hash || "",
-                result: transactionResult ? "success" : null, // success status here or null (if transactionResult = undefined)
-              });
+            const newBadge = await axiosClient.post("/api/badge/", badgeData);
 
-              if (transactionResult && newBadge.status === 200) {
-                // if success status
-                const newBadgeData = newBadge.data;
-                const notifObj = {
-                  result: transactionResult,
-                  badge_id: newBadgeData.id,
-                  transaction_hash: newBadgeData.transaction_hash,
-                  username: user.username,
-                  user_id: user.id,
-                };
-                socket && socket.emit("check_badge", notifObj);
-              }
+            if (transactionResult && newBadge.status === 200) {
+              // if success status
+              const newBadgeData = newBadge.data;
+              const notifObj = {
+                result: transactionResult,
+                badge_id: newBadgeData.id,
+                transaction_hash: newBadgeData.transaction_hash,
+                username: user.username,
+                user_id: user.id,
+              };
+              socket && socket.emit("check_badge", notifObj);
+            }
 
-              setIsOpenSuccessModal(true);
-            } // else ??? 
-          }
+            setIsOpenSuccessModal(true);
+          } // else ???
         }
       } catch (error) {
         const errorMessage = (error as Error).message;
@@ -271,18 +271,6 @@ const CreateBadgeForm = ({
       });
     }
   };
-
-  const blockchainList = useMemo(() => {
-    if (currBlockchain) {
-      return [
-        {
-          key: currBlockchain.nativeCurrency.symbol,
-          value: currBlockchain.badgeName,
-        },
-      ];
-    }
-    return null;
-  }, []);
 
   const { image, title, description, blockchain } = formBadge;
 
@@ -317,7 +305,7 @@ const CreateBadgeForm = ({
                   })
                 }
                 labelCol={24}
-                InputCol={24}
+                inputCol={24}
                 bigSize
               />
             </div>
@@ -335,7 +323,7 @@ const CreateBadgeForm = ({
                     }
                     placeholder="Your badge name..."
                     labelCol={24}
-                    InputCol={24}
+                    inputCol={24}
                     gutter={[0, 18]}
                   />
                 </div>
@@ -351,7 +339,7 @@ const CreateBadgeForm = ({
                     }
                     placeholder="Your badge description..."
                     labelCol={24}
-                    InputCol={24}
+                    inputCol={24}
                     gutter={[0, 18]}
                     isTextarea
                   />
@@ -362,7 +350,12 @@ const CreateBadgeForm = ({
                   <SelectInput
                     value={blockchain}
                     label="Blockchain"
-                    list={blockchainList}
+                    list={walletConf.blockchains.map(
+                      ({ nativeCurrency, badgeName }) => ({
+                        key: nativeCurrency.symbol,
+                        value: badgeName,
+                      })
+                    )}
                     placeholder="Choose blockchain"
                     setValue={(value) =>
                       setFormBadge({
@@ -384,7 +377,7 @@ const CreateBadgeForm = ({
                     onClick={createContract}
                     fontSize="18px"
                     disabled={loading}
-                    isBlue
+                    isMain
                   />
                 </div>
               </Col>

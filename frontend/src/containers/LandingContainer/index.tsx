@@ -1,70 +1,30 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router";
-import { useSelector } from "react-redux";
-import { FormattedMessage } from "react-intl";
-import {
-  DashboardLandingIcon,
-  DonationLandingIcon,
-  PencilLandingIcon,
-  ShieldLandingIcon,
-  WidgetsLandingIcon,
-} from "../../icons/icons";
+import { useAppSelector } from "../../hooks/reduxHooks";
+import { WalletContext } from "../../contexts/Wallet";
 import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
 import BaseButton from "../../components/BaseButton";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
-import { scrollToPosition, walletsConf } from "../../utils";
+import { scrollToPosition } from "../../utils";
 import { adminPath } from "../../consts";
-import bigImg from "../../assets/big_don.png";
+import {
+  blockchains,
+  cryptoSteps,
+  features,
+  help,
+  images,
+  socialNetworks,
+} from "./const";
 import "./styles.sass";
-
-const cryptoSteps = [
-  {
-    title: "mainpage_crypto_steps_step_one_title",
-    subtitle: "mainpage_crypto_steps_step_one_subtitle",
-  },
-  {
-    title: "mainpage_crypto_steps_step_two_title",
-    subtitle: "mainpage_crypto_steps_step_two_subtitle",
-  },
-  {
-    title: "mainpage_crypto_steps_step_three_title",
-    subtitle: "mainpage_crypto_steps_step_three_subtitle",
-  },
-];
-
-const features = [
-  {
-    icon: <DashboardLandingIcon />,
-    title: "mainpage_feature_one_title",
-    subtitle: "mainpage_feature_one_subtitle",
-  },
-  {
-    icon: <WidgetsLandingIcon />,
-    title: "mainpage_feature_two_title",
-    subtitle: "mainpage_feature_two_subtitle",
-  },
-  {
-    icon: <ShieldLandingIcon />,
-    title: "mainpage_feature_three_title",
-    subtitle: "mainpage_feature_three_subtitle",
-  },
-  {
-    icon: <PencilLandingIcon />,
-    title: "mainpage_feature_four_title",
-    subtitle: "mainpage_feature_four_subtitle",
-  },
-  {
-    icon: <DonationLandingIcon />,
-    title: "mainpage_feature_five_title",
-    subtitle: "mainpage_feature_five_subtitle",
-  },
-];
+import Logo from "../../components/HeaderComponents/LogoComponent";
 
 const LandingContainer = () => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
-  const user: any = useSelector((state: any) => state.user);
+  const { user } = useAppSelector((state) => state);
+
+  const { walletConf } = useContext(WalletContext);
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
 
@@ -72,177 +32,225 @@ const LandingContainer = () => {
     setIsOpenHeaderSelect(!isOpenHeaderSelect);
   };
 
+  const { id } = user;
+
   const signUp = async () => {
-    if (user.id) navigate(`/${adminPath}`);
+    if (id) navigate(`/${adminPath}`);
     else {
-      const countBlockhains = Object.keys(walletsConf).reduce(
-        (count, walletName) =>
-          count + walletsConf[walletName].blockchains.length,
-        0
-      );
-      navigate(countBlockhains > 1 ? "/wallets" : "/register");
+      const countBlockhains = walletConf.blockchains.length;
+      navigate(countBlockhains > 1 ? "/blockchains" : "/register");
     }
     scrollToPosition();
   };
 
+  const { rocketImg, moneyImg, listImg } = images;
+
   return (
-    <>
+    <div className="landing">
       <HeaderComponent
         visibleLogo
-        isOpenHeaderSelect={isOpenHeaderSelect}
-        handlerHeaderSelect={handlerHeaderSelect}
         logoUrl={`/${adminPath}`}
-      />
-      <div className="landing-container">
-        <div
-          className="landing-container__first-mocup"
-          style={{
-            height: isMobile ? 550 : 840,
-          }}
-        >
-          <div className="landing-container__first-mocup__background" />
-          <div className="landing-container__first-mocup__title">
-            <span>
-              <FormattedMessage id="mainpage_main_title" />
-            </span>
+        modificator="landing-header landing-padding"
+      >
+        <BaseButton
+          title={id ? "Launch app" : "Connect wallet"}
+          onClick={signUp}
+          modificator="connect-btn"
+          isMain
+        />
+      </HeaderComponent>
+
+      <div className="landing-container landing-padding">
+        <div className="banner">
+          {/* <div className="gradient-grey-bg" /> */}
+          <div className="gradient-red-bg" />
+          <div className="banner-content">
+            <h1 className="title">
+              Let's revolutionize the way crypto donations work
+            </h1>
+            <p className="subtitle">
+              It's time to display crypto donations on a stream, mint NFTs for
+              your supporters and have fun!
+            </p>
             <BaseButton
               formatId={
-                user && user.id
-                  ? "mainpage_main_button_logged"
-                  : "mainpage_main_button"
+                id ? "mainpage_main_button_logged" : "mainpage_main_button"
               }
               onClick={signUp}
-              padding={document.body.clientWidth > 640 ? "23px" : "17px"}
-              fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
-              isBlue
+              modificator="landing-btn center-btn"
+              isMain
             />
           </div>
         </div>
 
-        {/* <div
-          className="landing-container__video-wrapper"
-          style={{
-            marginBottom: "0px",
-          }}
-        >
-          <span className="block-title">What is Crypto Donutz?</span>
-          <iframe
-            width="100%"
-            height={videoWidth}
-            // width="560"
-            // height="315"
-            src="https://www.youtube.com/embed/ng-7g2x4GnM"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen={true}
-          />
-        </div> */}
-
-        <div className="landing-container__row-panel">
-          <span className="block-title">
-            <FormattedMessage id="mainpage_crypto_steps_title" />
-          </span>
-          <Row
-            justify="space-around"
-            style={{
-              width: "90%",
-            }}
-          >
-            {cryptoSteps.map((cryptoStep, cryptoStepIndex) => (
-              <Col key={"mainpage_crypto_steps_" + cryptoStepIndex}>
-                <span className="icon">{cryptoStepIndex + 1}</span>
-                <span className="title">
-                  <FormattedMessage id={cryptoStep.title} />
-                </span>
-                <span className="sub-title">
-                  <FormattedMessage id={cryptoStep.subtitle} />
-                </span>
+        <div className="whatIs">
+          <div className="gradient-blue-bg" />
+          <div className="content">
+            <Row justify="space-between" align={isMobile ? "top" : "middle"}>
+              <Col xs={16} md={12}>
+                <p className="subtitle">What is Crypto Donutz?</p>
+                <h1 className="title">
+                  Crypto donation platform for streamers
+                </h1>
+                <p className="description">
+                  Our product is aimed to increase streamer’s revenue and
+                  interaction with crypto supporters. It’s also extremely easy
+                  to set up.
+                </p>
+                <BaseButton
+                  title="Create account"
+                  onClick={signUp}
+                  modificator="landing-btn"
+                  isMain
+                />
               </Col>
-            ))}
-          </Row>
-        </div>
-
-        <div className="landing-container__big-mocup">
-          <div>
-            <FormattedMessage id="mainpage_submocup_title" />
-          </div>
-        </div>
-
-        <div className="landing-container__row-panel">
-          <span className="block-title">
-            <FormattedMessage id="mainpage_features_title" />
-          </span>
-          <Row
-            justify="center"
-            className="landing-container__row-panel-features"
-            style={{
-              width: "90%",
-            }}
-          >
-            {features.map((feature) => (
-              <Col
-                lg={8}
-                md={12}
-                xs={24}
-                className="landing-container__row-panel-features_item"
-                key={"mainpage_features_" + feature.title}
-              >
-                <span className="icon" style={{ marginBottom: "-12px" }}>
-                  {feature.icon}
-                </span>
-                <span className="title">
-                  <FormattedMessage id={feature.title} />
-                </span>
-                <span className="sub-title">
-                  <FormattedMessage id={feature.subtitle} />
-                </span>
-              </Col>
-            ))}
-          </Row>
-
-          <div className="landing-container__donut-panel">
-            <Row>
-              <Col lg={8} md={12} xs={24}>
-                <div className="landing-container__donut-panel_img">
-                  <img src={bigImg} alt="bigImg" />
-                </div>
-              </Col>
-              <Col lg={8} md={12} xs={24}>
-                <div className="landing-container__donut-panel_txt">
-                  <span className="title">
-                    <FormattedMessage id="mainpage_donut_mocup_title" />
-                  </span>
-                  <span className="subtitle">
-                    <FormattedMessage id="mainpage_donut_mocup_subtitle" />
-                  </span>
+              <Col xs={6} md={10}>
+                <div className="image">
+                  <img src={rocketImg} alt="rocket" />
                 </div>
               </Col>
             </Row>
           </div>
-          <div className="landing-container__bottom-panel">
-            <div>
-              <span>
-                <FormattedMessage id="mainpage_bottom_panel_title" />
-              </span>
-              <BaseButton
-                onClick={signUp}
-                fontSize={document.body.clientWidth > 640 ? "30px" : "24px"}
-                formatId={
-                  user && user.id
-                    ? "mainpage_main_button_logged"
-                    : "mainpage_main_button"
-                }
-                padding={
-                  document.body.clientWidth > 640 ? "22px 78px" : "12px 64px"
-                }
-                isBlue
-              />
+        </div>
+
+        <div className="features block">
+          <div className="gradient-blue-bg" />
+          <div className="content">
+            <p className="subtitle">What's so special about us?</p>
+            <h2 className="title">Our features</h2>
+            <Row
+              gutter={isMobile ? [16, 16] : [32, 32]}
+              justify="space-between"
+            >
+              {features.map(({ title, icon, description }, index) => (
+                <Col xs={24} md={12} key={index}>
+                  <div className="card feature">
+                    <div className="title">
+                      <span className="icon">{icon}</span>
+                      {title}
+                    </div>
+                    <p className="description">{description}</p>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+            <div className="commission block">
+              <Row justify="space-between" align={isMobile ? "top" : "middle"}>
+                <Col span={10}>
+                  <div className="image">
+                    <img src={moneyImg} alt="rocket" />
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className="content">
+                    <h2 className="title">3% commission</h2>
+                    <div className="description">
+                      We charge only 3% commission rate on donation received.
+                      Lowest commission on the market.
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </div>
+        </div>
+
+        <div className="howWork block">
+          <div className="gradient-red-bg" />
+          <Row justify="space-between" align={isMobile ? "top" : "middle"}>
+            <Col span={16}>
+              <div className="content">
+                <p className="subtitle">How it all works?</p>
+                <h2 className="title">Three steps process</h2>
+                <div className="steps">
+                  {cryptoSteps.map(({ title, description }, index) => (
+                    <div className="step" key={index}>
+                      <div className="title number">{index + 1}.</div>
+                      <div className="text">
+                        <h3 className="title">{title}</h3>
+                        <p className="description">{description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Col>
+            <Col span={7}>
+              <div className="image">
+                <img src={listImg} alt="list" />
+              </div>
+            </Col>
+          </Row>
+        </div>
+
+        <div className="blockchains block">
+          <p className="subtitle">Integrations</p>
+          <h2 className="title">Supported crypto</h2>
+          <div className="list">
+            {blockchains.map(({ name, image, background }, index) => (
+              <div className="blockchain" key={index}>
+                <div className="icon" style={{ background }}>
+                  <img src={image} alt={name} />
+                </div>
+                <p className="name">{name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="help block">
+          <h2 className="title">Need help?</h2>
+          <div className="list">
+            {help.map(({ title, icon, description }, index) => (
+              <div className="card" key={index}>
+                <Row align="middle">
+                  <Col span={6}>
+                    <div className="image">{icon}</div>
+                  </Col>
+                  <Col span={18}>
+                    <div className="text">
+                      <p className="title">{title}</p>
+                      <p className="description">{description}</p>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="footer">
+          <div className="gradient-blue-bg" />
+          <div className="content">
+            <h4 className="title">Are you ready to grab your Crypto donutz?</h4>
+            <BaseButton
+              formatId={
+                user.id ? "mainpage_main_button_logged" : "mainpage_main_button"
+              }
+              onClick={signUp}
+              modificator="landing-btn center-btn"
+              isMain
+            />
+            <div className="contacts">
+              <Logo />
+              <div className="social-networks">
+                {socialNetworks.map(({ link, icon }, index) => (
+                  <a
+                    key={index}
+                    className="link"
+                    href={link}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {icon}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

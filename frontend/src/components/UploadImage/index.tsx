@@ -1,13 +1,36 @@
 import { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { UploadIcon } from "../../icons/icons";
-import { url } from "../../consts";
+import { UploadIcon } from "../../icons";
 import { addNotification } from "../../utils";
 import { IFileInfo } from "../../types";
 import "./styles.sass";
 
 const maxFileSize = 3 * 1024 * 1024;
+
+export const UploadAfterEl = ({
+  size,
+  mdCol = 8,
+  alsoText = "Or choose",
+  openBanners,
+}: {
+  size: string;
+  mdCol?: number;
+  alsoText?: string;
+  openBanners: () => void;
+}) => (
+  <Col md={mdCol} xs={24}>
+    <div className="upload-afterEl">
+      <p>Recommended size: {size} px</p>
+      <p>
+        {alsoText}&nbsp;
+        <span className="link" onClick={() => openBanners()}>
+          default banners
+        </span>
+      </p>
+    </div>
+  </Col>
+);
 
 const UploadImage = ({
   imgName,
@@ -17,10 +40,11 @@ const UploadImage = ({
   setFile,
   filePreview,
   sizeStr,
-  InputCol,
+  inputCol,
   labelCol,
   gutter,
   bigSize,
+  afterEl,
   isBanner,
 }: {
   imgName?: string;
@@ -28,13 +52,14 @@ const UploadImage = ({
   formats?: string[];
   disabled?: boolean;
   filePreview?: string;
-  setFile?: (fileInfo: IFileInfo) => void;
   sizeStr?: string;
-  InputCol?: number;
+  inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
   bigSize?: boolean;
   isBanner?: boolean;
+  afterEl?: React.ReactNode;
+  setFile?: (fileInfo: IFileInfo) => void;
 }) => {
   const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false);
 
@@ -73,6 +98,7 @@ const UploadImage = ({
         style={{
           width: "100%",
         }}
+        justify={afterEl ? "space-between" : "start"}
       >
         <Col md={labelCol || 12} xs={24}>
           <div className="file-input__texts">
@@ -90,11 +116,11 @@ const UploadImage = ({
             )}
           </div>
         </Col>
-        <Col md={InputCol || 12} xs={24}>
+        <Col md={inputCol || 12} xs={24}>
           <div
             className={clsx("file-input__row", {
               banner: isBanner,
-              bigSize: bigSize,
+              bigSize,
               transparent: Boolean(filePreview?.length),
             })}
             onMouseEnter={() => !disabled && setIsMouseOnAvatar(true)}
@@ -102,7 +128,7 @@ const UploadImage = ({
           >
             <div className="file-input__row__image">
               {imgExist && (
-                <img src={filePreview || url + imgName} alt={label} />
+                <img src={filePreview || imgName} alt={label} />
               )}
             </div>
             {!disabled && (
@@ -117,7 +143,7 @@ const UploadImage = ({
                   // disabled={disabled || false}
                 />
                 <div
-                  className="file-input__row__back"
+                  className={clsx("file-input__row__back", { bigSize })}
                   style={{
                     opacity: isMouseOnAvatar || !imgExist ? "1" : "0",
                   }}
@@ -128,6 +154,7 @@ const UploadImage = ({
             )}
           </div>
         </Col>
+        {afterEl}
       </Row>
     </div>
   );

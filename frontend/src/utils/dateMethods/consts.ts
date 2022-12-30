@@ -1,9 +1,9 @@
 import {
-  IFilterCurrentPeriodItems,
+  ICurrentPeriodItemsTypes,
   IFilterPeriodItems,
   IStatsDataType,
   stringFormatTypes,
-} from "./types";
+} from "types";
 
 export const filterPeriodItems: IFilterPeriodItems<stringFormatTypes> = {
   today: "Today",
@@ -12,7 +12,7 @@ export const filterPeriodItems: IFilterPeriodItems<stringFormatTypes> = {
   year: "This year",
 };
 
-export const filterCurrentPeriodItems: IFilterCurrentPeriodItems = {
+export const filterCurrentPeriodItems: ICurrentPeriodItemsTypes = {
   yesterday: "Yesterday",
   today: "Today",
   "7days": "Last 7 days",

@@ -13,7 +13,7 @@
 
         .subtitle
             margin: 0
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 400
             font-size: 20px
@@ -24,18 +24,18 @@
                 margin-bottom: 20px
 
     &-item
-        background: variables.$grey-background-color
-        border: 2px solid variables.$grey-background-color
-        border-radius: 20px
+        background: variables.$black-transparent-color
+        border-radius: variables.$border-radius
         padding: 20px 30px
         cursor: pointer
         position: relative
+        backdrop-filter: blur(10px)
 
         @media (max-width: 768px)
             padding: 15px 20px
 
         &.active
-            border: 2px solid variables.$blue-color
+            border: 2px solid variables.$main-color
 
         &:not(:last-child)
             margin-bottom: 25px
@@ -47,7 +47,7 @@
             padding-right: 25px
 
             p
-                font-family: variables.$jakarta-font
+                font-family: variables.$pt-font
                 font-style: normal
                 font-size: 20px
                 line-height: 25px
@@ -78,12 +78,12 @@
             height: 100%
             p
                 margin: 0
-                font-family: variables.$jakarta-font
+                font-family: variables.$pt-font
                 font-style: normal
                 font-weight: 400
                 font-size: 17px
                 line-height: 20px
-                color: variables.$grey-color
+                color: variables.$white-color
 
             p:not(:last-child)
                 margin-bottom: 10px
@@ -100,7 +100,7 @@
 
             &_item:not(:last-child)
                 margin-right: 10px
-            
+
             svg
                 color: variables.$white-color
                 cursor: pointer
@@ -123,13 +123,13 @@
                 padding: 15px
 
                 &_title
-                    font-family: variables.$jakarta-font
+                    font-family: variables.$pt-font
                     font-style: normal
                     font-weight: 600
                     font-size: 17px
                     line-height: 22px
                     padding: 12px 40px
-                    border-radius: 10px
+                    border-radius: variables.$border-radius
                     text-align: center
 
                 &_stat
@@ -140,7 +140,7 @@
                         margin-top: 15px
                         p
                             // text-align: center
-                            font-family: variables.$jakarta-font
+                            font-family: variables.$pt-font
                             color: variables.$white-color
                             font-style: normal
                             font-weight: 700
@@ -161,7 +161,7 @@
     &-modal
         display: flex
         flex-direction: column
-        align-items: center
+        // align-items: center
         justify-content: center
 
         &__form
@@ -177,7 +177,7 @@
             @media (max-width: 768px)
                 margin-top: 45px
 
-            &_save
+            &_cancel
                 margin-right: 30px
 
 .ant-drawer-mask

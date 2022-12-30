@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { CopyIcon } from "../../icons/icons";
+import { CopyIcon } from "../../icons";
 import { copyStr, shortStr } from "../../utils";
 import "./styles.sass";
 
@@ -21,7 +21,6 @@ const LinkCopy = ({
       )}
       <div className={clsx(isSimple ? "simpleLink-block" : "link-block")}>
         <div className="link">
-          {" "}
           {Boolean(linkLength) ? shortStr(link, linkLength as number) : link}
         </div>
         <div

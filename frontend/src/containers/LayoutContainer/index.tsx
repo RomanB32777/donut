@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { BackTop, Layout, Menu } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
 import { IRoute, Pages, routers } from "../../routes";
-import { EmailIcon } from "../../icons/icons";
+import { EmailIcon } from "../../icons";
 
 import { WebSocketContext } from "../../components/Websocket";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
@@ -16,6 +16,8 @@ import NotificationsPopup from "../../components/HeaderComponents/NotificationsP
 import { getNotifications } from "../../store/types/Notifications";
 import { getBadgesStatus, scrollToPosition } from "../../utils";
 import { adminPath } from "../../consts";
+import HeaderSelect from "../../components/HeaderComponents/HeaderSelect";
+import { useAppSelector } from "../../hooks/reduxHooks";
 import "./styles.sass";
 
 const { Content, Sider } = Layout;
@@ -40,7 +42,7 @@ const getItem = ({
 const addToMenu = (
   route: IRoute,
   menuArr: IRoute[],
-  user: any,
+  roleplay: any,
   iter: number = 0
 ) => {
   const add = () => {
@@ -48,18 +50,18 @@ const addToMenu = (
       iter++;
       route.children.forEach((chRoute) => {
         chRoute.menu && iter !== 3 && menuArr.push(chRoute);
-        addToMenu(chRoute, menuArr, user, iter);
+        addToMenu(chRoute, menuArr, roleplay, iter);
       });
     }
   };
-  route.roleRequired ? route.roleRequired === user.roleplay && add() : add();
+  route.roleRequired ? route.roleRequired === roleplay && add() : add();
 };
 
 const LayoutApp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { user } = useSelector((state: any) => state);
+  const { id, username, roleplay } = useAppSelector(({ user }) => user);
   const socket = useContext(WebSocketContext);
   const { width, isTablet } = useWindowDimensions();
 
@@ -91,17 +93,17 @@ const LayoutApp = () => {
   }, [width]);
 
   useEffect(() => {
-    if (user.id) {
-      socket && getBadgesStatus(user, socket);
-      dispatch(getNotifications({ user: user.username }));
+    if (id) {
+      socket && getBadgesStatus({ username, id }, socket);
+      dispatch(getNotifications({ user: username }));
     }
-  }, [user, socket]);
+  }, [id, socket]);
 
   const menuItems: IRoute[] = useMemo(() => {
     const menuShowItems = routers.reduce((acc, route) => {
       route.protected
-        ? user.id && addToMenu(route, acc, user)
-        : addToMenu(route, acc, user);
+        ? id && addToMenu(route, acc, roleplay)
+        : addToMenu(route, acc, roleplay);
       return acc;
     }, [] as IRoute[]);
 
@@ -117,7 +119,7 @@ const LayoutApp = () => {
         }
         return 0;
       });
-  }, [user]);
+  }, [id, roleplay]);
 
   const activeRoute: string = useMemo(
     () =>
@@ -187,11 +189,7 @@ const LayoutApp = () => {
       }`}
     >
       <Layout
-        style={{
-          minHeight: "100vh",
-          position: "relative",
-        }}
-        className={clsx({
+        className={clsx("layout-container", {
           transparent: isTransparentMainConteiner,
         })}
       >
@@ -266,34 +264,46 @@ const LayoutApp = () => {
             transparent: isTransparentMainConteiner,
           })}
           style={{
-            marginLeft: hiddenLayoutElements || isTablet ? 0 : 250, // collapsed
+            paddingLeft: hiddenLayoutElements || isTablet ? 0 : 250, // collapsed
           }}
         >
           <HeaderComponent
             hidden={hiddenLayoutElements}
             onClick={() => closeAllHeaderPopups()}
-            isOpenHeaderSelect={isOpenHeaderSelect}
-            handlerHeaderSelect={handlerHeaderSelect}
             collapsedSidebar={collapsed}
             setCollapsedSidebar={setCollapsed}
             modificator="layout-header"
-            // visibleGamburger
+            visibleGamburger
           >
-            {user.id && (
-              <NotificationsPopup
-                user={user.id}
-                handlerNotificationPopup={handlerNotificationPopup}
-                isNotificationPopupOpened={isNotificationPopupOpened}
-              />
-            )}
+            <>
+              {id && (
+                <NotificationsPopup
+                  user={id}
+                  handlerNotificationPopup={handlerNotificationPopup}
+                  isNotificationPopupOpened={isNotificationPopupOpened}
+                />
+              )}
+
+              {username && (
+                <HeaderSelect
+                  title={username}
+                  // || shortStr(mainWallet.token, 8)
+                  isOpenSelect={isOpenHeaderSelect}
+                  handlerHeaderSelect={handlerHeaderSelect}
+                />
+              )}
+            </>
           </HeaderComponent>
           <Content
             onClick={() => closeAllHeaderPopups()}
-            style={{
-              background: isTransparentMainConteiner
-                ? "rgba(0, 0, 0, 0)"
-                : "#000000",
-            }}
+            className={clsx("content-container", {
+              transparent: isTransparentMainConteiner,
+            })}
+            // style={{
+            //   background: isTransparentMainConteiner
+            //     ? "rgba(0, 0, 0, 0)"
+            //     : "#000000",
+            // }}
           >
             <div
               className={clsx("main-container", {

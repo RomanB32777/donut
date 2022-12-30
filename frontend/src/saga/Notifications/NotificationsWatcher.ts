@@ -1,18 +1,14 @@
 import { GET_NOTIF } from "./../../store/types/Notifications/index";
-import { call, put, takeEvery, select } from "redux-saga/effects";
-import { baseURL } from "../../axiosClient";
+import { call, put, takeEvery } from "redux-saga/effects";
+import axiosClient from "../../axiosClient";
 import { setLoading } from "../../store/types/Loading";
 import { setNotifications } from "../../store/types/Notifications";
-import { currBlockchain } from "../../utils";
 
 const asyncGetNotifications = async (user: number | string) => {
-  const response = await fetch(
-    `${baseURL}/api/user/notifications/${user}?blockchain=${currBlockchain?.nativeCurrency.symbol}`
-  );
-  if (response.status === 200) {
-    const result = await response.json();
-    return result;
-  }
+  const { status, data } = await axiosClient.get(`/api/notification/${user}`);
+  // ?blockchain=${currBlockchain.name}
+  if (status === 200) return data;
+  return null;
 };
 
 function* NotificationsWorker(action: any): any {

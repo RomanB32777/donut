@@ -1,27 +1,33 @@
-import { useParams } from "react-router";
-import { walletsConf } from "../../utils";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { WalletContext } from "../../contexts/Wallet";
+import { useAppDispatch } from "../../hooks/reduxHooks";
+import { setSelectedBlockchain } from "../../store/types/Wallet";
 import "./styles.sass";
 
 const ChooseBlockchainContainer = () => {
-  const { wallet } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { walletConf } = useContext(WalletContext);
+
+  const blockchainChoose = async (name: string) => {
+    await walletConf.changeBlockchain(name);
+    dispatch(setSelectedBlockchain(name));
+    navigate("/register");
+  };
 
   return (
     <div className="blockchains-popup">
-      <p className="blockchains-popup__main-title">
-        Choose the blockchain {/* in {wallet} */}
-      </p>
-      <div className="blockchains-popup__registration_list">
-        {walletsConf[wallet as string].blockchains.map(({ name, icon }) => (
-          <div className="blockchains-popup__registration_list-item" key={name}>
-            <div className="blockchains-popup__registration_list-img">
+      <p className="title">Choose the blockchain</p>
+      <div className="list">
+        {walletConf.blockchains.map(({ name, chainName, icon }) => (
+          <div className="item" key={name}>
+            <div className="img">
               <img src={icon} alt={name + "_icon"} />
             </div>
-            {/* <div
-              className="blockchains-popup__registration_list-btn"
-              onClick={() => window.open(appLink, "_blank")}
-            >
-              {name}
-            </div> */}
+            <div className="name" onClick={() => blockchainChoose(name)}>
+              {chainName}
+            </div>
           </div>
         ))}
       </div>

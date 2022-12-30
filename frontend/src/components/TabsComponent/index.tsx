@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { Tabs } from "antd";
-import { typesTabContent } from "../../types";
 import "./styles.sass";
 
 interface Itab {
@@ -19,7 +18,7 @@ export const TabsComponent = ({
   activeKey?: string;
   modificator?: string;
   isBigTabs?: boolean;
-  setTabContent: (key: typesTabContent) => void;
+  setTabContent: (key: string) => void;
 }) => (
   <div
     className={clsx("page_tabs", {
@@ -29,7 +28,7 @@ export const TabsComponent = ({
   >
     <Tabs
       activeKey={activeKey}
-      onChange={(key) => setTabContent(key as typesTabContent)}
+      onChange={(key) => setTabContent(key)}
       items={tabs}
     />
   </div>

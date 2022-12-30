@@ -8,7 +8,7 @@ const BaseButton = (props: {
   padding?: string;
   fontSize?: string;
   icon?: React.ReactNode;
-  isBlue?: boolean;
+  isMain?: boolean;
   isRed?: boolean;
   isBlack?: boolean;
   disabled?: boolean;
@@ -18,7 +18,7 @@ const BaseButton = (props: {
 }) => (
   <div
     className={clsx("base-button", {
-      blueButton: props.isBlue,
+      mainButton: props.isMain,
       redButton: props.isRed,
       blackButton: props.isBlack,
       withIcon: Boolean(props.icon),

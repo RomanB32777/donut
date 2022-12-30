@@ -2,7 +2,7 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
 import { io, Socket } from "socket.io-client";
-import { baseURL } from "../../axiosClient";
+import { baseURL, isProduction, socketsBaseUrl } from "../../axiosClient";
 import { getNotifications } from "../../store/types/Notifications";
 import { addNotification, getNotificationMessage } from "../../utils";
 
@@ -14,7 +14,7 @@ export const connectSocket = (
   username: string,
   dispatch: Dispatch<AnyAction>
 ) => {
-  const socket = io(baseURL, {
+  const socket = io(isProduction ? baseURL : socketsBaseUrl, {
     path: "/sockt/",
     query: {
       userName: username,
@@ -101,8 +101,7 @@ export const connectSocket = (
       default:
         break;
     }
-    dispatch &&
-      dispatch(getNotifications({ user: username }));
+    dispatch && dispatch(getNotifications({ user: username }));
   });
   return socket;
 };

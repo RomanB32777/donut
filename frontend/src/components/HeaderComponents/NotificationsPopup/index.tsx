@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -10,11 +11,12 @@ import { Badge, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { InView } from "react-intersection-observer";
 import moment from "moment";
+import { WalletContext } from "../../../contexts/Wallet";
 import Loader from "../../Loader";
-import { currBlockchain, getNotificationMessage } from "../../../utils";
+import { getNotificationMessage } from "../../../utils";
 import axiosClient, { baseURL } from "../../../axiosClient";
 import { getNotifications } from "../../../store/types/Notifications";
-import { AlertIcon } from "../../../icons/icons";
+import { AlertIcon } from "../../../icons";
 import "./styles.sass";
 
 const LIMIT_NOTIF = 10;
@@ -22,7 +24,6 @@ const LIMIT_NOTIF = 10;
 interface INotificationStatus {
   id: number;
   read: boolean;
-  isRecipient: boolean;
 }
 
 const NotificationsPopup = ({
@@ -38,6 +39,9 @@ const NotificationsPopup = ({
   const notificationsApp = useSelector(
     (state: any) => state.notifications.list
   );
+
+  const { walletConf } = useContext(WalletContext);
+
   const contentRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -46,34 +50,29 @@ const NotificationsPopup = ({
   const [fetching, setFetching] = useState(false);
 
   const checkIsRecipient = (recipient: number) => recipient === user;
+
   const getNotificationUserRole = (recipient: number) =>
     checkIsRecipient(recipient) ? "read_recipient" : "read_sender";
 
-  const updateNotification = async ({
-    id,
-    read,
-    isRecipient,
-  }: INotificationStatus) => {
+  const updateNotification = async ({ id, read }: INotificationStatus) => {
     const { data, status } = await axiosClient.put(
-      `${baseURL}/api/user/notifications/status`,
+      `${baseURL}/api/notifications/status`,
       {
         id,
         read,
-        isRecipient,
       }
     );
     if (status === 200) return data.updatedNotification;
   };
 
   const handleChange =
-    ({ id, read, isRecipient }: INotificationStatus) =>
+    ({ id, read }: INotificationStatus) =>
     async (status: boolean) => {
       if (!status) return;
       if (status && !read) {
         const updatedNotification = await updateNotification({
           id,
           read: status,
-          isRecipient,
         });
         if (updatedNotification) {
           setNotifications((prev) =>
@@ -116,20 +115,24 @@ const NotificationsPopup = ({
   }) => {
     try {
       setLoading(true);
-      const url = `${baseURL}/api/user/notifications/${user}?blockchain=${
-        currBlockchain?.nativeCurrency.symbol
-      }&limit=${LIMIT_NOTIF}&offset=${LIMIT_NOTIF * currentPage}`; // &sort=read&sortDirection=ASC
+      const currBlockchain = await walletConf.getCurrentBlockchain();
 
-      const { data, status } = await axiosClient.get(url);
+      if (currBlockchain) {
+        const url = `${baseURL}/api/notifications/${user}?blockchain=${
+          currBlockchain.name
+        }&limit=${LIMIT_NOTIF}&offset=${LIMIT_NOTIF * currentPage}`; // &sort=read&sortDirection=ASC
 
-      if (status === 200) {
-        updatePage && setCurrentPage((prev) => prev + 1);
-        setTotalLength(data.totalLength);
-        setNotifications((prev) =>
-          updatePage && currentPage
-            ? [...prev, ...data.notifications]
-            : data.notifications
-        );
+        const { data, status } = await axiosClient.get(url);
+
+        if (status === 200) {
+          updatePage && setCurrentPage((prev) => prev + 1);
+          setTotalLength(data.totalLength);
+          setNotifications((prev) =>
+            updatePage && currentPage
+              ? [...prev, ...data.notifications]
+              : data.notifications
+          );
+        }
       }
     } catch (error) {
       console.log(error);
@@ -221,7 +224,6 @@ const NotificationsPopup = ({
         onChange={handleChange({
           id: n.id,
           read: n[getNotificationUserRole(n.recipient)],
-          isRecipient: checkIsRecipient(n.recipient),
         })}
         key={n.id}
       >
@@ -254,7 +256,7 @@ const NotificationsPopup = ({
                   data: badgeData,
                 })}
               <p className="date">
-                {moment(n.creation_date).startOf("minutes").fromNow()}
+                {moment(n.created_at).startOf("minutes").fromNow()}
               </p>
             </Badge>
           </div>
@@ -279,39 +281,41 @@ const NotificationsPopup = ({
       </div>
 
       {isNotificationPopupOpened && (
-        <div
-          className="notifications-popup-wrapper"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div className="notifications-popup__content">
-            <div
-              className="notifications-popup__content-list"
-              style={{
-                overflowY: notifications.length >= 9 ? "scroll" : "auto",
-              }}
-              ref={contentRef}
-            >
-              {notifications.map(renderNotifList)}
-              {!Boolean(notifications.length) && !loading && (
-                <div
-                  className="notifications-popup__content-item"
-                  style={{
-                    textAlign: "center",
-                  }}
-                >
-                  <Badge dot={false} className="dot">
-                    No notifications
-                  </Badge>
-                </div>
-              )}
-              {loading && (
-                <Row justify="center">
-                  <Loader size="small" />
-                </Row>
-              )}
+        <div className="popup">
+          <div
+            className="wrapper"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div className="content">
+              <div
+                className="list"
+                style={{
+                  overflowY: notifications.length >= 9 ? "scroll" : "auto",
+                }}
+                ref={contentRef}
+              >
+                {notifications.map(renderNotifList)}
+                {!Boolean(notifications.length) && !loading && (
+                  <div
+                    className="item"
+                    style={{
+                      textAlign: "center",
+                    }}
+                  >
+                    <Badge dot={false} className="dot">
+                      No notifications
+                    </Badge>
+                  </div>
+                )}
+                {loading && (
+                  <Row justify="center">
+                    <Loader size="small" />
+                  </Row>
+                )}
+              </div>
             </div>
           </div>
         </div>

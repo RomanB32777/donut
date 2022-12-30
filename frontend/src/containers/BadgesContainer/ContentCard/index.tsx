@@ -1,23 +1,29 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
+import { IBadgeInfo, IBadgeShort } from "types";
 
-import { TrashBinIcon } from "../../../icons/icons";
-import { IBadge, IBadgeData, initBadgeData } from "../../../types";
+import { TrashBinIcon } from "../../../icons";
+import { IBadge } from "../../../types";
 import testIMG from "../../../assets/person.png";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import Loader from "../../../components/Loader";
+import { initBadgeData } from "../../../consts";
 import "./styles.sass";
 
-const ContentCard = (prop: {
-  data: IBadge;
-  onClick: (badge: IBadgeData) => void;
-  deleteBadge: (badge: IBadgeData) => void;
-  getBadgeData: (badge: IBadge) => Promise<any>;
+const ContentCard = ({
+  data,
+  onClick,
+  deleteBadge,
+  getBadgeData,
+}: {
+  data: IBadgeShort;
+  onClick: (badge: IBadge) => void;
+  deleteBadge: (badge: IBadge) => void;
+  getBadgeData: (badge: IBadgeShort) => Promise<any>;
 }) => {
-  const { data, onClick, deleteBadge, getBadgeData } = prop;
   const user = useSelector((state: any) => state.user);
-  const [badgeData, setBadgeData] = useState<IBadgeData>({
+  const [badgeData, setBadgeData] = useState<IBadge>({
     ...initBadgeData,
     ...data,
   });
@@ -27,9 +33,7 @@ const ContentCard = (prop: {
       const cardData = await getBadgeData(data);
       cardData && setBadgeData({ ...badgeData, ...cardData });
     };
-
-    const walletKey = process.env.REACT_APP_WALLET || "metamask";
-    user[`${walletKey}_token`] && getCardData();
+    user.wallet_address && getCardData();
   }, [user, data]);
 
   const { image, title, description, creator_id } = badgeData;

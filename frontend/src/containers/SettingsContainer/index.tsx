@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { Col, Row } from "antd";
 import clsx from "clsx";
+
+import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
 import axiosClient from "../../axiosClient";
+import { WalletContext } from "../../contexts/Wallet";
 import PageTitle from "../../components/PageTitle";
 import FormInput from "../../components/FormInput";
 import BaseButton from "../../components/BaseButton";
@@ -16,23 +18,23 @@ import {
   copyStr,
   sendFile,
   shortStr,
-  walletsConf,
 } from "../../utils";
-import { setMainWallet } from "../../store/types/Wallet";
-import { setLoading } from "../../store/types/Loading";
+import { setSelectedBlockchain } from "../../store/types/Wallet";
 import { IFileInfo } from "../../types";
-import { url } from "../../consts";
 import "./styles.sass";
+import SwitchForm from "../../components/SwitchForm";
 
 const SettingsContainer = () => {
-  const user = useSelector((state: any) => state.user);
-  const dispatch = useDispatch();
+  const user = useAppSelector(({ user }) => user);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { walletConf } = useContext(WalletContext);
 
   const [formSettings, setFormSettings] = useState<{
     avatar: IFileInfo;
     username: string;
     wallet: string;
+    spamFilter: boolean;
   }>({
     avatar: {
       preview: "",
@@ -40,6 +42,7 @@ const SettingsContainer = () => {
     },
     username: "",
     wallet: "",
+    spamFilter: false,
   });
 
   const [loading, setSettingsLoading] = useState<boolean>(false);
@@ -53,7 +56,7 @@ const SettingsContainer = () => {
           username,
           user_id: user.id,
         });
-        dispatch(tryToGetUser(user[`${process.env.REACT_APP_WALLET}_token`]));
+        dispatch(tryToGetUser(user.wallet_address));
         addSuccessNotification({ message: "Data saved successfully" });
       } catch (error) {
         addNotification({
@@ -75,8 +78,13 @@ const SettingsContainer = () => {
         setSettingsLoading(true);
         const { avatar } = formSettings;
         avatar.file &&
-          (await sendFile(avatar.file, user, "/api/user/edit-image/"));
-        dispatch(tryToGetUser(user[`${process.env.REACT_APP_WALLET}_token`]));
+          (await sendFile({
+            file: avatar.file,
+            username: user.username,
+            url: "/api/user/edit-image/",
+            isEdit: true,
+          }));
+        dispatch(tryToGetUser(user.wallet_address));
         addSuccessNotification({ message: "Data saved successfully" });
       } catch (error) {
         addNotification({
@@ -93,37 +101,33 @@ const SettingsContainer = () => {
   };
 
   useEffect(() => {
-    const { id, username, avatarlink } = user;
+    const { id, username, avatar } = user;
     id &&
       setFormSettings({
+        ...formSettings,
         username: username,
-        wallet: user[`${process.env.REACT_APP_WALLET}_token`],
+        wallet: user.wallet_address,
         avatar: {
           ...formSettings.avatar,
-          preview: avatarlink ? `${url + user.avatarlink}` : "",
+          preview: avatar || "",
         },
       });
   }, [user]);
 
   const deleteProfile = async () => {
-    await axiosClient.post("/api/user/delete/", {
-      user_id: user.id,
-    });
+    await axiosClient.delete(`/api/user/${user.id}`);
     dispatch(setUser(""));
-    localStorage.removeItem("main_wallet");
-    dispatch(setMainWallet({}));
-    dispatch(setLoading(false));
+    localStorage.removeItem("main_blockchain");
+    dispatch(setSelectedBlockchain(""));
     navigate("/register");
   };
 
   const shortWalletToken = useMemo(
-    () =>
-      user[`${process.env.REACT_APP_WALLET}_token`] &&
-      shortStr(user[`${process.env.REACT_APP_WALLET}_token`], 22),
+    () => user.wallet_address && shortStr(user.wallet_address, 12),
     [user]
   );
 
-  const { username, wallet, avatar } = formSettings;
+  const { username, wallet, avatar, spamFilter } = formSettings;
 
   return (
     <div className="settingsPage-container">
@@ -148,15 +152,15 @@ const SettingsContainer = () => {
                       })
                     }
                     labelCol={8}
-                    InputCol={16}
+                    inputCol={16}
                   />
                 </Col>
                 <Col span={7}>
                   <div
                     className={clsx("form-element__action", {
-                      active: avatar.preview.length
-                        ? avatar.preview !== url + user.avatarlink
-                        : avatar.preview !== user.avatarlink,
+                      // active: avatar.preview.length
+                      //   ? avatar.preview !== user.avatar
+                      //   : avatar.preview !== user.avatar,
                     })}
                     onClick={avatarBtnClick}
                   >
@@ -178,7 +182,7 @@ const SettingsContainer = () => {
                       setFormSettings({ ...formSettings, username: value })
                     }
                     labelCol={8}
-                    InputCol={16}
+                    inputCol={16}
                     gutter={[0, 16]}
                   />
                 </Col>
@@ -204,18 +208,13 @@ const SettingsContainer = () => {
                     name="wallet"
                     value={shortWalletToken}
                     addonBefore={
-                      <img
-                        width="18"
-                        src={
-                          walletsConf[
-                            process.env.REACT_APP_WALLET || "metamask"
-                          ].icon
-                        }
-                        alt="walletIcon"
-                      />
+                      <div className="wallet-icon">
+                        <img src={walletConf.icon} alt="walletIcon" />
+                      </div>
                     }
+                    addonsModificator="wallet-addon"
                     labelCol={8}
-                    InputCol={16}
+                    inputCol={16}
                     gutter={[0, 16]}
                   />
                 </Col>
@@ -223,14 +222,28 @@ const SettingsContainer = () => {
                   <div
                     className="form-element__action"
                     onClick={() => {
-                      copyStr(wallet);
+                      copyStr(wallet, "address");
                     }}
                   >
                     Copy
                   </div>
-                  {/* <div className="form-element__action">Delete from account</div> */}
                 </Col>
               </Row>
+            </div>
+          </Col>
+          <Col xl={18} xs={24}>
+            <div className="form-element">
+              <SwitchForm
+                label="Spam filter:"
+                checked={spamFilter}
+                setValue={(flag) =>
+                  setFormSettings({ ...formSettings, spamFilter: flag })
+                }
+                labelModificator="switch-label"
+                labelCol={6}
+                switchCol={2}
+                gutter={[0, 16]}
+              />
             </div>
           </Col>
           <Col span={24}>

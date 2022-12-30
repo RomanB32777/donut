@@ -1,51 +1,77 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { SmallToggleListArrowIcon } from "../../icons/icons";
+import { SmallToggleListArrowIcon } from "../../icons";
 import "./styles.sass";
 
 const SelectComponent = ({
   title,
   list,
   selectItem,
+  headerList,
+  footerList,
   modificator,
+  listModificator,
+  listItemModificator,
 }: {
-  title: string;
+  title: React.ReactNode;
   list: string[];
   selectItem: (item: string) => void;
+  headerList?: React.ReactNode;
+  footerList?: React.ReactNode;
   modificator?: string;
+  listModificator?: string;
+  listItemModificator?: string;
 }) => {
   const [isOpenSelect, setOpenSelect] = useState(false);
+
+  const itemHandler = (selected: string) => {
+    setOpenSelect(false);
+    selectItem(selected);
+  };
 
   return (
     <div
       className={clsx("select", {
         [modificator as string]: modificator,
       })}
-      onClick={() => {
-        setOpenSelect(!isOpenSelect);
-      }}
     >
-      <span className="select__title">{title}</span>
       <div
-        className={clsx("select__icon", {
-          rotated: isOpenSelect,
-        })}
+        className="block"
+        onClick={() => {
+          setOpenSelect(!isOpenSelect);
+        }}
       >
-        <SmallToggleListArrowIcon />
+        <div className="title">{title}</div>
+        <div
+          className={clsx("icon", {
+            rotated: isOpenSelect,
+          })}
+        >
+          <SmallToggleListArrowIcon />
+        </div>
       </div>
       {isOpenSelect && (
-        <div className="select__list">
-          {list.map((item, key) => (
-            <div
-              className={clsx("select__list-item", {
-                active: item === title,
-              })}
-              key={key}
-              onClick={() => selectItem(item)}
-            >
-              {item}
-            </div>
-          ))}
+        <div className="list-wrapper">
+          {headerList}
+          <div
+            className={clsx("list", {
+              [listModificator as string]: listModificator,
+            })}
+          >
+            {list.map((item, key) => (
+              <div
+                className={clsx("list-item", {
+                  [listItemModificator as string]: listItemModificator,
+                  active: item === title,
+                })}
+                key={key}
+                onClick={() => itemHandler(item)}
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+          {footerList}
         </div>
       )}
     </div>

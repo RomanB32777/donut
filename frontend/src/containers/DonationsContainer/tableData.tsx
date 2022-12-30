@@ -1,6 +1,6 @@
 import type { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
-import { roleUser } from "../../types";
+import { userRoles } from "types";
 import { DateFormatter, DateTimezoneFormatter } from "../../utils";
 
 interface ITableData {
@@ -10,7 +10,7 @@ interface ITableData {
   message: string;
   date: string;
   blockchain: string;
-  role?: roleUser;
+  role?: userRoles;
 }
 
 export const initTableDataItem: ITableData = {

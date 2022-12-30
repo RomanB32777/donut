@@ -1,25 +1,34 @@
 import { Col, Row } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import QRCode from "react-qr-code";
 import clsx from "clsx";
+import { defaultImageNameFolders } from "types";
 
+import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import axiosClient, { baseURL } from "../../axiosClient";
 import BaseButton from "../../components/BaseButton";
 import PageTitle from "../../components/PageTitle";
 import ColorPicker from "../../components/ColorPicker";
 import LinkCopy from "../../components/LinkCopy";
-import UploadImage from "../../components/UploadImage";
+import UploadImage, { UploadAfterEl } from "../../components/UploadImage";
 import FormInput from "../../components/FormInput";
-import { SmallToggleListArrowIcon } from "../../icons/icons";
-import { IFileInfo } from "../../types";
-import { addNotification, addSuccessNotification, sendFile } from "../../utils";
+import ModalComponent from "../../components/ModalComponent";
+import { SmallToggleListArrowIcon } from "../../icons";
+import { IFileInfo, IDefaultImagesModal } from "../../types";
 import { tryToGetUser } from "../../store/types/User";
-import { url } from "../../consts";
+import {
+  addNotification,
+  addSuccessNotification,
+  getDefaultImages,
+  sendFile,
+} from "../../utils";
 import "./styles.sass";
 
+type donationImageTypes = "header" | "banner";
+
 interface IDonationInfoData {
-  avatar: IFileInfo;
+  header: IFileInfo;
   banner: IFileInfo;
   welcome_text: string;
   btn_text: string;
@@ -27,15 +36,19 @@ interface IDonationInfoData {
   background_color: string;
 }
 
+interface IBannerModalInfo extends IDefaultImagesModal {
+  folder: defaultImageNameFolders;
+}
+
 const DonationPageContainer = () => {
-  const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(({ user }) => user);
   const [donationInfoData, setDonationInfoData] = useState<IDonationInfoData>({
-    avatar: {
+    banner: {
       preview: "",
       file: null,
     },
-    banner: {
+    header: {
       preview: "",
       file: null,
     },
@@ -47,6 +60,42 @@ const DonationPageContainer = () => {
 
   const [isOpenQR, setIsOpenQR] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [bannerModalInfo, setBannerModalInfo] = useState<IBannerModalInfo>({
+    images: [],
+    folder: "backgrounds",
+    isOpen: false,
+  });
+  const { isMobile } = useWindowDimensions();
+  const { id, wallet_address, username, donat_page } = user;
+
+  const openBannersPopup = async (folder: defaultImageNameFolders) => {
+    const images = await getDefaultImages(folder);
+    setBannerModalInfo({
+      images,
+      folder,
+      isOpen: true,
+    });
+  };
+
+  const closeBannersPopup = () =>
+    setBannerModalInfo((prev) => ({ ...prev, isOpen: false }));
+
+  const selectDefaultBanner = ({
+    image,
+    imageType,
+  }: {
+    image: string;
+    imageType: donationImageTypes;
+  }) => {
+    setDonationInfoData({
+      ...donationInfoData,
+      [imageType]: {
+        file: null,
+        preview: image,
+      },
+    });
+    closeBannersPopup();
+  };
 
   const onImageDownload = () => {
     const svg = document.getElementById("QRCode");
@@ -72,9 +121,8 @@ const DonationPageContainer = () => {
   const sendData = async () => {
     try {
       setLoading(true);
-      const walletKey = process.env.REACT_APP_WALLET || "metamask";
       const {
-        avatar,
+        header,
         banner,
         welcome_text,
         btn_text,
@@ -86,13 +134,30 @@ const DonationPageContainer = () => {
         btn_text,
         main_color,
         background_color,
-        user_id: user.id,
+        user_id: id,
       });
-      avatar.file &&
-        (await sendFile(avatar.file, user, "/api/user/edit-image/"));
-      banner.file &&
-        (await sendFile(banner.file, user, "/api/user/edit-background/"));
-      dispatch(tryToGetUser(user[`${walletKey}_token`]));
+
+      let fileType: defaultImageNameFolders = "headers";
+      if (header.file || header.preview !== donat_page.header_banner) {
+        await sendFile({
+          file: header.file,
+          filelink: header.preview,
+          username,
+          userId: id,
+          url: `/api/user/edit-creator-image/${fileType}`,
+        });
+      }
+      if (banner.file || banner.preview !== donat_page.background_banner) {
+        fileType = "backgrounds"
+        await sendFile({
+          file: banner.file,
+          filelink: banner.preview,
+          username,
+          userId: id,
+          url: `/api/user/edit-creator-image/${fileType}`,
+        });
+      }
+      dispatch(tryToGetUser(wallet_address));
       addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
       addNotification({
@@ -108,36 +173,35 @@ const DonationPageContainer = () => {
   };
 
   useEffect(() => {
-    if (user.id) {
-      const userData: IDonationInfoData = {
-        avatar: {
-          preview: user.avatarlink ? `${url + user.avatarlink}` : "",
-          file: donationInfoData.avatar.file,
+    if (user.id)
+      setDonationInfoData((prevInfo) => ({
+        ...prevInfo,
+        header: {
+          preview: donat_page.header_banner || "",
+          file: prevInfo.header.file,
         },
         banner: {
-          preview: user.backgroundlink ? `${url + user.backgroundlink}` : "",
-          file: donationInfoData.banner.file,
+          preview: donat_page.background_banner || "",
+          file: prevInfo.banner.file,
         },
-        welcome_text: user.welcome_text,
-        btn_text: user.btn_text,
-        main_color: user.main_color,
-        background_color: user.background_color,
-      };
-
-      setDonationInfoData({
-        ...donationInfoData,
-        ...userData,
-      });
-    }
+        welcome_text: donat_page.welcome_text,
+        btn_text: donat_page.btn_text,
+        main_color: donat_page.main_color,
+        background_color: donat_page.background_color,
+      }));
   }, [user]);
 
+  useEffect(() => {
+    console.log(bannerModalInfo);
+  }, [bannerModalInfo]);
+
   const linkForSupport = useMemo(
-    () => baseURL + "/support/" + user.username, //+ "/" + user.security_string,
-    [user]
+    () => baseURL + "/support/" + username, //+ "/" + user.security_string,
+    [username]
   );
 
   const {
-    avatar,
+    header,
     banner,
     welcome_text,
     btn_text,
@@ -145,15 +209,17 @@ const DonationPageContainer = () => {
     background_color,
   } = donationInfoData;
 
+  const { isOpen, folder, images } = bannerModalInfo;
+
+  const isHeaderBanner = useMemo(() => folder === "headers", [folder]);
+
   return (
     <div className="donationPage-container">
       <PageTitle formatId="page_title_donation_page" />
-      <LinkCopy
-        link={linkForSupport}
-        description={
-          "Via the link below your supporters can send you donations"
-        }
-      />
+      <div className="link-top">
+        <p>Via the link below your supporters can send you donations</p>
+        <LinkCopy link={linkForSupport} isSimple={!isMobile} />
+      </div>
       <div className="qr">
         <div
           className="qr-title"
@@ -180,7 +246,7 @@ const DonationPageContainer = () => {
               padding="6px 26px"
               onClick={onImageDownload}
               fontSize="18px"
-              isBlue
+              isMain
             />
           </div>
         )}
@@ -191,20 +257,29 @@ const DonationPageContainer = () => {
           <Col span={24}>
             <div className="form-element">
               <UploadImage
-                label="Avatar:"
-                formats={["PNG", "JPG", "JPEG", "GIF"]}
-                filePreview={avatar.preview}
+                label="Header banner:"
+                formats={["PNG", "JPG", "JPEG"]}
+                filePreview={header.preview}
                 setFile={({ preview, file }) =>
                   setDonationInfoData({
                     ...donationInfoData,
-                    avatar: {
+                    header: {
                       file,
                       preview,
                     },
                   })
                 }
-                labelCol={8}
-                InputCol={16}
+                afterEl={
+                  <UploadAfterEl
+                    size="1200*800"
+                    mdCol={6}
+                    alsoText="You can also choose"
+                    openBanners={() => openBannersPopup("headers")}
+                  />
+                }
+                labelCol={6}
+                inputCol={10}
+                isBanner
               />
             </div>
           </Col>
@@ -212,7 +287,7 @@ const DonationPageContainer = () => {
           <Col span={24}>
             <div className="form-element">
               <UploadImage
-                label="Banner:"
+                label="Background banner:"
                 formats={["PNG", "JPG", "JPEG"]}
                 filePreview={banner.preview}
                 setFile={({ preview, file }) =>
@@ -224,8 +299,16 @@ const DonationPageContainer = () => {
                     },
                   })
                 }
-                labelCol={8}
-                InputCol={16}
+                afterEl={
+                  <UploadAfterEl
+                    size="1200*800"
+                    mdCol={6}
+                    alsoText="You can also choose"
+                    openBanners={() => openBannersPopup("backgrounds")}
+                  />
+                }
+                labelCol={6}
+                inputCol={10}
                 isBanner
               />
             </div>
@@ -242,8 +325,8 @@ const DonationPageContainer = () => {
                     welcome_text: value,
                   })
                 }
-                labelCol={8}
-                InputCol={16}
+                labelCol={7}
+                inputCol={10}
                 gutter={[0, 16]}
                 isTextarea
               />
@@ -261,8 +344,8 @@ const DonationPageContainer = () => {
                     btn_text: value,
                   })
                 }
-                labelCol={8}
-                InputCol={10}
+                labelCol={7}
+                inputCol={10}
                 gutter={[0, 16]}
               />
             </div>
@@ -278,7 +361,7 @@ const DonationPageContainer = () => {
                     main_color: value,
                   })
                 }
-                labelCol={8}
+                labelCol={7}
                 gutter={[0, 16]}
               />
             </div>
@@ -294,7 +377,7 @@ const DonationPageContainer = () => {
                     background_color: value,
                   })
                 }
-                labelCol={8}
+                labelCol={7}
                 gutter={[0, 16]}
               />
             </div>
@@ -307,10 +390,38 @@ const DonationPageContainer = () => {
             onClick={sendData}
             fontSize="18px"
             disabled={loading}
-            isBlue
+            isMain
           />
         </div>
       </div>
+      <ModalComponent
+        open={isOpen}
+        title={`Default ${isHeaderBanner ? "header" : "background"} banners`}
+        width={900}
+        onCancel={closeBannersPopup}
+        className="donat-modal"
+        topModal
+      >
+        <Row gutter={[16, 32]} justify="space-between">
+          {images.map((image, key) => (
+            <Col md={isHeaderBanner ? 24 : 8} key={`banner-${image}-${key}`}>
+              <div
+                className={clsx("default-banner", {
+                  long: isHeaderBanner,
+                })}
+                onClick={() =>
+                  selectDefaultBanner({
+                    image,
+                    imageType: isHeaderBanner ? "header" : "banner",
+                  })
+                }
+              >
+                <img src={image} alt={`banner-${key}`} />
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </ModalComponent>
     </div>
   );
 };

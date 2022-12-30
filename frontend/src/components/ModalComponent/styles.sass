@@ -1,9 +1,11 @@
 @use '../../commonStyles/variables'
 
-.app-modal 
+.app-modal
     .ant-modal-content
-        background: variables.$grey-background-color
+        background: variables.$blue-transparent-color
         border-radius: 20px
+        position: relative
+        backdrop-filter: blur(15px)
 
         .modal-content-wrapper
             padding: 0 52px 34px
@@ -19,15 +21,15 @@
         color: variables.$grey-color
 
     .ant-modal-header
-        background: variables.$grey-background-color
+        background: transparent
         border: none
         border-radius: 20px
 
         .ant-modal-title
-            font-family: variables.$inter-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 500
-            font-size: 30px
+            font-size: 25px
             line-height: 30px
             color: variables.$white-color
             text-align: center
@@ -47,11 +49,11 @@
         background-position-y: 45%
         height: 93vh
         border-radius: variables.$border-radius
-            
+
         &__message,
         &__description
             text-align: center
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
 
         &__message
@@ -69,7 +71,6 @@
             font-size: 25px
             line-height: 30px
             color: #F6F7F1
-
 
         @media (max-width: 992px)
             height: 55vh

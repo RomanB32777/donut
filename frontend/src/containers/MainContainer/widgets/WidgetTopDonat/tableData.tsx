@@ -31,7 +31,7 @@ export const tableColums: ColumnsType<ITableData> = [
   },
   {
     title: "Date and Time, UTM",
-    dataIndex: "donation_date",
+    dataIndex: "created_at",
     width: "25%",
     render: (date) => DateFormatter(DateTimezoneFormatter(date)),
   },

@@ -1,13 +1,11 @@
 @use '../../commonStyles/variables'
 
 .switch
-    width: 100%
-
     .ant-switch
         background: variables.$grey-color
         
         &-checked
-            background: variables.$blue-color
+            background: variables.$main-color
 
             &:focus
                 box-shadow: none
@@ -20,7 +18,7 @@
             margin: 0 10px
 
         span
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 400
             font-size: 15px
@@ -28,7 +26,7 @@
             color: variables.$white-color
 
     &-label
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 400
         font-size: 20px

@@ -1,25 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, Col, Row } from "antd";
 import FileSaver from "file-saver";
 import { utils, write } from "xlsx";
 import { SearchOutlined } from "@ant-design/icons";
+import type { CheckboxChangeEvent } from "antd/es/checkbox";
+import { periodItemsTypes } from "types";
+
+import { WalletContext } from "../../contexts/Wallet";
 import PageTitle from "../../components/PageTitle";
 import FormInput from "../../components/FormInput";
 import DatesPicker from "../../components/DatesPicker";
 import SelectInput from "../../components/SelectInput";
 import TableComponent from "../../components/TableComponent";
 import BaseButton from "../../components/BaseButton";
-import { CalendarIcon, DownloadIcon } from "../../icons/icons";
-import type { CheckboxChangeEvent } from "antd/es/checkbox";
-import { initTableDataItem, ITableData, tableColumns } from "./tableData";
-import { getUsdKoef } from "../../utils";
-import axiosClient from "../../axiosClient";
-import { currBlockchain } from "../../utils";
-import { filterPeriodItems } from "../../utils/dateMethods/consts";
-import { setUpdateAppNotifications } from "../../store/types/Notifications";
+import { CalendarIcon, DownloadIcon } from "../../icons";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
-import { periodItemsTypes } from "../../utils/dateMethods/types";
+import axiosClient from "../../axiosClient";
+import { setUpdateAppNotifications } from "../../store/types/Notifications";
+import { getUsdKoef } from "../../utils";
+import { initTableDataItem, ITableData, tableColumns } from "./tableData";
+import { filterPeriodItems } from "../../utils/dateMethods/consts";
 import "./styles.sass";
 
 interface IQueryForm {
@@ -35,6 +36,7 @@ const LIMIT_DONATS = 15;
 const DonationsContainer = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
+  const { walletConf } = useContext(WalletContext);
   const { isMobile, isLaptop } = useWindowDimensions();
 
   const { list, shouldUpdateApp } = useSelector(
@@ -58,34 +60,37 @@ const DonationsContainer = () => {
   const getDonationsData = async () => {
     try {
       setLoading(true);
-      const queryFormString = Object.keys(queryForm).reduce(
-        (acc, key) =>
-          queryForm[key as keyof IQueryForm]
-            ? acc + `&${key}=${queryForm[key as keyof IQueryForm]}`
-            : acc,
-        ""
-      );
-      const blockchain = currBlockchain?.nativeCurrency.symbol;
-      const { data } = await axiosClient.get(
-        `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}${queryFormString}&blockchain=${blockchain}`
-      ); // &limit=${LIMIT_DONATS}&offset=${0}
-      if (data.donations && data.donations.length) {
-        const forTableData: ITableData[] = data.donations.map(
-          (donat: any, key: number) => ({
-            key: donat.id || key,
-            name: donat.username,
-            donationToken: donat.sum_donation,
-            donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
-            message: donat.donation_message || "-",
-            blockchain:
-              donat.blockchain || currBlockchain?.nativeCurrency.symbol,
-            date: donat.donation_date || "-",
-            role: user.roleplay,
-          })
+      const currBlockchain = await walletConf.getCurrentBlockchain();
+
+      if (currBlockchain) {
+        const queryFormString = Object.keys(queryForm).reduce(
+          (acc, key) =>
+            queryForm[key as keyof IQueryForm]
+              ? acc + `&${key}=${queryForm[key as keyof IQueryForm]}`
+              : acc,
+          ""
         );
-        setTableData(forTableData);
-      } else {
-        setTableData([]);
+        const blockchain = currBlockchain.name;
+        const { data } = await axiosClient.get(
+          `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}${queryFormString}&blockchain=${blockchain}`
+        ); // &limit=${LIMIT_DONATS}&offset=${0}
+        if (data.donations && data.donations.length) {
+          const forTableData: ITableData[] = data.donations.map(
+            (donat: any, key: number) => ({
+              key: donat.id || key,
+              name: donat.username,
+              donationToken: donat.sum_donation,
+              donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
+              message: donat.donation_message || "-",
+              blockchain: donat.blockchain || blockchain,
+              date: donat.created_at || "-",
+              role: user.roleplay,
+            })
+          );
+          setTableData(forTableData);
+        } else {
+          setTableData([]);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -214,7 +219,7 @@ const DonationsContainer = () => {
                       onClick={filterBtnClick}
                       modificator={"donations-header__left_btn"}
                       icon={<CalendarIcon />}
-                      isBlue={visibleDatesPicker}
+                      isMain={visibleDatesPicker}
                     />
                   </Col>
                 )}
@@ -231,7 +236,7 @@ const DonationsContainer = () => {
                       onClick={filterBtnClick}
                       modificator={"donations-header__right_btn"}
                       icon={<CalendarIcon />}
-                      isBlue={visibleDatesPicker}
+                      isMain={visibleDatesPicker}
                     />
                   </Col>
                   <Col xl={12}>
@@ -277,14 +282,14 @@ const DonationsContainer = () => {
           onClick={sendQuery}
           padding="8px 24px"
           fontSize={isMobile ? "15px" : "18px"}
-          isBlue
+          isMain
         />
       </div>
       <div className="donations-results">
         {isCreator && (
           <div className="donations-results__title">
             <p>
-              Found {tableData.length} result for the amount of{" "}
+              Found {tableData.length} result for the amount of&nbsp;
               {allAmountUSD.toFixed(2)} USD
             </p>
           </div>

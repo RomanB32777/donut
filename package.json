@@ -8,14 +8,16 @@
     "frontend:evmos": "REACT_APP_BLOCKCHAIN=evmos REACT_APP_WALLET=metamask npm start --prefix frontend",
     "frontend:klay": "REACT_APP_BLOCKCHAIN=klay-token REACT_APP_WALLET=metamask npm start --prefix frontend",
     "landing": "npm start --prefix landing",
-    "backend": "npm run server --prefix backend",
+    "backend": "npm run dev --prefix backend",
+    "sockets": "npm run dev --prefix sockets",
     "frontend:install": "npm install --prefix frontend",
     "frontend:build": "npm  run build --prefix frontend",
     "landing:install": "npm install --prefix landing",
     "landing:build": "npm  run build --prefix landing",
     "backend:install": "npm install --prefix backend",
-    "install": "concurrently \"npm run frontend:install\" \"npm run landing:install\" \"npm run backend:install\"",
-    "dev": "concurrently \"npm run frontend:tron\" \"npm run backend\"",
+    "sockets:install": "npm install --prefix sockets",
+    "install": "concurrently \"npm run frontend:install\" \"npm run landing:install\" \"npm run backend:install\" \"npm run sockets:install\"",
+    "dev": "concurrently \"npm run frontend:evmos\" \"npm run backend\" \"npm run sockets\"",
     "dumpSql": "docker exec -i new_donut_db_1 pg_dump --username postgres -d donut > /home/deploy/new_donut/dump.sql",
     "exexSql": "docker exec -it new_donut_db_1 psql  -U postgres -d donut",
     "dockerUp": "docker-compose up -d --build",
@@ -30,5 +32,7 @@
   "dependencies": {
     "concurrently": "^7.2.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  }
 }

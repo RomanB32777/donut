@@ -4,14 +4,14 @@ import "./styles.sass";
 const ColorPicker = ({
   label,
   color,
-  InputCol,
+  inputCol,
   labelCol,
   gutter,
   setColor,
 }: {
   label: string;
   color: string;
-  InputCol?: number;
+  inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
   setColor: (color: string) => void;
@@ -35,7 +35,7 @@ const ColorPicker = ({
         >
           <span className="colorPicker-label">{label}</span>
         </Col>
-        <Col md={InputCol || 12} xs={24}>
+        <Col md={inputCol || 12} xs={24}>
           <label htmlFor={idForInput} className="colorPicker-inputWrapper">
             <span>{color}</span>
             <input

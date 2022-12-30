@@ -2,43 +2,43 @@ import { Col, Row } from "antd";
 import { Header } from "antd/lib/layout/layout";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
-import { MenuMobileIcon } from "../../../icons/icons";
+import { useAppSelector } from "../../../hooks/reduxHooks";
+import { MenuMobileIcon } from "../../../icons";
 import { shortStr } from "../../../utils";
+import BaseButton from "../../BaseButton";
 import HeaderSelect from "../HeaderSelect";
 import Logo from "../LogoComponent";
 import "./styles.sass";
 
 interface IHeaderComponent {
-  isOpenHeaderSelect?: boolean;
   visibleLogo?: boolean;
   logoUrl?: string;
   visibleGamburger?: boolean;
   hidden?: boolean;
+  contentModificator?: string;
   modificator?: string;
   backgroundColor?: string;
   collapsedSidebar?: boolean;
   children?: React.ReactNode;
   setCollapsedSidebar?: (status: boolean) => void;
-  handlerHeaderSelect?: () => void;
   onClick?: () => void;
 }
 
 export const HeaderComponent = ({
-  isOpenHeaderSelect,
   hidden,
   visibleLogo,
   visibleGamburger,
   logoUrl,
+  contentModificator,
   modificator,
   backgroundColor,
   collapsedSidebar,
   children,
-  handlerHeaderSelect,
   setCollapsedSidebar,
   onClick,
 }: IHeaderComponent) => {
-  const user = useSelector((state: any) => state.user);
-  const mainWallet = useSelector((state: any) => state.wallet);
+  // const { user } = useAppSelector((state) => state);
+  // const { username } = user;
 
   return (
     <Header
@@ -54,9 +54,9 @@ export const HeaderComponent = ({
       <Row
         justify="space-between"
         align="middle"
-        style={{
-          width: "100%",
-        }}
+        className={clsx("header-container", {
+          [contentModificator as string]: contentModificator,
+        })}
       >
         {visibleGamburger && (
           <div
@@ -79,27 +79,8 @@ export const HeaderComponent = ({
         )}
         <Col xs={!visibleLogo ? 24 : 8}>
           <div className="header__right">
-            {(user.id || mainWallet.token) && (
-              <>
-                <Row
-                  align="middle"
-                  justify="end"
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  <Col>{children}</Col>
-                  <Col>
-                    <HeaderSelect
-                      title={user.username || shortStr(mainWallet.token, 8)}
-                      isOpenSelect={user.id && isOpenHeaderSelect}
-                      handlerHeaderSelect={handlerHeaderSelect}
-                      isNotVisibleAvatarInMobile={visibleLogo}
-                    />
-                  </Col>
-                </Row>
-              </>
-            )}
+            {children}
+            {/* {(username || blockchain) && */}
           </div>
         </Col>
       </Row>

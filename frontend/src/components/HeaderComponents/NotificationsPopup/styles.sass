@@ -4,31 +4,29 @@
     position: relative
     margin-right: 37px
 
-    &-popup-wrapper
-        display: flex
-        flex-direction: column
-        width: 380px
-        background: variables.$grey-background-color
-        border: 1px solid variables.$black-color
-        border-radius: variables.$border-radius
-        position: absolute
-        right: -75px
-        top: 56px
-        z-index: 100
-        padding: 20px
-        // -webkit-box-shadow: 0px 0px 4px 2px variables.$black-color
-        // box-shadow: 0px 0px 4px 2px variables.$black-color
+    .popup
+        .wrapper
+            position: absolute
+            right: -75px
+            top: 56px
+            z-index: 100
+            width: 380px
+            display: flex
+            flex-direction: column
+            border-radius: variables.$border-radius
+            background: variables.$black-transparent-color
+            padding: 20px
+            backdrop-filter: blur(10px)
 
-    &-popup
-        &__content
+        .content
             width: 100%
             overflow: hidden
             text-overflow: ellipsis
 
-            &-list
+            .list
                 max-height: 280px
 
-            &-item
+            .item
                 margin-bottom: 5px
                 margin-right: 10px
                 padding: 0 10px
@@ -38,7 +36,7 @@
                     padding: 5px 0
                     width: 100%
                     border-bottom: 1px solid variables.$grey-color
-                    font-family: variables.$jakarta-font
+                    font-family: variables.$pt-font
                     font-style: normal
                     font-weight: 500
                     font-size: 18px
@@ -60,21 +58,15 @@
                     .dot
                         border-bottom: none
 
-            &-link
-                margin-top: 15px
-                text-align: center
-                color: variables.$grey-color
-                cursor: pointer
-
 @media (max-width: 400px)
     .notifications
-        &-popup-wrapper
-            width: 300px
-            padding: 20px 10px
+        .popup
+            .wrapper
+                width: 300px
+                padding: 20px 10px
 
-        &-popup
-            &__content
-                &-item
+            .content
+                .item
                     .dot
                         font-size: 16px
                         line-height: 20px
@@ -85,5 +77,6 @@
 
 @media (max-width: 992px)
     .notifications
-        &-popup-wrapper
-            right: -230px
+        .popup
+            .wrapper
+                right: -230px

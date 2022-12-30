@@ -7,15 +7,14 @@
     height: 100vh
 
 .donat-container
-    max-width: 900px
+    max-width: 720px
     width: 100%
     display: flex
     flex-direction: column
     align-items: center
-    background: variables.$grey-background-color
+    background: variables.$black-transparent-color
     margin: 40px auto 40px
     padding-bottom: 34px
-    border: 1px solid variables.$grey-color
     border-radius: variables.$border-radius
 
     &__payment
@@ -28,7 +27,7 @@
 
         &_title
             margin-top: 100px
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 600
             font-size: 30px
@@ -50,9 +49,9 @@
             margin-bottom: 30px
 
             &_btn
-                background: variables.$black-color
+                background: variables.$blue-dark-color
                 padding: 18px
-                border-radius: 20px
+                border-radius: variables.$border-radius
                 cursor: pointer
                 border: 2px solid transparent
                 transition: all .4s ease
@@ -63,7 +62,7 @@
 
                 p
                     margin-top: 20px
-                    font-family: variables.$jakarta-font
+                    font-family: variables.$pt-font
                     font-style: normal
                     font-weight: 500
                     font-size: 20px
@@ -80,7 +79,7 @@
 
                 .ant-radio-wrapper
                     span
-                        font-family: variables.$jakarta-font
+                        font-family: variables.$pt-font
                         font-style: normal
                         font-weight: 500
                         font-size: 18px
@@ -100,45 +99,79 @@
 
             &-select
                 height: 100%
-                background: variables.$grey-background-color
-                padding: 5px 10px 5px 20px
-                border-radius: 20px
+                background: variables.$main-color
+                padding: 5px 10px 5px 5px
+                border-radius: 30px
 
             input,
             textarea
-                background: variables.$black-color
+                background: variables.$blue-dark-color
                 width: 100%
                 outline: none
                 line-height: 22px
                 font-size: 17px
                 border: 0
-                border-radius: 35px
-                font-family: variables.$jakarta-font
+                border-radius: variables.$border-radius
+                font-family: variables.$pt-font
                 color: variables.$white-color
-                font-weight: 600
-                box-sizing: border-box
-                padding: 25px
 
             input
-                height: 80px
+                height: 45px
 
             textarea
-                height: 180px
+                height: 120px
+                position: relative
 
             .formInput__description
                 text-align: right
                 font-size: 14px
                 padding-right: 25px
 
-            .formInput__input_addonAfter
-                background: variables.$black-color
-                border: 0
-                border-top-right-radius: 35px
-                border-bottom-right-radius: 35px
-                padding: 23px
+            .input-addon
+                background: variables.$blue-dark-color
+
+            .username-switch
+                width: 220px
+
+                .switch-label
+                    margin: 0
+                    font-size: 14px
+                    line-height: 18px
+                    color: variables.$grey-color
+
+            .select-blockchain
+                background: variables.$blue-dark-color
+                padding: 5.5px
+                border-top-right-radius: variables.$border-radius
+                border-bottom-right-radius: variables.$border-radius
+
+            .selected-blockchain
+                display: flex
+                align-items: center
+
+                .blockchain-icon
+                    width: 27px
+                    height: 27px
+                    background: yellow
+                    border-radius: 50%
+                    margin-right: 10px
+
+                    img
+                        width: 100%
+                        height: 100%
+
+            .count-modificator
+                display: flex
+                align-items: center
+                justify-content: space-between
+                width: 100%
+
+                .usd-equal
+                    font-size: 14px
+                    line-height: 18px
 
         &_balance
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 500
             font-size: 18px
@@ -153,7 +186,7 @@
 
         &_title
             margin: 100px 0 30px
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 600
             font-size: 30px
@@ -165,9 +198,8 @@
                 margin-top: 20px
 
 .donat-header
-    width: 100%
-    border-top-left-radius: variables.$border-radius
-    border-top-right-radius: variables.$border-radius
+    margin: 0 auto
+    max-width: 720px
 
 .donat-info-container
     position: relative
@@ -179,7 +211,7 @@
 
     &__background
         width: 100%
-        height: 192px
+        height: 145px
         margin-bottom: 2px
         background-size: cover
         position: relative
@@ -208,22 +240,22 @@
 
     &__picture
         position: relative
-        height: 200px
+        height: 120px
         width: 28%
-        max-width: 220px
-        border-radius: 10px
+        max-width: 120px
+        border-radius: variables.$border-radius
         overflow: hidden
         display: flex
         justify-content: center
         align-items: center
-        background: #D9D9D9
+        background: variables.$blue-dark-color
 
         @media (max-width: 768px)
             width: 55%
 
         img
             width: 100%
-            heigth: 100%
+            height: 100%
             object-fit: cover
 
     &__personal
@@ -231,7 +263,7 @@
         padding: 70px 0 0
 
         .title
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-weight: 600
             font-size: 30px
@@ -253,7 +285,7 @@
     &__description
         margin-bottom: 25px
         text-align: center
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 600
         font-size: 25px

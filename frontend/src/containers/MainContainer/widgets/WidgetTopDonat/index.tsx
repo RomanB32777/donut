@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Empty } from "antd";
+import { stringFormatTypes } from "types";
 import axiosClient from "../../../../axiosClient";
+import { WalletContext } from "../../../../contexts/Wallet";
+
 import SelectComponent from "../../../../components/SelectComponent";
 import TableComponent from "../../../../components/TableComponent";
 import useWindowDimensions from "../../../../hooks/useWindowDimensions";
 import WidgetItem from "../WidgetItem";
+
 import { ITableData, tableColums } from "./tableData";
-import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
-import { stringFormatTypes } from "../../../../utils/dateMethods/types";
+import { getTimePeriodQuery } from "../../../../utils";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
@@ -22,6 +25,8 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
     (state: any) => state.notifications
   );
 
+  const { walletConf } = useContext(WalletContext);
+
   const [topDonations, setTopDonations] = useState<ITableData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(
@@ -31,16 +36,20 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const getTopDonations = async (timePeriod: string) => {
     try {
       setLoading(true);
-      const blockchain = currBlockchain?.nativeCurrency.symbol;
-      const { data } = await axiosClient.get(
-        `${widgetApiUrl}/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&blockchain=${blockchain}`
-      );
-      if (data) {
-        const forTableData: ITableData[] = data.map((donat: any) => ({
-          key: donat.id,
-          ...donat,
-        }));
-        setTopDonations(forTableData);
+      const currBlockchain = await walletConf.getCurrentBlockchain();
+
+      if (currBlockchain) {
+        const blockchain = currBlockchain.name;
+        const { data } = await axiosClient.get(
+          `${widgetApiUrl}/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&blockchain=${blockchain}`
+        );
+        if (data) {
+          const forTableData: ITableData[] = data.map((donat: any) => ({
+            key: donat.id,
+            ...donat,
+          }));
+          setTopDonations(forTableData);
+        }
       }
     } catch (error) {
       console.log(error);

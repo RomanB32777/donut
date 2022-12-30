@@ -66,9 +66,10 @@ export const addInstallWalletNotification = (
   });
 };
 
-export const checkIsExistUser = async (token: string) => {
-  const {data} = await axiosClient.post("/api/user/check-user-exist/", { token });
-  console.log(data);
+export const checkIsExistUser = async (address: string) => {
+  const { data } = await axiosClient.get(
+    `/api/user/check-user-exist/${address}`
+  );
 
   if (data.notExist) return false;
   return true;

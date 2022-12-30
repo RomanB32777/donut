@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Empty } from "antd";
+import { stringFormatTypes } from "types";
+import { WalletContext } from "../../../../contexts/Wallet";
 import WidgetItem from "../WidgetItem";
 import SelectComponent from "../../../../components/SelectComponent";
-import { currBlockchain, getTimePeriodQuery } from "../../../../utils";
+import { getTimePeriodQuery } from "../../../../utils";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import axiosClient from "../../../../axiosClient";
 import { widgetApiUrl } from "../../../../consts";
-import { stringFormatTypes } from "../../../../utils/dateMethods/types";
 import "./styles.sass";
 
 const LIMIT_LATEST = 6;
@@ -17,6 +18,7 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const { list, shouldUpdateApp } = useSelector(
     (state: any) => state.notifications
   );
+  const { walletConf } = useContext(WalletContext);
 
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
@@ -25,11 +27,14 @@ const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
 
   const getLatestDonations = async (timePeriod: string) => {
     try {
-      const blockchain = currBlockchain?.nativeCurrency.symbol;
-      const { data } = await axiosClient.get(
-        `${widgetApiUrl}/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}&blockchain=${blockchain}`
-      );
-      data && setLatestDonations(data);
+      const currBlockchain = await walletConf.getCurrentBlockchain();
+      if (currBlockchain) {
+        const blockchain = currBlockchain.name;
+        const { data } = await axiosClient.get(
+          `${widgetApiUrl}/latest-donations/${user.id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}&blockchain=${blockchain}`
+        );
+        data && setLatestDonations(data);
+      }
     } catch (error) {
       console.log(error);
     }

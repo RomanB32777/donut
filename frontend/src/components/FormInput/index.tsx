@@ -12,10 +12,13 @@ const FormInput = ({
   typeInput,
   disabled,
   modificator,
+  descriptionModificator,
+  addonsModificator,
   descriptionInput,
   maxLength,
   isTextarea,
-  InputCol,
+  isVisibleLength,
+  inputCol,
   labelCol,
   gutter,
   addonBefore,
@@ -29,10 +32,13 @@ const FormInput = ({
   typeInput?: HTMLInputTypeAttribute;
   disabled?: boolean;
   modificator?: string;
-  descriptionInput?: string;
+  descriptionModificator?: string;
+  addonsModificator?: string;
+  descriptionInput?: React.ReactNode;
   maxLength?: number;
   isTextarea?: boolean;
-  InputCol?: number;
+  isVisibleLength?: boolean;
+  inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
   addonBefore?: React.ReactNode;
@@ -51,16 +57,22 @@ const FormInput = ({
             alignCenter: !isTextarea,
           })}
         >
-          <span className="formInput__label">{label}</span>
+          <span className="label">{label}</span>
         </Col>
-        <Col md={InputCol || (label ? 12 : 24)} xs={24}>
+        <Col md={inputCol || (label ? 12 : 24)} xs={24}>
           <div
-            className={clsx("formInput__input", {
+            className={clsx("input", {
               [modificator as string]: modificator,
             })}
           >
             {addonBefore && (
-              <div className="formInput__input_addonBefore">{addonBefore}</div>
+              <div
+                className={clsx("addonBefore", {
+                  [addonsModificator as string]: addonsModificator,
+                })}
+              >
+                {addonBefore}
+              </div>
             )}
             {isTextarea ? (
               <textarea
@@ -92,8 +104,15 @@ const FormInput = ({
                 onChange={(e) => setValue && setValue(e.target.value)}
               />
             )}
+            {isVisibleLength && <p className="value-length">{value.length}/{maxLength}</p>}
             {addonAfter && (
-              <div className="formInput__input_addonAfter">{addonAfter}</div>
+              <div
+                className={clsx("addonAfter", {
+                  [addonsModificator as string]: addonsModificator,
+                })}
+              >
+                {addonAfter}
+              </div>
             )}
           </div>
         </Col>
@@ -102,9 +121,15 @@ const FormInput = ({
         <Row>
           <Col
             offset={(!isMobile ? labelCol : 0) || (label && !isMobile ? 12 : 0)}
-            md={InputCol || (label ? 12 : 24)}
+            md={inputCol || (label ? 12 : 24)}
           >
-            <p className="formInput__description">{descriptionInput}</p>
+            <div
+              className={clsx("description", {
+                [descriptionModificator as string]: descriptionModificator,
+              })}
+            >
+              {descriptionInput}
+            </div>
           </Col>
         </Row>
       )}

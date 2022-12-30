@@ -8,17 +8,17 @@
         align-items: center
 
     &__label
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 400
         font-size: 20px
         line-height: 25px
         color: variables.$white-color
-        
+
     &__description
         margin-top: 10px
         margin-bottom: 0
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 400
         font-size: 17px
@@ -35,9 +35,9 @@
         .ant-select-selector
             width: 100%
             height: auto
-            background-color: transparent
-            border: 1px solid variables.$white-color
-            border-radius: 10px
+            background-color: variables.$black-transparent-color
+            border: none
+            border-radius: variables.$border-radius
             padding: 9px 24px
 
         .ant-select-arrow
@@ -51,9 +51,13 @@
         .ant-select-selector
             border-color: variables.$white-color !important
 
+    .ant-select-disabled.ant-select:not(.ant-select-customize-input)
+        .ant-select-selector
+            background: rgba(94, 94, 94, .3)
+
     .ant-select-selection-item,
     .ant-select-multiple .ant-select-selection-item
-        font-family: variables.$inter-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 500
         font-size: 20px
@@ -69,3 +73,12 @@
     .ant-select-single.ant-select-open
         .ant-select-selection-item
             color: variables.$white-color
+
+    .ant-select-single.ant-select-show-arrow
+        .ant-select-selection-search
+            right: 50px
+            left: 20px
+            display: flex
+            align-items: center
+            font-size: 20px
+            line-height: 25px

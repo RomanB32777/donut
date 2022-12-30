@@ -9,7 +9,7 @@
     
     span
         margin-right: 62px
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-weight: 700
         font-size: 20px
@@ -24,8 +24,8 @@
         display: flex
 
         .link
-            font-family: variables.$jakarta-font
-            color: variables.$grey-color
+            font-family: variables.$pt-font
+            color: variables.$white-color
             font-style: normal
             font-size: 17px
             line-height: 21px
@@ -41,7 +41,7 @@
             justify-content: center
             align-items: center
             cursor: pointer
-            color: variables.$grey-color
+            color: variables.$white-color
 
     .simpleLink-block
         .link
@@ -49,11 +49,13 @@
             max-width: 400px
 
     .link-block
-        .link
-            font-weight: 700
-            background: #000000
-            border: 1px solid variables.$grey-color
-            border-radius: 10px
-            max-width: 550px
-            max-height: 55px
-            padding: 13px
+        font-weight: 400
+        background: variables.$black-transparent-color
+        border-radius: variables.$border-radius
+        border: none
+        max-width: 550px
+        max-height: 55px
+        padding: 13px
+
+        .icon
+            margin-left: 20px

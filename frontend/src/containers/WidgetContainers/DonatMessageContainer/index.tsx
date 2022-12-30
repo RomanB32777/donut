@@ -8,8 +8,8 @@ import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
 
 import bigImg from "../../../assets/big_don.png";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { IAlertData, initAlertData } from "../../../types";
-import { url } from "../../../consts";
+import { IAlert } from "../../../types";
+import { initAlertData } from "../../../consts";
 import { soundsList } from "../../../assets/sounds";
 import "./styles.sass";
 
@@ -33,7 +33,7 @@ const DonatMessageContainer = () => {
     // ...testDonat,
   });
 
-  const [alertWidgetData, setAlertWidgetData] = useState<IAlertData>({
+  const [alertWidgetData, setAlertWidgetData] = useState<IAlert>({
     ...initAlertData,
   });
 
@@ -67,18 +67,13 @@ const DonatMessageContainer = () => {
       const { data } = await axiosClient.get(
         "/api/widget/get-alerts-widget/" + user.id
       );
-      const userData: IAlertData = {
+      const userData: IAlert = {
+        ...data,
         banner: {
           preview: data.banner_link,
           file: alertWidgetData.banner.file,
         },
-        message_color: data.message_color,
-        name_color: data.name_color,
-        sum_color: data.sum_color,
         duration: Number(data.duration),
-        sound: data.sound,
-        voice: data.voice,
-        gender_voice: data.gender_voice,
       };
 
       setAlertWidgetData({
@@ -118,7 +113,7 @@ const DonatMessageContainer = () => {
       {Boolean(Object.keys(lastNotif).length) && (
         <>
           <img
-            src={banner.preview ? url + banner.preview : bigImg}
+            src={banner.preview || bigImg}
             alt="banner"
             className={clsx("donat-messsage-container_banner", {
               rotate: !Boolean(banner.preview),
@@ -133,9 +128,9 @@ const DonatMessageContainer = () => {
                       color: name_color,
                     }}
                   >
-                    {lastNotif.username}{" "}
-                  </span>{" "}
-                  -{" "}
+                    {lastNotif.username}&nbsp;
+                  </span>&nbsp;
+                  -&nbsp;
                   <span
                     style={{
                       color: sum_color,

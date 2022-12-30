@@ -1,5 +1,12 @@
 @use '../../commonStyles/_variables'
 
+.content-container
+    background: url('../../assets/red-gradient.png')
+    background-repeat: no-repeat
+    background-position: 140% 200%
+    background-size: 700px
+    background-attachment: fixed
+
 .main-container
     margin-top: 68px
     padding: 39px 50px 34px
@@ -14,10 +21,11 @@
 
 .sidebar
     &-content
-        height: 85%
         display: flex
         flex-direction: column
         justify-content: space-between
+        height: 85%
+        margin-top: 40px
 
     &-email
         display: flex

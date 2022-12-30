@@ -5,7 +5,7 @@
 .ant-pagination-item
     background: none !important
     color: variables.$white-color !important
-    font-family: variables.$inter-font
+    font-family: variables.$pt-font
     font-style: normal
     font-size: 17px
     line-height: 22px
@@ -14,6 +14,11 @@
     a
         color: variables.$white-color
         text-decoration: underline
+
+.app-table
+    .ant-table-tbody > tr > td,
+    .ant-table-thead > tr > th
+        border-bottom: none
 
 .ant-table-thead
     .ant-table-cell
@@ -42,7 +47,7 @@
         min-width: auto
         a
             color: variables.$white-color !important
-            font-family: variables.$jakarta-font
+            font-family: variables.$pt-font
             font-style: normal
             font-size: 15px
             line-height: 20px
@@ -50,14 +55,14 @@
 
     .ant-pagination-item-active
         a
-            color: variables.$blue-color !important
+            color: variables.$main-color !important
 
     .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis,
     .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
-    .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon, 
+    .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon,
     .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-link-icon
         color: variables.$white-color !important
-        font-family: variables.$jakarta-font
+        font-family: variables.$pt-font
         font-style: normal
         font-size: 12px
 

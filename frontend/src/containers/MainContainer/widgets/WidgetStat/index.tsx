@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useContext, useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
+import moment from "moment";
+import { periodItemsTypes, stringFormatTypes } from "types";
+import { useAppSelector } from "../../../../hooks/reduxHooks";
+
+import { WalletContext } from "../../../../contexts/Wallet";
 import SelectComponent from "../../../../components/SelectComponent";
-import {
-  currBlockchain,
-  getTimePeriodQuery,
-  DateFormatter,
-} from "../../../../utils";
+import { getTimePeriodQuery, DateFormatter } from "../../../../utils";
 import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
 import axiosClient from "../../../../axiosClient";
 import {
@@ -18,21 +18,14 @@ import {
   options,
   subtractDate,
 } from "./graphData";
-import {
-  periodItemsTypes,
-  stringFormatTypes,
-} from "../../../../utils/dateMethods/types";
 import { widgetApiUrl } from "../../../../consts";
 import "./styles.sass";
-import moment from "moment";
 
 Chart.register(...registerables);
 
 const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
-  const user: any = useSelector((state: any) => state.user);
-  const { list, shouldUpdateApp } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { user, notifications } = useAppSelector((state) => state);
+  const { walletConf } = useContext(WalletContext);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [dataChart, setDataChart] = useState<ChartData<"line">>({
@@ -42,9 +35,9 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
         label: "Donation sum",
         data: [],
         fill: true,
-        pointBackgroundColor: "rgba(29, 20, 255, 1)",
-        backgroundColor: "rgba(29, 20, 255, 0.2)",
-        borderColor: "rgba(29, 20, 255, 0.5)",
+        pointBackgroundColor: "rgba(233, 69, 96, 1)",
+        backgroundColor: "rgba(233, 69, 96, 0.2)",
+        borderColor: "rgba(233, 69, 96, 0.5)",
       },
     ],
   });
@@ -52,50 +45,59 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
+
+  const { list, shouldUpdateApp } = notifications;
+
   const getLatestDonations = async (timePeriod: periodItemsTypes) => {
     try {
       setLoading(true);
-      const blockchain = currBlockchain?.nativeCurrency.symbol;
-      const { data } = await axiosClient.get(
-        `${widgetApiUrl}/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${blockchain}`
-      );
-      if (data) {
-        const filteredDates = {
-          start: moment()
-            .subtract(...subtractDate[timePeriod].split("_"))
-            .startOf("day")
-            .valueOf(),
-          end: moment().endOf("day").valueOf(),
-        };
+      const currBlockchain = await walletConf.getCurrentBlockchain();
 
-        const initGroupDates = enumerateBetweenDates({
-          startDate: filteredDates.start,
-          endDate: filteredDates.end,
-          timePeriod: timePeriod,
-        }).reduce((acc, i) => ({ ...acc, [i]: 0 }), {});
+      if (currBlockchain) {
+        const blockchain = currBlockchain.name;
+        const { data } = await axiosClient.get(
+          `${widgetApiUrl}/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${blockchain}`
+        );
+        console.log(data);
 
-        const groupDonats = data.reduce((acc: any, d: any) => {
-          const date = DateFormatter(d.date_group, dateFormat[timePeriod]);
-          return {
-            ...acc,
-            [date]: +(+d.sum_donation * usdtKoef).toFixed(2),
+        if (data) {
+          const filteredDates = {
+            start: moment()
+              .subtract(...subtractDate[timePeriod].split("_"))
+              .startOf("day")
+              .valueOf(),
+            end: moment().endOf("day").valueOf(),
           };
-        }, initGroupDates as { [key: string]: number });
 
-        const labels = Object.keys(groupDonats).map((date: string) => date);
-        const values = Object.values(groupDonats).map((sum: any) => sum);
+          const initGroupDates = enumerateBetweenDates({
+            startDate: filteredDates.start,
+            endDate: filteredDates.end,
+            timePeriod: timePeriod,
+          }).reduce((acc, i) => ({ ...acc, [i]: 0 }), {});
 
-        setDataChart({
-          ...dataChart,
-          labels,
-          datasets: [
-            {
-              ...dataChart.datasets[0],
-              data: values,
-            },
-          ],
-        });
-      }
+          const groupDonats = data.reduce((acc: any, d: any) => {
+            const date = DateFormatter(d.date_group, dateFormat[timePeriod]);
+            return {
+              ...acc,
+              [date]: +(+d.sum_donation * usdtKoef).toFixed(2),
+            };
+          }, initGroupDates as { [key: string]: number });
+
+          const labels = Object.keys(groupDonats).map((date: string) => date);
+          const values = Object.values(groupDonats).map((sum: any) => sum);
+
+          setDataChart({
+            ...dataChart,
+            labels,
+            datasets: [
+              {
+                ...dataChart.datasets[0],
+                data: values,
+              },
+            ],
+          });
+        }
+      } else setLoading(false);
     } catch (error) {
       console.log(error);
     } finally {
@@ -105,6 +107,8 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
+    console.log(user.id, timePeriod, shouldUpdateApp, usdtKoef);
+
     user.id &&
       timePeriod &&
       shouldUpdateApp &&

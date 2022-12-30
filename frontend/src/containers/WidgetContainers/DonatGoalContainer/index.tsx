@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { IGoalData } from "types";
 
 import { Progress } from "antd";
 import axiosClient, { baseURL } from "../../../axiosClient";
-import { IGoalData } from "../../../types";
 import "./styles.sass";
 
 const DonatGoalContainer = () => {

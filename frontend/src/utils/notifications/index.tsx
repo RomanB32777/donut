@@ -107,7 +107,7 @@ export const getNotificationMessage = ({
     case "add_badge_creator":
       return (
         <span>
-          You sent{" "}
+          You sent&nbsp;
           {data ? (
             <a
               href={`${baseURL}/badges?id=${data}`}
@@ -119,7 +119,7 @@ export const getNotificationMessage = ({
             </a>
           ) : (
             "a badge"
-          )}{" "}
+          )}&nbsp;
           to {user}
         </span>
       );
@@ -127,7 +127,7 @@ export const getNotificationMessage = ({
     case "add_badge_supporter":
       return (
         <span>
-          You received{" "}
+          You received&nbsp;
           {data ? (
             <a
               href={`${baseURL}/badges?id=${data}`}
@@ -139,7 +139,7 @@ export const getNotificationMessage = ({
             </a>
           ) : (
             "a badge"
-          )}{" "}
+          )}&nbsp;
           from {user};
         </span>
       );
@@ -157,7 +157,7 @@ export const getNotificationMessage = ({
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             Click here
-          </a>{" "}
+          </a>&nbsp;
           to check!
         </span>
       );
@@ -172,7 +172,7 @@ export const getNotificationMessage = ({
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             New badge
-          </a>{" "}
+          </a>&nbsp;
           was created successfully!
         </span>
       );

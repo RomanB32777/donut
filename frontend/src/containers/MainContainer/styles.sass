@@ -1,10 +1,19 @@
 @use '../././../commonStyles/variables'
 
 .widget
-    background: variables.$grey-background-color
+    position: relative
+    background: variables.$black-transparent-color
     border-radius: variables.$border-radius
     min-height: 100px
     padding: 20px 15px
+
+    &:before
+        position: absolute
+        left: 0
+        top: 0
+        right: 0
+        bottom: 0
+        backdrop-filter: blur(10px)
 
     &.widget-stat
         margin-bottom: 16px
@@ -13,7 +22,7 @@
         display: flex
         justify-content: space-between
         align-items: center
-        font-family: variables.$inter-font
+        font-family: variables.$pt-font
         color: variables.$white-color
 
         &__title
@@ -27,17 +36,17 @@
 
     &__items
         margin-top: 20px
-        
+
     &__item
         display: flex
         flex-direction: column
-        background: variables.$black-color
+        background: variables.$blue-dark-color
         border-radius: 20px
         padding: 15px 20px
 
         &_name,
         &_sum
-            font-family: variables.$inter-font
+            font-family: variables.$pt-font
             font-style: normal
 
         &_name
@@ -45,7 +54,7 @@
             line-height: 22px
             font-weight: 600
             color: variables.$white-color
-        
+
         &_sum
             font-size: 15px
             line-height: 20px
@@ -58,7 +67,6 @@
         transform: rotate(0deg)
     100%
         transform: rotate(-360deg)
-
 
 @media (min-width: 768px)
     .widget

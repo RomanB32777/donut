@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Col, Empty, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  IStatData,
+  allPeriodItemsTypes,
+  statsDataTypes,
+  ICurrentPeriodItemsTypes,
+} from "types";
+
 import BaseButton from "../../../components/BaseButton";
 import PageTitle from "../../../components/PageTitle";
 import FormInput from "../../../components/FormInput";
 import ModalComponent from "../../../components/ModalComponent";
 import SelectInput, { ISelectItem } from "../../../components/SelectInput";
-import { IStatData } from "../../../types";
 import StatsItem from "./StatsItem";
 import DatesPicker from "../../../components/DatesPicker";
 import axiosClient from "../../../axiosClient";
@@ -18,13 +24,9 @@ import {
   filterCurrentPeriodItems,
 } from "../../../utils/dateMethods/consts";
 import "./styles.sass";
-import {
-  allPeriodItemsTypes,
-  IFilterCurrentPeriodItems,
-  statsDataTypes,
-} from "../../../utils/dateMethods/types";
 
-type keyPeriodItems = keyof IFilterCurrentPeriodItems;
+type keyPeriodItems = keyof ICurrentPeriodItemsTypes;
+
 interface IWidgetStatData {
   title: string;
   stat_description: string;
@@ -173,7 +175,7 @@ const StreamStatsContainer = () => {
           padding="6px 35px"
           onClick={() => setIsOpenModal(true)}
           fontSize="18px"
-          isBlue
+          isMain
         />
       </div>
       <div className="stats-wrapper">
@@ -210,7 +212,7 @@ const StreamStatsContainer = () => {
                     setFormData({ ...formData, title: value })
                   }
                   labelCol={6}
-                  InputCol={16}
+                  inputCol={16}
                   gutter={[0, 18]}
                 />
               </div>
@@ -225,7 +227,7 @@ const StreamStatsContainer = () => {
                     setFormData({ ...formData, stat_description: value })
                   }
                   labelCol={6}
-                  InputCol={16}
+                  inputCol={16}
                   gutter={[0, 18]}
                   isTextarea
                 />
@@ -314,6 +316,14 @@ const StreamStatsContainer = () => {
             </Col>
           </Row>
           <div className="stats-modal__btns">
+            <div className="stats-modal__btns_cancel">
+              <BaseButton
+                formatId="profile_form_cancel_button"
+                padding="6px 35px"
+                onClick={closeEditModal}
+                fontSize="18px"
+              />
+            </div>
             <div className="stats-modal__btns_save">
               <BaseButton
                 formatId="profile_form_save_widget_button"
@@ -321,15 +331,7 @@ const StreamStatsContainer = () => {
                 onClick={sendData}
                 disabled={loading}
                 fontSize="18px"
-                isBlue
-              />
-            </div>
-            <div className="stats-modal__btns_cancel">
-              <BaseButton
-                formatId="profile_form_cancel_button"
-                padding="6px 35px"
-                onClick={closeEditModal}
-                fontSize="18px"
+                isMain
               />
             </div>
           </div>

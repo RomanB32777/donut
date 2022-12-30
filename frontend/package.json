@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -18,6 +19,7 @@
     "clsx": "^1.2.1",
     "ethers": "^5.7.0",
     "file-saver": "^2.0.5",
+    "fontfaceobserver": "^2.3.0",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-chartjs-2": "^4.3.1",
@@ -36,6 +38,8 @@
     "redux-saga": "^1.2.1",
     "sass": "^1.54.8",
     "socket.io-client": "^4.5.2",
+    "styled-components": "^5.3.6",
+    "types": "file:../types",
     "typescript": "^4.8.2",
     "use-sound": "^4.0.1",
     "web-vitals": "^2.1.4",
@@ -68,6 +72,8 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5",
-    "@types/react-document-title": "^2.0.5"
+    "@types/fontfaceobserver": "^2.1.0",
+    "@types/react-document-title": "^2.0.5",
+    "@types/styled-components": "^5.1.26"
   }
 }

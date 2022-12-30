@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Col, Empty, Row } from "antd";
 import { FormattedMessage } from "react-intl";
-
 import { useDispatch, useSelector } from "react-redux";
+import { IBadgeInfo, IBadgeShort } from "types";
+
+import { WalletContext } from "../../contexts/Wallet";
 import axiosClient, { baseURL } from "../../axiosClient";
 import PageTitle from "../../components/PageTitle";
 import ContentCard from "./ContentCard";
@@ -12,21 +14,24 @@ import BadgePage from "./BadgePage";
 
 import CreateBadgeForm from "./CreateBadgeForm";
 import { setUpdateAppNotifications } from "../../store/types/Notifications";
-import { IBadge, IBadgeData, initBadgeData } from "../../types";
-import { addNotification, currBlockchain, walletsConf } from "../../utils";
-import { ipfsFileformat, ipfsFilename } from "../../consts";
+import { IBadge } from "../../types";
+import { addNotification } from "../../utils";
+import { initBadgeData, ipfsFileformat, ipfsFilename } from "../../consts";
 import "./styles.sass";
 
 const BadgesContainer = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
+
+  const { walletConf } = useContext(WalletContext);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const { list, shouldUpdateApp } = useSelector(
     (state: any) => state.notifications
   );
 
-  const [badgesList, setBadgesList] = useState<IBadgeData[]>([]);
-  const [activeBadge, setActiveBadge] = useState<IBadgeData>({
+  const [badgesList, setBadgesList] = useState<IBadge[]>([]);
+  const [activeBadge, setActiveBadge] = useState<IBadge>({
     ...initBadgeData,
   });
   const [isOpenCreateForm, setIsOpenCreateForm] = useState<boolean>(false);
@@ -35,28 +40,29 @@ const BadgesContainer = () => {
   const queryID = searchParams.get("id");
 
   const getBadges = async (id: number) => {
-    const url =
-      user.roleplay === "creators"
-        ? `${baseURL}/api/badge/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}&status=success`
-        : `${baseURL}/api/badge/badges-backer/${id}?blockchain=${currBlockchain?.nativeCurrency.symbol}&status=success`;
+    const currBlockchain = await walletConf.getCurrentBlockchain();
+    if (currBlockchain) {
+      const url =
+        user.roleplay === "creators"
+          ? `${baseURL}/api/badge/${id}?blockchain=${currBlockchain.name}&status=success`
+          : `${baseURL}/api/badge/badges-backer/${id}?blockchain=${currBlockchain.name}&status=success`;
 
-    const { data } = await axiosClient.get(url);
-    if (Array.isArray(data) && data.length) {
-      setBadgesList(data);
+      const { data } = await axiosClient.get(url);
+      if (Array.isArray(data) && data.length) {
+        setBadgesList(data);
+      }
     }
   };
 
-  const getBadgeData = async (badge: IBadge) => {
+  const getBadgeData = async (badge: IBadgeShort) => {
     try {
-      const walletKey = process.env.REACT_APP_WALLET || "metamask";
-      const wallet = walletsConf[walletKey];
       const { contract_address, creator_id } = badge;
 
-      const badgeURI = await wallet.getBadgeURI(contract_address);
+      const badgeURI = await walletConf.getBadgeURI(contract_address);
 
-      const quantity = await wallet.getQuantityBalance({
+      const quantity = await walletConf.getQuantityBalance({
         contract_address,
-        supporter_address: user[`${walletKey}_token`],
+        supporter_address: user.wallet_address,
         isCreator: user.id === creator_id,
       });
 
@@ -102,7 +108,7 @@ const BadgesContainer = () => {
     }
   };
 
-  const deleteBadge = async (badge: IBadgeData) => {
+  const deleteBadge = async (badge: IBadge) => {
     try {
       const { id, contract_address, title, quantity } = badge;
       if (title && quantity < 1) {
@@ -186,9 +192,7 @@ const BadgesContainer = () => {
     return (
       <CreateBadgeForm
         backBtn={() => setIsOpenCreateForm(false)}
-        setActiveBadge={(activeBadge: IBadgeData) =>
-          setActiveBadge(activeBadge)
-        }
+        setActiveBadge={(activeBadge: IBadge) => setActiveBadge(activeBadge)}
         openBadgePage={() => setIsOpenBadgePage(true)}
       />
     );
@@ -207,7 +211,7 @@ const BadgesContainer = () => {
             padding="6px 43px"
             fontSize="18px"
             onClick={() => setIsOpenCreateForm(true)}
-            isBlue
+            isMain
           />
         </div>
       )}

@@ -1,17 +1,18 @@
+CREATE TYPE UserRoles AS ENUM('creators', 'backers');
+
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
-    tronlink_token VARCHAR(255) DEFAULT '',
-    metamask_token VARCHAR(255) DEFAULT '',
-    near_token VARCHAR(255) DEFAULT '',
+    wallet_address VARCHAR(255) UNIQUE DEFAULT '',
     username VARCHAR(255) UNIQUE DEFAULT '',
-    roleplay VARCHAR(15) DEFAULT ''
+    roleplay UserRoles DEFAULT NULL,
+    avatar VARCHAR(255) DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT Now()
 );
 
 CREATE TABLE creators(
     id SERIAL PRIMARY KEY,
-    avatarLink VARCHAR(255) DEFAULT '',
-    backgroundLink VARCHAR(255) DEFAULT '',
-    creation_date VARCHAR(255) DEFAULT '',
+    header_banner VARCHAR DEFAULT '',
+    background_banner VARCHAR DEFAULT '',
     welcome_text VARCHAR(255) DEFAULT '',
     btn_text VARCHAR(255) DEFAULT '',
     main_color VARCHAR(255) DEFAULT '#2B4BFB',
@@ -19,25 +20,6 @@ CREATE TABLE creators(
     security_string VARCHAR(100) DEFAULT '',
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE backers(
-    id SERIAL PRIMARY KEY,
-    avatarLink VARCHAR(255) DEFAULT '',
-    creation_date VARCHAR(255) DEFAULT '',
-    user_description VARCHAR(512) DEFAULT '',
-    user_id INTEGER,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE supporters(
-    id SERIAL PRIMARY KEY,
-    backer_id INTEGER,
-    FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE SET NULL,
-    sum_donations NUMERIC DEFAULT 0,
-    creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
-    amount_donations NUMERIC
 );
 
 CREATE TYPE BadgeStatus AS ENUM('success', 'failed', 'pending');
@@ -50,21 +32,34 @@ CREATE TABLE badges(
     transaction_hash VARCHAR DEFAULT '',
     transaction_status BadgeStatus DEFAULT NULL,
     creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT Now()
 );
 
 CREATE TABLE alerts (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,
     banner_link VARCHAR(255) DEFAULT '',
     message_color  VARCHAR(10) DEFAULT '#ffffff',
+    message_font VARCHAR(255) DEFAULT 'jakarta',
     name_color  VARCHAR(10) DEFAULT '#ffffff',
+    name_font VARCHAR(255) DEFAULT 'jakarta',
     sum_color VARCHAR(10) DEFAULT '#ffffff',
+    sum_font VARCHAR(255) DEFAULT 'jakarta',
     duration NUMERIC DEFAULT 15,
     sound VARCHAR(255) DEFAULT 'sound_1',
     voice BOOLEAN DEFAULT 'false',
     gender_voice VARCHAR(10) DEFAULT 'MALE',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE sounds (
+    id SERIAL PRIMARY KEY,
+    creator_id INTEGER,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    sound VARCHAR(500) DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT Now(),
+    UNIQUE (creator_id, sound)
 );
 
 CREATE TABLE goals (
@@ -74,10 +69,13 @@ CREATE TABLE goals (
     amount_raised NUMERIC DEFAULT 0,
     isArchive BOOLEAN DEFAULT 'false',
     title_color VARCHAR(10) DEFAULT '#ffffff',
+    title_font VARCHAR(255) DEFAULT 'jakarta',
     progress_color VARCHAR(10) DEFAULT '#1D14FF',
+    progress_font VARCHAR(255) DEFAULT 'jakarta',
     background_color VARCHAR(10) DEFAULT '#212127',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT Now(),
     CHECK (amount_goal >= amount_raised)
 );
 
@@ -89,16 +87,18 @@ CREATE TABLE stats (
     data_type VARCHAR(255) DEFAULT '',
     time_period VARCHAR(255) DEFAULT '',
     title_color VARCHAR(10) DEFAULT '#ffffff',
+    title_font VARCHAR(255) DEFAULT 'jakarta',
     bar_color VARCHAR(10) DEFAULT '#1D14FF',
+    bar_font VARCHAR(255) DEFAULT 'jakarta',
     content_color VARCHAR(10) DEFAULT '#ffffff',
     aligment VARCHAR(10) DEFAULT 'Center',
     creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT Now()
 );
 
 CREATE TABLE donations(
     id SERIAL PRIMARY KEY,
-    donation_date VARCHAR(63) DEFAULT '',
     backer_id INTEGER,
     FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
     sum_donation NUMERIC DEFAULT 0,
@@ -106,21 +106,30 @@ CREATE TABLE donations(
     blockchain VARCHAR(255) DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
-    goal_id VARCHAR(20) DEFAULT '',
-    FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE SET NULL
+    goal_id VARCHAR(20) DEFAULT NULL,
+    FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE SET NULL,
+    isAnonymous BOOLEAN DEFAULT 'false',
+    created_at TIMESTAMPTZ DEFAULT Now()
 );
 
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
-    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    sender INTEGER,
-    FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
-    recipient INTEGER,
-    FOREIGN KEY (recipient) REFERENCES users(id) ON DELETE CASCADE,
-	donation INTEGER,
+	donation INTEGER DEFAULT NULL,
 	FOREIGN KEY (donation) REFERENCES donations(id) ON DELETE CASCADE,
-    badge INTEGER,
+    badge INTEGER DEFAULT NULL,
 	FOREIGN KEY (badge) REFERENCES badges(id) ON DELETE CASCADE,
-    read_sender BOOLEAN DEFAULT 'false',
-    read_recipient BOOLEAN DEFAULT 'false'
+    created_at TIMESTAMPTZ DEFAULT Now()
+);
+
+CREATE TYPE NotificationRoles AS ENUM('sender', 'recipient');
+
+CREATE TABLE users_notifications (
+    id BIGSERIAL PRIMARY KEY,
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    notification_id INTEGER,
+    FOREIGN KEY (notification_id) REFERENCES notifications(id) ON DELETE CASCADE,
+    read BOOLEAN DEFAULT 'false',
+    roleplay NotificationRoles DEFAULT NULL,
+    UNIQUE (user_id, notification_id)
 );

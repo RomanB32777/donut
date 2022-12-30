@@ -31,7 +31,7 @@ const HeaderSelect = ({
           })}
           onClick={() => navigate("/settings")}
         >
-          {user.avatarlink && <img src={url + user.avatarlink} alt="" />}
+          {user.avatar && <img src={url + user.avatar} alt="" />}
         </div>
       )}
       <div

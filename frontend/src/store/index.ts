@@ -1,16 +1,23 @@
 import createSagaMiddleware from "redux-saga";
-import {applyMiddleware, createStore} from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
+import { configureStore } from "@reduxjs/toolkit";
 import { rootWatcher } from "../saga";
-import {rootReducer} from './reducers';
+import { rootReducer } from "./reducers";
+import { initValue } from "../contexts/Wallet";
 
-const sagaMiddleware = createSagaMiddleware()
+const sagaMiddleware = createSagaMiddleware({
+  context: { initValue },
+});
 
-const store = createStore(
-    rootReducer,
-    composeWithDevTools(applyMiddleware(sagaMiddleware))
-);
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
+  devTools: process.env.NODE_ENV !== "production",
+});
 
-sagaMiddleware.run(rootWatcher)
+sagaMiddleware.run(rootWatcher);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
 export default store;

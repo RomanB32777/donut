@@ -1,18 +1,17 @@
-import { SET_STATS } from './../../types/Stats/index';
+import { IStatData } from "types";
+import { IStatAction } from "../../../types";
+import { SET_STATS } from "./../../types/Stats/index";
 
-const initialState = {
-    
-}
+const initialState: IStatData[] = [];
 
-const StatsReducer = (state = initialState, action: any) => {
+const StatsReducer = (state = initialState, action: IStatAction) => {
+  switch (action.type) {
+    case SET_STATS:
+      return action.payload;
 
-    switch (action.type) {
-        case SET_STATS:
-            return action.payload
-        
-        default:
-            return state
-    }
-}
+    default:
+      return state;
+  }
+};
 
-export default StatsReducer
+export default StatsReducer;

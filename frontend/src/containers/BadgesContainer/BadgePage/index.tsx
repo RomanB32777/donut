@@ -2,7 +2,10 @@ import { Avatar, Col, Divider, Row, Tooltip } from "antd";
 import { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
+import { IMintBadgeSocketObj } from "types";
 
+import { WalletContext } from "../../../contexts/Wallet";
+import { WebSocketContext } from "../../../components/Websocket";
 import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import LinkCopy from "../../../components/LinkCopy";
@@ -14,26 +17,27 @@ import {
 } from "../../../components/ModalComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { WebSocketContext } from "../../../components/Websocket";
-import { IBadgeData, initBadgeData } from "../../../types";
-import { addErrorNotification, walletsConf } from "../../../utils";
-import { url } from "../../../consts";
-import { LeftArrowIcon } from "../../../icons/icons";
+import { addErrorNotification } from "../../../utils";
+import { IBadge } from "../../../types";
+import { initBadgeData } from "../../../consts";
+import { LeftArrowIcon } from "../../../icons";
 
 const BadgePage = ({
   activeBadge,
   backBtn,
   deleteBadge,
 }: {
-  activeBadge: IBadgeData;
+  activeBadge: IBadge;
   backBtn: () => void;
-  deleteBadge: (badge: IBadgeData) => Promise<boolean | undefined>;
+  deleteBadge: (badge: IBadge) => Promise<boolean | undefined>;
 }) => {
   const { isTablet } = useWindowDimensions();
   const user = useSelector((state: any) => state.user);
+
+  const { walletConf } = useContext(WalletContext);
   const socket = useContext(WebSocketContext);
 
-  const [formBadge, setFormBadge] = useState<IBadgeData>({
+  const [formBadge, setFormBadge] = useState<IBadge>({
     ...initBadgeData,
     ...activeBadge,
   });
@@ -44,15 +48,13 @@ const BadgePage = ({
   const [holders, setHolders] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
 
-  const updateBadgeNFTData = async (badge: IBadgeData) => {
+  const updateBadgeNFTData = async (badge: IBadge) => {
     try {
       const { contract_address, creator_id } = badge;
 
-      const walletKey = process.env.REACT_APP_WALLET || "metamask";
-      const wallet = walletsConf[walletKey];
-      const quantity = await wallet.getQuantityBalance({
+      const quantity = await walletConf.getQuantityBalance({
         contract_address,
-        supporter_address: user[`${walletKey}_token`],
+        supporter_address: user.wallet_address,
         isCreator: user.id === creator_id,
       });
 
@@ -66,7 +68,7 @@ const BadgePage = ({
     }
   };
 
-  const getHolders = async (activeBadge: IBadgeData) => {
+  const getHolders = async (activeBadge: IBadge) => {
     try {
       const { id, contract_address } = activeBadge;
       const { data } = await axiosClient.get(
@@ -81,7 +83,7 @@ const BadgePage = ({
   const getSupporters = async (user_id: number) => {
     try {
       const { data } = await axiosClient.get(
-        `${baseURL}/api/donation/supporters/${user_id}`
+        `/api/donation/supporters/${user_id}`
       );
       data && setSupporters(data);
     } catch (error) {
@@ -98,18 +100,23 @@ const BadgePage = ({
         contributor_id,
       });
       if (res.status === 200) {
-        socket &&
-          res.data &&
-          socket.emit("new_badge", {
+        if (socket && res.data) {
+          const sendData: IMintBadgeSocketObj = {
             supporter: {
               username: selectedUser,
               id: contributor_id,
             },
-            creator_id: creator_id,
-            creator_username: user.username,
-            badgeID: id,
-            badgeName: title,
-          });
+            creator: {
+              id: creator_id,
+              username: user.username,
+            },
+            badge: {
+              id,
+              name: title,
+            },
+          };
+          socket.emit("new_badge", sendData);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -124,11 +131,9 @@ const BadgePage = ({
         (s: any) => s.username === selectedUser
       );
       if (selectedUserObj) {
-        const wallet = walletsConf[process.env.REACT_APP_WALLET || "metamask"];
-        const selectedUserAddress =
-          selectedUserObj[`${process.env.REACT_APP_WALLET}_token`];
+        const selectedUserAddress = selectedUserObj.wallet_address;
 
-        await wallet.mintBadge({
+        await walletConf.mintBadge({
           contract_address,
           addressTo: selectedUserAddress,
         });
@@ -199,7 +204,7 @@ const BadgePage = ({
                 label="Image"
                 filePreview={image.preview}
                 labelCol={24}
-                InputCol={24}
+                inputCol={24}
                 disabled
                 bigSize
               />
@@ -295,8 +300,8 @@ const BadgePage = ({
                                 title={holder.username}
                                 placement="top"
                               >
-                                {holder.avatarlink ? (
-                                  <Avatar src={url + holder.avatarlink} />
+                                {holder.avatar ? (
+                                  <Avatar src={holder.avatar} />
                                 ) : (
                                   <Avatar
                                     style={{ backgroundColor: "#1D14FF" }}
@@ -355,7 +360,7 @@ const BadgePage = ({
                       onClick={mintBadge}
                       fontSize={isTablet ? "14px" : "18px"}
                       disabled={loading}
-                      isBlue
+                      isMain
                     />
                   </div>
                 </Col>

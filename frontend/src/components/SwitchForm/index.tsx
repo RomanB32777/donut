@@ -1,15 +1,18 @@
 import { Col, Row, Switch, SwitchProps } from "antd";
+import clsx from "clsx";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISliderProps extends SwitchProps {
   // extends SliderBaseProps
-  label: string;
   afterComponent?: React.ReactNode;
+  label?: string;
   switchCol?: number;
   labelCol?: number;
   maxWidth?: number;
   gutter?: number | [number, number];
+  labelModificator?: string;
+  isVisibleStatus?: boolean;
   setValue: (value: boolean) => void;
 }
 
@@ -21,6 +24,8 @@ const SwitchForm = ({
   switchCol,
   labelCol,
   gutter,
+  labelModificator,
+  isVisibleStatus,
   setValue,
 }: ISliderProps) => {
   const { isMobile } = useWindowDimensions();
@@ -32,6 +37,7 @@ const SwitchForm = ({
           width: "100%",
         }}
         align="middle"
+        // justify={justify || "start"}
         gutter={gutter || 0}
       >
         <Col
@@ -42,13 +48,19 @@ const SwitchForm = ({
             alignItems: "center",
           }}
         >
-          <span className="slider-label">{label}</span>
+          <span
+            className={clsx("slider-label", {
+              [labelModificator as string]: labelModificator,
+            })}
+          >
+            {label}
+          </span>
         </Col>
         <Col md={switchCol || (label ? 12 : 24)} xs={24}>
           <div className="switch-wrapper">
-            <span>Disabled</span>
+            {isVisibleStatus && <span>Disabled</span>}
             <Switch checked={checked} onChange={setValue} />
-            <span>Abled</span>
+            {isVisibleStatus && <span>Abled</span>}
           </div>
         </Col>
       </Row>

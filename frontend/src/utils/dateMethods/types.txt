@@ -1,0 +1,28 @@
+// period-time
+type periodItemsTypes = "today" | "7days" | "30days" | "year";
+
+type stringFormatTypes = "Today" | "Last 7 days" | "Last 30 days" | "This year";
+
+type IFilterPeriodItems<T = string> = {
+  [key in periodItemsTypes]: T;
+};
+
+// period-current-time
+type currentPeriodItemsTypes = "yesterday" | "all" | "custom";
+
+type allPeriodItemsTypes = periodItemsTypes | currentPeriodItemsTypes;
+
+type ICurrentPeriodItemsTypes = {
+  [key in allPeriodItemsTypes]: string;
+};
+
+type ICurrentPeriodItemsTypes = ICurrentPeriodItemsTypes;
+
+export type {
+  periodItemsTypes,
+  stringFormatTypes,
+  IFilterPeriodItems,
+  currentPeriodItemsTypes,
+  allPeriodItemsTypes,
+  ICurrentPeriodItemsTypes,
+};

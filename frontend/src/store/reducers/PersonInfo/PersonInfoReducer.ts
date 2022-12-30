@@ -1,47 +1,27 @@
-import { SET_LATEST_DONATIONS_PERSON_INFO, SET_MAIN_PERSON_INFO, SET_TOP_SUPPORTERS_PERSON_INFO } from "../../types/PersonInfo"
+import { SET_MAIN_PERSON_INFO } from "../../types/PersonInfo";
 
 const initialState: any = {
-    main_info: {
-        username: '',
-        creation_date: '',
-        person_name: '',
-        avatarlink: '',
-        twitter: '',
-        instagram: '',
-        twitch: '',
-        facebook: '',
-        google: '',
-        backgroundLink: '',
-    },
-    top_supporters: [],
-    latest_donations: [],
-}
+  main_info: {
+    username: "",
+    created_at: "",
+    person_name: "",
+    avatar: "",
+    header_banner: "",
+    background_banner: "",
+  },
+};
 
 const PersonInfoReducer = (state = initialState, action: any) => {
+  switch (action.type) {
+    case SET_MAIN_PERSON_INFO:
+      return {
+        ...state,
+        main_info: action.payload,
+      };
 
-    switch (action.type) {
+    default:
+      return state;
+  }
+};
 
-        case SET_MAIN_PERSON_INFO:
-            return {
-                ...state,
-                main_info: action.payload
-            }
-        
-        case SET_TOP_SUPPORTERS_PERSON_INFO:
-            return {
-                ...state,
-                top_supporters: action.payload
-            }
-
-        case SET_LATEST_DONATIONS_PERSON_INFO: 
-            return {
-                ...state,
-                latest_donantions: action.payload
-            }
-
-        default:
-            return state
-    }
-}
-
-export default PersonInfoReducer
+export default PersonInfoReducer;
