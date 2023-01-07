@@ -10,7 +10,7 @@ import {
   createContract,
   getBalance,
 } from "./methods";
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../modules/axiosClient";
 
 export const getUsdKoef = async (
   blockchain: string, // currencyTypes

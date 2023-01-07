@@ -1,7 +1,7 @@
 import { call, put, takeEvery } from "redux-saga/effects";
-import axiosClient from "../../axiosClient";
-import { setLoading } from "../../store/types/Loading";
-import { setUser, TRY_TO_GET_USER } from "../../store/types/User";
+import axiosClient from "modules/axiosClient";
+import { setLoading } from "store/types/Loading";
+import { setUser, TRY_TO_GET_USER } from "store/types/User";
 
 const asyncGetUser = async (address: string) => {
   const { status, data } = await axiosClient.get(`/api/user/${address}`);

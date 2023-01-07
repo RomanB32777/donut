@@ -1,13 +1,16 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Col, Row } from "antd";
 import { useNavigate } from "react-router";
-import { useAppSelector } from "../../hooks/reduxHooks";
-import { WalletContext } from "../../contexts/Wallet";
-import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
-import BaseButton from "../../components/BaseButton";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
-import { scrollToPosition } from "../../utils";
-import { adminPath } from "../../consts";
+
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import { WalletContext } from "contexts/Wallet";
+import { HeaderComponent } from "components/HeaderComponents/HeaderComponent";
+import BaseButton from "components/BaseButton";
+import Logo from "components/HeaderComponents/LogoComponent";
+
+import { scrollToPosition } from "utils";
+import { adminPath } from "consts";
 import {
   blockchains,
   cryptoSteps,
@@ -17,22 +20,12 @@ import {
   socialNetworks,
 } from "./const";
 import "./styles.sass";
-import Logo from "../../components/HeaderComponents/LogoComponent";
 
 const LandingContainer = () => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
-  const { user } = useAppSelector((state) => state);
-
+  const { id } = useAppSelector(({ user }) => user);
   const { walletConf } = useContext(WalletContext);
-
-  const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
-
-  const handlerHeaderSelect = () => {
-    setIsOpenHeaderSelect(!isOpenHeaderSelect);
-  };
-
-  const { id } = user;
 
   const signUp = async () => {
     if (id) navigate(`/${adminPath}`);
@@ -225,7 +218,7 @@ const LandingContainer = () => {
             <h4 className="title">Are you ready to grab your Crypto donutz?</h4>
             <BaseButton
               formatId={
-                user.id ? "mainpage_main_button_logged" : "mainpage_main_button"
+                id ? "mainpage_main_button_logged" : "mainpage_main_button"
               }
               onClick={signUp}
               modificator="landing-btn center-btn"

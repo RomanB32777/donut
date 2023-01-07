@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import useSound from "use-sound";
 import clsx from "clsx";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
+import { tryToGetPersonInfo } from "store/types/PersonInfo";
 
-import bigImg from "../../../assets/big_don.png";
-import axiosClient, { baseURL } from "../../../axiosClient";
-import { IAlert } from "../../../types";
-import { initAlertData } from "../../../consts";
-import { soundsList } from "../../../assets/sounds";
+import bigImg from "assets/big_don.png";
+import axiosClient from "modules/axiosClient";
+import { IAlert } from "appTypes";
+import { initAlertData } from "consts";
 import "./styles.sass";
 
 // const testDonat = {
@@ -24,9 +22,7 @@ import "./styles.sass";
 const DonatMessageContainer = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.personInfo).main_info;
-  const { list } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { list } = useSelector((state: any) => state.notifications);
   const { name } = useParams();
 
   const [lastNotif, setLastNotif] = useState<any>({
@@ -41,26 +37,27 @@ const DonatMessageContainer = () => {
     list.length && setLastNotif(list[0].donation);
   }, [list]);
 
-  useEffect(() => {
-    const { voice, sound, gender_voice } = alertWidgetData;
-    if (lastNotif.sum_donation) {
-      if (sound && duration) {
-        play();
-        setTimeout(() => {
-          const { duration } = alertWidgetData;
-          if (voice && lastNotif.donation_message) {
-            const tmp = new Audio(
-              `${baseURL}/api/widget/generate/sound?text=${lastNotif.donation_message}&gender_voice=${gender_voice}`
-            );
-            tmp.play();
-          }
-          setTimeout(() => {
-            setLastNotif({});
-          }, duration * 1000);
-        }, duration);
-      }
-    }
-  }, [lastNotif]);
+  // ВЕРНУТЬ
+  // useEffect(() => {
+  //   const { voice, sound, gender_voice } = alertWidgetData;
+  //   if (lastNotif.sum_donation) {
+  //     if (sound && duration) {
+  //       play();
+  //       setTimeout(() => {
+  //         const { duration } = alertWidgetData;
+  //         if (voice && lastNotif.donation_message) {
+  //           const tmp = new Audio(
+  //             `${baseURL}/api/widget/sound/generate?text=${lastNotif.donation_message}&gender_voice=${gender_voice}`
+  //           );
+  //           tmp.play();
+  //         }
+  //         setTimeout(() => {
+  //           setLastNotif({});
+  //         }, duration * 1000);
+  //       }, duration);
+  //     }
+  //   }
+  // }, [lastNotif]);
 
   const getAlertsWidgetData = async (user: any) => {
     if (user.id) {
@@ -88,11 +85,7 @@ const DonatMessageContainer = () => {
   }, [user]);
 
   useEffect(() => {
-    dispatch(
-      tryToGetPersonInfo({
-        username: name,
-      })
-    );
+    name && dispatch(tryToGetPersonInfo(name));
   }, [name]);
 
   // const blockchainImg = useMemo(() => {
@@ -106,7 +99,7 @@ const DonatMessageContainer = () => {
   const { banner, message_color, name_color, sum_color, sound } =
     alertWidgetData;
 
-  const [play, { duration }] = useSound(soundsList[sound]);
+  // const [play, { duration }] = useSound(soundsList[sound]);
 
   return (
     <div className="donat-messsage-container">
@@ -129,8 +122,8 @@ const DonatMessageContainer = () => {
                     }}
                   >
                     {lastNotif.username}&nbsp;
-                  </span>&nbsp;
-                  -&nbsp;
+                  </span>
+                  &nbsp; -&nbsp;
                   <span
                     style={{
                       color: sum_color,

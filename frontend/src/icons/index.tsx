@@ -422,4 +422,8 @@ export const TelegramIcon = () => (
     </svg>
 )
 
-
+export const ShareIcon = () => (
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5.8125 1H3.0625C1.92341 1 1 1.92341 1 3.06249V9.93751C1 11.0766 1.92341 12 3.0625 12H9.9375C11.0766 12 12 11.0766 12 9.93751V7.18747M8.56216 1.00017L12 1M12 1V4.09382M12 1L6.15575 6.84355" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)

@@ -1,12 +1,8 @@
 import { Col, Row } from "antd";
 import { Header } from "antd/lib/layout/layout";
 import clsx from "clsx";
-import { useSelector } from "react-redux";
-import { useAppSelector } from "../../../hooks/reduxHooks";
-import { MenuMobileIcon } from "../../../icons";
-import { shortStr } from "../../../utils";
-import BaseButton from "../../BaseButton";
-import HeaderSelect from "../HeaderSelect";
+
+import { MenuMobileIcon } from "icons";
 import Logo from "../LogoComponent";
 import "./styles.sass";
 
@@ -37,9 +33,6 @@ export const HeaderComponent = ({
   setCollapsedSidebar,
   onClick,
 }: IHeaderComponent) => {
-  // const { user } = useAppSelector((state) => state);
-  // const { username } = user;
-
   return (
     <Header
       className={clsx("site-layout-background", {

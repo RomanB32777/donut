@@ -8,8 +8,10 @@ import {
 } from "./types/dates";
 import {
   ISoundInfo,
+  alertAssetTypes,
+  donatAssetTypes,
   fileUploadTypes,
-  defaultImageNameFolders,
+  defaultAssetsFolders,
 } from "./types/files";
 import {
   userRoles,
@@ -50,8 +52,10 @@ export type {
 
   // files
   ISoundInfo,
+  alertAssetTypes,
+  donatAssetTypes,
   fileUploadTypes,
-  defaultImageNameFolders,
+  defaultAssetsFolders,
 
   // user
   userRoles,

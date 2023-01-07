@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useNavigate } from "react-router";
+import { scrollToPosition } from "utils";
 import "./styles.sass";
 
 const Logo = ({
@@ -10,10 +11,16 @@ const Logo = ({
   modificator?: string;
 }) => {
   const navigate = useNavigate();
+
+  const redirect = () => {
+    navigate(navigateUrl);
+    scrollToPosition();
+  };
+
   return (
     <div
       className={clsx("main-logo", { [modificator as string]: modificator })}
-      onClick={() => navigate(navigateUrl)}
+      onClick={redirect}
     >
       <span>Crypto Donutz</span>
     </div>

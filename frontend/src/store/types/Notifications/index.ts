@@ -1,4 +1,4 @@
-import { INotificationsState } from "../../../types/notifications";
+import { INotificationsState } from "../../../appTypes/notifications";
 
 export const SET_NOTIF = "SET_NOTIF";
 export const SET_UPDATE_FLAG = "SET_UPDATE_FLAG";

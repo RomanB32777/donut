@@ -1,9 +1,9 @@
-import { useContext, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useContext, useState } from "react";
 import { Col, Row, StepProps, Steps, StepsProps } from "antd";
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
 import { IBadgeInfo } from "types";
 
+import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "../../../contexts/Wallet";
 import { WebSocketContext } from "../../../components/Websocket";
 import BaseButton from "../../../components/BaseButton";
@@ -15,12 +15,13 @@ import SelectInput from "../../../components/SelectInput";
 import ModalComponent, {
   SuccessModalComponent,
 } from "../../../components/ModalComponent";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../modules/axiosClient";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { makeStorageClient } from "../utils";
 import { addNotification } from "../../../utils";
-import { IBadge } from "../../../types";
+import { IBadge } from "../../../appTypes";
 import { initBadgeData, ipfsFileformat, ipfsFilename } from "../../../consts";
+import "./styles.sass";
 
 const { Step } = Steps;
 
@@ -76,7 +77,7 @@ const CreateBadgeForm = ({
   setActiveBadge?: (activeBadge: IBadge) => void;
   openBadgePage?: () => void;
 }) => {
-  const user = useSelector((state: any) => state.user);
+  const { id, username } = useAppSelector(({ user }) => user);
 
   const { walletConf } = useContext(WalletContext);
   const socket = useContext(WebSocketContext);
@@ -228,7 +229,7 @@ const CreateBadgeForm = ({
               throw new Error(transactionResult);
 
             const badgeData: IBadgeInfo = {
-              creator_id: user.id,
+              creator_id: id,
               contract_address: badgeContract.contract_address,
               blockchain,
               transaction_hash: badgeContract?.transaction_hash || "",
@@ -244,8 +245,8 @@ const CreateBadgeForm = ({
                 result: transactionResult,
                 badge_id: newBadgeData.id,
                 transaction_hash: newBadgeData.transaction_hash,
-                username: user.username,
-                user_id: user.id,
+                user_id: id,
+                username,
               };
               socket && socket.emit("check_badge", notifObj);
             }
@@ -272,7 +273,7 @@ const CreateBadgeForm = ({
     }
   };
 
-  const { image, title, description, blockchain } = formBadge;
+  const { image, title, description, quantity, blockchain } = formBadge;
 
   return (
     <div className="create_badges">
@@ -313,35 +314,44 @@ const CreateBadgeForm = ({
           <Col xl={12} md={24}>
             <Row gutter={[0, 18]} className="form">
               <Col span={24}>
+                <p className="title">Badge information</p>
+                <p className="description">
+                  Please fill in the required information
+                </p>
+              </Col>
+              <Col span={24}>
                 <div className="form-element">
                   <FormInput
-                    label="Name"
-                    name="name"
                     value={title}
                     setValue={(value) =>
                       setFormBadge({ ...formBadge, title: value })
                     }
-                    placeholder="Your badge name..."
-                    labelCol={24}
-                    inputCol={24}
-                    gutter={[0, 18]}
+                    placeholder="Badge name"
                   />
                 </div>
               </Col>
               <Col span={24}>
                 <div className="form-element">
                   <FormInput
-                    label="Description"
-                    name="description"
                     value={description}
                     setValue={(value) =>
                       setFormBadge({ ...formBadge, description: value })
                     }
-                    placeholder="Your badge description..."
-                    labelCol={24}
-                    inputCol={24}
-                    gutter={[0, 18]}
+                    placeholder="Badge description"
+                    modificator="description-area"
                     isTextarea
+                  />
+                </div>
+              </Col>
+              <Col span={24}>
+                <div className="form-element">
+                  <FormInput
+                    typeInput="number"
+                    value={String(quantity)}
+                    setValue={(value) =>
+                      setFormBadge({ ...formBadge, quantity: +value })
+                    }
+                    placeholder="Number of badges to create"
                   />
                 </div>
               </Col>
@@ -349,7 +359,6 @@ const CreateBadgeForm = ({
                 <div className="form-element">
                   <SelectInput
                     value={blockchain}
-                    label="Blockchain"
                     list={walletConf.blockchains.map(
                       ({ nativeCurrency, badgeName }) => ({
                         key: nativeCurrency.symbol,
@@ -370,12 +379,21 @@ const CreateBadgeForm = ({
                 </div>
               </Col>
               <Col span={24}>
-                <div className="saveBottom">
+                <div className="btn-bottom">
                   <BaseButton
-                    title="Deploy contract"
+                    title="Cancel"
+                    padding="6px 35px"
+                    onClick={() => {}}
+                    fontSize="18px"
+                    disabled={loading}
+                    isBlack
+                  />
+                  <BaseButton
+                    title="Create badge"
                     padding="6px 35px"
                     onClick={createContract}
                     fontSize="18px"
+                    modificator="create-btn"
                     disabled={loading}
                     isMain
                   />

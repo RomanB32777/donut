@@ -1,43 +1,23 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router";
-import { BackTop, Layout, Menu } from "antd";
+import { useLocation } from "react-router";
+import { BackTop, Layout } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
-import { IRoute, Pages, routers } from "../../routes";
-import { EmailIcon } from "../../icons";
+import { IRoute, Pages, routers } from "routes";
+import { WebSocketContext } from "components/Websocket";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
 
-import { WebSocketContext } from "../../components/Websocket";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
-import Logo from "../../components/HeaderComponents/LogoComponent";
-import { HeaderComponent } from "../../components/HeaderComponents/HeaderComponent";
-import NotificationsPopup from "../../components/HeaderComponents/NotificationsPopup";
-import { getNotifications } from "../../store/types/Notifications";
-import { getBadgesStatus, scrollToPosition } from "../../utils";
-import { adminPath } from "../../consts";
-import HeaderSelect from "../../components/HeaderComponents/HeaderSelect";
-import { useAppSelector } from "../../hooks/reduxHooks";
+import { getNotifications } from "store/types/Notifications";
+import { getBadgesStatus } from "utils";
+import { adminPath } from "consts";
+import { useAppSelector } from "hooks/reduxHooks";
 import "./styles.sass";
 
-const { Content, Sider } = Layout;
-
-const getItem = ({
-  label,
-  path,
-  icon,
-  children,
-}: {
-  label: any;
-  path: any;
-  icon: any;
-  children?: any;
-}) => ({
-  key: path,
-  icon: icon || null,
-  children: children || null,
-  label,
-});
+const { Content } = Layout;
 
 const addToMenu = (
   route: IRoute,
@@ -58,7 +38,6 @@ const addToMenu = (
 };
 
 const LayoutApp = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const { id, username, roleplay } = useAppSelector(({ user }) => user);
@@ -70,18 +49,6 @@ const LayoutApp = () => {
 
   const [isOpenHeaderSelect, setIsOpenHeaderSelect] = useState<boolean>(false);
   const [collapsed, setCollapsed] = useState(true);
-
-  const handlerHeaderSelect = (e?: React.MouseEvent<HTMLDivElement>) => {
-    e && e.stopPropagation();
-    setIsOpenHeaderSelect(!isOpenHeaderSelect);
-    setNotificationPopupOpened(false);
-  };
-
-  const handlerNotificationPopup = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    setNotificationPopupOpened(!isNotificationPopupOpened);
-    setIsOpenHeaderSelect(false);
-  };
 
   const closeAllHeaderPopups = () => {
     isOpenHeaderSelect && setIsOpenHeaderSelect(false);
@@ -193,71 +160,14 @@ const LayoutApp = () => {
           transparent: isTransparentMainConteiner,
         })}
       >
-        {!collapsed && (
-          <div className="sidebar-overlay" onClick={() => setCollapsed(true)} />
-        )}
-        <Sider
-          hidden={hiddenLayoutElements}
-          width={isTablet ? 275 : 250}
-          onClick={() => closeAllHeaderPopups()}
-          collapsible
+        <Sidebar
+          menuItems={menuItems}
           collapsed={collapsed}
-          collapsedWidth="0"
-          className="layout-sidebar"
-          trigger={null}
-          onCollapse={(c, t) => console.log(c, t)}
-        >
-          {!collapsed && <Logo navigateUrl="/" />}
-          <div className="sidebar-content">
-            <Menu
-              theme="dark"
-              selectedKeys={[activeRoute]}
-              defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
-              triggerSubMenuAction="click"
-              mode="inline"
-              onClick={({ key }) => {
-                navigate(key);
-                scrollToPosition();
-                isTablet && setCollapsed(true);
-              }}
-              // getPopupContainer={(el) => {
-              //   // el.style.display = "none";
-              //   console.log(el);
-
-              //   return el;
-              // }}
-              items={
-                menuItems &&
-                menuItems.map(({ name, icon, menu, path, children }) => {
-                  return menu
-                    ? getItem({
-                        label: name,
-                        path,
-                        icon,
-                        children: children
-                          ? children.map((el) =>
-                              el.menu
-                                ? getItem({
-                                    label: el.name,
-                                    path: path + (`/${el.path}` || ""),
-                                    icon: el.icon,
-                                  })
-                                : null
-                            )
-                          : null,
-                      })
-                    : null;
-                })
-              }
-            />
-            {!collapsed && (
-              <div className="sidebar-email">
-                <EmailIcon />
-                <a href="mailto:info@cryptodonutz.xyz">info@cryptodonutz.xyz</a>
-              </div>
-            )}
-          </div>
-        </Sider>
+          activeRoute={activeRoute}
+          hiddenLayoutElements={hiddenLayoutElements}
+          setCollapsed={setCollapsed}
+          closeAllHeaderPopups={closeAllHeaderPopups}
+        />
         <BackTop />
         <Layout
           className={clsx("site-layout", {
@@ -267,33 +177,16 @@ const LayoutApp = () => {
             paddingLeft: hiddenLayoutElements || isTablet ? 0 : 250, // collapsed
           }}
         >
-          <HeaderComponent
-            hidden={hiddenLayoutElements}
-            onClick={() => closeAllHeaderPopups()}
+          <Header
             collapsedSidebar={collapsed}
+            isOpenHeaderSelect={isOpenHeaderSelect}
+            hiddenLayoutElements={hiddenLayoutElements}
+            isNotificationPopupOpened={isNotificationPopupOpened}
             setCollapsedSidebar={setCollapsed}
-            modificator="layout-header"
-            visibleGamburger
-          >
-            <>
-              {id && (
-                <NotificationsPopup
-                  user={id}
-                  handlerNotificationPopup={handlerNotificationPopup}
-                  isNotificationPopupOpened={isNotificationPopupOpened}
-                />
-              )}
-
-              {username && (
-                <HeaderSelect
-                  title={username}
-                  // || shortStr(mainWallet.token, 8)
-                  isOpenSelect={isOpenHeaderSelect}
-                  handlerHeaderSelect={handlerHeaderSelect}
-                />
-              )}
-            </>
-          </HeaderComponent>
+            closeAllHeaderPopups={closeAllHeaderPopups}
+            setIsOpenHeaderSelect={setIsOpenHeaderSelect}
+            setNotificationPopupOpened={setNotificationPopupOpened}
+          />
           <Content
             onClick={() => closeAllHeaderPopups()}
             className={clsx("content-container", {

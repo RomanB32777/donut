@@ -1,5 +1,5 @@
 import { IStatData } from "types";
-import { IStatAction } from "../../../types";
+import { IStatAction } from "../../../appTypes";
 import { SET_STATS } from "./../../types/Stats/index";
 
 const initialState: IStatData[] = [];

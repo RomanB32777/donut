@@ -3,22 +3,21 @@ import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import { periodItemsTypes, stringFormatTypes } from "types";
-import { useAppSelector } from "../../../../hooks/reduxHooks";
 
-import { WalletContext } from "../../../../contexts/Wallet";
-import SelectComponent from "../../../../components/SelectComponent";
-import { getTimePeriodQuery, DateFormatter } from "../../../../utils";
-import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
-import axiosClient from "../../../../axiosClient";
+import SelectComponent from "components/SelectComponent";
+import { useAppSelector } from "hooks/reduxHooks";
+import { WalletContext } from "contexts/Wallet";
+import { getTimePeriodQuery, DateFormatter } from "utils";
+import axiosClient from "modules/axiosClient";
 import {
   dateFormat,
   enumerateBetweenDates,
   options,
   subtractDate,
 } from "./graphData";
-import { widgetApiUrl } from "../../../../consts";
+import { filterPeriodItems, widgetApiUrl } from "consts";
 import "./styles.sass";
 
 Chart.register(...registerables);
@@ -62,11 +61,11 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
 
         if (data) {
           const filteredDates = {
-            start: moment()
-              .subtract(...subtractDate[timePeriod].split("_"))
+            start: dayjs()
+              // .subtract(...subtractDate[timePeriod].split("_"))
               .startOf("day")
               .valueOf(),
-            end: moment().endOf("day").valueOf(),
+            end: dayjs().endOf("day").valueOf(),
           };
 
           const initGroupDates = enumerateBetweenDates({

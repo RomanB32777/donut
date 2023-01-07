@@ -1,23 +1,11 @@
+import { initUser } from "consts";
+import { IUserAction } from "appTypes";
 import { SET_MAIN_PERSON_INFO } from "../../types/PersonInfo";
 
-const initialState: any = {
-  main_info: {
-    username: "",
-    created_at: "",
-    person_name: "",
-    avatar: "",
-    header_banner: "",
-    background_banner: "",
-  },
-};
-
-const PersonInfoReducer = (state = initialState, action: any) => {
+const PersonInfoReducer = (state = initUser, action: IUserAction) => {
   switch (action.type) {
     case SET_MAIN_PERSON_INFO:
-      return {
-        ...state,
-        main_info: action.payload,
-      };
+      return { ...state, ...action.payload };
 
     default:
       return state;
@@ -25,3 +13,4 @@ const PersonInfoReducer = (state = initialState, action: any) => {
 };
 
 export default PersonInfoReducer;
+

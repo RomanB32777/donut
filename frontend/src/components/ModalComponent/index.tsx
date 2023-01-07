@@ -38,6 +38,7 @@ const ModalComponent = ({
     }}
     centered={centered || false}
     className={clsx("app-modal", className)}
+    transitionName=""
   >
     <div
       className={clsx("modal-content-wrapper", {

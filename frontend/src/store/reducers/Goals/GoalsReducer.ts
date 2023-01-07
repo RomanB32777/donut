@@ -1,5 +1,5 @@
 import { IGoalData } from "types";
-import { IGoalAction } from "../../../types";
+import { IGoalAction } from "../../../appTypes";
 import { SET_GOALS } from "./../../types/Goals/index";
 
 const initialState: IGoalData[] = [];

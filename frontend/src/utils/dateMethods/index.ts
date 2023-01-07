@@ -1,10 +1,10 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { allPeriodItemsTypes, periodItemsTypes, statsDataTypes } from "types";
 import {
   filterCurrentPeriodItems,
   filterDataTypeItems,
   filterPeriodItems,
-} from "./consts";
+} from "consts";
 
 export const DateTimezoneFormatter = (date: string) => {
   const initDate = new Date(date);
@@ -17,7 +17,7 @@ export const DateFormatter = (
   date: string,
   toFormat: string = "DD/MM/YYYY HH:mm"
 ) => {
-  let dateFormat = moment(date).format(toFormat);
+  let dateFormat = dayjs(date).format(toFormat);
   if (dateFormat === "Invalid Date") dateFormat = "";
   return dateFormat;
 };

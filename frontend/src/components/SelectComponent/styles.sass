@@ -1,4 +1,4 @@
-@use '../../commonStyles/variables'
+@use 'commonStyles/variables'
 
 .select
     position: relative
@@ -11,31 +11,24 @@
     .title
         font-size: 15px
 
-    .icon
-        display: flex
-        align-items: center
-
-        svg
-            transition: transform .4s
-
-        &.rotated
-            svg
-                transform: rotate(180deg)
-
     .list-wrapper
         position: absolute
-        right: 0
+        // right: 0
+        transform: translateX(-50%)
+        left: 50%
         top: 110%
         z-index: 10
         max-width: 300px
-        min-width: 130px
+        // min-width: 130px
+        min-width: 110px
         background: variables.$blue-transparent-color
         border-radius: variables.$border-radius
         backdrop-filter: blur(15px)
 
     .list
         padding: 11px
-        // border: 1px solid variables.$black-transparent-color
+        overflow-y: auto
+        max-height: 230px
 
         &-item
             text-align: center
@@ -54,3 +47,6 @@
 
             &:hover
                 color: variables.$white-color
+
+        @media (min-width: 768px)
+            max-height: 140px

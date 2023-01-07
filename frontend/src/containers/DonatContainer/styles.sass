@@ -1,4 +1,4 @@
-@use '../././../commonStyles/variables'
+@use 'commonStyles/variables'
 
 .loader-page
     display: flex
@@ -6,288 +6,321 @@
     align-items: center
     height: 100vh
 
-.donat-container
-    max-width: 720px
-    width: 100%
-    display: flex
-    flex-direction: column
-    align-items: center
-    background: variables.$black-transparent-color
-    margin: 40px auto 40px
-    padding-bottom: 34px
-    border-radius: variables.$border-radius
+.donat-wrapper
+    padding-bottom: 40px
+    background-repeat: no-repeat
+    background-size: cover
 
-    &__payment
-        &_wrapper
-            width: 100%
-            padding: 0 60px
+    .donat-container
+        max-width: 720px
+        width: 100%
+        display: flex
+        flex-direction: column
+        align-items: center
+        background: variables.$black-transparent-color
+        margin: 40px auto 0
+        padding-bottom: 34px
+        border-radius: variables.$border-radius
 
-            @media (max-width: 768px)
-                padding: 0 25px
+        &__payment
+            &_wrapper
+                width: 100%
+                padding: 0 60px
 
-        &_title
-            margin-top: 100px
-            font-family: variables.$pt-font
-            font-style: normal
-            font-weight: 600
-            font-size: 30px
-            line-height: 30px
-            color: variables.$white-color
-            text-align: center
+                @media (max-width: 768px)
+                    padding: 0 25px
 
-        &-row
-            display: flex
-            justify-content: space-between
-            margin-top: 30px
+            &_title
+                margin-top: 100px
+                font-family: variables.$pt-font
+                font-style: normal
+                font-weight: 600
+                font-size: 30px
+                line-height: 30px
+                color: variables.$white-color
+                text-align: center
 
-        &-column
-            display: flex
-            flex-direction: column
-            width: 100%
-
-        &_goals
-            margin-bottom: 30px
-
-            &_btn
-                background: variables.$blue-dark-color
-                padding: 18px
-                border-radius: variables.$border-radius
-                cursor: pointer
-                border: 2px solid transparent
-                transition: all .4s ease
-
-                &:hover
-                    -webkit-box-shadow: 0px 0px 4px 2px variables.$white-color
-                    box-shadow: 0px 0px 4px 2px variables.$white-color
-
-                p
-                    margin-top: 20px
-                    font-family: variables.$pt-font
-                    font-style: normal
-                    font-weight: 500
-                    font-size: 20px
-                    line-height: 30px
-                    color: variables.$white-color
-
-                &.active
-                    border-color: variables.$white-color
-
-            &_list
-                height: 100%
+            &-row
                 display: flex
-                align-items: center
+                justify-content: space-between
+                margin-top: 30px
 
-                .ant-radio-wrapper
-                    span
+            &-column
+                display: flex
+                flex-direction: column
+                width: 100%
+
+            &_goals
+                margin-bottom: 30px
+
+                &_btn
+                    background: variables.$blue-dark-color
+                    padding: 20px
+                    border-radius: variables.$border-radius
+                    cursor: pointer
+                    border: 2px solid transparent
+                    transition: all .4s ease
+                    -webkit-box-shadow: variables.$shadow
+                    box-shadow: variables.$shadow
+
+                    &:hover
+                        border-color: variables.$main-color
+
+                    p
+                        margin: 0
                         font-family: variables.$pt-font
                         font-style: normal
                         font-weight: 500
-                        font-size: 18px
-                        line-height: 25px
-                        color: variables.$white-color
 
-        &_bottom
-            display: flex
-            align-items: center
+                    .header
+                        display: flex
+                        align-items: center
 
-        &_inputs
-            display: flex
+                        p
+                            font-size: 18px
+                            line-height: 22px
+                            color: variables.$white-color
+                            margin-left: 5px
+
+                    .description
+                        margin: 0
+                        margin-top: 10px
+                        font-size: 15px
+                        line-height: 18px
+                        color: variables.$grey-color
+
+                    &.active
+                        border-color: variables.$main-color
+
+                &_list
+                    height: 100%
+                    display: flex
+                    align-items: center
+
+                    .ant-radio-wrapper
+                        .ant-radio-inner
+                            // opacity: 0
+
+                        span
+                            font-family: variables.$pt-font
+                            font-style: normal
+                            font-weight: 500
+                            font-size: 18px
+                            line-height: 25px
+                            color: variables.$white-color
+
+            &_bottom
+                display: flex
+                align-items: center
+
+            &_inputs
+                display: flex
+                flex-direction: column
+
+                &-item
+                    margin-bottom: 20px
+
+                    &:last-child
+                        margin-bottom: 0
+
+                &-select
+                    height: 100%
+                    background: variables.$main-color
+                    padding: 5px 10px 5px 5px
+                    border-radius: 30px
+
+                input,
+                textarea
+                    background: variables.$blue-dark-color
+                    width: 100%
+                    outline: none
+                    line-height: 22px
+                    font-size: 17px
+                    border: 0
+                    border-radius: variables.$border-radius
+                    font-family: variables.$pt-font
+                    color: variables.$white-color
+
+                input
+                    height: 45px
+
+                textarea
+                    height: 120px
+                    position: relative
+
+                .formInput__description
+                    text-align: right
+                    font-size: 14px
+                    padding-right: 25px
+
+                .input-addon
+                    background: variables.$blue-dark-color
+                    padding: 10.75px
+
+                .username-switch
+                    width: 220px
+
+                    .switch-label
+                        margin: 0
+                        font-size: 14px
+                        line-height: 18px
+                        color: variables.$grey-color
+
+                .select-blockchain
+                    background: variables.$blue-dark-color
+                    padding: 4px
+                    border-top-right-radius: variables.$border-radius
+                    border-bottom-right-radius: variables.$border-radius
+
+                .selected-blockchain
+                    display: flex
+                    align-items: center
+
+                    .blockchain-icon
+                        width: 27px
+                        height: 27px
+                        background: yellow
+                        border-radius: 50%
+                        margin-right: 10px
+
+                        img
+                            width: 100%
+                            height: 100%
+
+                .count-modificator
+                    display: flex
+                    align-items: center
+                    justify-content: space-between
+                    width: 100%
+
+                    .usd-equal
+                        font-size: 14px
+                        line-height: 18px
+
+            &_balance
+                font-family: variables.$pt-font
+                font-style: normal
+                font-weight: 500
+                font-size: 18px
+                line-height: 25px
+                color: variables.$white-color
+                margin-left: 10px
+
+        &__registration
+            &_wrapper
+                max-width: 1170px
+                width: 100%
+
+            &_title
+                margin: 100px 0 30px
+                font-family: variables.$pt-font
+                font-style: normal
+                font-weight: 600
+                font-size: 30px
+                line-height: 30px
+                color: variables.$white-color
+                text-align: center
+
+                &-choose
+                    margin-top: 20px
+
+    .donat-header
+        &-content
+            margin: 0 auto
+            max-width: 720px
+
+        @media (max-width: 768px)
+            padding-inline: 25px
+
+    .donat-info-container
+        position: relative
+        width: 100%
+        height: fit-content
+        display: flex
+        flex-direction: column
+        overflow: hidden
+
+        &__background
+            width: 100%
+            height: 145px
+            margin-bottom: 2px
+            background-size: cover
+            position: relative
+
+            img
+                position: absolute
+                width: 100%
+                height: 100%
+                object-fit: cover
+                border-top-left-radius: variables.$border-radius
+                border-top-right-radius: variables.$border-radius
+
+        &__information
+            &-wrapper
+                padding: 0 60px
+
+                @media (max-width: 768px)
+                    padding: 0 25px
+
+    .donat-main-info
+        display: flex
+        margin-top: -50px
+        width: 100%
+        justify-content: space-between
+
+        @media (max-width: 768px)
             flex-direction: column
 
-            &-item
-                margin-bottom: 20px
-
-            &-select
-                height: 100%
-                background: variables.$main-color
-                padding: 5px 10px 5px 5px
-                border-radius: 30px
-
-            input,
-            textarea
-                background: variables.$blue-dark-color
-                width: 100%
-                outline: none
-                line-height: 22px
-                font-size: 17px
-                border: 0
-                border-radius: variables.$border-radius
-                font-family: variables.$pt-font
-                color: variables.$white-color
-
-            input
-                height: 45px
-
-            textarea
-                height: 120px
-                position: relative
-
-            .formInput__description
-                text-align: right
-                font-size: 14px
-                padding-right: 25px
-
-            .input-addon
-                background: variables.$blue-dark-color
-
-            .username-switch
-                width: 220px
-
-                .switch-label
-                    margin: 0
-                    font-size: 14px
-                    line-height: 18px
-                    color: variables.$grey-color
-
-            .select-blockchain
-                background: variables.$blue-dark-color
-                padding: 5.5px
-                border-top-right-radius: variables.$border-radius
-                border-bottom-right-radius: variables.$border-radius
-
-            .selected-blockchain
-                display: flex
-                align-items: center
-
-                .blockchain-icon
-                    width: 27px
-                    height: 27px
-                    background: yellow
-                    border-radius: 50%
-                    margin-right: 10px
-
-                    img
-                        width: 100%
-                        height: 100%
-
-            .count-modificator
-                display: flex
-                align-items: center
-                justify-content: space-between
-                width: 100%
-
-                .usd-equal
-                    font-size: 14px
-                    line-height: 18px
-
-        &_balance
-            font-family: variables.$pt-font
-            font-style: normal
-            font-weight: 500
-            font-size: 18px
-            line-height: 25px
-            color: variables.$white-color
-            margin-left: 10px
-
-    &__registration
-        &_wrapper
-            max-width: 1170px
-            width: 100%
-
-        &_title
-            margin: 100px 0 30px
-            font-family: variables.$pt-font
-            font-style: normal
-            font-weight: 600
-            font-size: 30px
-            line-height: 30px
-            color: variables.$white-color
-            text-align: center
-
-            &-choose
-                margin-top: 20px
-
-.donat-header
-    margin: 0 auto
-    max-width: 720px
-
-.donat-info-container
-    position: relative
-    width: 100%
-    height: fit-content
-    display: flex
-    flex-direction: column
-    overflow: hidden
-
-    &__background
-        width: 100%
-        height: 145px
-        margin-bottom: 2px
-        background-size: cover
-        position: relative
-
-        img
-            position: absolute
-            width: 100%
-            height: 100%
-            object-fit: cover
-
-    &__information
-        &-wrapper
-            padding: 0 60px
+        &__picture
+            position: relative
+            height: 120px
+            width: 28%
+            max-width: 120px
+            border-radius: variables.$border-radius
+            overflow: hidden
+            display: flex
+            justify-content: center
+            align-items: center
+            background: variables.$blue-dark-color
 
             @media (max-width: 768px)
-                padding: 0 25px
+                width: 55%
 
-.donat-main-info
-    display: flex
-    margin-top: -50px
-    width: 100%
-    justify-content: space-between
+            img
+                width: 100%
+                height: 100%
+                object-fit: cover
 
-    @media (max-width: 768px)
-        flex-direction: column
+        &__personal
+            width: 70%
+            padding: 70px 0 0
 
-    &__picture
-        position: relative
-        height: 120px
-        width: 28%
-        max-width: 120px
-        border-radius: variables.$border-radius
-        overflow: hidden
+            .title
+                font-family: variables.$pt-font
+                font-style: normal
+                font-weight: 600
+                font-size: 30px
+                line-height: 35px
+                color: variables.$white-color
+
+            @media (max-width: 768px)
+                padding: 30px 0 0
+
+                .title
+                    font-size: 25px
+
+    .donat-loading
         display: flex
-        justify-content: center
+        flex-direction: column
         align-items: center
-        background: variables.$blue-dark-color
 
-        @media (max-width: 768px)
-            width: 55%
-
-        img
-            width: 100%
-            height: 100%
-            object-fit: cover
-
-    &__personal
-        width: 70%
-        padding: 70px 0 0
-
-        .title
+        &__message,
+        &__description
+            margin-bottom: 25px
+            text-align: center
             font-family: variables.$pt-font
             font-style: normal
             font-weight: 600
-            font-size: 30px
-            line-height: 35px
+            font-size: 25px
+            line-height: 30px
             color: variables.$white-color
-
-        @media (max-width: 768px)
-            padding: 30px 0 0
-
-            .title
-                font-size: 25px
-
-.donat-loading
-    display: flex
-    flex-direction: column
-    align-items: center
-
-    &__message,
-    &__description
-        margin-bottom: 25px
-        text-align: center
-        font-family: variables.$pt-font
-        font-style: normal
-        font-weight: 600
-        font-size: 25px
-        line-height: 30px
-        color: variables.$white-color

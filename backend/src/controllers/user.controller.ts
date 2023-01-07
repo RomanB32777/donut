@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
-import { IShortUserData } from 'types';
+import { IShortUserData } from 'types/index.js';
 import { uploadsFolder, isProduction } from '../consts.js';
 
 class UserController {
@@ -41,21 +41,21 @@ class UserController {
         `INSERT INTO users (wallet_address, username, roleplay) values ($1, $2, $3) RETURNING *;`,
         [wallet_address, (username.includes('@') ? username : '@' + username).toLowerCase(), roleplay],
       );
+      const newUserInfo = newUser.rows[0];
+      const userId = newUserInfo.id;
+
       if (roleplay === 'creators') {
         const security_string = getRandomStr(10);
         await db.query(`INSERT INTO creators (user_id, security_string) values ($1, $2) RETURNING *`, [
-          newUser.rows[0].id,
+          userId,
           security_string,
         ]);
         const alertID = getRandomStr(6);
-        await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [
-          alertID,
-          newUser.rows[0].id,
-        ]);
-        res.status(200).json({ message: 'Creator created!' });
+        await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, userId]);
+        return res.status(200).json(newUserInfo);
       } else {
-        await db.query(`INSERT INTO backers (user_id) values ($1) RETURNING *`, [newUser.rows[0].id]); // username.toLowerCase(),
-        res.status(200).json({ message: 'Backer created!', newUser: newUser.rows[0] });
+        await db.query(`INSERT INTO backers (user_id) values ($1) RETURNING *`, [userId]); // username.toLowerCase(),
+        return res.status(200).json(newUserInfo);
       }
     } catch (error) {
       next(error);
@@ -115,11 +115,7 @@ class UserController {
         // c.background_link, c.welcome_text, c.btn_text, c.main_color, c.background_color, c.security_string,
       );
       if (creator.rowCount) return res.status(200).json(creator.rows[0]);
-      else
-        return res.status(500).json({
-          error: true,
-          message: 'User with this username not found!',
-        });
+      else return res.status(500).json('User with this username not found!');
     } catch (error) {
       next(error);
     }
@@ -182,6 +178,7 @@ class UserController {
     try {
       const { type } = req.params;
       const { username, userId, filelink } = req.body;
+      let uploadedFileLink = '';
 
       if (req.files) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
@@ -189,24 +186,16 @@ class UserController {
         const filepath = `${uploadsFolder}/${username}/${type}/${filename}`;
 
         file?.mv(filepath, (err) => err && console.log(err));
+        uploadedFileLink = (isProduction ? '/' : `${req.protocol}://${req.headers.host}/`) + filepath;
+      } else if (filelink) uploadedFileLink = filelink;
 
-        await db.query(
-          `UPDATE creators
-            SET ${type}_banner = $1 
-            WHERE user_id = $2;`,
-          [(isProduction ? '/' : `${req.protocol}://${req.headers.host}/`) + filepath, userId],
-        );
-
-        return res.status(200).json({ message: 'success' });
-      } else if (filelink) {
-        await db.query(
-          `UPDATE creators
-            SET ${type}_banner = $1 
-            WHERE user_id = $2;`,
-          [filelink, userId],
-        );
-        return res.status(200).json({ message: 'success' });
-      }
+      await db.query(
+        `UPDATE creators
+          SET ${type}_banner = $1 
+          WHERE user_id = $2;`,
+        [uploadedFileLink, userId],
+      );
+      return res.status(200).json({ message: 'success' });
     } catch (error) {
       next(error);
     }

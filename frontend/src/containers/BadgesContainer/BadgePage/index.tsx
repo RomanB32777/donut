@@ -10,7 +10,7 @@ import BaseButton from "../../../components/BaseButton";
 import UploadImage from "../../../components/UploadImage";
 import LinkCopy from "../../../components/LinkCopy";
 import SelectInput from "../../../components/SelectInput";
-import axiosClient, { baseURL } from "../../../axiosClient";
+import axiosClient, { baseURL } from "../../../modules/axiosClient";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
@@ -18,7 +18,7 @@ import {
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import { addErrorNotification } from "../../../utils";
-import { IBadge } from "../../../types";
+import { IBadge } from "../../../appTypes";
 import { initBadgeData } from "../../../consts";
 import { LeftArrowIcon } from "../../../icons";
 

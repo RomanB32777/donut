@@ -42,6 +42,7 @@ interface IBlockchain {
   chainName: string;
   badgeName: string;
   color: string;
+  scannerLink: string;
   nativeCurrency: {
     symbol: string;
     name: string;

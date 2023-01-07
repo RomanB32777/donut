@@ -1,13 +1,13 @@
 import { useContext } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { WalletContext } from "../../contexts/Wallet";
-import { useAppDispatch } from "../../hooks/reduxHooks";
 import { setSelectedBlockchain } from "../../store/types/Wallet";
 import "./styles.sass";
 
 const ChooseBlockchainContainer = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const { walletConf } = useContext(WalletContext);
 
   const blockchainChoose = async (name: string) => {

@@ -3,18 +3,18 @@ import { useSearchParams } from "react-router-dom";
 import { Col, Empty, Row } from "antd";
 import { FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
-import { IBadgeInfo, IBadgeShort } from "types";
+import { IBadgeShort } from "types";
 
 import { WalletContext } from "../../contexts/Wallet";
-import axiosClient, { baseURL } from "../../axiosClient";
+import axiosClient, { baseURL } from "../../modules/axiosClient";
 import PageTitle from "../../components/PageTitle";
 import ContentCard from "./ContentCard";
 import BaseButton from "../../components/BaseButton";
 import BadgePage from "./BadgePage";
 
-import CreateBadgeForm from "./CreateBadgeForm";
+import CreateBadgeForm from "./CreateBadge";
 import { setUpdateAppNotifications } from "../../store/types/Notifications";
-import { IBadge } from "../../types";
+import { IBadge } from "../../appTypes";
 import { addNotification } from "../../utils";
 import { initBadgeData, ipfsFileformat, ipfsFilename } from "../../consts";
 import "./styles.sass";

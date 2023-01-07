@@ -1,5 +1,5 @@
 import { ChartOptions } from "chart.js";
-import moment from "moment";
+import dayjs from "dayjs";
 import { periodItemsTypes } from "types";
 
 export const options: ChartOptions<"line"> = {
@@ -86,7 +86,7 @@ export const enumerateBetweenDates = ({
 }: IEnumerateDates) => {
   let dates = [];
   for (
-    let m = moment(startDate).add(1, periodTypes[timePeriod]);
+    let m = dayjs(startDate).add(1, periodTypes[timePeriod]);
     m.isBefore(endDate);
     m.add(1, periodTypes[timePeriod])
   ) {

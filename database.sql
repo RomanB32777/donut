@@ -53,14 +53,14 @@ CREATE TABLE alerts (
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE sounds (
-    id SERIAL PRIMARY KEY,
-    creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
-    sound VARCHAR(500) DEFAULT '',
-    created_at TIMESTAMPTZ DEFAULT Now(),
-    UNIQUE (creator_id, sound)
-);
+-- CREATE TABLE sounds (
+--     id SERIAL PRIMARY KEY,
+--     creator_id INTEGER,
+--     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+--     sound VARCHAR(500) DEFAULT '',
+--     created_at TIMESTAMPTZ DEFAULT Now(),
+--     UNIQUE (creator_id, sound)
+-- );
 
 CREATE TABLE goals (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,

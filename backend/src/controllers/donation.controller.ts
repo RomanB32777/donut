@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import { IFilterPeriodItems, periodItemsTypes, blockchainsType } from 'types';
+import { IFilterPeriodItems, periodItemsTypes, blockchainsType } from 'types/index.js';
 import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
 import db from '../db.js';
 

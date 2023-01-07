@@ -6,21 +6,25 @@ import "./styles.sass";
 const SelectComponent = ({
   title,
   list,
-  selectItem,
+  selected,
   headerList,
   footerList,
   modificator,
   listModificator,
   listItemModificator,
+  listWrapperModificator,
+  selectItem,
 }: {
   title: React.ReactNode;
   list: string[];
-  selectItem: (item: string) => void;
+  selected?: string;
   headerList?: React.ReactNode;
   footerList?: React.ReactNode;
   modificator?: string;
   listModificator?: string;
   listItemModificator?: string;
+  listWrapperModificator?: string;
+  selectItem: (item: string) => void;
 }) => {
   const [isOpenSelect, setOpenSelect] = useState(false);
 
@@ -51,7 +55,11 @@ const SelectComponent = ({
         </div>
       </div>
       {isOpenSelect && (
-        <div className="list-wrapper">
+        <div
+          className={clsx("list-wrapper", {
+            [listWrapperModificator as string]: listWrapperModificator,
+          })}
+        >
           {headerList}
           <div
             className={clsx("list", {
@@ -62,7 +70,7 @@ const SelectComponent = ({
               <div
                 className={clsx("list-item", {
                   [listItemModificator as string]: listItemModificator,
-                  active: item === title,
+                  active: item === title || item === selected,
                 })}
                 key={key}
                 onClick={() => itemHandler(item)}

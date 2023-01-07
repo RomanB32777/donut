@@ -2,13 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Empty } from "antd";
 import { stringFormatTypes } from "types";
-import { WalletContext } from "../../../../contexts/Wallet";
+import { WalletContext } from "contexts/Wallet";
 import WidgetItem from "../WidgetItem";
-import SelectComponent from "../../../../components/SelectComponent";
-import { getTimePeriodQuery } from "../../../../utils";
-import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
-import axiosClient from "../../../../axiosClient";
-import { widgetApiUrl } from "../../../../consts";
+import SelectComponent from "components/SelectComponent";
+import { getTimePeriodQuery } from "utils";
+import axiosClient from "modules/axiosClient";
+import { filterPeriodItems, widgetApiUrl } from "consts";
 import "./styles.sass";
 
 const LIMIT_LATEST = 6;

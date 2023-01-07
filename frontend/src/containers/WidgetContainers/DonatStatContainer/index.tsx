@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { IStatData } from "types";
 
-import axiosClient, { baseURL } from "../../../axiosClient";
+import axiosClient, { baseURL } from "../../../modules/axiosClient";
 import { WalletContext } from "../../../contexts/Wallet";
 import {
   getCurrentTimePeriodQuery,
@@ -13,7 +13,7 @@ import {
   renderStatItem,
 } from "../../../utils";
 import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
-import { AlignText } from "../../../types";
+import { AlignText } from "../../../appTypes";
 import {
   alignFlextItemsList,
   alignItemsList,
@@ -49,9 +49,7 @@ const DonatStatContainer = () => {
               Boolean(customPeriod.length > 1)
                 ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
                 : `timePeriod=${time_period}`
-            }&isStatPage=true&blockchain=${
-              currBlockchain.name
-            }`
+            }&isStatPage=true&blockchain=${currBlockchain.name}`
           );
           data && data.length && setRenderList(data);
         }
@@ -71,11 +69,7 @@ const DonatStatContainer = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      tryToGetPersonInfo({
-        username: name,
-      })
-    );
+    name && dispatch(tryToGetPersonInfo(name));
     getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
   }, []);
 

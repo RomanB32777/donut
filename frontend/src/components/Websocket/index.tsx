@@ -2,7 +2,7 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
 import { io, Socket } from "socket.io-client";
-import { baseURL, isProduction, socketsBaseUrl } from "../../axiosClient";
+import { baseURL, isProduction, socketsBaseUrl } from "../../modules/axiosClient";
 import { getNotifications } from "../../store/types/Notifications";
 import { addNotification, getNotificationMessage } from "../../utils";
 

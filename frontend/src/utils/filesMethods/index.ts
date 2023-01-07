@@ -1,5 +1,5 @@
-import { defaultImageNameFolders, ISoundInfo } from "types";
-import axiosClient from "../../axiosClient";
+import { defaultAssetsFolders, ISoundInfo } from "types";
+import axiosClient from "../../modules/axiosClient";
 
 const sendFile = async ({
   file,
@@ -34,13 +34,11 @@ const sendFile = async ({
   filelink && formData.append("filelink", filelink);
 
   const res = await axiosClient[isEdit ? "put" : "post"](url, formData);
-  if (res.status === 200) {
-    return res;
-  }
+  return res.status === 200 ? res : null;
 };
 
 const getDefaultImages = async (
-  type: defaultImageNameFolders
+  type: defaultAssetsFolders
 ): Promise<string[]> => {
   const { status, data } = await axiosClient.get(
     `/api/file/default-images/${type}`
@@ -48,8 +46,8 @@ const getDefaultImages = async (
   return status === 200 ? data : [];
 };
 
-const getSounds = async (userId: number): Promise<ISoundInfo[]> => {
-  const { status, data } = await axiosClient.get(`/api/file/sounds/${userId}`);
+const getSounds = async (username: string): Promise<ISoundInfo[]> => {
+  const { status, data } = await axiosClient.get(`/api/file/sounds/${username}`);
   return status === 200 ? data : [];
 };
 

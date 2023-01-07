@@ -1,7 +1,5 @@
-import { periodItemsTypes } from "types";
-import {
-  IFileInfo,
-} from "./files";
+import { IBadgeData, periodItemsTypes } from "types";
+import { IFileInfo } from "./files";
 import {
   IWalletInitData,
   IPayObj,
@@ -21,10 +19,14 @@ import { IUserAction } from "./user";
 import {
   AlignText,
   IFont,
+  keyPeriodItems,
   IGoalAction,
+  IEditGoalData,
+  IWidgetGoalData,
   IStatAction,
+  IEditStatData,
+  IWidgetStatData,
   IAlert,
-  IBadge,
 } from "./widgets";
 
 interface ILoadingAction {
@@ -54,6 +56,14 @@ interface IDefaultImagesModal {
 
 type typesTabContent = "All" | "Settings" | "Preview";
 
+interface IBadge extends IBadgeData {
+  image: IFileInfo;
+}
+
+interface IStringObj {
+  [key: string]: string;
+}
+
 export type {
   // app
   IFileInfo,
@@ -63,6 +73,8 @@ export type {
   IFiltersDates,
   IDefaultImagesModal,
   typesTabContent,
+  IBadge,
+  IStringObj,
 
   // user
   IUserAction,
@@ -85,8 +97,12 @@ export type {
   // widgets
   AlignText,
   IFont,
+  keyPeriodItems,
   IGoalAction,
+  IEditGoalData,
+  IWidgetGoalData,
   IStatAction,
+  IWidgetStatData,
+  IEditStatData,
   IAlert,
-  IBadge,
 };

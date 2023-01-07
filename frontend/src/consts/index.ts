@@ -1,10 +1,22 @@
 import {
+  filterPeriodItems,
+  filterCurrentPeriodItems,
+  filterDataTypeItems,
+} from "./dates";
+
+import {
   alignItemsList,
   alignFlextItemsList,
   initAlertData,
   initBadgeData,
+  initWidgetGoalData,
+  initWidgetStatData,
 } from "./widgets";
-import walletInfo from "./wallet";
+
+import { initBlockchainData, walletInfo } from "./wallet";
+import { initUser } from "./user";
+
+import dummyImg from "assets/big_don.png";
 
 const url = "/images/";
 const widgetApiUrl = "/api/donation/widgets";
@@ -21,8 +33,15 @@ export {
   ipfsFilename,
   ipfsFileformat,
   adminPath,
+  dummyImg,
+
+  // dates
+  filterPeriodItems,
+  filterCurrentPeriodItems,
+  filterDataTypeItems,
 
   // wallet
+  initBlockchainData,
   walletInfo,
 
   // widgets
@@ -30,4 +49,9 @@ export {
   alignFlextItemsList,
   initAlertData,
   initBadgeData,
+  initWidgetGoalData,
+  initWidgetStatData,
+
+  // user
+  initUser,
 };

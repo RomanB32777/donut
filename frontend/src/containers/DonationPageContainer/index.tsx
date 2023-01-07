@@ -1,28 +1,28 @@
-import { Col, Row } from "antd";
+import { Col, Row, QRCode } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import QRCode from "react-qr-code";
+import { useDispatch } from "react-redux";
 import clsx from "clsx";
-import { defaultImageNameFolders } from "types";
+import { defaultAssetsFolders } from "types";
 
-import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
-import axiosClient, { baseURL } from "../../axiosClient";
-import BaseButton from "../../components/BaseButton";
-import PageTitle from "../../components/PageTitle";
-import ColorPicker from "../../components/ColorPicker";
-import LinkCopy from "../../components/LinkCopy";
-import UploadImage, { UploadAfterEl } from "../../components/UploadImage";
-import FormInput from "../../components/FormInput";
-import ModalComponent from "../../components/ModalComponent";
-import { SmallToggleListArrowIcon } from "../../icons";
-import { IFileInfo, IDefaultImagesModal } from "../../types";
-import { tryToGetUser } from "../../store/types/User";
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import axiosClient, { baseURL } from "modules/axiosClient";
+import BaseButton from "components/BaseButton";
+import PageTitle from "components/PageTitle";
+import ColorPicker from "components/ColorPicker";
+import LinkCopy from "components/LinkCopy";
+import UploadImage, { UploadAfterEl } from "components/UploadImage";
+import FormInput from "components/FormInput";
+import ModalComponent from "components/ModalComponent";
+import { SmallToggleListArrowIcon } from "icons";
+import { IFileInfo, IDefaultImagesModal } from "appTypes";
+import { tryToGetUser } from "store/types/User";
 import {
   addNotification,
   addSuccessNotification,
   getDefaultImages,
   sendFile,
-} from "../../utils";
+} from "utils";
 import "./styles.sass";
 
 type donationImageTypes = "header" | "banner";
@@ -37,12 +37,14 @@ interface IDonationInfoData {
 }
 
 interface IBannerModalInfo extends IDefaultImagesModal {
-  folder: defaultImageNameFolders;
+  folder: defaultAssetsFolders;
 }
 
 const DonationPageContainer = () => {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(({ user }) => user);
+  const dispatch = useDispatch();
+  const { id, wallet_address, username, donat_page } = useAppSelector(
+    ({ user }) => user
+  );
   const [donationInfoData, setDonationInfoData] = useState<IDonationInfoData>({
     banner: {
       preview: "",
@@ -62,13 +64,12 @@ const DonationPageContainer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [bannerModalInfo, setBannerModalInfo] = useState<IBannerModalInfo>({
     images: [],
-    folder: "backgrounds",
+    folder: "background",
     isOpen: false,
   });
   const { isMobile } = useWindowDimensions();
-  const { id, wallet_address, username, donat_page } = user;
 
-  const openBannersPopup = async (folder: defaultImageNameFolders) => {
+  const openBannersPopup = async (folder: defaultAssetsFolders) => {
     const images = await getDefaultImages(folder);
     setBannerModalInfo({
       images,
@@ -98,23 +99,17 @@ const DonationPageContainer = () => {
   };
 
   const onImageDownload = () => {
-    const svg = document.getElementById("QRCode");
-    if (svg) {
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx && ctx.drawImage(img, 0, 0);
-        const pngFile = canvas.toDataURL("image/png");
-        const downloadLink = document.createElement("a");
-        downloadLink.download = "QRCode";
-        downloadLink.href = `${pngFile}`;
-        downloadLink.click();
-      };
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+    const canvas = document
+      .querySelector(".QRCode")
+      ?.querySelector<HTMLCanvasElement>("canvas");
+    if (canvas) {
+      const url = canvas.toDataURL();
+      const a = document.createElement("a");
+      a.download = "QRCode.png";
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   };
 
@@ -137,7 +132,7 @@ const DonationPageContainer = () => {
         user_id: id,
       });
 
-      let fileType: defaultImageNameFolders = "headers";
+      let fileType: defaultAssetsFolders = "header";
       if (header.file || header.preview !== donat_page.header_banner) {
         await sendFile({
           file: header.file,
@@ -148,7 +143,7 @@ const DonationPageContainer = () => {
         });
       }
       if (banner.file || banner.preview !== donat_page.background_banner) {
-        fileType = "backgrounds"
+        fileType = "background";
         await sendFile({
           file: banner.file,
           filelink: banner.preview,
@@ -173,7 +168,7 @@ const DonationPageContainer = () => {
   };
 
   useEffect(() => {
-    if (user.id)
+    if (id)
       setDonationInfoData((prevInfo) => ({
         ...prevInfo,
         header: {
@@ -189,7 +184,7 @@ const DonationPageContainer = () => {
         main_color: donat_page.main_color,
         background_color: donat_page.background_color,
       }));
-  }, [user]);
+  }, [id]);
 
   useEffect(() => {
     console.log(bannerModalInfo);
@@ -211,7 +206,7 @@ const DonationPageContainer = () => {
 
   const { isOpen, folder, images } = bannerModalInfo;
 
-  const isHeaderBanner = useMemo(() => folder === "headers", [folder]);
+  const isHeaderBanner = useMemo(() => folder === "header", [folder]);
 
   return (
     <div className="donationPage-container">
@@ -239,7 +234,13 @@ const DonationPageContainer = () => {
         {isOpenQR && (
           <div className="qr-wrapper">
             <div className="qr-block">
-              <QRCode id="QRCode" size={125} value={linkForSupport} />
+              <QRCode
+                errorLevel="H"
+                className="QRCode"
+                value={linkForSupport}
+                bordered={false}
+                // icon={avatar}
+              />
             </div>
             <BaseButton
               formatId="profile_form_download_png_button"
@@ -274,7 +275,7 @@ const DonationPageContainer = () => {
                     size="1200*800"
                     mdCol={6}
                     alsoText="You can also choose"
-                    openBanners={() => openBannersPopup("headers")}
+                    openBanners={() => openBannersPopup("header")}
                   />
                 }
                 labelCol={6}
@@ -304,7 +305,7 @@ const DonationPageContainer = () => {
                     size="1200*800"
                     mdCol={6}
                     alsoText="You can also choose"
-                    openBanners={() => openBannersPopup("backgrounds")}
+                    openBanners={() => openBannersPopup("background")}
                   />
                 }
                 labelCol={6}

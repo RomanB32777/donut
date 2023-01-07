@@ -1,4 +1,5 @@
 import { DatePicker } from "antd";
+import dayjsModule from "modules/dayjsModule";
 import "./styles.sass";
 
 const { RangePicker } = DatePicker;
@@ -24,7 +25,7 @@ const DatesPicker = ({
               )
             : setValue("", "")
         }
-        disabledDate={(d) => !d || d.isAfter()}
+        disabledDate={(d) => !d || d.isAfter(dayjsModule())}
       />
     </div>
   );

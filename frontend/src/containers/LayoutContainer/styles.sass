@@ -1,4 +1,4 @@
-@use '../../commonStyles/_variables'
+@use 'commonStyles/_variables'
 
 .content-container
     background: url('../../assets/red-gradient.png')
@@ -21,31 +21,26 @@
 
 .sidebar
     &-content
-        display: flex
-        flex-direction: column
-        justify-content: space-between
         height: 85%
         margin-top: 40px
 
-    &-email
-        display: flex
-        align-items: center
-        padding-left: 24px
+    &-wallet
+        opacity: 0
+        margin: 0 16px 10px 24px
+        transition: .2s
 
-        a, svg
-            transition: .3s
-            color: variables.$grey-color
-        a
-            font-weight: 400
-            font-family: variables.$inter-font
-            font-size: 14px
-            margin-left: 5px
+        .wallet-popup
+            position: relative
+            z-index: 1
+            padding: 10px 5px
 
-        &:hover
-            a, svg
-                color: variables.$white-color
+        &.visible
+            opacity: 1
 
 @media (max-width: 992px)
+    .content-container
+        background-position: 250px 200%
+
     .sidebar-overlay
         position: absolute
         height: 100%
@@ -62,5 +57,9 @@
             margin-top: 0
 
 @media (max-width: 768px)
+    .sidebar
+        &-content
+            margin-top: 0
+
     .main-container
         padding: 39px 25px 80px

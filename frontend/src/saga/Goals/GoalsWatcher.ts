@@ -1,7 +1,7 @@
 import { call, put, takeEvery } from "redux-saga/effects";
-import axiosClient from "../../axiosClient";
-import { setLoading } from "../../store/types/Loading";
-import { GET_GOALS, setGoals } from "../../store/types/Goals";
+import axiosClient from "modules/axiosClient";
+import { setLoading } from "store/types/Loading";
+import { GET_GOALS, setGoals } from "store/types/Goals";
 
 const asyncGetGoals = async (creator_id: string) => {
   const { status, data } = await axiosClient.get(

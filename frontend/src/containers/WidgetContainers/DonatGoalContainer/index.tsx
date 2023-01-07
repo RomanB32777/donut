@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { IGoalData } from "types";
 
 import { Progress } from "antd";
-import axiosClient, { baseURL } from "../../../axiosClient";
+import axiosClient, { baseURL } from "../../../modules/axiosClient";
 import "./styles.sass";
 
 const DonatGoalContainer = () => {

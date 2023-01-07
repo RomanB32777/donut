@@ -5,7 +5,7 @@ import {
   IPayObj,
   IQuantityBalanceObj,
   IWalletConf,
-} from "../../types";
+} from "../../appTypes";
 import { addInstallWalletNotification } from "..";
 
 const metamaskTransferAbi =

@@ -1,5 +1,6 @@
 import { Col, Row } from "antd";
-import moment from "moment";
+import dayjsModule from "modules/dayjsModule";
+
 import { DateTimezoneFormatter } from "../../../../utils";
 import "./styles.sass";
 
@@ -15,18 +16,13 @@ const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
                   {donat.username}
                 </div>
                 <div className="widget__item_header_sum sum">
-                  {(
-                    Number(donat.sum_donation) * usdtKoef
-                  ).toFixed(2)}&nbsp;
-                  USD
+                  {(Number(donat.sum_donation) * usdtKoef).toFixed(2)}&nbsp; USD
                 </div>
               </div>
             </Col>
             <Col xs={5} md={4}>
               <div className="widget__item_header_time time">
-                {moment(
-                  DateTimezoneFormatter(donat.created_at)
-                )
+                {dayjsModule(DateTimezoneFormatter(donat.created_at))
                   .startOf("minutes")
                   .fromNow()}
               </div>

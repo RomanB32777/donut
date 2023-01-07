@@ -1,14 +1,10 @@
-@use '../../../commonStyles/_variables'
-
-.rotated
-    svg
-        transform: rotate(180deg)
+@use 'commonStyles/_variables'
 
 .alerts-container
     .link-top
         display: flex
         justify-content: space-between
-        align-items: center
+        align-items: flex-start
         width: 100%
 
         p
@@ -29,6 +25,12 @@
 
     .alertsSettings
         margin-top: 40px
+
+        .init-loader
+            display: flex
+            justify-content: center
+            align-items: center
+            height: 50vh
 
         .preview-block
             max-width: 432px
@@ -71,6 +73,8 @@
 
             .select-sound
                 font-family: variables.$pt-font
+                width: max-content
+
                 .select-header
                     font-size: 18px
                     line-height: 22px
@@ -78,7 +82,7 @@
                     padding: 15px 22px
 
                 .list-sound
-                    width: 200px
+                    width: 250px
                     padding: 0 22px 15px
 
                     .listItem-sound
@@ -87,6 +91,10 @@
                         font-size: 18px
                         line-height: 22px
                         font-weight: 400
+                        overflow: hidden
+                        text-overflow: ellipsis
+                        display: -webkit-box
+                        -webkit-box-orient: vertical
 
                 .select-footer
                     border-top: 1px solid variables.$grey-color
@@ -95,7 +103,14 @@
                     line-height: 18px
                     font-weight: 400
                     color: variables.$grey-color
-                    cursor: pointer
+
+                    .sound-upload
+
+                        label
+                            cursor: pointer
+
+                        input
+                            display: none
 
     .saveBottom
         margin-top: 30px

@@ -2,7 +2,20 @@ import clsx from "clsx";
 import { FormattedMessage } from "react-intl";
 import "./styles.sass";
 
-const BaseButton = (props: {
+const BaseButton = ({
+  formatId,
+  title,
+  padding,
+  fontSize,
+  icon,
+  isMain,
+  isRed,
+  isBlack,
+  disabled,
+  color,
+  modificator,
+  onClick,
+}: {
   formatId?: string;
   title?: string;
   padding?: string;
@@ -12,30 +25,30 @@ const BaseButton = (props: {
   isRed?: boolean;
   isBlack?: boolean;
   disabled?: boolean;
-  color?: string,
+  color?: string;
   modificator?: string;
-  onClick: (event?: React.MouseEvent<HTMLDivElement>) => void;
+  onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
 }) => (
   <div
     className={clsx("base-button", {
-      mainButton: props.isMain,
-      redButton: props.isRed,
-      blackButton: props.isBlack,
-      withIcon: Boolean(props.icon),
-      disabled: props.disabled || false,
-      [props.modificator as string]: props.modificator,
+      mainButton: isMain,
+      redButton: isRed,
+      blackButton: isBlack,
+      withIcon: Boolean(icon),
+      disabled: disabled || false,
+      [modificator as string]: modificator,
     })}
-    onClick={props.onClick}
+    onClick={onClick}
     style={{
-      padding: props.padding,
-      fontSize: props.fontSize,
-      background: props.color,
-      borderColor: props.color,
+      padding: padding,
+      fontSize: fontSize,
+      background: color,
+      borderColor: color,
     }}
   >
-    {props.formatId && <FormattedMessage id={props.formatId} />}
-    {props.title}
-    {props.icon && <div className="base-button__icon icon">{props.icon}</div>}
+    {formatId && <FormattedMessage id={formatId} />}
+    {title}
+    {icon && <div className="base-button__icon icon">{icon}</div>}
   </div>
 );
 

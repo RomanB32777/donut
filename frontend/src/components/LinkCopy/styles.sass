@@ -1,4 +1,4 @@
-@use '../../commonStyles/variables'
+@use 'commonStyles/variables'
 
 .link-wrapper
     display: flex
@@ -6,7 +6,7 @@
     width: 100%
     // margin-top: 16px
     // align-items: center
-    
+
     span
         margin-right: 62px
         font-family: variables.$pt-font
@@ -59,3 +59,6 @@
 
         .icon
             margin-left: 20px
+
+        @media (max-width: 576px)
+            max-width: 325px

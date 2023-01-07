@@ -65,7 +65,7 @@ body
   border-left: 8px solid #0c078c !important
 
 .rnc__notification-content
-  font-family: variables.$pt-font, sans-serif
+  font-family: variables.$pt-font
 
 .ant-layout-sider,
 .ant-layout-sider-trigger,
@@ -137,18 +137,6 @@ body,
 .empty-el
   margin: 0 auto
 
-.ant-slider:hover .ant-slider-track,
-.ant-slider-track
-  background-color: variables.$main-color
-
-.ant-slider-handle,
-.ant-slider-handle:focus,
-.ant-slider-handle:hover,
-.ant-slider:hover .ant-slider-handle:not(.ant-tooltip-open)
-  border: solid 2px variables.$main-color
-  border-color: variables.$main-color
-  background: variables.$main-color
-
 .ant-slider-dot
   display: none
 
@@ -190,9 +178,19 @@ body,
   display: flex
   align-items: center
 
+  svg
+    transition: transform .4s
+
   &-notifications
     height: 100%
     cursor: pointer
+
+  &.rotated
+    svg
+      transform: rotate(180deg)
+
+[hidden]
+  display: none !important
 
 .form
   &-element
@@ -204,34 +202,39 @@ body,
       line-height: 25px
       color: variables.$white-color
 
-.layout-sidebar
-  overflow: auto
-  height: 100vh
-  position: fixed
-  left: 0
-  top: 0
-  bottom: 0
-  z-index: 2
-  transition: all .4s
-  backdrop-filter: blur(15px)
+.layout-container
+  .layout-sidebar,
+  .layout-header
+    background: variables.$black-transparent-color
 
-.layout-header
-  position: fixed
-  top: 0
-  left: 0
-  z-index: 1
-  width: calc(100% - 250px)
-  margin-left: 250px
-
-  &::before
-    content: ""
-    display: block
-    height: 100%
-    width: 100%
-    position: absolute
+  .layout-sidebar
+    overflow: auto
+    height: 100vh
+    position: fixed
     left: 0
     top: 0
-    backdrop-filter: blur(10px)
+    bottom: 0
+    z-index: 2
+    transition: all .4s
+    backdrop-filter: blur(15px)
+
+  .layout-header
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 1
+    width: calc(100% - 250px)
+    margin-left: 250px
+
+    &::before
+      content: ""
+      display: block
+      height: 100%
+      width: 100%
+      position: absolute
+      left: 0
+      top: 0
+      backdrop-filter: blur(10px)
 
 .hidden
   display: none !important
@@ -249,18 +252,26 @@ body,
   font-family: variables.$pt-font
 
 @media (max-width: 992px)
-  .layout-header
-    z-index: 100
-    width: 100%
-    margin-left: 0
+  .ant-layout
+    background: variables.$blue-dark-color
 
-  .layout-sidebar
-    top: 68px
-    z-index: 100
+    &.site-layout
+      background-position: 0 -100%
 
-    .main-logo
-      display: none
+  .layout-container
+    .layout-header
+      z-index: 100
+      width: 100%
+      margin-left: 0
+
+    .layout-sidebar
+      top: 64px
+      z-index: 100
+
+      .main-logo
+        display: none
 
 @media (max-width: 768px)
-  .ant-layout-header
-    padding: 0 25px
+  .layout-container
+    .layout-header
+      padding: 0 25px

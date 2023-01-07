@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { FormattedMessage } from "react-intl";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { IShortUserData } from "types";
 
+import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "../../contexts/Wallet";
 import BaseButton from "../../components/BaseButton";
 import FormInput from "../../components/FormInput";
 
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../modules/axiosClient";
 import { tryToGetUser } from "../../store/types/User";
 import { addNotification } from "../../utils";
 import { adminPath } from "../../consts";
@@ -20,14 +21,14 @@ const RegistrationContainer = () => {
   const navigate = useNavigate();
   const { walletConf } = useContext(WalletContext);
 
-  const user = useSelector((state: any) => state.user);
+  const { id } = useAppSelector(({ user }) => user);
 
   const [username, setUsername] = useState<string>("");
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
 
   useEffect(() => {
-    user.id && navigate(`/${adminPath}`);
-  }, [user]);
+    id && navigate(`/${adminPath}`);
+  }, [id]);
 
   const tryToLogin = async () => {
     const blockchainData = await walletConf.getBlockchainData();
@@ -52,7 +53,7 @@ const RegistrationContainer = () => {
             } as IShortUserData);
 
             if (status === 200) {
-              dispatch(tryToGetUser(address as string));
+              dispatch(tryToGetUser(address));
               navigate(`/${adminPath}`);
             }
           }

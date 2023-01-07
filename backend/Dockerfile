@@ -2,13 +2,11 @@ FROM node:14-alpine
 
 WORKDIR /backend
 
-COPY ./package.json ./
+COPY . .
 
 RUN npm install
 
-COPY . .
 
 EXPOSE 5000
 
-CMD [ "node", "index.js" ]
-# RUN npm run start --quiet
+CMD [ "npm", "run", "start" ]

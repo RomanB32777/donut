@@ -2,18 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Empty } from "antd";
 import { stringFormatTypes } from "types";
-import axiosClient from "../../../../axiosClient";
-import { WalletContext } from "../../../../contexts/Wallet";
+import axiosClient from "modules/axiosClient";
+import { WalletContext } from "contexts/Wallet";
 
-import SelectComponent from "../../../../components/SelectComponent";
-import TableComponent from "../../../../components/TableComponent";
-import useWindowDimensions from "../../../../hooks/useWindowDimensions";
+import SelectComponent from "components/SelectComponent";
+import TableComponent from "components/TableComponent";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import WidgetItem from "../WidgetItem";
 
 import { ITableData, tableColums } from "./tableData";
-import { getTimePeriodQuery } from "../../../../utils";
-import { filterPeriodItems } from "../../../../utils/dateMethods/consts";
-import { widgetApiUrl } from "../../../../consts";
+import { getTimePeriodQuery } from "utils";
+import { filterPeriodItems, widgetApiUrl } from "consts";
 import "./styles.sass";
 
 const LIMIT_DONATS = 6;

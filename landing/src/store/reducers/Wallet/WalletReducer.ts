@@ -1,18 +1,15 @@
-import { SET_MAIN_WALLET } from "../../types/Wallet"
+import { SET_MAIN_WALLET } from "../../types/Wallet";
 
-const initialState = {
-    
-}
+const initialState = {};
 
 const WalletReducer = (state = initialState, action: any) => {
+  switch (action.type) {
+    case SET_MAIN_WALLET:
+      return action.payload;
 
-    switch (action.type) {
-        case SET_MAIN_WALLET:
-            return action.payload
+    default:
+      return state;
+  }
+};
 
-        default:
-            return state
-    }
-}
-
-export default WalletReducer
+export default WalletReducer;

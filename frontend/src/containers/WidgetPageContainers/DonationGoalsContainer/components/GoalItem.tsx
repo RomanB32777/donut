@@ -3,175 +3,23 @@ import { useSelector, useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
 import { IGoalData } from "types";
+
 import LinkCopy from "../../../../components/LinkCopy";
 import WidgetMobileWrapper from "../../../../components/WidgetMobileWrapper";
 import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons";
-import ColorPicker from "../../../../components/ColorPicker";
 import ConfirmPopup from "../../../../components/ConfirmPopup";
-import BaseButton from "../../../../components/BaseButton";
+import PreviewGoalBlock from "./PreviewGoalBlock";
+import SettingsGoalBlock from "./SettingsGoalBlock";
+
 import useWindowDimensions from "../../../../hooks/useWindowDimensions";
-import axiosClient, { baseURL } from "../../../../axiosClient";
+import axiosClient, { baseURL } from "../../../../modules/axiosClient";
 import { getGoals } from "../../../../store/types/Goals";
 import {
   addNotification,
   addSuccessNotification,
   copyStr,
 } from "../../../../utils";
-
-interface IEditGoalData {
-  title_color: string;
-  progress_color: string;
-  background_color: string;
-}
-
-const PreviewGoalBlock = ({
-  editGoalData,
-  goalData,
-  loading,
-  sendColorsData,
-}: {
-  editGoalData: IEditGoalData;
-  goalData: IGoalData;
-  loading: boolean;
-  sendColorsData: () => Promise<void>;
-}) => {
-  const { isLaptop } = useWindowDimensions();
-  const { title } = goalData;
-  const { title_color, progress_color, background_color } = editGoalData;
-
-  return (
-    <Col
-      xl={10}
-      md={24}
-      style={{
-        width: "100%",
-      }}
-    >
-      <div className="preview-block">
-        <div className="preview-block_title">
-          <p>
-            <span
-              style={{
-                color: title_color,
-              }}
-            >
-              {title}
-            </span>
-          </p>
-        </div>
-        <div
-          className="preview-block_goal"
-          style={{
-            background: background_color,
-          }}
-        >
-          <Progress
-            type="circle"
-            percent={75}
-            width={46}
-            strokeColor={progress_color}
-            format={(percent) => (
-              <span
-                style={{
-                  color: "#fff",
-                }}
-              >
-                {percent}%
-              </span>
-            )}
-          />
-
-          <p>75 / 100 USD</p>
-        </div>
-      </div>
-      {isLaptop && (
-        <div className="btn-block">
-          <BaseButton
-            formatId="profile_form_save_changes_button"
-            padding="6px 35px"
-            onClick={sendColorsData}
-            fontSize="18px"
-            disabled={loading}
-            isMain
-          />
-        </div>
-      )}
-    </Col>
-  );
-};
-
-const SettingsGoalBlock = ({
-  editGoalData,
-  loading,
-  sendColorsData,
-  setEditGoalData,
-}: {
-  editGoalData: IEditGoalData;
-  loading: boolean;
-  sendColorsData: () => Promise<void>;
-  setEditGoalData: (editGoalData: IEditGoalData) => void;
-}) => {
-  const { title_color, progress_color, background_color } = editGoalData;
-
-  return (
-    <Col xl={13} md={24}>
-      <Row gutter={[0, 18]} className="form">
-        <Col span={24}>
-          <div className="form-element">
-            <ColorPicker
-              setColor={(color) =>
-                setEditGoalData({ ...editGoalData, title_color: color })
-              }
-              color={title_color}
-              label="Goal title color:"
-              labelCol={9}
-              gutter={[0, 18]}
-            />
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="form-element">
-            <ColorPicker
-              setColor={(color) =>
-                setEditGoalData({ ...editGoalData, progress_color: color })
-              }
-              color={progress_color}
-              label="Progress bar color:"
-              labelCol={9}
-              gutter={[0, 18]}
-            />
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="form-element">
-            <ColorPicker
-              setColor={(color) =>
-                setEditGoalData({
-                  ...editGoalData,
-                  background_color: color,
-                })
-              }
-              color={background_color}
-              label="Background color:"
-              labelCol={9}
-              gutter={[0, 18]}
-            />
-          </div>
-        </Col>
-      </Row>
-      <div className="btn-block">
-        <BaseButton
-          formatId="profile_form_save_changes_button"
-          padding="6px 35px"
-          onClick={sendColorsData}
-          fontSize="18px"
-          disabled={loading}
-          isMain
-        />
-      </div>
-    </Col>
-  );
-};
+import { IEditGoalData } from "appTypes";
 
 const GoalItem = ({
   goalData,

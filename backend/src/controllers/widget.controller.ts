@@ -7,8 +7,9 @@ import db from '../db.js';
 import { getRandomStr } from '../utils.js';
 import { isProduction, uploadsFolder } from '../consts.js';
 
+// import dotenv from 'dotenv';
+// dotenv.config();
 const speechClient = new TextToSpeechClient();
-// require('dotenv').config();
 
 class WidgetController {
   // alerts
@@ -178,7 +179,7 @@ class WidgetController {
 
   async deleteGoalWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
       const deletedGoalWidget = await db.query(`DELETE FROM goals WHERE id = $1 RETURNING *;`, [id]);
       res.status(200).json(deletedGoalWidget.rows[0]);
     } catch (error) {
@@ -203,7 +204,7 @@ class WidgetController {
 
   async getStatWidgets(req: Request, res: Response, next: NextFunction) {
     try {
-      const creator_id = req.params.creator_id;
+      const { creator_id } = req.params;
       const data = await db.query('SELECT * FROM stats WHERE creator_id = $1', [creator_id]);
       res.status(200).json(data.rows);
     } catch (error) {
@@ -256,7 +257,7 @@ class WidgetController {
 
   async deleteStatWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
       const deletedStatWidget = await db.query(`DELETE FROM stats WHERE id = $1 RETURNING *;`, [id]);
       res.status(200).json(deletedStatWidget.rows[0]);
     } catch (error) {
@@ -289,6 +290,36 @@ class WidgetController {
       }
     } catch (error) {
       console.log(`api, ${error}`);
+      next(error);
+    }
+  }
+
+  async uploadSound(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { username, userId } = req.body;
+
+      console.log(username, userId);
+
+      if (req.files) {
+        const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
+        const filename = file.name;
+        const filepath = `${uploadsFolder}/${username}/sound/${filename}`;
+
+        file?.mv(filepath, (err) => err && console.log(err));
+
+        // await db.query(
+        //   `UPDATE alerts
+        //     SET sound = $1
+        //     WHERE creator_id = $2;`,
+        //   [(isProduction ? '/' : `${req.protocol}://${req.headers.host}/`) + filepath, userId],
+        // );
+        return res.status(200).json({
+          name: filename,
+          link: isProduction ? filepath : `${req.protocol}://${req.headers.host}/${filepath}`,
+        });
+      }
+      return res.status(500).json({ message: 'error uploading' });
+    } catch (error) {
       next(error);
     }
   }

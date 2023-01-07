@@ -15,7 +15,6 @@ import { setSelectedBlockchain } from "./store/types/Wallet";
 import { setLoading } from "./store/types/Loading";
 
 import "react-notifications-component/dist/theme.css";
-import "antd/dist/antd.css";
 import "./commonStyles/main.sass";
 
 function App() {

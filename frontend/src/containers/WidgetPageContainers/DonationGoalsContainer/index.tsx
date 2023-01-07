@@ -1,39 +1,25 @@
-import { Col, Empty, Row } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Empty } from "antd";
+import { useDispatch } from "react-redux";
 import { IGoalData } from "types";
-import axiosClient from "../../../axiosClient";
-import BaseButton from "../../../components/BaseButton";
-import PageTitle from "../../../components/PageTitle";
-import FormInput from "../../../components/FormInput";
-import ModalComponent from "../../../components/ModalComponent";
-import { getGoals } from "../../../store/types/Goals";
-import { addNotification, addSuccessNotification } from "../../../utils";
-import GoalItem from "./GoalItem";
 
+import { useAppSelector } from "hooks/reduxHooks";
+import BaseButton from "components/BaseButton";
+import PageTitle from "components/PageTitle";
+import GoalItem from "./components/GoalItem";
+import GoalsModal from "./components/GoalsModal";
+
+import { getGoals } from "store/types/Goals";
+import { initWidgetGoalData } from "consts";
+import { IWidgetGoalData } from "appTypes";
 import "./styles.sass";
-
-interface IWidgetGoalData {
-  widgetAmount: string;
-  widgetDescription: string;
-  id?: number;
-}
-
-const initWidgetGoalData: IWidgetGoalData = {
-  widgetAmount: "0",
-  widgetDescription: "",
-};
 
 const DonationGoalsContainer = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
-  const { list } = useSelector(
-    (state: any) => state.notifications
-  );
-  const goals = useSelector((state: any) => state.goals);
+  const { user, goals, notifications } = useAppSelector((state) => state);
+  const { list } = notifications;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<IWidgetGoalData>({
     ...initWidgetGoalData,
   });
@@ -48,55 +34,9 @@ const DonationGoalsContainer = () => {
     setIsOpenModal(true);
   };
 
-  const closeEditModal = () => {
-    setFormData({
-      ...initWidgetGoalData,
-    });
-    setIsOpenModal(false);
-  };
-
-  const sendData = async () => {
-    try {
-      setLoading(true);
-      const { widgetDescription, widgetAmount, id } = formData;
-      id
-        ? await axiosClient.put("/api/widget/goals-widget/", {
-            goalData: {
-              title: widgetDescription,
-              amount_goal: +widgetAmount,
-            },
-            creator_id: user.id,
-            id,
-          })
-        : await axiosClient.post("/api/widget/goals-widget/", {
-            title: widgetDescription,
-            amount_goal: +widgetAmount,
-            creator_id: user.id,
-          });
-      dispatch(getGoals(user.id));
-      setIsOpenModal(false);
-      setFormData({
-        ...initWidgetGoalData,
-      });
-      addSuccessNotification({ message: "Data created successfully" });
-    } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while creating data`,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     user.id && dispatch(getGoals(user.id));
   }, [user, list]);
-
-  const { widgetAmount, widgetDescription } = formData;
 
   return (
     <div className="donationGoalsPage-container">
@@ -144,69 +84,12 @@ const DonationGoalsContainer = () => {
           <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}
       </div>
-      <ModalComponent
-        open={isOpenModal}
-        title="New donation goal"
-        onCancel={closeEditModal}
-        width={880}
-      >
-        <div className="goals-modal">
-          <Row gutter={[0, 18]} className="goals-modal__form" justify="center">
-            <Col span={24}>
-              <div className="form-element">
-                <FormInput
-                  label="Goal description:"
-                  name="widgetDescription"
-                  value={widgetDescription}
-                  setValue={(value) =>
-                    setFormData({ ...formData, widgetDescription: value })
-                  }
-                  labelCol={6}
-                  inputCol={14}
-                  gutter={[0, 18]}
-                />
-              </div>
-            </Col>
-            <Col span={24}>
-              <div className="form-element">
-                <FormInput
-                  label="Amount to raise:"
-                  name="widgetAmount"
-                  value={widgetAmount}
-                  typeInput="number"
-                  setValue={(value) =>
-                    setFormData({ ...formData, widgetAmount: value })
-                  }
-                  addonAfter={<span>USD</span>}
-                  labelCol={6}
-                  inputCol={10}
-                  gutter={[0, 18]}
-                />
-              </div>
-            </Col>
-          </Row>
-          <div className="goals-modal__btns">
-            <div className="goals-modal__btns_save">
-              <BaseButton
-                formatId="profile_form_save_goal_button"
-                padding="6px 35px"
-                onClick={sendData}
-                fontSize="18px"
-                disabled={loading}
-                isMain
-              />
-            </div>
-            <div className="goals-modal__btns_cancel">
-              <BaseButton
-                formatId="profile_form_cancel_button"
-                padding="6px 35px"
-                onClick={closeEditModal}
-                fontSize="18px"
-              />
-            </div>
-          </div>
-        </div>
-      </ModalComponent>
+      <GoalsModal
+        formData={formData}
+        isOpenModal={isOpenModal}
+        setFormData={setFormData}
+        setIsOpenModal={setIsOpenModal}
+      />
     </div>
   );
 };

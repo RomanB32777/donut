@@ -5,6 +5,6 @@ const router = Router();
 const fileController = new FileController();
 
 router.get('/default-images/:type', fileController.getDefaultImages)
-router.get('/sounds/:user_id', fileController.getSounds)
+router.get('/sounds/:username', fileController.getSounds)
 
 export default router;

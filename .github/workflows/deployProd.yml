@@ -1,0 +1,23 @@
+name: Deploy prod
+
+on:
+  push:
+    branches: [donut4]
+    paths-ignore:
+      - '.github/workflows/*'
+  workflow_dispatch:
+
+jobs:
+  deploy_and_build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Run update script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          password: ${{ secrets.SSH_PASS }}
+          script: sh ~/donut4/update.sh 
+          script_stop: true
+ 

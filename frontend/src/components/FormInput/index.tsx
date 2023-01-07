@@ -50,15 +50,17 @@ const FormInput = ({
   return (
     <div className="formInput">
       <Row gutter={gutter || 0}>
-        <Col
-          md={labelCol || (label ? 12 : 0)}
-          xs={24}
-          className={clsx({
-            alignCenter: !isTextarea,
-          })}
-        >
-          <span className="label">{label}</span>
-        </Col>
+        {label && (
+          <Col
+            md={labelCol || (label ? 12 : 0)}
+            xs={24}
+            className={clsx({
+              alignCenter: !isTextarea,
+            })}
+          >
+            <span className="label">{label}</span>
+          </Col>
+        )}
         <Col md={inputCol || (label ? 12 : 24)} xs={24}>
           <div
             className={clsx("input", {
@@ -104,7 +106,11 @@ const FormInput = ({
                 onChange={(e) => setValue && setValue(e.target.value)}
               />
             )}
-            {isVisibleLength && <p className="value-length">{value.length}/{maxLength}</p>}
+            {isVisibleLength && (
+              <p className="value-length">
+                {value.length}/{maxLength}
+              </p>
+            )}
             {addonAfter && (
               <div
                 className={clsx("addonAfter", {

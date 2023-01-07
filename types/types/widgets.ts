@@ -17,7 +17,7 @@ interface IAlertBase {
   name_color: string;
   sum_color: string;
   duration: number;
-  sound: any; // ???
+  sound: string;
   voice: boolean;
   gender_voice: string;
 }

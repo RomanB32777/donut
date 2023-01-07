@@ -2,13 +2,11 @@ FROM node:14-alpine
 
 WORKDIR /sockets
 
-COPY ./package.json ./
+COPY . .
 
 RUN npm install
 
-COPY . .
-
 EXPOSE 4005
 
-CMD [ "node", "index.js" ]
+CMD [ "npm", "run", "start" ]
 # RUN npm run start --quiet

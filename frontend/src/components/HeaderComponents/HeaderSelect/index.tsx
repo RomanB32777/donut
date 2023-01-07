@@ -1,12 +1,13 @@
 import clsx from "clsx";
 import { useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../../../hooks/reduxHooks";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import WalletBlock from "../WalletBlock";
-import { LogoutIcon, SmallToggleListArrowIcon } from "../../../icons";
-import { setUser } from "../../../store/types/User";
-import { setSelectedBlockchain } from "../../../store/types/Wallet";
+import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
+import { setUser } from "store/types/User";
+import { setSelectedBlockchain } from "store/types/Wallet";
 import "./styles.sass";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const HeaderSelect = ({
   title,
@@ -15,11 +16,11 @@ const HeaderSelect = ({
   handlerHeaderSelect,
 }: {
   title: string;
-  isOpenSelect?: boolean;
+  isOpenSelect: boolean;
   isNotVisibleAvatarInMobile?: boolean;
   handlerHeaderSelect?: (e?: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id, avatar } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
@@ -30,7 +31,7 @@ const HeaderSelect = ({
       <div
         className={clsx("info", {
           withoutArrow: isOpenSelect === undefined,
-          withWalletBlock: !isMobile
+          withWalletBlock: !isMobile,
         })}
         onClick={(e: React.MouseEvent<HTMLDivElement>) =>
           handlerHeaderSelect && handlerHeaderSelect(e)
@@ -46,22 +47,15 @@ const HeaderSelect = ({
           </div>
         )}
         <span className="title">{title}</span>
-        {isOpenSelect !== undefined && (
-          <div
-            className={clsx("icon", {
-              rotated: isOpenSelect,
-            })}
-          >
-            <SmallToggleListArrowIcon />
-          </div>
-        )}
+        <div
+          className={clsx("icon", {
+            rotated: isOpenSelect,
+          })}
+        >
+          <SmallToggleListArrowIcon />
+        </div>
         {Boolean(isOpenSelect) && (
           <div className="popup">
-            {isMobile && (
-              <div className="item">
-                <WalletBlock />
-              </div>
-            )}
             <div className="item">
               <div
                 className="content"

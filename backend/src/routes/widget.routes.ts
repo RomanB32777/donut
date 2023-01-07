@@ -22,7 +22,8 @@ router.get('/stats-widget/:id', widgetController.getStatWidget)
 router.put('/stats-widget', widgetController.editStatWidget)
 router.delete('/stats-widget/:id', widgetController.deleteStatWidget)
 
-// get sound
-router.get('/generate/sound', widgetController.generateSound)
+// sound
+router.get('/sound/generate', widgetController.generateSound)
+router.post('/sound', widgetController.uploadSound)
 
 export default router;

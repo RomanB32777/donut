@@ -10,11 +10,13 @@ import {
 import { Badge, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { InView } from "react-intersection-observer";
-import moment from "moment";
+import dayjsModule from "modules/dayjsModule";
+
 import { WalletContext } from "../../../contexts/Wallet";
 import Loader from "../../Loader";
+
 import { getNotificationMessage } from "../../../utils";
-import axiosClient, { baseURL } from "../../../axiosClient";
+import axiosClient, { baseURL } from "../../../modules/axiosClient";
 import { getNotifications } from "../../../store/types/Notifications";
 import { AlertIcon } from "../../../icons";
 import "./styles.sass";
@@ -256,7 +258,7 @@ const NotificationsPopup = ({
                   data: badgeData,
                 })}
               <p className="date">
-                {moment(n.created_at).startOf("minutes").fromNow()}
+                {dayjsModule(n.created_at).startOf("minutes").fromNow()}
               </p>
             </Badge>
           </div>

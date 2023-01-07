@@ -3,7 +3,7 @@ import { Row } from "antd";
 import { EyeOutlined, SettingOutlined } from "@ant-design/icons";
 import { TabsComponent } from "../TabsComponent";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
-import { typesTabContent } from "../../types";
+import { typesTabContent } from "../../appTypes";
 
 const WidgetMobileWrapper = ({
   previewBlock,

@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { UploadIcon } from "../../icons";
-import { addNotification } from "../../utils";
-import { IFileInfo } from "../../types";
+import { UploadIcon } from "icons";
+import { addNotification } from "utils";
+import { IFileInfo } from "appTypes";
 import "./styles.sass";
 
 const maxFileSize = 3 * 1024 * 1024;

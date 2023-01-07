@@ -1,20 +1,16 @@
 FROM node:14-alpine AS builder
 
-WORKDIR /client
-
-COPY ./package.json ./
-
-RUN npm install
+WORKDIR /frontend
 
 COPY . .
+
+RUN npm install
 
 ARG BACKEND_PORT
 
 ARG NODE_ENV
 
 ARG WALLET
-
-ARG BLOCKCHAIN
 
 ARG STORAGE_TOKEN
 
@@ -23,8 +19,6 @@ ENV REACT_APP_BACKEND_PORT=$BACKEND_PORT
 ENV REACT_APP_NODE_ENV=$NODE_ENV
 
 ENV REACT_APP_WALLET=$WALLET
-
-ENV REACT_APP_BLOCKCHAIN=$BLOCKCHAIN
 
 ENV REACT_APP_STORAGE_TOKEN=$STORAGE_TOKEN
 
@@ -43,4 +37,4 @@ COPY ./nginx.config /etc/nginx/nginx.template
 
 CMD ["/bin/sh", "-c", "envsubst < /etc/nginx/nginx.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
 
-COPY --from=builder /client/build /usr/share/nginx/html
+COPY --from=builder /frontend/build /usr/share/nginx/html

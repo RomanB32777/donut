@@ -7,20 +7,20 @@ import { SearchOutlined } from "@ant-design/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { periodItemsTypes } from "types";
 
-import { WalletContext } from "../../contexts/Wallet";
-import PageTitle from "../../components/PageTitle";
-import FormInput from "../../components/FormInput";
-import DatesPicker from "../../components/DatesPicker";
-import SelectInput from "../../components/SelectInput";
-import TableComponent from "../../components/TableComponent";
-import BaseButton from "../../components/BaseButton";
-import { CalendarIcon, DownloadIcon } from "../../icons";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
-import axiosClient from "../../axiosClient";
-import { setUpdateAppNotifications } from "../../store/types/Notifications";
-import { getUsdKoef } from "../../utils";
+import { WalletContext } from "contexts/Wallet";
+import PageTitle from "components/PageTitle";
+import FormInput from "components/FormInput";
+import DatesPicker from "components/DatesPicker";
+import SelectInput from "components/SelectInput";
+import TableComponent from "components/TableComponent";
+import BaseButton from "components/BaseButton";
+import { CalendarIcon, DownloadIcon } from "icons";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import axiosClient from "modules/axiosClient";
+import { setUpdateAppNotifications } from "store/types/Notifications";
+import { getUsdKoef } from "utils";
 import { initTableDataItem, ITableData, tableColumns } from "./tableData";
-import { filterPeriodItems } from "../../utils/dateMethods/consts";
+import { filterPeriodItems } from "consts";
 import "./styles.sass";
 
 interface IQueryForm {
@@ -227,14 +227,14 @@ const DonationsContainer = () => {
             </div>
           </Col>
           {isCreator && (
-            <Col xl={8} md={13} xs={24}>
+            <Col xl={6} md={13} xs={24}>
               <div className="donations-header__right">
                 <Row justify={isLaptop ? "start" : "end"}>
-                  <Col xl={11}>
+                  <Col xl={12}>
                     <BaseButton
                       formatId="create_filter_button"
                       onClick={filterBtnClick}
-                      modificator={"donations-header__right_btn"}
+                      modificator="donations-header__right_btn"
                       icon={<CalendarIcon />}
                       isMain={visibleDatesPicker}
                     />
@@ -243,7 +243,7 @@ const DonationsContainer = () => {
                     <BaseButton
                       formatId="create_export_button"
                       onClick={exportToExel}
-                      modificator={"donations-header__right_btn"}
+                      modificator="donations-header__right_btn"
                       icon={<DownloadIcon />}
                     />
                   </Col>

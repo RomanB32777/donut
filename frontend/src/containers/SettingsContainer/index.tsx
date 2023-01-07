@@ -1,10 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 
-import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
-import axiosClient from "../../axiosClient";
+import { useAppSelector } from "../../hooks/reduxHooks";
+import axiosClient from "../../modules/axiosClient";
 import { WalletContext } from "../../contexts/Wallet";
 import PageTitle from "../../components/PageTitle";
 import FormInput from "../../components/FormInput";
@@ -20,13 +21,13 @@ import {
   shortStr,
 } from "../../utils";
 import { setSelectedBlockchain } from "../../store/types/Wallet";
-import { IFileInfo } from "../../types";
+import { IFileInfo } from "../../appTypes";
 import "./styles.sass";
 import SwitchForm from "../../components/SwitchForm";
 
 const SettingsContainer = () => {
   const user = useAppSelector(({ user }) => user);
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { walletConf } = useContext(WalletContext);
 
@@ -240,7 +241,7 @@ const SettingsContainer = () => {
                   setFormSettings({ ...formSettings, spamFilter: flag })
                 }
                 labelModificator="switch-label"
-                labelCol={6}
+                labelCol={5}
                 switchCol={2}
                 gutter={[0, 16]}
               />
@@ -252,12 +253,19 @@ const SettingsContainer = () => {
                 <BaseButton
                   formatId="profile_form_delete_button"
                   padding="6px 30px"
-                  onClick={() => console.log()}
                   fontSize="18px"
                   disabled={loading}
-                  isRed
+                  isBlack
                 />
               </ConfirmPopup>
+              <BaseButton
+                title="Save changes"
+                padding="6px 30px"
+                fontSize="18px"
+                modificator="save-btn"
+                disabled={loading}
+                isMain
+              />
             </div>
           </Col>
         </Row>

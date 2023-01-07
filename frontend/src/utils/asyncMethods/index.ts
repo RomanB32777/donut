@@ -1,4 +1,4 @@
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../modules/axiosClient";
 
 export const checkIsExistUser = async (address: string) => {
   const { data } = await axiosClient.get(

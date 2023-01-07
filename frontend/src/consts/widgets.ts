@@ -1,5 +1,5 @@
 import { typeAligmnet } from "types";
-import { IAlert, IBadge } from "../types";
+import { IAlert, IBadge, IWidgetGoalData, IWidgetStatData } from "../appTypes";
 
 const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
@@ -39,6 +39,21 @@ const initAlertData: IAlert = {
   gender_voice: "MAN",
 };
 
+const initWidgetGoalData: IWidgetGoalData = {
+  widgetAmount: "0",
+  widgetDescription: "",
+};
+
+const initWidgetStatData: IWidgetStatData = {
+  id: 0,
+  title: "",
+  stat_description: "",
+  template: [],
+  data_type: "top-donations", // filterDataTypeItems["top-donations"]
+  time_period: "today", // "Today"
+  custom_period: "",
+};
+
 const initBadgeData: IBadge = {
   id: 0,
   creator_id: 0,
@@ -56,4 +71,11 @@ const initBadgeData: IBadge = {
   quantity: 0,
 };
 
-export { alignItemsList, alignFlextItemsList, initAlertData, initBadgeData };
+export {
+  alignItemsList,
+  alignFlextItemsList,
+  initAlertData,
+  initWidgetGoalData,
+  initWidgetStatData,
+  initBadgeData,
+};

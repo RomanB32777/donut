@@ -1,10 +1,11 @@
-import { Navigate, useRoutes, Outlet, RouteObject } from "react-router";
+import { Navigate, useRoutes, Outlet } from "react-router";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons";
 import {
   PieChartOutlined,
   SettingOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
+import { userRoles } from "types";
 import { useAppSelector } from "./hooks/reduxHooks";
 
 import MainPage from "./pages/MainPage";
@@ -27,13 +28,8 @@ import ChooseBlockchainPage from "./pages/ChooseBlockchainPage";
 import NoPage from "./pages/NoPage";
 import { adminPath } from "./consts";
 
-const routes = {
-  main: "/",
-};
-
-interface IRoute extends RouteObject {
+interface IRoute {
   path?: string;
-  index?: boolean;
   name?: string;
   menu?: boolean;
   element?: React.ReactNode | null;
@@ -47,8 +43,6 @@ interface IRoute extends RouteObject {
   hiddenLayoutElements?: boolean;
   noPaddingMainConteiner?: boolean;
 }
-
-declare type userRoles = "creators" | "backers";
 
 //protected Route state
 type ProtectedRouteType = {
@@ -94,7 +88,7 @@ export const routers: IRoute[] = [
         protected: true,
         children: [
           {
-            index: true,
+            path: "",
             element: <MainPage />,
             name: "Dashboard",
             icon: <PieChartOutlined />,
@@ -199,123 +193,53 @@ export const routers: IRoute[] = [
     transparet: true,
   },
   {
+    path: "test",
+    element: <DonatStatPage />,
+    hiddenLayoutElements: true,
+    transparet: true,
+  },
+  {
     path: "*",
     element: <NoPage />,
   },
 ];
 
-// const test = [
-//   {
-//     path: "/",
-//     element: <ProtectedRoutes />,
-//     children: [
-//       {
-//         path: "/",
-//         element: <ProtectedRoutes roleRequired="creators" />,
-//         children: [
-//           {
-//             index: true,
-//             path: "/",
-//             element: <MainPage />,
-//           },
-//           {
-//             path: "donat", // /:name/:token
-//             element: <DonationPage />,
-//           },
-//           {
-//             path: "widgets",
-//             element: <WidgetsPage />,
-//             children: [
-//               {
-//                 path: "alerts",
-//                 element: <AlertsPage />,
-//               },
-//               {
-//                 path: "stats",
-//                 element: <StreamStatsPage />,
-//               },
-//               {
-//                 path: "goals",
-//                 element: <DonationGoalsPage />,
-//               },
-//             ],
-//           },
-//         ],
-//       },
-//       {
-//         path: "donations",
-//         element: <DonationsPage />,
-//       },
-//       {
-//         path: "badges",
-//         element: <BadgesPage />,
-//       },
-//       {
-//         path: "settings",
-//         element: <SettingsPage />,
-//       },
-//     ],
-//   },
-//   {
-//     path: "register",
-//     element: <RegistrationModal />,
-//   },
-//   {
-//     path: "support/:name",
-//     element: <DonatPage />,
-//   },
-//   {
-//     path: "donat-message/:name/:token",
-//     element: <DonatMessagePage />,
-//   },
-//   {
-//     path: "donat-goal/:name/:id",
-//     element: <DonatGoalPage />,
-//   },
-//   {
-//     path: "donat-stat/:name/:id",
-//     element: <DonatStatPage />,
-//   },
-//   {
-//     path: "*",
-//     element: <NoPage />,
-//   },
-// ];
+type routerPathsType = Record<string, string>;
+// type routerPathsType<T> = Record<T, string>;
 
-const addChildrenRoute = (currRoute: IRoute, routersAcc: IRoute[]) => {
-  // console.log(route.path);
-  if (currRoute.children) {
-    const mapArr = currRoute.children.map((route) => {
-      // console.log(route.path);
-      if (route.children) addChildrenRoute(route, routersAcc);
-      return {
-        path: route.path,
-        element: route.element,
-      };
-    });
+const addRouteWithPath = ({ path }: IRoute, routersAcc: any) => {
+  if (path && !path.includes("*")) {
+    const pathValue = path.split("/")[0];
+    const key = pathValue || "main";
+    return {
+      ...routersAcc,
+      [key]: pathValue || "/",
+    };
   }
   return routersAcc;
 };
 
-export const Pages = () => {
-  const routerPages = routers.reduce((acc, route) => {
+const initRoutersObj = (
+  routers: IRoute[],
+  initObj: routerPathsType
+): routerPathsType => {
+  const routerPages = routers.reduce((obj, route) => {
     if (route.children) {
-      const newAcc = addChildrenRoute(route, acc);
-      return newAcc;
+      const newObjWithChilds = initRoutersObj(route.children, obj);
+      const newObjWithParent = addRouteWithPath(route, initObj);
+      return { ...newObjWithParent, ...newObjWithChilds };
     }
-    return [
-      ...acc,
-      {
-        path: route.path,
-        element: route.element,
-      },
-    ];
-  }, [] as IRoute[]);
+    return addRouteWithPath(route, obj);
+  }, initObj as Record<keyof typeof initObj, string>);
+  return routerPages;
+};
 
-  // console.log(routerPages);
+const routerPaths = initRoutersObj(routers, {});
 
+const Pages = () => {
   const pages = useRoutes(routers);
   return pages;
 };
 
 export type { IRoute, userRoles };
+export { routerPaths, Pages };

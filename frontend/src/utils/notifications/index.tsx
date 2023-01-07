@@ -1,5 +1,5 @@
 import { Store } from "react-notifications-component";
-import { baseURL, isProduction } from "../../axiosClient";
+import { baseURL, isProduction } from "../../modules/axiosClient";
 import {
   INotification,
   INotificationWithoutType,
@@ -56,10 +56,12 @@ export const addSuccessNotification = ({
     type: "success",
   });
 
-export const addNotFoundUserNotification = () =>
+export const addNotFoundUserNotification = (
+  title: string = "User with this username not found!"
+) =>
   addNotification({
     type: "danger",
-    title: "User with this username not found!",
+    title,
   });
 
 export const addInstallWalletNotification = (
@@ -119,8 +121,8 @@ export const getNotificationMessage = ({
             </a>
           ) : (
             "a badge"
-          )}&nbsp;
-          to {user}
+          )}
+          &nbsp; to {user}
         </span>
       );
 
@@ -139,8 +141,8 @@ export const getNotificationMessage = ({
             </a>
           ) : (
             "a badge"
-          )}&nbsp;
-          from {user};
+          )}
+          &nbsp; from {user};
         </span>
       );
 
@@ -157,8 +159,8 @@ export const getNotificationMessage = ({
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             Click here
-          </a>&nbsp;
-          to check!
+          </a>
+          &nbsp; to check!
         </span>
       );
 
@@ -172,8 +174,8 @@ export const getNotificationMessage = ({
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             New badge
-          </a>&nbsp;
-          was created successfully!
+          </a>
+          &nbsp; was created successfully!
         </span>
       );
 

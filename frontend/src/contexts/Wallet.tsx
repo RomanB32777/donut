@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { IWalletContext } from "../types";
+import { IWalletContext } from "../appTypes";
 import { initValue } from "./values";
 
 // const currentWalletName = process.env.REACT_APP_WALLET || "tronlink";

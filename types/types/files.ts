@@ -1,23 +1,24 @@
 interface ISoundInfo {
   name: string;
   link: string;
+  isUploaded?: boolean;
 }
 
-enum defaultImageNameEnum {
-  backgrounds = "backgrounds",
-  headers = "headers",
-  alerts = "alerts",
-}
+// enum userUploadsEnum {
+//   avatars,
+// }
 
-enum userUploadsEnum {
-  avatars = "avatars",
-  sounds = "sounds",
-}
+type alertAssetTypes = "alert" | "sound";
+type donatAssetTypes = "background" | "header";
 
-type fileUploadTypes =
-  | keyof typeof defaultImageNameEnum
-  | keyof typeof userUploadsEnum;
+type defaultAssetsFolders = donatAssetTypes | alertAssetTypes;
 
-type defaultImageNameFolders = keyof typeof defaultImageNameEnum;
+type fileUploadTypes = defaultAssetsFolders | "avatars";
 
-export type { ISoundInfo, fileUploadTypes, defaultImageNameFolders };
+export type {
+  ISoundInfo,
+  alertAssetTypes,
+  donatAssetTypes,
+  fileUploadTypes,
+  defaultAssetsFolders,
+};

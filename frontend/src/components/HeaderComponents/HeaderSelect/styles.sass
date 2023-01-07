@@ -1,4 +1,4 @@
-@use '../../../commonStyles/variables'
+@use 'commonStyles/variables'
 
 .header-select
     position: relative
@@ -63,16 +63,8 @@
                 max-width: 100px
 
         .icon
-            display: flex
-            align-items: center
-
             svg
-                transition: transform .4s
                 color: variables.$white-color
-
-            &.rotated
-                svg
-                    transform: rotate(180deg)
 
         .popup
             position: absolute
@@ -109,7 +101,3 @@
                 &:last-child
                     border-bottom: none
                     padding: 5px 0 0
-
-                @media (max-width: 768px)
-                    font-size: 10px
-                    line-height: 12px

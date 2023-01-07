@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { IBadgeInfo, IBadgeShort } from "types";
 
 import { TrashBinIcon } from "../../../icons";
-import { IBadge } from "../../../types";
+import { IBadge } from "../../../appTypes";
 import testIMG from "../../../assets/person.png";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import Loader from "../../../components/Loader";

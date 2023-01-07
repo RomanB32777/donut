@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import db from '../db.js';
-import { IBadgeInfo } from 'types';
+import { IBadgeInfo } from 'types/index.js';
 
 class BadgeController {
   async createBadge(req: Request, res: Response, next: NextFunction) {

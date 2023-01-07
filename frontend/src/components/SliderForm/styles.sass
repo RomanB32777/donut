@@ -1,4 +1,4 @@
-@use '../../commonStyles/variables'
+@use 'commonStyles/variables'
 
 .slider
     width: 100%
@@ -36,3 +36,27 @@
         line-height: 20px
         color: variables.$grey-color
         text-align: center
+
+    .ant-slider
+        &:hover .ant-slider-track,
+        .ant-slider-track
+            background: variables.$main-color
+
+        &:hover .ant-slider-rail,
+        .ant-slider-rail
+            background-color: variables.$grey-color
+
+    .ant-slider-handle,
+    .ant-slider-handle:hover
+        &::after
+            border: solid 2px variables.$main-color
+            border-color: variables.$main-color
+            background: variables.$main-color
+            box-shadow: 0 0 0 2px variables.$main-color !important
+
+    // .ant-slider-handle:focus,
+    // .ant-slider-handle:hover,
+    // .ant-slider:hover .ant-slider-handle:not(.ant-tooltip-open)
+    //     border: solid 2px variables.$main-color
+    //     border-color: variables.$main-color
+    //     background: variables.$main-color
