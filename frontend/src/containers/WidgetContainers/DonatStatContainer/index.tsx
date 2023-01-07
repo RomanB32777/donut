@@ -37,8 +37,6 @@ const DonatStatContainer = () => {
 
   const getDonations = async () => {
     if (statData) {
-      console.log("test action");
-
       try {
         const { time_period, data_type } = statData;
         const customPeriod = time_period.split("-");
