@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "update donut app"
 date
+ls
 
 root_dir=$(dirname "$0")
 types_dir="types"
