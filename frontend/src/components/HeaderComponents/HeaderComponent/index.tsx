@@ -64,17 +64,14 @@ export const HeaderComponent = ({
           </div>
         )}
         {visibleLogo && (
-          <Col lg={8} xs={14}>
+          <Col xs={8}>
             <div className="header__left">
               <Logo navigateUrl={logoUrl || "/"} />
             </div>
           </Col>
         )}
-        <Col xs={!visibleLogo ? 24 : 8}>
-          <div className="header__right">
-            {children}
-            {/* {(username || blockchain) && */}
-          </div>
+        <Col xs={!visibleLogo ? 24 : 14}>
+          <div className="header__right">{children}</div>
         </Col>
       </Row>
     </Header>

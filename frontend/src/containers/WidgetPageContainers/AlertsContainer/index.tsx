@@ -169,15 +169,6 @@ const AlertsContainer = () => {
   useEffect(() => {
     const initFonts = async () => {
       const fonts = await getFontsList();
-      // await Promise.all(
-      //   fonts.map(async (font) => {
-      //     const loadedFont = await loadFont({
-      //       name: font.value,
-      //       link: font.key,
-      //     });
-      //     return loadedFont;
-      //   })
-      // );
       setFonts(fonts);
     };
     initFonts();

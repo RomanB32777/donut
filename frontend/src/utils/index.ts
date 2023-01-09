@@ -98,7 +98,7 @@ const getFontsList = async () => {
       const resultList: ISelectItem[] = data.items
         .filter((font: any) => Boolean(font.files.regular))
         .map((font: any) => ({
-          key: font.files.regular,
+          key: font.files.regular.replace("http", "https"),
           value: font.family,
         }));
 

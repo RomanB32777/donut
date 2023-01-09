@@ -18,8 +18,6 @@ const NotificationsReducer = (
       return { ...state, list: [...state.list, ...action.payload.list] };
 
     case SET_UPDATE_FLAG:
-      console.log(action.payload);
-
       return { ...state, shouldUpdateApp: action.payload.shouldUpdateApp };
 
     default:

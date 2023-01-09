@@ -18,6 +18,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: root
           password: ${{ secrets.SSH_PASS }}
-          script: sh ~/donut4/update.sh 
+          script: bash ~/donut4/update.sh 
           script_stop: true
  

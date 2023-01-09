@@ -3,7 +3,6 @@ import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
 import { Skeleton } from "antd";
-import dayjs from "dayjs";
 import { periodItemsTypes, stringFormatTypes } from "types";
 
 import SelectComponent from "components/SelectComponent";
@@ -11,6 +10,7 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "contexts/Wallet";
 import { getTimePeriodQuery, DateFormatter } from "utils";
 import axiosClient from "modules/axiosClient";
+import dayjsModule, { ManipulateType } from "modules/dayjsModule";
 import {
   dateFormat,
   enumerateBetweenDates,
@@ -57,15 +57,16 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
         const { data } = await axiosClient.get(
           `${widgetApiUrl}/stats/${user.id}?timePeriod=${timePeriod}&blockchain=${blockchain}`
         );
-        console.log(data);
 
         if (data) {
+          const subtractedDate = subtractDate[timePeriod].split("_");
+
           const filteredDates = {
-            start: dayjs()
-              // .subtract(...subtractDate[timePeriod].split("_"))
+            start: dayjsModule()
+              .subtract(+subtractedDate[0], subtractedDate[1] as ManipulateType)
               .startOf("day")
               .valueOf(),
-            end: dayjs().endOf("day").valueOf(),
+            end: dayjsModule().endOf("day").valueOf(),
           };
 
           const initGroupDates = enumerateBetweenDates({
@@ -106,7 +107,6 @@ const WidgetStat = ({ usdtKoef }: { usdtKoef: number }) => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    console.log(user.id, timePeriod, shouldUpdateApp, usdtKoef);
 
     user.id &&
       timePeriod &&

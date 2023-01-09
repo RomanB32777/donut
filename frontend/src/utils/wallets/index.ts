@@ -61,10 +61,7 @@ const checkWallet = async ({
   } else if (!currentBlockchain && navigate) {
     const newBlockchaind = await walletConf.changeBlockchain("evmos");
     newBlockchaind ? dispatch(setSelectedBlockchain("evmos")) : navigate("/");
-  } else {
-    console.log("false?");
-    dispatch(setLoading(false));
-  }
+  } else dispatch(setLoading(false));
 };
 
 export { walletMethods, getUsdKoef, checkWallet };

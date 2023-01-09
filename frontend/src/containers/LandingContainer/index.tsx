@@ -32,15 +32,7 @@ const LandingContainer = () => {
 
   const signUp = async () => {
     if (id) navigate(`/${adminPath}`);
-    else {
-      const newBlockchaind = await walletConf.changeBlockchain("evmos");
-      console.log("newBlockchaind", newBlockchaind);
-
-      if (newBlockchaind) {
-        dispatch(setSelectedBlockchain("klay"));
-        navigate("/register");
-      }
-    }
+    else navigate("/register");
     scrollToPosition();
   };
 

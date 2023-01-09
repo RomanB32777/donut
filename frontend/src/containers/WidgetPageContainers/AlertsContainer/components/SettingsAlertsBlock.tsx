@@ -262,23 +262,6 @@ const SettingsAlertsBlock = ({
         </Col>
         <Col span={24}>
           <div className="form-element">
-            <SliderForm
-              label="Alert duration:"
-              step={1}
-              max={25}
-              min={15}
-              setValue={(num) => setFormData({ ...formData, duration: num })}
-              value={+duration}
-              maxWidth={250}
-              description={`${duration} sec`}
-              labelCol={8}
-              sliderCol={14}
-              gutter={[0, 18]}
-            />
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="form-element">
             <Row
               style={{
                 width: "100%",
@@ -310,6 +293,23 @@ const SettingsAlertsBlock = ({
                 />
               </Col>
             </Row>
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SliderForm
+              label="Alert duration:"
+              step={1}
+              max={25}
+              min={15}
+              setValue={(num) => setFormData({ ...formData, duration: num })}
+              value={+duration}
+              maxWidth={250}
+              description={`${duration} sec`}
+              labelCol={8}
+              sliderCol={14}
+              gutter={[0, 18]}
+            />
           </div>
         </Col>
         <Col span={24}>

@@ -1,6 +1,6 @@
 import { ChartOptions } from "chart.js";
-import dayjs from "dayjs";
 import { periodItemsTypes } from "types";
+import dayjsModule from "modules/dayjsModule";
 
 export const options: ChartOptions<"line"> = {
   scales: {
@@ -84,13 +84,12 @@ export const enumerateBetweenDates = ({
   endDate,
   timePeriod,
 }: IEnumerateDates) => {
-  let dates = [];
-  for (
-    let m = dayjs(startDate).add(1, periodTypes[timePeriod]);
-    m.isBefore(endDate);
-    m.add(1, periodTypes[timePeriod])
-  ) {
+  let m = dayjsModule(startDate).add(1, periodTypes[timePeriod]);
+  const dates = [];
+
+  while (m.isBefore(endDate)) {
     dates.push(m.format(dateFormat[timePeriod]));
+    m = m.add(1, periodTypes[timePeriod]);
   }
   return dates;
 };

@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
 import { allPeriodItemsTypes, periodItemsTypes, statsDataTypes } from "types";
+import dayjsModule from "modules/dayjsModule";
 import {
   filterCurrentPeriodItems,
   filterDataTypeItems,
@@ -17,7 +17,7 @@ export const DateFormatter = (
   date: string,
   toFormat: string = "DD/MM/YYYY HH:mm"
 ) => {
-  let dateFormat = dayjs(date).format(toFormat);
+  let dateFormat = dayjsModule(date).format(toFormat);
   if (dateFormat === "Invalid Date") dateFormat = "";
   return dateFormat;
 };

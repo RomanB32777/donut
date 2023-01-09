@@ -10,7 +10,6 @@ import BaseButton from "../../components/BaseButton";
 import FormInput from "../../components/FormInput";
 import Loader from "components/Loader";
 
-import { setSelectedBlockchain } from "store/types/Wallet";
 import axiosClient from "../../modules/axiosClient";
 import { tryToGetUser } from "../../store/types/User";
 import { addNotification, checkWallet } from "../../utils";
@@ -70,15 +69,7 @@ const RegistrationContainer = () => {
   useEffect(() => {
     const checkBlockchain = async () => {
       setLoading(true);
-      await checkWallet({ walletConf, dispatch });
-
-      const currentBlockchain = await walletConf.getCurrentBlockchain();
-      if (!currentBlockchain || currentBlockchain.name !== "evmos") {
-        const newBlockchaind = await walletConf.changeBlockchain("evmos");
-        newBlockchaind
-          ? dispatch(setSelectedBlockchain("evmos"))
-          : navigate("/");
-      }
+      await checkWallet({ walletConf, dispatch, navigate });
       setLoading(false);
     };
 
