@@ -12,6 +12,7 @@ import "./commonStyles/main.sass";
 
 function App() {
   const locale = LOCALES.ENGLISH;
+  // test version
 
   return (
     <IntlProvider
