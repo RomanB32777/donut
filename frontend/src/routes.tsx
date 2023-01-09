@@ -106,7 +106,7 @@ export const routers: IRoute[] = [
             menuOrder: 1,
           },
           {
-            path: "donat", // /:name/:token
+            path: "donat",
             element: <DonationPage />,
             name: "Donation page",
             icon: <DonationPageIcon />,
