@@ -3,8 +3,12 @@
 .switch
     .ant-switch
         background: variables.$grey-color
-        
-        &-checked
+
+        &:hover:not(.ant-switch-disabled)
+            background: variables.$grey-color
+
+        &-checked,
+        &-checked:hover:not(.ant-switch-disabled)
             background: variables.$main-color
 
             &:focus

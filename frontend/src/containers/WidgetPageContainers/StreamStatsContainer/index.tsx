@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { Empty } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { IStatData } from "types";
 
-import BaseButton from "../../../components/BaseButton";
-import PageTitle from "../../../components/PageTitle";
+import { useAppSelector } from "hooks/reduxHooks";
+import BaseButton from "components/BaseButton";
+import PageTitle from "components/PageTitle";
 import StatsModal from "./components/StatsModal";
 import StatsItem from "./components/StatsItem";
 
-import { getStats } from "../../../store/types/Stats";
+import { getStats } from "store/types/Stats";
 import { initWidgetStatData } from "consts";
 import { IWidgetStatData } from "appTypes";
 import "./styles.sass";
 
 const StreamStatsContainer = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
-  const stats = useSelector((state: any) => state.stats);
+  const { user, stats } = useAppSelector((state) => state);
+  const { id } = user;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [formData, setFormData] = useState<IWidgetStatData>({
@@ -38,8 +39,8 @@ const StreamStatsContainer = () => {
   };
 
   useEffect(() => {
-    user.id && dispatch(getStats(user.id));
-  }, [user]);
+    id && dispatch(getStats(id));
+  }, [id]);
 
   return (
     <div className="streamStatsPage-container stats">

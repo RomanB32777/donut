@@ -29,7 +29,7 @@ const Sidebar = ({
   const { pathname } = useLocation();
   const { isMobile, isTablet } = useWindowDimensions();
 
-  const [isVisibleWalletBlock, setIsVisibleWalletBlock] = useState(false);
+  const [isVisibleContent, setIsVisibleContent] = useState(false);
 
   const getItem = ({
     label,
@@ -56,10 +56,10 @@ const Sidebar = ({
 
   useEffect(() => {
     if (!collapsed) {
-      setIsVisibleWalletBlock(false);
-      setTimeout(() => setIsVisibleWalletBlock(true), 400);
+      setIsVisibleContent(false);
+      setTimeout(() => setIsVisibleContent(true), 300);
     } else {
-      setIsVisibleWalletBlock(false);
+      setIsVisibleContent(false);
     }
   }, [collapsed]);
 
@@ -79,12 +79,14 @@ const Sidebar = ({
         trigger={null}
       >
         {!collapsed && <Logo navigateUrl="/" />}
-        <div className="sidebar-content">
+        <div
+          className={clsx("sidebar-content", {
+            visible: isVisibleContent,
+          })}
+        >
           {isMobile && (
             <WalletBlock
-              modificator={clsx("sidebar-wallet", {
-                visible: isVisibleWalletBlock
-              })}
+              modificator="sidebar-wallet"
               popupModificator="wallet-popup"
             />
           )}

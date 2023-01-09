@@ -2,6 +2,7 @@ import { CheckOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { blockchainsType } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "contexts/Wallet";
@@ -21,9 +22,10 @@ const WalletBlock = ({
   modificator?: string;
   popupModificator?: string;
 }) => {
-  const { walletConf } = useContext(WalletContext);
   const dispatch = useDispatch();
+  const { walletConf } = useContext(WalletContext);
   const { blockchain, user } = useAppSelector((store) => store);
+  const { username, avatar } = user;
 
   const [walletData, setWalletData] = useState<IBlockchain>(initBlockchainData);
   const [balance, setBalance] = useState(0);
@@ -32,16 +34,13 @@ const WalletBlock = ({
 
   const copyAddress = () => copyStr(address);
 
-  const blockchainHandler = async ({
-    currentTarget,
-  }: React.MouseEvent<HTMLDivElement>) => {
-    const selectedBlockchain = currentTarget.dataset?.blockchain;
-    if (selectedBlockchain) {
-      setLoading(true);
-      await walletConf.changeBlockchain(selectedBlockchain);
-      dispatch(setSelectedBlockchain(selectedBlockchain));
-      setLoading(false);
-    }
+  const blockchainHandler = async (selectedBlockchain: blockchainsType) => {
+    setLoading(true);
+    const newBlockchaind = await walletConf.changeBlockchain(
+      selectedBlockchain
+    );
+    newBlockchaind && dispatch(setSelectedBlockchain(selectedBlockchain));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -77,14 +76,17 @@ const WalletBlock = ({
     <div
       className={clsx("wallet-wrapper", {
         [modificator as string]: modificator,
-        loaded: !loading,
       })}
       onClick={() => setOpenSelect((prev) => !prev)}
     >
       {loading ? (
         <Loader size="small" />
       ) : (
-        <div className="wallet-block">
+        <div
+          className={clsx("wallet-block", {
+            loaded: !loading,
+          })}
+        >
           <div className="wallet-icon">
             <img src={icon} alt="wallet-icon" style={{ background: color }} />
           </div>
@@ -114,7 +116,7 @@ const WalletBlock = ({
           <div className="item">
             <div className="content">
               <div className="image">
-                <img src={user.avatar} alt={`avatar_${user.username}`} />
+                {avatar && <img src={avatar} alt={`avatar_${username}`} />}
               </div>
               <span className="title">{shortStr(address, 3)}</span>
             </div>
@@ -144,7 +146,7 @@ const WalletBlock = ({
                 key={name}
                 className="item"
                 data-blockchain={name}
-                onClick={blockchainHandler}
+                onClick={() => blockchainHandler(name)}
               >
                 <div className="content">
                   <div className="image" style={{ background: color }}>

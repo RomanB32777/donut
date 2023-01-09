@@ -40,22 +40,24 @@ const SwitchForm = ({
         // justify={justify || "start"}
         gutter={gutter || 0}
       >
-        <Col
-          md={labelCol || (label ? 12 : 0)}
-          xs={24}
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <span
-            className={clsx("slider-label", {
-              [labelModificator as string]: labelModificator,
-            })}
+        {label && (
+          <Col
+            md={labelCol || (label ? 12 : 0)}
+            xs={24}
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            {label}
-          </span>
-        </Col>
+            <span
+              className={clsx("slider-label", {
+                [labelModificator as string]: labelModificator,
+              })}
+            >
+              {label}
+            </span>
+          </Col>
+        )}
         <Col md={switchCol || (label ? 12 : 24)} xs={24}>
           <div className="switch-wrapper">
             {isVisibleStatus && <span>Disabled</span>}

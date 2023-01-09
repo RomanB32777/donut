@@ -1,14 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
 import clsx from "clsx";
-import { IBadgeInfo, IBadgeShort } from "types";
+import { IBadgeShort } from "types";
 
-import { TrashBinIcon } from "../../../icons";
-import { IBadge } from "../../../appTypes";
-import testIMG from "../../../assets/person.png";
-import ConfirmPopup from "../../../components/ConfirmPopup";
-import Loader from "../../../components/Loader";
-import { initBadgeData } from "../../../consts";
+import ConfirmPopup from "components/ConfirmPopup";
+import Loader from "components/Loader";
+import { TrashBinIcon } from "icons";
+
+import { useAppSelector } from "hooks/reduxHooks";
+import { initBadgeData } from "consts";
+import { IBadge } from "appTypes";
+import testIMG from "assets/person.png";
 import "./styles.sass";
 
 const ContentCard = ({
@@ -22,7 +23,7 @@ const ContentCard = ({
   deleteBadge: (badge: IBadge) => void;
   getBadgeData: (badge: IBadgeShort) => Promise<any>;
 }) => {
-  const user = useSelector((state: any) => state.user);
+  const { id, wallet_address } = useAppSelector(({ user }) => user);
   const [badgeData, setBadgeData] = useState<IBadge>({
     ...initBadgeData,
     ...data,
@@ -33,14 +34,14 @@ const ContentCard = ({
       const cardData = await getBadgeData(data);
       cardData && setBadgeData({ ...badgeData, ...cardData });
     };
-    user.wallet_address && getCardData();
-  }, [user, data]);
+    wallet_address && getCardData();
+  }, [wallet_address, data]);
 
   const { image, title, description, creator_id } = badgeData;
 
   const ableToDelete = useMemo(
-    () => user.id && title && user.id === creator_id,
-    [user, title, creator_id]
+    () => id && title && id === creator_id,
+    [id, title, creator_id]
   );
 
   return (

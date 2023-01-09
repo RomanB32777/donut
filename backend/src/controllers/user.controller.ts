@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
+import { existsSync, rmSync } from 'fs';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
 import { IShortUserData } from 'types/index.js';
@@ -65,7 +66,12 @@ class UserController {
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const deletedUser = await db.query(`DELETE FROM users WHERE id = $1 RETURNING *;`, [id]);
+      const deletedUser = await db.query(`DELETE FROM users WHERE id = $1 RETURNING username;`, [id]);
+      if (deletedUser.rows[0]) {
+        const { username } = deletedUser.rows[0];
+        const uploadsFilesPath = `${uploadsFolder}/${username}`;
+        existsSync(uploadsFilesPath) && rmSync(uploadsFilesPath, { recursive: true });
+      }
       res.status(200).json({ deletedUser: deletedUser.rows[0] });
     } catch (error) {
       next(error);

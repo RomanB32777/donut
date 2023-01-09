@@ -8,7 +8,6 @@ import {
 import { setLoading } from "store/types/Loading";
 import { addNotFoundUserNotification } from "utils";
 import { IAnyAction } from "appTypes";
-import { AxiosError } from "axios";
 
 const asyncGetMainData = async (username: string) => {
   try {

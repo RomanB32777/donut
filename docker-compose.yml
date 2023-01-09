@@ -68,6 +68,7 @@ services:
         - NODE_ENV=production
         - WALLET=metamask
         - STORAGE_TOKEN=token
+        - GOOGLE_API_KEY=key
     depends_on:
       - backend
       - sockets

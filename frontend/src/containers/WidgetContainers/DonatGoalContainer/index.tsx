@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
+import { Progress } from "antd";
 
-import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { IGoalData } from "types";
 
-import { Progress } from "antd";
-import axiosClient, { baseURL } from "../../../modules/axiosClient";
+import { useAppSelector } from "hooks/reduxHooks";
+import axiosClient, { baseURL } from "modules/axiosClient";
 import "./styles.sass";
 
 const DonatGoalContainer = () => {
   const { id, name } = useParams();
-  const { list } = useSelector((state: any) => state.notifications);
+  const { list } = useAppSelector(({ notifications }) => notifications);
   const [lastNotif, setLastNotif] = useState<any>({});
 
   const [goalData, setGoalData] = useState<IGoalData>({

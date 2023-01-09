@@ -8,17 +8,18 @@ import {
   useState,
 } from "react";
 import { Badge, Row } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
 
-import { WalletContext } from "../../../contexts/Wallet";
-import Loader from "../../Loader";
+import { useAppSelector } from "hooks/reduxHooks";
+import { WalletContext } from "contexts/Wallet";
+import Loader from "components/Loader";
 
-import { getNotificationMessage } from "../../../utils";
-import axiosClient, { baseURL } from "../../../modules/axiosClient";
-import { getNotifications } from "../../../store/types/Notifications";
-import { AlertIcon } from "../../../icons";
+import { getNotificationMessage } from "utils";
+import axiosClient, { baseURL } from "modules/axiosClient";
+import { getNotifications } from "store/types/Notifications";
+import { AlertIcon } from "icons";
 import "./styles.sass";
 
 const LIMIT_NOTIF = 10;
@@ -38,10 +39,7 @@ const NotificationsPopup = ({
   handlerNotificationPopup: (e: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
   const dispatch = useDispatch();
-  const notificationsApp = useSelector(
-    (state: any) => state.notifications.list
-  );
-
+  const { list } = useAppSelector(({ notifications }) => notifications);
   const { walletConf } = useContext(WalletContext);
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -169,9 +167,9 @@ const NotificationsPopup = ({
   }, [handleScroll]);
 
   const unreadedNotificationsCount = useMemo(() => {
-    const all = notificationsApp.length;
+    const all = list.length;
 
-    const unreadedApp = notificationsApp.filter(
+    const unreadedApp = list.filter(
       (n: any) => !n[getNotificationUserRole(n.recipient)]
     ).length;
 
@@ -183,7 +181,7 @@ const NotificationsPopup = ({
       (n: any) => n[getNotificationUserRole(n.recipient)]
     ).length;
 
-    const currentUnreaded = notificationsApp.filter(
+    const currentUnreaded = list.filter(
       (na: any) =>
         !na[getNotificationUserRole(na.recipient)] &&
         notifications.some((n: any) => n.id === na.id)
@@ -201,7 +199,7 @@ const NotificationsPopup = ({
     }
 
     return 0;
-  }, [notificationsApp, notifications, loading]);
+  }, [list, notifications, loading]);
 
   const renderNotifList = (n: any) => {
     const isNotificationBadgeStatus = n.badge && n.recipient === n.sender;

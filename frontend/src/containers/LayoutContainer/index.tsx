@@ -19,6 +19,8 @@ import "./styles.sass";
 
 const { Content } = Layout;
 
+const transparentClass = "transparent";
+
 const addToMenu = (
   route: IRoute,
   menuArr: IRoute[],
@@ -111,9 +113,18 @@ const LayoutApp = () => {
       (route) => route.transparet
     );
 
-    return pathsWithTransparentBgLayoutElements.some(
+    const isTransparent = pathsWithTransparentBgLayoutElements.some(
       (route) => pathname.split("/")[1] === route.path?.split("/")[0]
     );
+
+    const bodyClasses = document.querySelector("body")?.classList;
+
+    if (bodyClasses)
+      isTransparent
+        ? bodyClasses.add(transparentClass)
+        : bodyClasses?.remove(transparentClass);
+
+    return isTransparent;
   }, [pathname]);
 
   const noPaddingMainConteiner: boolean = useMemo(() => {
@@ -157,7 +168,7 @@ const LayoutApp = () => {
     >
       <Layout
         className={clsx("layout-container", {
-          transparent: isTransparentMainConteiner,
+          [transparentClass]: isTransparentMainConteiner,
         })}
       >
         <Sidebar
@@ -171,7 +182,7 @@ const LayoutApp = () => {
         <BackTop />
         <Layout
           className={clsx("site-layout", {
-            transparent: isTransparentMainConteiner,
+            [transparentClass]: isTransparentMainConteiner,
           })}
           style={{
             paddingLeft: hiddenLayoutElements || isTablet ? 0 : 250, // collapsed
@@ -190,13 +201,8 @@ const LayoutApp = () => {
           <Content
             onClick={() => closeAllHeaderPopups()}
             className={clsx("content-container", {
-              transparent: isTransparentMainConteiner,
+              [transparentClass]: isTransparentMainConteiner,
             })}
-            // style={{
-            //   background: isTransparentMainConteiner
-            //     ? "rgba(0, 0, 0, 0)"
-            //     : "#000000",
-            // }}
           >
             <div
               className={clsx("main-container", {

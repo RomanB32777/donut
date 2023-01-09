@@ -1,26 +1,27 @@
 import { Avatar, Col, Divider, Row, Tooltip } from "antd";
 import { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
-import { useSelector } from "react-redux";
 import { IMintBadgeSocketObj } from "types";
 
-import { WalletContext } from "../../../contexts/Wallet";
-import { WebSocketContext } from "../../../components/Websocket";
-import BaseButton from "../../../components/BaseButton";
-import UploadImage from "../../../components/UploadImage";
-import LinkCopy from "../../../components/LinkCopy";
-import SelectInput from "../../../components/SelectInput";
-import axiosClient, { baseURL } from "../../../modules/axiosClient";
+import { WalletContext } from "contexts/Wallet";
+import { WebSocketContext } from "components/Websocket";
+import BaseButton from "components/BaseButton";
+import UploadImage from "components/UploadImage";
+import LinkCopy from "components/LinkCopy";
+import SelectInput from "components/SelectInput";
+import axiosClient, { baseURL } from "modules/axiosClient";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
-} from "../../../components/ModalComponent";
-import ConfirmPopup from "../../../components/ConfirmPopup";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { addErrorNotification } from "../../../utils";
-import { IBadge } from "../../../appTypes";
-import { initBadgeData } from "../../../consts";
-import { LeftArrowIcon } from "../../../icons";
+} from "components/ModalComponent";
+import ConfirmPopup from "components/ConfirmPopup";
+import { LeftArrowIcon } from "icons";
+
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import { addErrorNotification } from "utils";
+import { initBadgeData } from "consts";
+import { IBadge } from "appTypes";
 
 const BadgePage = ({
   activeBadge,
@@ -32,7 +33,9 @@ const BadgePage = ({
   deleteBadge: (badge: IBadge) => Promise<boolean | undefined>;
 }) => {
   const { isTablet } = useWindowDimensions();
-  const user = useSelector((state: any) => state.user);
+  const { id, wallet_address, username, roleplay } = useAppSelector(
+    ({ user }) => user
+  );
 
   const { walletConf } = useContext(WalletContext);
   const socket = useContext(WebSocketContext);
@@ -54,8 +57,8 @@ const BadgePage = ({
 
       const quantity = await walletConf.getQuantityBalance({
         contract_address,
-        supporter_address: user.wallet_address,
-        isCreator: user.id === creator_id,
+        supporter_address: wallet_address,
+        isCreator: id === creator_id,
       });
 
       quantity &&
@@ -108,7 +111,7 @@ const BadgePage = ({
             },
             creator: {
               id: creator_id,
-              username: user.username,
+              username,
             },
             badge: {
               id,
@@ -168,16 +171,13 @@ const BadgePage = ({
     const { id, contract_address } = activeBadge;
     if (id && contract_address) {
       // getBadge(activeBadge);
-      user.roleplay && user.roleplay === "creators" && getHolders(activeBadge);
+      roleplay === "creators" && getHolders(activeBadge);
     }
-  }, [activeBadge, user]);
+  }, [activeBadge, roleplay]);
 
   useEffect(() => {
-    user.id &&
-      user.roleplay &&
-      user.roleplay === "creators" &&
-      getSupporters(user.id);
-  }, [user]);
+    id && roleplay === "creators" && getSupporters(id);
+  }, [id, roleplay]);
 
   const { image, title, description, contract_address, quantity, creator_id } =
     formBadge;
@@ -270,7 +270,7 @@ const BadgePage = ({
                 </div>
               </Col>
             </Row>
-            {user.id === creator_id && ( // user.roleplay && user.roleplay === "creators"
+            {id === creator_id && (
               <Row>
                 {Boolean(holders.length) && (
                   <Col span={24}>

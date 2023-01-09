@@ -91,10 +91,13 @@ body,
     background-size: 800px
     background-attachment: fixed
 
-.transparent
-  background: rgba(0, 0, 0, 0)
-  padding-bottom: 0
-  overflow: hidden
+body,
+.ant-layout,
+.content-container
+  &.transparent
+    background: rgba(0, 0, 0, 0)
+    padding-bottom: 0
+    overflow: hidden
 
 .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected,
 .ant-menu.ant-menu-dark .ant-menu-item-selected
@@ -149,7 +152,8 @@ body,
   color: variables.$main-color
 
 .ant-btn-primary,
-.ant-btn-primary:hover
+.ant-btn-primary:hover,
+.ant-btn-primary:not(:disabled):hover
   border-color: variables.$main-color
   background-color: variables.$main-color
 
@@ -168,6 +172,21 @@ body,
 
 .ant-badge-count
   box-shadow: none
+
+.ant-radio-wrapper
+  &.radio-select
+    .ant-radio-inner
+      box-shadow: variables.$shadow
+      border-color: variables.$grey-color
+      background-color: variables.$grey-color
+
+    .ant-radio-checked
+      .ant-radio-inner
+        border-color: variables.$main-color
+        background-color: variables.$main-color
+
+        &::after
+          background-color: variables.$main-color
 
 .line
   color: variables.$white-color
@@ -202,40 +221,6 @@ body,
       line-height: 25px
       color: variables.$white-color
 
-.layout-container
-  .layout-sidebar,
-  .layout-header
-    background: variables.$black-transparent-color
-
-  .layout-sidebar
-    overflow: auto
-    height: 100vh
-    position: fixed
-    left: 0
-    top: 0
-    bottom: 0
-    z-index: 2
-    transition: all .4s
-    backdrop-filter: blur(15px)
-
-  .layout-header
-    position: fixed
-    top: 0
-    left: 0
-    z-index: 1
-    width: calc(100% - 250px)
-    margin-left: 250px
-
-    &::before
-      content: ""
-      display: block
-      height: 100%
-      width: 100%
-      position: absolute
-      left: 0
-      top: 0
-      backdrop-filter: blur(10px)
-
 .hidden
   display: none !important
 
@@ -258,20 +243,9 @@ body,
     &.site-layout
       background-position: 0 -100%
 
-  .layout-container
-    .layout-header
-      z-index: 100
-      width: 100%
-      margin-left: 0
+@keyframes downTransform
+  from
+    transform: translate3d(0, -50px, 0)
 
-    .layout-sidebar
-      top: 64px
-      z-index: 100
-
-      .main-logo
-        display: none
-
-@media (max-width: 768px)
-  .layout-container
-    .layout-header
-      padding: 0 25px
+  to
+    transform: none

@@ -10,12 +10,15 @@
         .modal-content-wrapper
             padding: 0 52px 34px
 
-            @media (max-width: 768px)
-                padding: 0
-                padding-bottom: 15px
-
             &.noPadding
                 padding: 0
+
+        @media (max-width: 768px)
+            padding: 20px 0 0
+
+            .modal-content-wrapper
+                padding: 0
+                padding-bottom: 15px
 
     .ant-modal-close-x
         color: variables.$grey-color
@@ -50,13 +53,13 @@
         height: 93vh
         border-radius: variables.$border-radius
 
-        &__message,
-        &__description
+        .message,
+        .description
             text-align: center
             font-family: variables.$pt-font
             font-style: normal
 
-        &__message
+        .message
             max-width: 70%
             margin-bottom: 25px
             font-weight: 600
@@ -64,7 +67,7 @@
             line-height: 37px
             color: variables.$green-color
 
-        &__description
+        .description
             max-width: 85%
             margin-top: 75px
             font-weight: 400
@@ -75,13 +78,30 @@
         @media (max-width: 992px)
             height: 55vh
 
-            &__message
+            .message
                 max-width: 90%
                 font-size: 27px
                 line-height: 32px
 
-            &__description
+            .description
                 max-width: 90%
                 font-size: 22px
                 line-height: 30px
                 margin-top: 15px
+
+
+    .donat-loading
+        display: flex
+        flex-direction: column
+        align-items: center
+
+        &__message,
+        &__description
+            margin-bottom: 25px
+            text-align: center
+            font-family: variables.$pt-font
+            font-style: normal
+            font-weight: 600
+            font-size: 25px
+            line-height: 30px
+            color: variables.$white-color

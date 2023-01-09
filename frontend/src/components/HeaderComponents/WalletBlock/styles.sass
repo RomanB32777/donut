@@ -2,25 +2,27 @@
 
 .wallet-wrapper
     position: relative
-    border-radius: variables.$border-radius
     font-family: variables.$pt-font
     color: variables.$white-color
     font-style: normal
     cursor: pointer
 
-    &.loaded
-        background: variables.$blue-dark-color
-        box-shadow: variables.$shadow
-
     p
         margin: 0
 
     .wallet-block
+        position: relative
         display: flex
         flex-direction: row
         align-items: center
         justify-content: space-between
         padding: 4px 8px
+        border-radius: variables.$border-radius
+        z-index: 2
+
+        &.loaded
+            background: variables.$blue-dark-color
+            box-shadow: variables.$shadow
 
     .wallet-icon
         // background: variables.$orange-transparent-color
@@ -53,7 +55,7 @@
 
     .popup
         position: absolute
-        z-index: -1
+        z-index: 1
         top: 0
         right: 0
         display: flex
@@ -88,6 +90,7 @@
                     justify-content: center
                     align-items: center
                     overflow: hidden
+                    background: variables.$main-color
 
                     img
                         object-fit: cover

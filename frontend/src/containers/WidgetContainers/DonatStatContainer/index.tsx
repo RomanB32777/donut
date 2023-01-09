@@ -1,24 +1,21 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { IStatData } from "types";
 
-import axiosClient, { baseURL } from "../../../modules/axiosClient";
-import { WalletContext } from "../../../contexts/Wallet";
+import { useAppSelector } from "hooks/reduxHooks";
+import axiosClient, { baseURL } from "modules/axiosClient";
+import { WalletContext } from "contexts/Wallet";
 import {
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
   getUsdKoef,
   renderStatItem,
-} from "../../../utils";
-import { tryToGetPersonInfo } from "../../../store/types/PersonInfo";
-import { AlignText } from "../../../appTypes";
-import {
-  alignFlextItemsList,
-  alignItemsList,
-  widgetApiUrl,
-} from "../../../consts";
+} from "utils";
+import { tryToGetPersonInfo } from "store/types/PersonInfo";
+import { alignFlextItemsList, alignItemsList, widgetApiUrl } from "consts";
+import { AlignText } from "appTypes";
 import "./styles.sass";
 
 const LIMIT = 3;
@@ -28,8 +25,9 @@ const DonatStatContainer = () => {
   const { id, name } = useParams();
   const { walletConf } = useContext(WalletContext);
 
-  const user = useSelector((state: any) => state.personInfo).main_info;
-  const { list } = useSelector((state: any) => state.notifications);
+  const { user, notifications } = useAppSelector((state) => state);
+  const { list } = notifications;
+
   const [lastNotif, setLastNotif] = useState<any>({});
   const [renderList, setRenderList] = useState<any[]>([]);
   const [statData, setStatData] = useState<IStatData | null>(null);
@@ -45,7 +43,7 @@ const DonatStatContainer = () => {
 
         if (currBlockchain) {
           const { data } = await axiosClient.get(
-            `${widgetApiUrl}/${data_type}/${user.user_id}?limit=${LIMIT}&${
+            `${widgetApiUrl}/${data_type}/${user.id}?limit=${LIMIT}&${
               Boolean(customPeriod.length > 1)
                 ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
                 : `timePeriod=${time_period}`
@@ -74,7 +72,7 @@ const DonatStatContainer = () => {
   }, []);
 
   useEffect(() => {
-    statData && user.user_id && getDonations();
+    statData && user.id && getDonations();
   }, [user, statData, lastNotif]);
 
   useEffect(() => {

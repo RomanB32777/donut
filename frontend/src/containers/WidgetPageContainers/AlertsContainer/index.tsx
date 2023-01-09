@@ -1,27 +1,29 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { fileUploadTypes, ISoundInfo } from "types";
 
-import { useAppSelector } from "../../../hooks/reduxHooks";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import PageTitle from "../../../components/PageTitle";
-import BaseButton from "../../../components/BaseButton";
-import LinkCopy from "../../../components/LinkCopy";
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import PageTitle from "components/PageTitle";
+import BaseButton from "components/BaseButton";
+import LinkCopy from "components/LinkCopy";
 import SettingsAlertsBlock from "./components/SettingsAlertsBlock";
 import PreviewAlertsBlock from "./components/PreviewAlertsBlock";
-import WidgetMobileWrapper from "../../../components/WidgetMobileWrapper";
+import WidgetMobileWrapper from "components/WidgetMobileWrapper";
 import Loader from "components/Loader";
 
-import axiosClient, { baseURL } from "../../../modules/axiosClient";
+import axiosClient, { baseURL } from "modules/axiosClient";
 import {
+  addErrorNotification,
   addNotification,
   addSuccessNotification,
   getFontsList,
   getSounds,
+  loadFont,
   sendFile,
-} from "../../../utils";
-import { IAlert } from "../../../appTypes";
-import { ISelectItem } from "../../../components/SelectInput";
-import { initAlertData } from "../../../consts";
+} from "utils";
+import { ISelectItem } from "components/SelectInput";
+import { initAlertData } from "consts";
+import { IAlert, IFont } from "appTypes";
 import "./styles.sass";
 
 const AlertsContainer = () => {
@@ -41,20 +43,27 @@ const AlertsContainer = () => {
 
       const soundsFolderName: fileUploadTypes = "sound";
 
+      const getFontInfo = (type: string): IFont => ({
+        name: data[`${type}_font`],
+        link:
+          fonts.find(({ value }) => value === data[`${type}_font`])?.key || "",
+      });
+
+      const name_font = getFontInfo("name");
+      const message_font = getFontInfo("message");
+      const sum_font = getFontInfo("sum");
+
+      await Promise.all([
+        loadFont(name_font),
+        loadFont(message_font),
+        loadFont(sum_font),
+      ]);
+
       const userData: IAlert = {
         ...data,
-        name_font: {
-          name: data.name_font,
-          link: fonts.find(({ value }) => value === data.name_font)?.key,
-        },
-        message_font: {
-          name: data.message_font,
-          link: fonts.find(({ value }) => value === data.message_font)?.key,
-        },
-        sum_font: {
-          name: data.sum_font,
-          link: fonts.find(({ value }) => value === data.sum_font)?.key,
-        },
+        name_font,
+        message_font,
+        sum_font,
         banner: {
           ...formData.banner,
           preview: data.banner_link || "",
@@ -68,6 +77,12 @@ const AlertsContainer = () => {
       });
       setLoading(false);
     }
+  };
+
+  const checkSuccessSending = (status?: number) => {
+    status === 200
+      ? addSuccessNotification({ message: "Data saved successfully" })
+      : addErrorNotification({ message: "saving error" });
   };
 
   const sendData = async () => {
@@ -89,31 +104,43 @@ const AlertsContainer = () => {
 
       const soundInfo = soundsList.find((s) => s.name === sound);
 
-      (banner.file || banner.preview) &&
-        (await sendFile({
+      const sendingData = JSON.stringify({
+        message_color,
+        message_font: message_font.name,
+        name_color,
+        name_font: name_font.name,
+        sum_color,
+        sum_font: sum_font.name,
+        duration,
+        sound: soundInfo?.link || "",
+        voice,
+        gender_voice,
+      });
+
+      if (banner.file || banner.preview) {
+        const res = await sendFile({
           file: banner.file,
           filelink: banner.preview,
           username,
           userId: id,
           data: {
             key: "alertData",
-            body: JSON.stringify({
-              message_color,
-              message_font: message_font.name,
-              name_color,
-              name_font: name_font.name,
-              sum_color,
-              sum_font: sum_font.name,
-              duration,
-              sound: soundInfo?.link || "",
-              voice,
-              gender_voice,
-            }),
+            body: sendingData,
           },
           url: "/api/widget/edit-alerts-widget/",
-        }));
-
-      addSuccessNotification({ message: "Data saved successfully" });
+        });
+        checkSuccessSending(res?.status);
+      } else {
+        const { status } = await axiosClient.put(
+          "/api/widget/edit-alerts-widget/",
+          {
+            alertData: sendingData,
+            username,
+            userId: id,
+          }
+        );
+        checkSuccessSending(status);
+      }
     } catch (error) {
       addNotification({
         type: "danger",
@@ -139,29 +166,18 @@ const AlertsContainer = () => {
     }
   }, [id, fonts]);
 
-  // useEffect(() => {
-  //   console.log("loaded", fonts.length);
-  //   if (fonts.length) {
-  //     const fontObservers = fonts.map(
-  //       (font) => new FontFaceObserver(font.value)
-  //     );
-  //     console.log(fontObservers);
-
-  //     fontObservers[0].load().then(function () {
-  //       console.log("Family A");
-  //     });
-
-  //     // fontA.load(), fontB.load()
-
-  //     Promise.all(fontObservers.map((font) => font.load())).then(function () {
-  //       console.log("Family A & B have loaded");
-  //     });
-  //   }
-  // }, [fonts]);
-
   useEffect(() => {
     const initFonts = async () => {
       const fonts = await getFontsList();
+      // await Promise.all(
+      //   fonts.map(async (font) => {
+      //     const loadedFont = await loadFont({
+      //       name: font.value,
+      //       link: font.key,
+      //     });
+      //     return loadedFont;
+      //   })
+      // );
       setFonts(fonts);
     };
     initFonts();
@@ -171,18 +187,6 @@ const AlertsContainer = () => {
     () => `${baseURL}/donat-message/${username}/${donat_page.security_string}`,
     [username, donat_page]
   );
-
-  // const testFonts =
-
-  // console.log(testFonts);
-
-  // const fontA = new FontFaceObserver(message_font.name);
-  // var fontB = new FontFaceObserver("Family B");
-
-  // fontA.load().then(function () {
-  //   console.log("Family A is available");//   сщтыщдуюдщп(ЭАфьшдн Ф шы фмфшдфидуЭ)ж
-
-  // });
 
   return (
     <div className="alerts-container">

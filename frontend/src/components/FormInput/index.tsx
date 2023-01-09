@@ -128,6 +128,7 @@ const FormInput = ({
           <Col
             offset={(!isMobile ? labelCol : 0) || (label && !isMobile ? 12 : 0)}
             md={inputCol || (label ? 12 : 24)}
+            xs={24}
           >
             <div
               className={clsx("description", {

@@ -1,3 +1,5 @@
-export const SET_LOADING = 'SET_LOADING'
+const SET_LOADING = "SET_LOADING";
 
-export const setLoading = (payload: boolean) => ({type: SET_LOADING, payload})
+const setLoading = (payload: boolean) => ({ type: SET_LOADING, payload });
+
+export { SET_LOADING, setLoading };

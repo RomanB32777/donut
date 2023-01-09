@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { blockchainsType } from "types";
+import { blockchainsType, exchangeNameTypes } from "types";
 
 interface IWalletInitData {
   userAddress: string | null;
@@ -36,7 +36,7 @@ interface ICreateContractObj {
 
 interface IBlockchain {
   address: string;
-  name: string;
+  name: blockchainsType;
   icon: string;
   chainId: string;
   chainName: string;
@@ -46,7 +46,7 @@ interface IBlockchain {
   nativeCurrency: {
     symbol: string;
     name: string;
-    exchangeName: string;
+    exchangeName: exchangeNameTypes;
     decimals?: number;
   };
   rpcUrls?: string[];
@@ -78,7 +78,7 @@ interface IWalletMethods {
   isInstall: () => boolean;
   getBlockchainData: () => Promise<IBlockchainData | null>;
   getCurrentBlockchain: () => Promise<IBlockchain | null>;
-  changeBlockchain: (blockchainName: string) => Promise<any>;
+  changeBlockchain: (blockchainName: blockchainsType) => Promise<any>;
   paymentMethod: (objForPay: IPayObj) => Promise<any>;
   getBalance: (setBalance?: (amount: number) => void) => Promise<number>;
   createContract: (objForContract: ICreateContractObj) => Promise<any>;
@@ -93,7 +93,7 @@ interface IWalletMethods {
 interface IWalletConf extends IWalletState, IWalletMethods {}
 
 type currencyBlockchainsType = {
-  [key in blockchainsType]: string;
+  [key in exchangeNameTypes]: string;
 };
 
 interface IWalletContext {

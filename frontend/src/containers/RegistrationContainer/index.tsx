@@ -8,10 +8,12 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "../../contexts/Wallet";
 import BaseButton from "../../components/BaseButton";
 import FormInput from "../../components/FormInput";
+import Loader from "components/Loader";
 
+import { setSelectedBlockchain } from "store/types/Wallet";
 import axiosClient from "../../modules/axiosClient";
 import { tryToGetUser } from "../../store/types/User";
-import { addNotification } from "../../utils";
+import { addNotification, checkWallet } from "../../utils";
 import { adminPath } from "../../consts";
 import registerImg from "../../assets/registerImg.png";
 import "./styles.sass";
@@ -24,11 +26,8 @@ const RegistrationContainer = () => {
   const { id } = useAppSelector(({ user }) => user);
 
   const [username, setUsername] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
-
-  useEffect(() => {
-    id && navigate(`/${adminPath}`);
-  }, [id]);
 
   const tryToLogin = async () => {
     const blockchainData = await walletConf.getBlockchainData();
@@ -67,6 +66,31 @@ const RegistrationContainer = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const checkBlockchain = async () => {
+      setLoading(true);
+      await checkWallet({ walletConf, dispatch });
+
+      const currentBlockchain = await walletConf.getCurrentBlockchain();
+      if (!currentBlockchain || currentBlockchain.name !== "evmos") {
+        const newBlockchaind = await walletConf.changeBlockchain("evmos");
+        newBlockchaind
+          ? dispatch(setSelectedBlockchain("evmos"))
+          : navigate("/");
+      }
+      setLoading(false);
+    };
+
+    id ? navigate(`/${adminPath}`) : checkBlockchain();
+  }, [id, walletConf]);
+
+  if (loading)
+    return (
+      <div className="loader-page">
+        <Loader size="big" />
+      </div>
+    );
 
   return (
     <div className="registration-modal">

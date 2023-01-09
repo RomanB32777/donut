@@ -1,5 +1,4 @@
 import { Col, Row, Select } from "antd";
-import { BaseOptionType, DefaultOptionType } from "antd/lib/select";
 import clsx from "clsx";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import "./styles.sass";

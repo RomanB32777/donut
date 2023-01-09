@@ -1,5 +1,5 @@
 import { Col } from "antd";
-import StyledText from "./StyledText";
+import StyledText from "components/StyledText";
 import { dummyImg } from "consts";
 import { IAlert } from "appTypes";
 

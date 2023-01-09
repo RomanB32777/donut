@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { blockchainsType } from "types";
 import {
   ICreateContractObj,
   IMintBadgeObj,
@@ -64,10 +65,8 @@ export async function getCurrentBlockchain(this: IWalletConf) {
 
 export async function changeBlockchain(
   this: IWalletConf,
-  blockchainName: string
+  blockchainName: blockchainsType
 ) {
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-
   const checkChainId = await (window as any).ethereum.request({
     method: "eth_chainId",
   });
@@ -78,33 +77,46 @@ export async function changeBlockchain(
     const { chainId, chainName, nativeCurrency, rpcUrls, blockExplorerUrls } =
       blockchain;
     if (checkChainId !== chainId) {
-      await (window as any).ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId, // `0x${Number(9000).toString(16)}`,
-            chainName,
-            nativeCurrency: {
-              symbol: nativeCurrency.symbol,
-              name: nativeCurrency.name,
-              decimals: nativeCurrency.decimals,
-            },
-            rpcUrls,
-            blockExplorerUrls,
-          },
-        ],
-      });
-      // window.location.reload();
+      try {
+        await (window as any).ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId }],
+        });
+        return chainId;
+      } catch (switchError: any) {
+        console.log(switchError);
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          try {
+            await (window as any).ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId, // `0x${Number(9000).toString(16)}`,
+                  chainName,
+                  nativeCurrency: {
+                    symbol: nativeCurrency.symbol,
+                    name: nativeCurrency.name,
+                    decimals: nativeCurrency.decimals,
+                  },
+                  rpcUrls,
+                  blockExplorerUrls,
+                },
+              ],
+            });
+            return chainId;
+          } catch (addError) {
+            console.log("add error", addError);
+            return null;
+          }
+        }
+        // User rejected the request
+        else if (switchError.code === 4001) return null;
+        else return null;
+      }
     }
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner(0);
-    const address = await signer.getAddress();
-    return {
-      signer,
-      address,
-      provider,
-      chainId,
-    };
+    // newBlockchain === currentBlockchain
+    return chainId;
   }
   return null;
 }

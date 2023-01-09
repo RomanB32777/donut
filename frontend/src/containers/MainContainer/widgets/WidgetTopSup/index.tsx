@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Col, Empty, Row } from "antd";
 import { stringFormatTypes } from "types";
 
@@ -7,6 +6,7 @@ import { WalletContext } from "contexts/Wallet";
 import SelectComponent from "components/SelectComponent";
 import axiosClient from "modules/axiosClient";
 
+import { useAppSelector } from "hooks/reduxHooks";
 import { getTimePeriodQuery } from "utils";
 import { filterPeriodItems, widgetApiUrl } from "consts";
 import "./styles.sass";
@@ -14,11 +14,10 @@ import "./styles.sass";
 const LIMIT_SUPPORTERS = 6;
 
 const WidgetTopSup = ({ usdtKoef }: { usdtKoef: number }) => {
-  const user: any = useSelector((state: any) => state.user);
-  const { list, shouldUpdateApp } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { user, notifications } = useAppSelector((state) => state);
   const { walletConf } = useContext(WalletContext);
+
+  const { list, shouldUpdateApp } = notifications;
 
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(

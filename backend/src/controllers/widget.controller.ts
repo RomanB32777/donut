@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { Stream } from 'stream';
 import fileUpload, { UploadedFile } from 'express-fileupload';
+import { existsSync, readdirSync } from 'fs';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
-import { isProduction, uploadsFolder } from '../consts.js';
+import { assetsFolder, isProduction, soundsFolderName, uploadsFolder } from '../consts.js';
 
 // import dotenv from 'dotenv';
 // dotenv.config();
@@ -17,9 +18,6 @@ class WidgetController {
     try {
       const { alertData, username, userId, filelink } = req.body;
       const parseData = JSON.parse(alertData);
-
-      console.log(parseData);
-
       const updatedDBWidget = await db.query(
         `UPDATE alerts SET 
                 message_color = $1,
@@ -36,6 +34,8 @@ class WidgetController {
         [...Object.values(parseData), userId],
       );
       const updatedWidget = updatedDBWidget.rows[0];
+
+      if (!updatedWidget) res.status(204).json({});
 
       if (req.files) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
@@ -59,7 +59,7 @@ class WidgetController {
             WHERE creator_id = $2 RETURNING *;`,
           [filelink, userId],
         );
-        return res.status(200).json({ ...updatedWidget, banner_link: filelink }); //
+        return res.status(200).json({ ...updatedWidget, banner_link: filelink });
       }
       return res.status(200).json(updatedWidget);
     } catch (error) {
@@ -71,7 +71,43 @@ class WidgetController {
     try {
       const creator_id = req.params.creator_id;
       const data = await db.query('SELECT * FROM alerts WHERE creator_id = $1', [creator_id]);
-      res.status(200).json(data.rows[0]);
+      const alertInfo = data.rows[0];
+      if (alertInfo) {
+        const { sound, banner_link } = alertInfo;
+        const appLink = `${req.protocol}://${req.headers.host}/`;
+        const soundPath = isProduction ? sound.slice(1) : sound.split(appLink)[1];
+        const bannerPath = isProduction ? banner_link.slice(1) : banner_link.split(appLink)[1];
+
+        if (!existsSync(soundPath)) {
+          const defaultFilesPath = `${assetsFolder}/${soundsFolderName}`;
+          const defaultSounds = readdirSync(defaultFilesPath);
+          const newSound = defaultSounds[0];
+          const updatedAlertWidget = await db.query(
+            `UPDATE alerts SET 
+              sound = $1
+              WHERE creator_id = $2 RETURNING *;`,
+            [
+              isProduction
+                ? `/${defaultFilesPath}/${newSound}`
+                : `${req.protocol}://${req.headers.host}/${defaultFilesPath}/${newSound}`,
+              creator_id,
+            ],
+          );
+          return res.status(200).json(updatedAlertWidget.rows[0]);
+        }
+
+        if (!existsSync(bannerPath)) {
+          const updatedAlertWidget = await db.query(
+            `UPDATE alerts SET 
+              banner_link = ''
+              WHERE creator_id = $1 RETURNING *;`,
+            [creator_id],
+          );
+          return res.status(200).json(updatedAlertWidget.rows[0]);
+        }
+        return res.status(200).json(alertInfo);
+      }
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }

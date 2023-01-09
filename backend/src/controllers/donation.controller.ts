@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import { IFilterPeriodItems, periodItemsTypes, blockchainsType } from 'types/index.js';
+import { IFilterPeriodItems, periodItemsTypes, exchangeNameTypes, IFullSendDonat } from 'types/index.js';
 import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
 import db from '../db.js';
 
-const currenciesFormatApi: { [key in blockchainsType]: string } = {
+const currenciesFormatApi: { [key in exchangeNameTypes]: string } = {
   // tEVMOS: 'evmos',
   // KLAY: 'klay-token',
   // TRX: 'tron',
@@ -43,7 +43,7 @@ const dateTrancCurrentParams: IFullFilterPeriodItems = {
   custom: 'custom',
 };
 
-const getUsdKoef = async (blockchain: blockchainsType) => {
+const getUsdKoef = async (blockchain: exchangeNameTypes) => {
   const blockchainForTransfer = currenciesFormatApi[blockchain];
   const { data } = await axios.default.get(
     `https://api.coingecko.com/api/v3/simple/price?ids=${blockchainForTransfer}&vs_currencies=usd`,
@@ -79,21 +79,14 @@ const getTimeCurrentPeriod = ({
 class DonationController {
   async createDonation(req: Request, res: Response, next: NextFunction) {
     try {
-      const { creator_token, backer_token, donation_message, goal_id, sum, wallet, blockchain } = req.body;
-
-      // const initDate = new Date();
-      // // initDate.setDate(initDate.getDate() - 4);
-      // const formatedDate = initDate.getTime();
-      // const userOffset = -initDate.getTimezoneOffset() * 60 * 1000;
-      // const date = new Date(formatedDate + userOffset).toISOString();
-      const toUsdKoef = await getUsdKoef(blockchain); // "evmos"
-
-      if (backer_token && creator_token) {
-        const creator = await db.query(`SELECT * FROM users WHERE wallet_address = $1`, [creator_token]);
-        const backer = await db.query(`SELECT * FROM users WHERE wallet_address = $1`, [backer_token]);
+      const { creator_address, backer_address, message, selectedBlockchain, amount, selectedGoal } =
+        req.body as IFullSendDonat;
+      if (creator_address && backer_address) {
+        const creator = await db.query(`SELECT * FROM users WHERE wallet_address = $1`, [creator_address]);
+        const backer = await db.query(`SELECT * FROM users WHERE wallet_address = $1`, [backer_address]);
         const donation = await db.query(
           `INSERT INTO donations (backer_id, sum_donation, donation_message, blockchain, goal_id, creator_id) values ($1, $2, $3, $4, $5, $6) RETURNING *`,
-          [backer.rows[0].id, sum, donation_message, blockchain, goal_id, creator.rows[0].id],
+          [backer.rows[0].id, amount, message, selectedBlockchain, selectedGoal, creator.rows[0].id],
         );
 
         if (donation.rows[0]) {

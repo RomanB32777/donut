@@ -21,8 +21,13 @@ import {
   IDonatPage,
   IEditUserData,
 } from "./types/user";
-import { blockchainsType } from "./types/wallet";
-import { IDonation, INewDonatSocketObj } from "./types/donations";
+import { blockchainsType, exchangeNameTypes } from "./types/wallet";
+import {
+  IDonation,
+  INewDonatSocketObj,
+  ISendDonat,
+  IFullSendDonat,
+} from "./types/donations";
 import {
   badgeStatus,
   IBadgeShort,
@@ -67,10 +72,13 @@ export type {
 
   // wallet
   blockchainsType,
+  exchangeNameTypes,
 
   // donat
   IDonation,
   INewDonatSocketObj,
+  ISendDonat,
+  IFullSendDonat,
 
   // badge
   badgeStatus,

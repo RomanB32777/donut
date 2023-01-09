@@ -13,7 +13,8 @@ import {
   initWidgetStatData,
 } from "./widgets";
 
-import { initBlockchainData, walletInfo } from "./wallet";
+import { storageWalletKey, initBlockchainData, walletInfo } from "./wallet";
+import { initSendDonatData, initDonationData } from "./donations";
 import { initUser } from "./user";
 
 import dummyImg from "assets/big_don.png";
@@ -41,8 +42,13 @@ export {
   filterDataTypeItems,
 
   // wallet
+  storageWalletKey,
   initBlockchainData,
   walletInfo,
+
+  // donations
+  initSendDonatData,
+  initDonationData,
 
   // widgets
   alignItemsList,

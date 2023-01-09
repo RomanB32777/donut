@@ -17,5 +17,3 @@ const WalletReducer = (
 };
 
 export default WalletReducer;
-
-// const UserReducer: (state: IUser | undefined, action: IUserAction) => IUser

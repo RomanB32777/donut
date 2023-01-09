@@ -20,4 +20,18 @@ interface INewDonatSocketObj {
   donation_id: number;
 }
 
-export type { IDonation, INewDonatSocketObj };
+interface ISendDonat {
+  message: string;
+  username: string;
+  amount: number;
+  selectedBlockchain: string; // blockchainsType
+  selectedGoal: number | null;
+  isAnonymous: boolean;
+}
+
+interface IFullSendDonat extends ISendDonat {
+  creator_address: string;
+  backer_address: string;
+}
+
+export type { IDonation, INewDonatSocketObj, ISendDonat, IFullSendDonat };

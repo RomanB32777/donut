@@ -5,8 +5,7 @@ import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import WalletBlock from "../WalletBlock";
 import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
-import { setUser } from "store/types/User";
-import { setSelectedBlockchain } from "store/types/Wallet";
+import { logoutUser } from "utils";
 import "./styles.sass";
 
 const HeaderSelect = ({
@@ -24,6 +23,11 @@ const HeaderSelect = ({
   const navigate = useNavigate();
   const { id, avatar } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
+
+  const logout = (e: React.MouseEvent<HTMLDivElement>) => {
+    handlerHeaderSelect && handlerHeaderSelect(e);
+    logoutUser({ dispatch, navigate });
+  };
 
   return (
     <div className="header-select">
@@ -57,16 +61,7 @@ const HeaderSelect = ({
         {Boolean(isOpenSelect) && (
           <div className="popup">
             <div className="item">
-              <div
-                className="content"
-                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                  handlerHeaderSelect && handlerHeaderSelect(e);
-                  dispatch(setUser(""));
-                  localStorage.removeItem("main_blockchain");
-                  dispatch(setSelectedBlockchain(""));
-                  navigate("/");
-                }}
-              >
+              <div className="content" onClick={logout}>
                 <div className="img icon">
                   <LogoutIcon />
                 </div>

@@ -1,10 +1,15 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
 import { io, Socket } from "socket.io-client";
-import { baseURL, isProduction, socketsBaseUrl } from "../../modules/axiosClient";
-import { getNotifications } from "../../store/types/Notifications";
-import { addNotification, getNotificationMessage } from "../../utils";
+import { useAppSelector } from "hooks/reduxHooks";
+import {
+  baseURL,
+  isProduction,
+  socketsBaseUrl,
+} from "modules/axiosClient";
+import { getNotifications } from "store/types/Notifications";
+import { addNotification, getNotificationMessage } from "utils";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -108,20 +113,20 @@ export const connectSocket = (
 
 export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const [valueContext, setValueContext] = useState<null | Socket>(null);
-  const user = useSelector((state: any) => state.user);
+  const { username } = useAppSelector(({ user }) => user);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user && user.username) {
-      const socket = connectSocket(user.username, dispatch);
+    if (username) {
+      const socket = connectSocket(username, dispatch);
       setValueContext(socket);
 
       return () => {
         socket.disconnect();
       };
     }
-  }, [user]);
+  }, [username]);
 
   return (
     <WebSocketContext.Provider value={valueContext}>

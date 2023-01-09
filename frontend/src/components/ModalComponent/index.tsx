@@ -60,7 +60,7 @@ export const LoadingModalComponent = ({
 }: ILoadingModalComponent) => (
   <ModalComponent open={open} closable={false} width={600}>
     <div className="donat-loading">
-      <p className="donat-loading__message">{message}</p>
+      <p className="message">{message}</p>
       <Loader size="big" />
     </div>
   </ModalComponent>
@@ -101,9 +101,9 @@ export const SuccessModalComponent = ({
       centered={isMobile as boolean}
     >
       <div className="modal-success">
-        <p className="modal-success__message">{message}</p>
+        <p className="message">{message}</p>
         {description && (
-          <p className="modal-success__description">{description}</p>
+          <p className="description">{description}</p>
         )}
       </div>
     </ModalComponent>

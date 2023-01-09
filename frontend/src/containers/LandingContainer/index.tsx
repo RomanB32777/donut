@@ -1,5 +1,6 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Col, Row } from "antd";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -9,8 +10,9 @@ import { HeaderComponent } from "components/HeaderComponents/HeaderComponent";
 import BaseButton from "components/BaseButton";
 import Logo from "components/HeaderComponents/LogoComponent";
 
-import { scrollToPosition } from "utils";
-import { adminPath } from "consts";
+import { setSelectedBlockchain } from "store/types/Wallet";
+import { checkWallet, scrollToPosition } from "utils";
+import { adminPath, storageWalletKey } from "consts";
 import {
   blockchains,
   cryptoSteps,
@@ -22,6 +24,7 @@ import {
 import "./styles.sass";
 
 const LandingContainer = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const { id } = useAppSelector(({ user }) => user);
@@ -30,11 +33,21 @@ const LandingContainer = () => {
   const signUp = async () => {
     if (id) navigate(`/${adminPath}`);
     else {
-      const countBlockhains = walletConf.blockchains.length;
-      navigate(countBlockhains > 1 ? "/blockchains" : "/register");
+      const newBlockchaind = await walletConf.changeBlockchain("evmos");
+      console.log("newBlockchaind", newBlockchaind);
+
+      if (newBlockchaind) {
+        dispatch(setSelectedBlockchain("klay"));
+        navigate("/register");
+      }
     }
     scrollToPosition();
   };
+
+  useEffect(() => {
+    localStorage.getItem(storageWalletKey) &&
+      checkWallet({ walletConf, dispatch });
+  }, [walletConf]);
 
   const { rocketImg, moneyImg, listImg } = images;
 

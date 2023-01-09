@@ -2,33 +2,32 @@ import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Col, Empty, Row } from "antd";
 import { FormattedMessage } from "react-intl";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { IBadgeShort } from "types";
 
-import { WalletContext } from "../../contexts/Wallet";
-import axiosClient, { baseURL } from "../../modules/axiosClient";
-import PageTitle from "../../components/PageTitle";
+import { WalletContext } from "contexts/Wallet";
+import PageTitle from "components/PageTitle";
 import ContentCard from "./ContentCard";
-import BaseButton from "../../components/BaseButton";
+import BaseButton from "components/BaseButton";
 import BadgePage from "./BadgePage";
-
 import CreateBadgeForm from "./CreateBadge";
-import { setUpdateAppNotifications } from "../../store/types/Notifications";
-import { IBadge } from "../../appTypes";
-import { addNotification } from "../../utils";
-import { initBadgeData, ipfsFileformat, ipfsFilename } from "../../consts";
+
+import { useAppSelector } from "hooks/reduxHooks";
+import axiosClient, { baseURL } from "modules/axiosClient";
+import { setUpdateAppNotifications } from "store/types/Notifications";
+import { IBadge } from "appTypes";
+import { addNotification } from "utils";
+import { initBadgeData, ipfsFileformat, ipfsFilename } from "consts";
+
 import "./styles.sass";
 
 const BadgesContainer = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
-
+  const { user, notifications } = useAppSelector((state) => state);
+  const [searchParams, setSearchParams] = useSearchParams();
   const { walletConf } = useContext(WalletContext);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { list, shouldUpdateApp } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { list, shouldUpdateApp } = notifications;
 
   const [badgesList, setBadgesList] = useState<IBadge[]>([]);
   const [activeBadge, setActiveBadge] = useState<IBadge>({

@@ -11,7 +11,7 @@ const asyncGetUser = async (address: string) => {
 
 function* UserWorker(action: any): any {
   yield put(setLoading(true));
-  const data: any = yield call(asyncGetUser, action.payload);
+  const data = yield call(asyncGetUser, action.payload);
   if (data) yield put(setUser(data));
   yield put(setLoading(false));
 }

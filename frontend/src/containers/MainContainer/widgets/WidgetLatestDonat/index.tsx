@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Empty } from "antd";
 import { stringFormatTypes } from "types";
+
 import { WalletContext } from "contexts/Wallet";
 import WidgetItem from "../WidgetItem";
 import SelectComponent from "components/SelectComponent";
+
+import { useAppSelector } from "hooks/reduxHooks";
 import { getTimePeriodQuery } from "utils";
 import axiosClient from "modules/axiosClient";
 import { filterPeriodItems, widgetApiUrl } from "consts";
@@ -13,11 +15,10 @@ import "./styles.sass";
 const LIMIT_LATEST = 6;
 
 const WidgetLatestDonat = ({ usdtKoef }: { usdtKoef: number }) => {
-  const user: any = useSelector((state: any) => state.user);
-  const { list, shouldUpdateApp } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { user, notifications } = useAppSelector((state) => state);
   const { walletConf } = useContext(WalletContext);
+
+  const { list, shouldUpdateApp } = notifications;
 
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]

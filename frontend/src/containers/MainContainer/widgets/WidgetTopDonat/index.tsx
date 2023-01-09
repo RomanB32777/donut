@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Empty } from "antd";
 import { stringFormatTypes } from "types";
 import axiosClient from "modules/axiosClient";
@@ -10,6 +9,7 @@ import TableComponent from "components/TableComponent";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import WidgetItem from "../WidgetItem";
 
+import { useAppSelector } from "hooks/reduxHooks";
 import { ITableData, tableColums } from "./tableData";
 import { getTimePeriodQuery } from "utils";
 import { filterPeriodItems, widgetApiUrl } from "consts";
@@ -19,13 +19,11 @@ const LIMIT_DONATS = 6;
 
 const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const { isTablet } = useWindowDimensions();
-  const user: any = useSelector((state: any) => state.user);
-  const { list, shouldUpdateApp } = useSelector(
-    (state: any) => state.notifications
-  );
-
+  const { user, notifications } = useAppSelector((state) => state);
   const { walletConf } = useContext(WalletContext);
 
+  const { list, shouldUpdateApp } = notifications;
+  
   const [topDonations, setTopDonations] = useState<ITableData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeFilterItem, setActiveFilterItem] = useState(

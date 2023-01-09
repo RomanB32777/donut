@@ -1,4 +1,6 @@
+import { useContext, useEffect } from "react";
 import { Navigate, useRoutes, Outlet } from "react-router";
+import { useDispatch } from "react-redux";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons";
 import {
   PieChartOutlined,
@@ -6,8 +8,9 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { userRoles } from "types";
-import { useAppSelector } from "./hooks/reduxHooks";
 
+import { useAppSelector } from "./hooks/reduxHooks";
+import { WalletContext } from "contexts/Wallet";
 import MainPage from "./pages/MainPage";
 import BadgesPage from "./pages/BadgesPage";
 import DonatPage from "./pages/DonatPage";
@@ -24,8 +27,8 @@ import DonatMessagePage from "./pages/DonatMessagePage";
 import DonatGoalPage from "./pages/DonatGoalPage";
 import DonatStatPage from "./pages/DonatStatPage";
 import LandingPage from "./pages/LandingPage";
-import ChooseBlockchainPage from "./pages/ChooseBlockchainPage";
 import NoPage from "./pages/NoPage";
+import { checkWallet } from "utils";
 import { adminPath } from "./consts";
 
 interface IRoute {
@@ -49,15 +52,22 @@ type ProtectedRouteType = {
   roleRequired?: userRoles;
 };
 
-const ProtectedRoutes = (props: ProtectedRouteType) => {
+const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
+  const dispatch = useDispatch();
+  const { walletConf } = useContext(WalletContext);
   const { user, loading } = useAppSelector((state) => state);
+  const { id, roleplay } = user;
 
-  if (!user.id && loading) return <Loader size="big" />;
+  useEffect(() => {
+    !id && checkWallet({ walletConf, dispatch });
+  }, [id, walletConf]);
+
+  if (!id && loading) return <Loader size="big" />;
 
   //if the role required is there or not
-  if (props.roleRequired) {
-    return user.id ? (
-      props.roleRequired === user.roleplay ? (
+  if (roleRequired) {
+    return id ? (
+      roleRequired === roleplay ? (
         <Outlet />
       ) : (
         <Navigate to={`/${adminPath}/donations`} />
@@ -66,7 +76,7 @@ const ProtectedRoutes = (props: ProtectedRouteType) => {
       <Navigate to="/register" />
     );
   } else {
-    return user.id ? <Outlet /> : <Navigate to="/register" />;
+    return id ? <Outlet /> : <Navigate to="/register" />;
   }
 };
 
@@ -160,11 +170,6 @@ export const routers: IRoute[] = [
     ],
   },
   {
-    path: "blockchains",
-    element: <ChooseBlockchainPage />,
-    hiddenLayoutElements: true,
-  },
-  {
     path: "register",
     element: <RegistrationContainer />,
   },
@@ -188,12 +193,6 @@ export const routers: IRoute[] = [
   },
   {
     path: "donat-stat/:name/:id",
-    element: <DonatStatPage />,
-    hiddenLayoutElements: true,
-    transparet: true,
-  },
-  {
-    path: "test",
     element: <DonatStatPage />,
     hiddenLayoutElements: true,
     transparet: true,

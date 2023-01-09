@@ -1,24 +1,21 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
 import { IGoalData } from "types";
 
-import LinkCopy from "../../../../components/LinkCopy";
-import WidgetMobileWrapper from "../../../../components/WidgetMobileWrapper";
-import { CopyIcon, PencilIcon, TrashBinIcon } from "../../../../icons";
-import ConfirmPopup from "../../../../components/ConfirmPopup";
+import LinkCopy from "components/LinkCopy";
+import WidgetMobileWrapper from "components/WidgetMobileWrapper";
+import { CopyIcon, PencilIcon, TrashBinIcon } from "icons";
+import ConfirmPopup from "components/ConfirmPopup";
 import PreviewGoalBlock from "./PreviewGoalBlock";
 import SettingsGoalBlock from "./SettingsGoalBlock";
 
-import useWindowDimensions from "../../../../hooks/useWindowDimensions";
-import axiosClient, { baseURL } from "../../../../modules/axiosClient";
-import { getGoals } from "../../../../store/types/Goals";
-import {
-  addNotification,
-  addSuccessNotification,
-  copyStr,
-} from "../../../../utils";
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import axiosClient, { baseURL } from "modules/axiosClient";
+import { getGoals } from "store/types/Goals";
+import { addNotification, addSuccessNotification, copyStr } from "utils";
 import { IEditGoalData } from "appTypes";
 
 const GoalItem = ({
@@ -29,7 +26,7 @@ const GoalItem = ({
   openEditModal?: (data: IGoalData) => void;
 }) => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
+  const user = useAppSelector(({ user }) => user);
   const { isLaptop, isTablet } = useWindowDimensions();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);

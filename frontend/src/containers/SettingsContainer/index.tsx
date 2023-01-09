@@ -4,26 +4,26 @@ import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 
-import { useAppSelector } from "../../hooks/reduxHooks";
-import axiosClient from "../../modules/axiosClient";
-import { WalletContext } from "../../contexts/Wallet";
-import PageTitle from "../../components/PageTitle";
-import FormInput from "../../components/FormInput";
-import BaseButton from "../../components/BaseButton";
-import ConfirmPopup from "../../components/ConfirmPopup";
-import UploadImage from "../../components/UploadImage";
-import { setUser, tryToGetUser } from "../../store/types/User";
+import { useAppSelector } from "hooks/reduxHooks";
+import axiosClient from "modules/axiosClient";
+import { WalletContext } from "contexts/Wallet";
+import PageTitle from "components/PageTitle";
+import FormInput from "components/FormInput";
+import BaseButton from "components/BaseButton";
+import ConfirmPopup from "components/ConfirmPopup";
+import UploadImage from "components/UploadImage";
+import SwitchForm from "components/SwitchForm";
+import { tryToGetUser } from "store/types/User";
 import {
   addNotification,
   addSuccessNotification,
   copyStr,
+  logoutUser,
   sendFile,
   shortStr,
-} from "../../utils";
-import { setSelectedBlockchain } from "../../store/types/Wallet";
-import { IFileInfo } from "../../appTypes";
+} from "utils";
+import { IFileInfo } from "appTypes";
 import "./styles.sass";
-import SwitchForm from "../../components/SwitchForm";
 
 const SettingsContainer = () => {
   const user = useAppSelector(({ user }) => user);
@@ -117,10 +117,7 @@ const SettingsContainer = () => {
 
   const deleteProfile = async () => {
     await axiosClient.delete(`/api/user/${user.id}`);
-    dispatch(setUser(""));
-    localStorage.removeItem("main_blockchain");
-    dispatch(setSelectedBlockchain(""));
-    navigate("/register");
+    logoutUser({ dispatch, navigate });
   };
 
   const shortWalletToken = useMemo(
@@ -251,7 +248,7 @@ const SettingsContainer = () => {
             <div className="btn-bottom">
               <ConfirmPopup confirm={deleteProfile}>
                 <BaseButton
-                  formatId="profile_form_delete_button"
+                  title="Delete account"
                   padding="6px 30px"
                   fontSize="18px"
                   disabled={loading}

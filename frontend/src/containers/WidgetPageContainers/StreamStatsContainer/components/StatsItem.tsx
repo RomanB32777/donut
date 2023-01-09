@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { IStatData, typeAligmnet } from "types";
+import { IStatData } from "types";
 
 import LinkCopy from "components/LinkCopy";
 import { CopyIcon, PencilIcon, TrashBinIcon } from "icons";
@@ -12,6 +12,7 @@ import SettingsStatBlock from "./SettingsStatBlock";
 import PreviewStatBlock from "./PreviewStatBlock";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
+import { useAppSelector } from "hooks/reduxHooks";
 import { getStats } from "store/types/Stats";
 import axiosClient, { baseURL } from "modules/axiosClient";
 import {
@@ -31,7 +32,7 @@ const StatsItem = ({
   openEditModal?: (data: IStatData) => void;
 }) => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
+  const user = useAppSelector(({ user }) => user);
   const { isTablet } = useWindowDimensions();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);

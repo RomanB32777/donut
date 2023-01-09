@@ -10,21 +10,15 @@ import { TabsComponent } from "components/TabsComponent";
 import SliderForm from "components/SliderForm";
 import SwitchForm from "components/SwitchForm";
 import SelectComponent from "components/SelectComponent";
+import FontSelectOption from "components/SelectInput/options/FontSelectOption";
 import UploadSound from "./UploadSound";
-import StyledText from "./StyledText";
-import { useAppSelector } from "hooks/reduxHooks";
 
+import { useAppSelector } from "hooks/reduxHooks";
 import { getDefaultImages, sendFile } from "utils";
 import { dummyImg } from "consts";
 import { IAlert, IDefaultImagesModal } from "appTypes";
 
 const alertSound = new Audio();
-
-const SelectDropdownOption = (item: ISelectItem) => (
-  <StyledText font={item.value} fontLink={item.key}>
-    {item.value}
-  </StyledText>
-);
 
 const SettingsAlertsBlock = ({
   formData,
@@ -142,7 +136,7 @@ const SettingsAlertsBlock = ({
               }
               afterEl={
                 <UploadAfterEl
-                  mdCol={7}
+                  mdCol={8}
                   size="1200*800"
                   openBanners={openDefaultImages}
                 />
@@ -210,7 +204,7 @@ const SettingsAlertsBlock = ({
                   },
                 })
               }
-              renderOption={SelectDropdownOption}
+              renderOption={FontSelectOption}
               labelCol={8}
               selectCol={14}
               gutter={[0, 18]}
@@ -234,7 +228,7 @@ const SettingsAlertsBlock = ({
                   },
                 })
               }
-              renderOption={SelectDropdownOption}
+              renderOption={FontSelectOption}
               labelCol={8}
               selectCol={14}
               gutter={[0, 18]}
@@ -258,7 +252,7 @@ const SettingsAlertsBlock = ({
                   },
                 })
               }
-              renderOption={SelectDropdownOption}
+              renderOption={FontSelectOption}
               labelCol={8}
               selectCol={14}
               gutter={[0, 18]}

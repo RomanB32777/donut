@@ -1,11 +1,5 @@
 @use 'commonStyles/variables'
 
-.loader-page
-    display: flex
-    justify-content: center
-    align-items: center
-    height: 100vh
-
 .donat-wrapper
     padding-bottom: 40px
     background-repeat: no-repeat
@@ -22,38 +16,28 @@
         padding-bottom: 34px
         border-radius: variables.$border-radius
 
-        &__payment
-            &_wrapper
-                width: 100%
-                padding: 0 60px
+        .payment_wrapper
+            width: 100%
+            padding: 0 60px
 
-                @media (max-width: 768px)
-                    padding: 0 25px
+            @media (max-width: 768px)
+                padding: 0 25px
 
-            &_title
-                margin-top: 100px
-                font-family: variables.$pt-font
-                font-style: normal
-                font-weight: 600
-                font-size: 30px
-                line-height: 30px
-                color: variables.$white-color
-                text-align: center
-
-            &-row
+        .payment
+            .row
                 display: flex
                 justify-content: space-between
                 margin-top: 30px
 
-            &-column
+            .column
                 display: flex
                 flex-direction: column
                 width: 100%
 
-            &_goals
+            .goals
                 margin-bottom: 30px
 
-                &_btn
+                .btn
                     background: variables.$blue-dark-color
                     padding: 20px
                     border-radius: variables.$border-radius
@@ -63,8 +47,8 @@
                     -webkit-box-shadow: variables.$shadow
                     box-shadow: variables.$shadow
 
-                    &:hover
-                        border-color: variables.$main-color
+                    // &:hover
+                    //     border-color: variables.$main-color
 
                     p
                         margin: 0
@@ -75,11 +59,11 @@
                     .header
                         display: flex
                         align-items: center
+                        font-size: 18px
+                        line-height: 22px
+                        color: variables.$white-color
 
                         p
-                            font-size: 18px
-                            line-height: 22px
-                            color: variables.$white-color
                             margin-left: 5px
 
                     .description
@@ -89,18 +73,28 @@
                         line-height: 18px
                         color: variables.$grey-color
 
+                    @media (max-width: 768px)
+                        padding: 10px
+
+                        .header,
+                        .description
+                            font-size: 13px
+                            line-height: 16px
+
+                        .header
+                            svg
+                                width: 20px
+                                height: 20px
+
                     &.active
                         border-color: variables.$main-color
 
-                &_list
+                .list
                     height: 100%
                     display: flex
                     align-items: center
 
                     .ant-radio-wrapper
-                        .ant-radio-inner
-                            // opacity: 0
-
                         span
                             font-family: variables.$pt-font
                             font-style: normal
@@ -109,19 +103,27 @@
                             line-height: 25px
                             color: variables.$white-color
 
-            &_bottom
+                            @media (max-width: 768px)
+                                font-size: 13px
+                                line-height: 16px
+
+            .bottom
                 display: flex
                 align-items: center
 
-            &_inputs
+            .inputs
                 display: flex
                 flex-direction: column
 
-                &-item
+                .item
                     margin-bottom: 20px
 
                     &:last-child
                         margin-bottom: 0
+
+                &-addon
+                    background: variables.$blue-dark-color
+                    padding: 10.75px
 
                 &-select
                     height: 100%
@@ -148,15 +150,6 @@
                     height: 120px
                     position: relative
 
-                .formInput__description
-                    text-align: right
-                    font-size: 14px
-                    padding-right: 25px
-
-                .input-addon
-                    background: variables.$blue-dark-color
-                    padding: 10.75px
-
                 .username-switch
                     width: 220px
 
@@ -165,6 +158,9 @@
                         font-size: 14px
                         line-height: 18px
                         color: variables.$grey-color
+
+                    @media (max-width: 768px)
+                        width: 70px
 
                 .select-blockchain
                     background: variables.$blue-dark-color
@@ -189,15 +185,16 @@
 
                 .count-modificator
                     display: flex
-                    align-items: center
+                    align-items: baseline
                     justify-content: space-between
                     width: 100%
 
                     .usd-equal
+                        margin: 0
                         font-size: 14px
                         line-height: 18px
 
-            &_balance
+            .balance
                 font-family: variables.$pt-font
                 font-style: normal
                 font-weight: 500
@@ -206,25 +203,7 @@
                 color: variables.$white-color
                 margin-left: 10px
 
-        &__registration
-            &_wrapper
-                max-width: 1170px
-                width: 100%
-
-            &_title
-                margin: 100px 0 30px
-                font-family: variables.$pt-font
-                font-style: normal
-                font-weight: 600
-                font-size: 30px
-                line-height: 30px
-                color: variables.$white-color
-                text-align: center
-
-                &-choose
-                    margin-top: 20px
-
-    .donat-header
+    .headerBlock
         &-content
             margin: 0 auto
             max-width: 720px
@@ -232,7 +211,37 @@
         @media (max-width: 768px)
             padding-inline: 25px
 
-    .donat-info-container
+            .donut-wallet
+                .wallet-block
+                    margin-right: 0
+                    border-radius: 5px
+                    width: 100%
+                    padding: 4px 6px
+
+                    &.loaded
+                        box-shadow: none
+
+                    .icon
+                        width: 15px
+                        height: 15px
+
+                        img
+                            width: 13px
+                            height: 13px
+
+                    .balance,
+                    .address
+                        font-size: 10px
+                        line-height: 12px
+
+                    .icon,
+                    .balance
+                        margin-right: 5px
+
+                    .address
+                        padding: 2px 4px
+
+    .info
         position: relative
         width: 100%
         height: fit-content
@@ -240,7 +249,7 @@
         flex-direction: column
         overflow: hidden
 
-        &__background
+        .background
             width: 100%
             height: 145px
             margin-bottom: 2px
@@ -255,72 +264,50 @@
                 border-top-left-radius: variables.$border-radius
                 border-top-right-radius: variables.$border-radius
 
-        &__information
-            &-wrapper
-                padding: 0 60px
-
-                @media (max-width: 768px)
-                    padding: 0 25px
-
-    .donat-main-info
-        display: flex
-        margin-top: -50px
-        width: 100%
-        justify-content: space-between
-
-        @media (max-width: 768px)
-            flex-direction: column
-
-        &__picture
-            position: relative
-            height: 120px
-            width: 28%
-            max-width: 120px
-            border-radius: variables.$border-radius
-            overflow: hidden
-            display: flex
-            justify-content: center
-            align-items: center
-            background: variables.$blue-dark-color
+        .information-wrapper
+            padding: 0 60px
 
             @media (max-width: 768px)
-                width: 55%
+                padding: 0 25px
 
-            img
+            .main-info
+                display: flex
+                margin-top: -50px
                 width: 100%
-                height: 100%
-                object-fit: cover
+                justify-content: space-between
 
-        &__personal
-            width: 70%
-            padding: 70px 0 0
+                .picture
+                    position: relative
+                    height: 120px
+                    width: 28%
+                    max-width: 120px
+                    border-radius: variables.$border-radius
+                    overflow: hidden
+                    display: flex
+                    justify-content: center
+                    align-items: center
 
-            .title
-                font-family: variables.$pt-font
-                font-style: normal
-                font-weight: 600
-                font-size: 30px
-                line-height: 35px
-                color: variables.$white-color
+                    @media (max-width: 768px)
+                        width: 55%
 
-            @media (max-width: 768px)
-                padding: 30px 0 0
+                    img
+                        width: 100%
+                        height: 100%
+                        object-fit: cover
 
-                .title
-                    font-size: 25px
+                .personal
+                    width: 75%
+                    padding: 70px 0 0
 
-    .donat-loading
-        display: flex
-        flex-direction: column
-        align-items: center
+                    .title
+                        font-family: variables.$pt-font
+                        font-style: normal
+                        font-size: 16px
+                        line-height: 20px
+                        color: variables.$white-color
 
-        &__message,
-        &__description
-            margin-bottom: 25px
-            text-align: center
-            font-family: variables.$pt-font
-            font-style: normal
-            font-weight: 600
-            font-size: 25px
-            line-height: 30px
-            color: variables.$white-color
+                    @media (max-width: 768px)
+                        width: 60%
+                        .title
+                            font-size: 13px
+                            line-height: 16px

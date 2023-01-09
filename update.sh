@@ -14,4 +14,4 @@ cp -r $root_dir/$types_dir $root_dir/frontend
 cp -r $root_dir/$types_dir $root_dir/sockets
 
 docker-compose -f $root_dir/docker-compose.yml up -d --build
-docker rmi $(docker images -f dangling=true -q)
+# docker rmi $(docker images -f dangling=true -q)

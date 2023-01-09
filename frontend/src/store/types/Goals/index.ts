@@ -1,10 +1,12 @@
 import { IGoalData } from "types";
 
-export const SET_GOALS = "SET_GOALS";
-export const GET_GOALS = "GET_GOALS";
+const SET_GOALS = "SET_GOALS";
+const GET_GOALS = "GET_GOALS";
 
-export const setGoals = (payload: IGoalData[]) => ({ type: SET_GOALS, payload });
-export const getGoals = (payload: number | string) => ({
+const setGoals = (payload: IGoalData[]) => ({ type: SET_GOALS, payload });
+const getGoals = (payload: number | string) => ({
   type: GET_GOALS,
   payload,
 });
+
+export { SET_GOALS, GET_GOALS, setGoals, getGoals };

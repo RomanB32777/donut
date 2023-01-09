@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Checkbox, Col, Row } from "antd";
 import FileSaver from "file-saver";
 import { utils, write } from "xlsx";
@@ -15,12 +15,15 @@ import SelectInput from "components/SelectInput";
 import TableComponent from "components/TableComponent";
 import BaseButton from "components/BaseButton";
 import { CalendarIcon, DownloadIcon } from "icons";
+
+import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import axiosClient from "modules/axiosClient";
 import { setUpdateAppNotifications } from "store/types/Notifications";
 import { getUsdKoef } from "utils";
 import { initTableDataItem, ITableData, tableColumns } from "./tableData";
 import { filterPeriodItems } from "consts";
+
 import "./styles.sass";
 
 interface IQueryForm {
@@ -35,13 +38,12 @@ const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
+  const { user, notifications } = useAppSelector((state) => state);
   const { walletConf } = useContext(WalletContext);
   const { isMobile, isLaptop } = useWindowDimensions();
 
-  const { list, shouldUpdateApp } = useSelector(
-    (state: any) => state.notifications
-  );
+  const { list, shouldUpdateApp } = notifications;
+
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
   const [queryForm, setQueryForm] = useState<IQueryForm>({
     timePeriod: "7days",

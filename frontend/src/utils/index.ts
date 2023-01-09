@@ -1,4 +1,8 @@
+import { AnyAction, Dispatch } from "redux";
+import { NavigateFunction } from "react-router-dom";
+import FontFaceObserver from "fontfaceobserver";
 import axios from "axios";
+
 import { getTimePeriodQuery } from "./dateMethods";
 import {
   addNotification,
@@ -26,9 +30,13 @@ import {
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
 } from "./dateMethods";
-import { getUsdKoef, walletMethods } from "./wallets";
+import { getUsdKoef, checkWallet, walletMethods } from "./wallets";
 import { checkIsExistUser } from "./asyncMethods";
-import { ISelectItem } from "../components/SelectInput";
+import { setUser } from "store/types/User";
+import { setSelectedBlockchain } from "store/types/Wallet";
+import { initUser, storageWalletKey } from "consts";
+import { ISelectItem } from "components/SelectInput";
+import { IFont } from "appTypes";
 
 const getBadgesStatus = async (user: any, socket?: any) => {
   // const url =
@@ -103,19 +111,49 @@ const getFontsList = async () => {
   }
 };
 
-// const getDefaultImages = ({ count, folder }: IDefaultImages) => {
-//   const images = [];
-//   const baseImgUrl = `images/default-banners/${folder}`;
-//   for (var i = 1; i <= count; i++)
-//     images.push(
-//       isProduction
-//         ? `/${baseImgUrl}/${i}.jpg`
-//         : `${baseURL}/${baseImgUrl}/${i}.jpg`
-//     );
-//   // images.push(require(`../assets/${folder}/${i}.jpg`));
+const checkFontObserver = async (name: string) => {
+  try {
+    const checkFontObserver = new FontFaceObserver(name);
+    const loadedFont = await checkFontObserver.load(null, 1);
+    return Boolean(loadedFont);
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
 
-//   return images;
-// };
+const loadFont = async ({ name, link }: IFont) => {
+  if (!link) return null;
+  try {
+    const isLoaded = await checkFontObserver(name);
+    if (!isLoaded) {
+      const newFont = new FontFace(name, `url(${link})`, {
+        style: "normal",
+        weight: "400",
+      });
+      const loadedFont = await newFont.load();
+      document.fonts.add(loadedFont);
+      return loadedFont;
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+const logoutUser = ({
+  dispatch,
+  navigate,
+}: {
+  dispatch: Dispatch<AnyAction>;
+  navigate: NavigateFunction;
+}) => {
+  dispatch(setUser(initUser));
+  localStorage.removeItem(storageWalletKey);
+  dispatch(setSelectedBlockchain(""));
+  navigate("/");
+};
 
 export {
   // notifications
@@ -152,6 +190,7 @@ export {
 
   // wallets
   getUsdKoef,
+  checkWallet,
   walletMethods,
 
   // async
@@ -160,4 +199,6 @@ export {
   // app
   scrollToPosition,
   getFontsList,
+  loadFont,
+  logoutUser,
 };
