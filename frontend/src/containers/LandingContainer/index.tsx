@@ -60,7 +60,6 @@ const LandingContainer = () => {
 
       <div className="landing-container landing-padding">
         <div className="banner">
-          {/* <div className="gradient-grey-bg" /> */}
           <div className="gradient-red-bg" />
           <div className="banner-content">
             <h1 className="title">
