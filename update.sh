@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "update app"
+echo "update donut app"
 
 root_dir=$(dirname "$0")
 types_dir="types"
