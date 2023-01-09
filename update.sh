@@ -16,7 +16,7 @@ branch=$($GIT rev-parse --abbrev-ref HEAD)
 
 echo $branch
 
-$GIT pull origin $branch
+$GIT pull # origin $branch
 $GIT log -3
 
 for i in ${modulesWithTypes[@]}
