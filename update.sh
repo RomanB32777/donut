@@ -1,7 +1,5 @@
 #!/bin/bash
 echo "update donut app"
-date
-ls
 
 root_dir=$(dirname "$0")
 types_dir="types"
@@ -9,24 +7,23 @@ modulesWithTypes=('backend' 'frontend' 'sockets')
 
 # for i in ${modulesWithTypes[@]}
 # do
-#     rm -rf $root_dir/$i/$types_dir
+#     rm -rf ./$i/$types_dir
 # done
 
-GIT='git --git-dir='$root_dir'/.git'
+cd $root_dir
+ls
 
-branch=$($GIT rev-parse --abbrev-ref HEAD)
+branch=$(git rev-parse --abbrev-ref HEAD)
 
 echo $branch
 
-$GIT pull # origin $branch
+git pull # origin $branch
 retVal=$?
 echo $retVal
 
-# $GIT log -3
-
 for i in ${modulesWithTypes[@]}
 do
-   cp -r $root_dir/$types_dir $root_dir/$i
+   cp -r ./$types_dir ./$i
 done
 
-docker-compose -f $root_dir/docker-compose.yml up -d --build
+docker-compose up -d --build
