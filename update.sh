@@ -26,4 +26,4 @@ docker-compose up -d --build
 
 # clear old images
 OLD_IMAGES=$(docker images --quiet --filter=dangling=true)
-[[ -n $OLD_IMAGES ]] && docker rmi $ids
+[[ -n $OLD_IMAGES ]] && docker rmi $OLD_IMAGES
