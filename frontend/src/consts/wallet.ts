@@ -1,7 +1,13 @@
-import { IBlockchain, IWalletState } from "../appTypes";
-import metamaskIcon from "../assets/metamask.png";
-import evmosIcon from "../assets/evmos.png";
-import klaytnIcon from "../assets/klaytn.png";
+import { IBlockchain, IWalletState } from "appTypes";
+import metamaskIcon from "assets/metamask.png";
+import evmosIcon from "assets/blockchains/evmos.png";
+import klaytnIcon from "assets/blockchains/klaytn.png";
+import ethIcon from "assets/blockchains/eth.png";
+import maticIcon from "assets/blockchains/matic.png";
+import usdcIcon from "assets/blockchains/usdc.png";
+import usdtIcon from "assets/blockchains/usdt.png";
+import bnbIcon from "assets/blockchains/bnb.png";
+import avaxIcon from "assets/blockchains/avax.png";
 
 // const metamaskTransferAbi =
 //   '[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address payable","name":"_creator","type":"address"}],"name":"transferMoney","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"withdrawPendingBalance","outputs":[],"stateMutability":"payable","type":"function"},{"stateMutability":"payable","type":"receive"}]';
@@ -40,7 +46,7 @@ const walletInfo: IWalletState = {
       scannerLink: "https://etherscan.io/address/",
       nativeCurrency: {
         name: "test-Evmos",
-        symbol: "ETH",
+        symbol: "ETHs",
         decimals: 18,
         exchangeName: "evmos",
       },
@@ -61,6 +67,114 @@ const walletInfo: IWalletState = {
         symbol: "KLAY",
         decimals: 18,
         exchangeName: "klay-token",
+      },
+      rpcUrls: ["https://api.baobab.klaytn.net:8651"],
+      blockExplorerUrls: ["https://www.klaytn.com/"],
+    },
+    {
+      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      name: "eth",
+      icon: ethIcon,
+      chainId: "0x3e9", // 1001
+      chainName: "Klaytn Testnet Baobab",
+      badgeName: "ETH",
+      color: "rgba(242, 244, 247, 0.8)",
+      scannerLink: "https://etherscan.io/address/",
+      nativeCurrency: {
+        name: "ETH",
+        symbol: "ETH",
+        decimals: 18,
+        exchangeName: "ethereum",
+      },
+      rpcUrls: ["https://api.baobab.klaytn.net:8651"],
+      blockExplorerUrls: ["https://www.klaytn.com/"],
+    },
+    {
+      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      name: "usdt",
+      icon: usdtIcon,
+      chainId: "0x3e9", // 1001
+      chainName: "Klaytn Testnet Baobab",
+      badgeName: "USDT",
+      color: "rgba(0, 147, 147, 0.8)",
+      scannerLink: "https://etherscan.io/address/",
+      nativeCurrency: {
+        name: "USDT",
+        symbol: "USDT",
+        decimals: 18,
+        exchangeName: "tether",
+      },
+      rpcUrls: ["https://api.baobab.klaytn.net:8651"],
+      blockExplorerUrls: ["https://www.klaytn.com/"],
+    },
+    {
+      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      name: "bnb",
+      icon: bnbIcon,
+      chainId: "0x3e9", // 1001
+      chainName: "Klaytn Testnet Baobab",
+      badgeName: "BNB",
+      color: "rgba(240, 185, 11, 0.8)",
+      scannerLink: "https://etherscan.io/address/",
+      nativeCurrency: {
+        name: "BNB",
+        symbol: "BNB",
+        decimals: 18,
+        exchangeName: "binancecoin",
+      },
+      rpcUrls: ["https://api.baobab.klaytn.net:8651"],
+      blockExplorerUrls: ["https://www.klaytn.com/"],
+    },
+    {
+      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      name: "avax",
+      icon: avaxIcon,
+      chainId: "0x3e9", // 1001
+      chainName: "Klaytn Testnet Baobab",
+      badgeName: "AVAX",
+      color: "rgba(232, 65, 66, 0.8)",
+      scannerLink: "https://etherscan.io/address/",
+      nativeCurrency: {
+        name: "AVAX",
+        symbol: "AVAX",
+        decimals: 18,
+        exchangeName: "avalanche-2",
+      },
+      rpcUrls: ["https://api.baobab.klaytn.net:8651"],
+      blockExplorerUrls: ["https://www.klaytn.com/"],
+    },
+    {
+      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      name: "usdc",
+      icon: usdcIcon,
+      chainId: "0x3e9", // 1001
+      chainName: "Klaytn Testnet Baobab",
+      badgeName: "USDC",
+      color: "rgba(39, 117, 201, 0.8)",
+      scannerLink: "https://etherscan.io/address/",
+      nativeCurrency: {
+        name: "USDC",
+        symbol: "USDC",
+        decimals: 18,
+        exchangeName: "usd-coin",
+      },
+      rpcUrls: ["https://api.baobab.klaytn.net:8651"],
+      blockExplorerUrls: ["https://www.klaytn.com/"],
+    },
+    {
+      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      name: "matic",
+      icon: maticIcon,
+      chainId: "0x3e9", // 1001
+      chainName: "Klaytn Testnet Baobab",
+      badgeName: "MATIC",
+      color: "rgba(130, 71, 229, 0.8)",
+      scannerLink: "https://etherscan.io/address/",
+      nativeCurrency: {
+        name: "MATIC",
+        symbol: "MATIC",
+        decimals: 18,
+        exchangeName: "matic-network",
       },
       rpcUrls: ["https://api.baobab.klaytn.net:8651"],
       blockExplorerUrls: ["https://www.klaytn.com/"],

@@ -67,9 +67,21 @@ const DonatStatContainer = () => {
   };
 
   useEffect(() => {
+    const initPage = async () => {
+      const currBlockchain = await walletConf.getCurrentBlockchain();
+      if (currBlockchain)
+        await getUsdKoef(
+          currBlockchain.nativeCurrency.exchangeName,
+          setUsdtKoef
+        );
+    };
+
+    initPage();
+  }, [walletConf]);
+
+  useEffect(() => {
     name && dispatch(tryToGetPersonInfo(name));
-    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
-  }, []);
+  }, [name]);
 
   useEffect(() => {
     statData && user.id && getDonations();

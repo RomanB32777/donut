@@ -15,7 +15,11 @@ const NotificationsReducer = (
 ) => {
   switch (action.type) {
     case SET_NOTIF:
-      return { ...state, list: [...state.list, ...action.payload.list] };
+      const { list, shouldUpdateApp } = action.payload;
+      return {
+        list: [...state.list, ...list],
+        shouldUpdateApp,
+      };
 
     case SET_UPDATE_FLAG:
       return { ...state, shouldUpdateApp: action.payload.shouldUpdateApp };

@@ -159,9 +159,7 @@ const triggerContract = async ({
           setLoading(true);
 
           if (balance >= Number(amount)) {
-            const currentBlockchain = walletConf.blockchains.find(
-              (b) => b.name === process.env.REACT_APP_BLOCKCHAIN
-            );
+            const currentBlockchain = await walletConf.getCurrentBlockchain()
 
             if (currentBlockchain) {
               const res = await walletConf.paymentMethod({

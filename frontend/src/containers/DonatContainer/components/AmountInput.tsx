@@ -80,33 +80,21 @@ const AmountInput = ({
   );
 
   useEffect(() => {
-    const setInitSelectedBlockchain = async () => {
-      const currBlockchain = await walletConf.getCurrentBlockchain();
-      if (currBlockchain) {
-        setForm((form) => ({
-          ...form,
-          selectedBlockchain: currBlockchain.nativeCurrency.symbol,
-        }));
-        await getUsdKoef(
-          currBlockchain.nativeCurrency.exchangeName,
-          setUsdtKoef
-        );
-      }
-    };
-
-    setInitSelectedBlockchain();
-  }, [walletConf]);
-
-  useEffect(() => {
     if (blockchain) {
       const blockchainInfo = walletConf.blockchains.find(
         (b) => b.name === blockchain
       );
-      if (blockchainInfo)
+      if (blockchainInfo) {
+        const blockchainSymbol = blockchainInfo.nativeCurrency.symbol;
+        setForm((form) => ({
+          ...form,
+          selectedBlockchain: blockchainSymbol,
+        }));
         setBlockchainInfo({
-          selected: blockchainInfo.nativeCurrency.symbol,
+          selected: blockchainSymbol,
           blockchainInfo,
         });
+      }
     }
   }, [walletConf, blockchain]);
 

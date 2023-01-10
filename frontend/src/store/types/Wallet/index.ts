@@ -1,12 +1,12 @@
-import { blockchainsType } from "types";
 import { storageWalletKey } from "consts";
-
-type setBlockchainNames = blockchainsType | "";
+import { blockchainPayload } from "appTypes";
 
 const SET_MAIN_WALLET = "SET_MAIN_WALLET";
 
-const setSelectedBlockchain = (blockchainName: setBlockchainNames) => {
-  localStorage.setItem(storageWalletKey, blockchainName);
+const setSelectedBlockchain = (blockchainName: blockchainPayload) => {
+  blockchainName
+    ? localStorage.setItem(storageWalletKey, blockchainName)
+    : localStorage.removeItem(storageWalletKey);
   return { type: SET_MAIN_WALLET, payload: blockchainName };
 };
 

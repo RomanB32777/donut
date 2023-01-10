@@ -38,7 +38,7 @@ const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
   const dispatch = useDispatch();
-  const { user, notifications } = useAppSelector((state) => state);
+  const { user, notifications, blockchain } = useAppSelector((state) => state);
   const { walletConf } = useContext(WalletContext);
   const { isMobile, isLaptop } = useWindowDimensions();
 
@@ -161,9 +161,21 @@ const DonationsContainer = () => {
   );
 
   useEffect(() => {
-    dispatch(setUpdateAppNotifications(true));
-    getUsdKoef(process.env.REACT_APP_BLOCKCHAIN || "evmos", setUsdtKoef);
-  }, []);
+    const initPage = async () => {
+      dispatch(setUpdateAppNotifications(true));
+      const currBlockchain = walletConf.blockchains.find(
+        (b) => b.name === blockchain
+      );
+      if (currBlockchain) {
+        await getUsdKoef(
+          currBlockchain.nativeCurrency.exchangeName,
+          setUsdtKoef
+        );
+      }
+    };
+
+    initPage();
+  }, [walletConf, blockchain]);
 
   useEffect(() => {
     user.id && usdtKoef && shouldUpdateApp && getDonationsData();

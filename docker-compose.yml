@@ -36,13 +36,6 @@ services:
       - ./backend/uploads:/backend/uploads
       - ./backend/assets:/backend/assets
 
-  nginx:
-    build: ./nginx
-    depends_on:
-      - backend
-    ports:
-      - "8000:8000"
-
   sockets:
     build: ./sockets
     ports:
@@ -56,6 +49,16 @@ services:
       - DB_NAME=donut
     depends_on:
       - db
+    networks:
+     - web
+
+  nginx:
+    build: ./nginx
+    depends_on:
+      - backend
+      - sockets
+    ports:
+      - "8000:8000"
     networks:
      - web
 

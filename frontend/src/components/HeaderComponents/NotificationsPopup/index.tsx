@@ -14,12 +14,12 @@ import dayjsModule from "modules/dayjsModule";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "contexts/Wallet";
+import { AlertIcon } from "icons";
 import Loader from "components/Loader";
 
-import { getNotificationMessage } from "utils";
 import axiosClient, { baseURL } from "modules/axiosClient";
 import { getNotifications } from "store/types/Notifications";
-import { AlertIcon } from "icons";
+import { getNotificationMessage } from "utils";
 import "./styles.sass";
 
 const LIMIT_NOTIF = 10;
@@ -56,7 +56,7 @@ const NotificationsPopup = ({
 
   const updateNotification = async ({ id, read }: INotificationStatus) => {
     const { data, status } = await axiosClient.put(
-      `${baseURL}/api/notifications/status`,
+      `${baseURL}/api/notification/status`,
       {
         id,
         read,
@@ -118,7 +118,7 @@ const NotificationsPopup = ({
       const currBlockchain = await walletConf.getCurrentBlockchain();
 
       if (currBlockchain) {
-        const url = `${baseURL}/api/notifications/${user}?blockchain=${
+        const url = `${baseURL}/api/notification/${user}?blockchain=${
           currBlockchain.name
         }&limit=${LIMIT_NOTIF}&offset=${LIMIT_NOTIF * currentPage}`; // &sort=read&sortDirection=ASC
 
@@ -282,13 +282,7 @@ const NotificationsPopup = ({
 
       {isNotificationPopupOpened && (
         <div className="popup">
-          <div
-            className="wrapper"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <div className="wrapper">
             <div className="content">
               <div
                 className="list"

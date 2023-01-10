@@ -11,29 +11,16 @@ import {
   ShieldLandingIcon,
   TelegramIcon,
   TwitterIcon,
-} from "../../icons";
+} from "icons";
 
-import rocketImg from "../../assets/landing/rocket.png";
-import listImg from "../../assets/landing/list.png";
-import moneyImg from "../../assets/landing/money.png";
-
-import ethImg from "../../assets/landing/eth.png";
-import maticImg from "../../assets/landing/matic.png";
-import usdcImg from "../../assets/landing/usdc.png";
-import usdtImg from "../../assets/landing/usdt.png";
-import bnbImg from "../../assets/landing/bnb.png";
-import avaxImg from "../../assets/landing/avax.png";
+import rocketImg from "assets/landing/rocket.png";
+import listImg from "assets/landing/list.png";
+import moneyImg from "assets/landing/money.png";
 
 const images = {
   rocketImg,
   moneyImg,
   listImg,
-  ethImg,
-  maticImg,
-  usdcImg,
-  usdtImg,
-  bnbImg,
-  avaxImg,
 };
 
 const features = [
@@ -106,39 +93,6 @@ const cryptoSteps = [
   },
 ];
 
-const blockchains = [
-  {
-    name: "ETH",
-    image: images.ethImg,
-    background: "rgba(242, 244, 247, 0.8)",
-  },
-  {
-    name: "USDT",
-    image: images.usdtImg,
-    background: "rgba(0, 147, 147, 0.8)",
-  },
-  {
-    name: "BNB",
-    image: images.bnbImg,
-    background: "rgba(240, 185, 11, 0.8)",
-  },
-  {
-    name: "AVAX",
-    image: images.avaxImg,
-    background: "rgba(232, 65, 66, 0.8)",
-  },
-  {
-    name: "USDC",
-    image: images.usdcImg,
-    background: "rgba(39, 117, 201, 0.8)",
-  },
-  {
-    name: "MATIC",
-    image: images.maticImg,
-    background: "rgba(130, 71, 229, 0.8)",
-  },
-];
-
 const help = [
   {
     title: "Ask in Telegram chat",
@@ -163,4 +117,4 @@ const socialNetworks = [
   },
 ];
 
-export { images, features, cryptoSteps, blockchains, help, socialNetworks };
+export { images, features, cryptoSteps, help, socialNetworks };

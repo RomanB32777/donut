@@ -26,6 +26,8 @@ COPY --from=builder /backend /app/
 
 ARG PORT
 
-EXPOSE $PORT
+ENV port=$PORT
+
+EXPOSE $port
 
 CMD ["npm", "run", "start:prod"]

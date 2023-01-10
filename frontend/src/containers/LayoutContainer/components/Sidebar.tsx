@@ -57,7 +57,7 @@ const Sidebar = ({
   useEffect(() => {
     if (!collapsed) {
       setIsVisibleContent(false);
-      setTimeout(() => setIsVisibleContent(true), 300);
+      setTimeout(() => setIsVisibleContent(true), 200);
     } else {
       setIsVisibleContent(false);
     }
@@ -71,12 +71,13 @@ const Sidebar = ({
       <Sider
         hidden={hiddenLayoutElements}
         width={isTablet ? 325 : 250}
-        onClick={() => closeAllHeaderPopups()}
+        onClick={closeAllHeaderPopups}
         collapsible
         collapsed={collapsed}
         collapsedWidth="0"
-        className="layout-sidebar"
+        className={clsx("layout-sidebar", { isBlur: isVisibleContent })}
         trigger={null}
+        
       >
         {!collapsed && <Logo navigateUrl="/" />}
         <div

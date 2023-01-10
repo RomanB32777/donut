@@ -78,6 +78,7 @@ interface IWalletMethods {
   isInstall: () => boolean;
   getBlockchainData: () => Promise<IBlockchainData | null>;
   getCurrentBlockchain: () => Promise<IBlockchain | null>;
+  // findAndGetBlockchain: (blockchainName: blockchainsType) => IBlockchain | null;
   changeBlockchain: (blockchainName: blockchainsType) => Promise<any>;
   paymentMethod: (objForPay: IPayObj) => Promise<any>;
   getBalance: (setBalance?: (amount: number) => void) => Promise<number>;

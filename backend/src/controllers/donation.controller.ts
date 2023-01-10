@@ -4,13 +4,13 @@ import { IFilterPeriodItems, periodItemsTypes, exchangeNameTypes, IFullSendDonat
 import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
 import db from '../db.js';
 
-const currenciesFormatApi: { [key in exchangeNameTypes]: string } = {
-  // tEVMOS: 'evmos',
-  // KLAY: 'klay-token',
-  // TRX: 'tron',
-  evmos: '',
-  'klay-token': '',
-};
+// const currenciesFormatApi: { [key in exchangeNameTypes]: string } = {
+//   // tEVMOS: 'evmos',
+//   // KLAY: 'klay-token',
+//   // TRX: 'tron',
+//   evmos: '',
+//   'klay-token': '',
+// };
 
 // const dateParams: IFilterPeriodItems = {
 //   today: 'Today',
@@ -43,13 +43,13 @@ const dateTrancCurrentParams: IFullFilterPeriodItems = {
   custom: 'custom',
 };
 
-const getUsdKoef = async (blockchain: exchangeNameTypes) => {
-  const blockchainForTransfer = currenciesFormatApi[blockchain];
-  const { data } = await axios.default.get(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${blockchainForTransfer}&vs_currencies=usd`,
-  );
-  return +data[blockchainForTransfer].usd;
-};
+// const getUsdKoef = async (blockchain: exchangeNameTypes) => {
+//   const blockchainForTransfer = currenciesFormatApi[blockchain];
+//   const { data } = await axios.default.get(
+//     `https://api.coingecko.com/api/v3/simple/price?ids=${blockchainForTransfer}&vs_currencies=usd`,
+//   );
+//   return +data[blockchainForTransfer].usd;
+// };
 
 const getTimePeriod = (period: periodItemsTypes) => `
     d.created_at >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} 

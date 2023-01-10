@@ -151,7 +151,7 @@ const logoutUser = ({
 }) => {
   dispatch(setUser(initUser));
   localStorage.removeItem(storageWalletKey);
-  dispatch(setSelectedBlockchain(""));
+  dispatch(setSelectedBlockchain(null));
   navigate("/");
 };
 

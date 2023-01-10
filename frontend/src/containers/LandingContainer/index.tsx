@@ -189,11 +189,15 @@ const LandingContainer = () => {
               autoplay
               dots={false}
               slidesToShow={blockchains.length < 6 ? blockchains.length : 6}
+              speed={500}
+              draggable
+              swipeToSlide
               responsive={[
                 {
                   breakpoint: 1200,
                   settings: {
-                    slidesToShow: blockchains.length < 4 ? blockchains.length : 4,
+                    slidesToShow:
+                      blockchains.length < 4 ? blockchains.length : 4,
                   },
                 },
               ]}
