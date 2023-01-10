@@ -36,7 +36,7 @@
     "sass": "^1.54.8",
     "socket.io-client": "^4.5.2",
     "styled-components": "^5.3.6",
-    "types": "file:./types",
+    "types": "file:../types",
     "typescript": "^4.8.2",
     "web-vitals": "^2.1.4",
     "web3.storage": "^4.4.0",

@@ -1,5 +1,5 @@
-import { useContext, useEffect } from "react";
-import { Col, Row } from "antd";
+import { useContext, useEffect, useMemo } from "react";
+import { Carousel, Col, Row } from "antd";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -10,11 +10,10 @@ import { HeaderComponent } from "components/HeaderComponents/HeaderComponent";
 import BaseButton from "components/BaseButton";
 import Logo from "components/HeaderComponents/LogoComponent";
 
-import { setSelectedBlockchain } from "store/types/Wallet";
 import { checkWallet, scrollToPosition } from "utils";
 import { adminPath, storageWalletKey } from "consts";
 import {
-  blockchains,
+  // blockchains,
   cryptoSteps,
   features,
   help,
@@ -40,6 +39,8 @@ const LandingContainer = () => {
     localStorage.getItem(storageWalletKey) &&
       checkWallet({ walletConf, dispatch });
   }, [walletConf]);
+
+  const blockchains = useMemo(() => walletConf.blockchains, [walletConf]);
 
   const { rocketImg, moneyImg, listImg } = images;
 
@@ -184,14 +185,30 @@ const LandingContainer = () => {
           <p className="subtitle">Integrations</p>
           <h2 className="title">Supported crypto</h2>
           <div className="list">
-            {blockchains.map(({ name, image, background }, index) => (
-              <div className="blockchain" key={index}>
-                <div className="icon" style={{ background }}>
-                  <img src={image} alt={name} />
+            <Carousel
+              autoplay
+              dots={false}
+              slidesToShow={blockchains.length < 6 ? blockchains.length : 6}
+              responsive={[
+                {
+                  breakpoint: 1200,
+                  settings: {
+                    slidesToShow: blockchains.length < 4 ? blockchains.length : 4,
+                  },
+                },
+              ]}
+            >
+              {blockchains.map(({ nativeCurrency, icon, color }, index) => (
+                <div className="blockchain" key={index}>
+                  <div className="icon" style={{ background: color }}>
+                    <div className="image">
+                      <img src={icon} alt={nativeCurrency.symbol} />
+                    </div>
+                  </div>
+                  <p className="name">{nativeCurrency.symbol}</p>
                 </div>
-                <p className="name">{name}</p>
-              </div>
-            ))}
+              ))}
+            </Carousel>
           </div>
         </div>
 

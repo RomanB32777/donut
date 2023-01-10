@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "rimraf ./build && npx tsc",
+    "start:prod": "node build/index",
     "start": "npm run build && node build/index",
     "dev": "npx nodemon",
     "lint": "npx eslint ./src",
@@ -24,7 +25,9 @@
     "express": "^4.18.1",
     "pg": "^8.7.3",
     "socket.io": "^4.5.1",
-    "types": "file:./types"
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3",
+    "types": "file:../types"
   },
   "devDependencies": {
     "@types/express": "^4.17.14",
@@ -37,8 +40,6 @@
     "nodemon": "^2.0.20",
     "parcel": "^2.0.0-rc.0",
     "prettier": "^2.8.0",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "rimraf": "^3.0.2"
   }
 }

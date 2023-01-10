@@ -186,10 +186,6 @@ const DonationPageContainer = () => {
       }));
   }, [id]);
 
-  useEffect(() => {
-    console.log(bannerModalInfo);
-  }, [bannerModalInfo]);
-
   const linkForSupport = useMemo(
     () => baseURL + "/support/" + username, //+ "/" + user.security_string,
     [username]

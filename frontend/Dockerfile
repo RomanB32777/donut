@@ -1,10 +1,14 @@
 FROM node:14-alpine AS builder
 
+COPY /types /types
+
 WORKDIR /frontend
 
 COPY . .
 
-RUN npm install
+RUN rm -rf ./types
+
+RUN npm ci
 
 ARG BACKEND_PORT
 

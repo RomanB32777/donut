@@ -2,6 +2,7 @@ import express from 'express';
 import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import path from 'path';
+import dotenv from 'dotenv';
 
 import fileRouter from './routes/file.routes.js';
 import userRouter from './routes/user.routes.js';
@@ -11,7 +12,9 @@ import donationRouter from './routes/donation.routes.js';
 import widgetRouter from './routes/widget.routes.js';
 import notificationRouter from './routes/notification.routes.js';
 
-import { assetsFolder, uploadsFolder } from './consts.js';
+import { assetsFolder, isProduction, uploadsFolder } from './consts.js';
+
+!isProduction && dotenv.config();
 
 const app = express();
 const __dirname = path.resolve();

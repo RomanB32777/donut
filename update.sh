@@ -5,16 +5,14 @@ project_dir=$(dirname "$0")
 types_dir="types"
 modulesWithTypes=('backend' 'frontend' 'sockets')
 
+cd $project_dir
+
 # for i in ${modulesWithTypes[@]}
 # do
 #     rm -rf ./$i/$types_dir
 # done
 
-cd $project_dir
-ls
-
 branch=$(git rev-parse --abbrev-ref HEAD)
-
 echo $branch
 
 git pull origin $branch

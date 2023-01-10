@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "rimraf ./build && npx tsc",
+    "start:prod": "node build/index",
     "start": "npm run build && node build/index",
     "dev": "npx nodemon",
     "lint": "npx eslint ./src",
@@ -28,7 +29,9 @@
     "express": "^4.18.1",
     "express-fileupload": "^1.4.0",
     "pg": "^8.7.3",
-    "types": "file:./types"
+    "typescript": "^4.9.3",
+    "ts-node": "^10.9.1",
+    "types": "file:../types"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
@@ -43,8 +46,6 @@
     "nodemon": "^2.0.20",
     "parcel": "^2.0.0-rc.0",
     "prettier": "^2.8.0",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "rimraf": "^3.0.2"
   }
 }

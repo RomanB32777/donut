@@ -1,12 +1,31 @@
-FROM node:14-alpine
+# stage 1
+FROM node:16-alpine AS builder
+
+COPY /types /types
 
 WORKDIR /sockets
 
 COPY . .
 
-RUN npm install
+RUN rm -rf ./types
 
-EXPOSE 4005
+RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 
-CMD [ "npm", "run", "start" ]
-# RUN npm run start --quiet
+# RUN npm ci --only=production
+RUN npm ci \
+    && npm run build \
+    && npm prune --production
+
+
+# stage 2
+FROM node:16-alpine
+
+WORKDIR /app
+
+COPY --from=builder /sockets /app/
+
+ARG PORT
+
+EXPOSE $PORT
+
+CMD ["npm", "run", "start:prod"]
