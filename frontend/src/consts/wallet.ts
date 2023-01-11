@@ -72,11 +72,11 @@ const walletInfo: IWalletState = {
       blockExplorerUrls: ["https://www.klaytn.com/"],
     },
     {
-      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      address: "0x8c408C8df8A61Da4DA487c3d1a3e7F4a169837A6",
       name: "eth",
       icon: ethIcon,
       chainId: "0x3e9", // 1001
-      chainName: "Klaytn Testnet Baobab",
+      chainName: "ETH Arbitrum Goerli testnet",
       badgeName: "ETH",
       color: "rgba(242, 244, 247, 0.8)",
       scannerLink: "https://etherscan.io/address/",
@@ -126,11 +126,11 @@ const walletInfo: IWalletState = {
       blockExplorerUrls: ["https://www.klaytn.com/"],
     },
     {
-      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      address: "0x353Cc5cF5d1bB7319E814A17c718601ce8D59de8",
       name: "avax",
       icon: avaxIcon,
       chainId: "0x3e9", // 1001
-      chainName: "Klaytn Testnet Baobab",
+      chainName: "Avalanche Testnet",
       badgeName: "AVAX",
       color: "rgba(232, 65, 66, 0.8)",
       scannerLink: "https://etherscan.io/address/",
@@ -144,11 +144,11 @@ const walletInfo: IWalletState = {
       blockExplorerUrls: ["https://www.klaytn.com/"],
     },
     {
-      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
+      address: "",
       name: "usdc",
       icon: usdcIcon,
       chainId: "0x3e9", // 1001
-      chainName: "Klaytn Testnet Baobab",
+      chainName: "USDC Testnet",
       badgeName: "USDC",
       color: "rgba(39, 117, 201, 0.8)",
       scannerLink: "https://etherscan.io/address/",
@@ -162,12 +162,12 @@ const walletInfo: IWalletState = {
       blockExplorerUrls: ["https://www.klaytn.com/"],
     },
     {
-      address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
-      name: "matic",
+      address: "0x4acB5714116aF02a844e8f346EE4CF40B10ED42f",
+      name: "polygon",
       icon: maticIcon,
       chainId: "0x3e9", // 1001
-      chainName: "Klaytn Testnet Baobab",
-      badgeName: "MATIC",
+      chainName: "Polygon Mumbai testnet",
+      badgeName: "Polygon",
       color: "rgba(130, 71, 229, 0.8)",
       scannerLink: "https://etherscan.io/address/",
       nativeCurrency: {

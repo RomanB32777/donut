@@ -13,11 +13,12 @@ CREATE TABLE creators(
     id SERIAL PRIMARY KEY,
     header_banner VARCHAR DEFAULT '',
     background_banner VARCHAR DEFAULT '',
-    welcome_text VARCHAR(255) DEFAULT '',
-    btn_text VARCHAR(255) DEFAULT '',
+    welcome_text VARCHAR(255) DEFAULT 'Thank you for being my crypto supporter!',
+    btn_text VARCHAR(255) DEFAULT 'Donate',
     main_color VARCHAR(255) DEFAULT '#2B4BFB',
     background_color VARCHAR(255) DEFAULT '#212127',
     security_string VARCHAR(100) DEFAULT '',
+    spamFilter BOOLEAN DEFAULT 'false',
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

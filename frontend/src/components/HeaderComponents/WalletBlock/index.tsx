@@ -118,7 +118,7 @@ const WalletBlock = ({
               <div className="image">
                 {avatar && <img src={avatar} alt={`avatar_${username}`} />}
               </div>
-              <span className="title">{shortStr(address, 3)}</span>
+              <span className="title">{shortStr(address, 8)}</span>
             </div>
             <div
               className="icons"

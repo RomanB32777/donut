@@ -6,7 +6,7 @@ type blockchainsType =
   | "bnb"
   | "avax"
   | "usdc"
-  | "matic";
+  | "polygon";
 type exchangeNameTypes =
   | "evmos" // evmos
   | "klay-token" // klay

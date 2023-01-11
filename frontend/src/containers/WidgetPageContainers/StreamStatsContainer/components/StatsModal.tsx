@@ -171,7 +171,7 @@ const StatsModal = ({
                   value: filterDataTypeItems[key as statsDataTypes],
                 }))}
                 value={data_type}
-                setValue={(value) =>
+                onChange={(value) =>
                   setFormData({
                     ...formData,
                     data_type: value as string,
@@ -192,7 +192,7 @@ const StatsModal = ({
                   value: filterCurrentPeriodItems[key as allPeriodItemsTypes],
                 }))}
                 value={time_period}
-                setValue={(value) =>
+                onChange={(value) =>
                   setFormData({
                     ...formData,
                     time_period: value as keyPeriodItems,
@@ -227,7 +227,7 @@ const StatsModal = ({
                 label="Template:"
                 list={currTemplateList}
                 value={currTemplate}
-                setValue={(value) =>
+                onChange={(value) =>
                   setFormData({
                     ...formData,
                     template: value as string[],

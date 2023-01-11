@@ -218,7 +218,7 @@ const DonationsContainer = () => {
                       value: filterPeriodItems[key as periodItemsTypes],
                     }))}
                     modificator={"donations-header__left_select"}
-                    setValue={(selected) =>
+                    onChange={(selected) =>
                       setQueryForm({
                         ...queryForm,
                         timePeriod: selected as string,

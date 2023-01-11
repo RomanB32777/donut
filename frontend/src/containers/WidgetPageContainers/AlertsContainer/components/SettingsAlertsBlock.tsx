@@ -19,6 +19,7 @@ import { dummyImg } from "consts";
 import { IAlert, IDefaultImagesModal } from "appTypes";
 
 const alertSound = new Audio();
+const notVisibleFontsCount = 1;
 
 const SettingsAlertsBlock = ({
   formData,
@@ -54,6 +55,10 @@ const SettingsAlertsBlock = ({
     images: [],
   });
 
+  const [fontList, setFontList] = useState<ISelectItem[]>(
+    fonts.slice(0, notVisibleFontsCount)
+  );
+
   const { isOpen, images } = modalInfo;
 
   const openDefaultImages = async () => {
@@ -77,6 +82,11 @@ const SettingsAlertsBlock = ({
     });
     closeModal();
   };
+
+  const onOpenFontSelect = (isOpen: boolean) =>
+    isOpen
+      ? setFontList(fonts)
+      : setFontList(fonts.slice(0, notVisibleFontsCount));
 
   const playSound = (soundLink: string) => {
     if (alertSound) {
@@ -193,17 +203,18 @@ const SettingsAlertsBlock = ({
             <SelectInput
               label="Message font:"
               value={message_font.name}
-              list={fonts}
+              list={fontList}
               modificator="form-select"
-              setValue={(selected, option) =>
+              onChange={(selected, option) =>
                 setFormData({
                   ...formData,
                   message_font: {
-                    name: option?.title,
+                    name: !Array.isArray(option) && option.title,
                     link: selected as string,
                   },
                 })
               }
+              onDropdownVisibleChange={onOpenFontSelect}
               renderOption={FontSelectOption}
               labelCol={8}
               selectCol={14}
@@ -215,19 +226,20 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Supporter font: "
+              label="Supporter font:"
               value={name_font.name}
-              list={fonts}
+              list={fontList}
               modificator="form-select"
-              setValue={(selected, option) =>
+              onChange={(selected, option) =>
                 setFormData({
                   ...formData,
                   name_font: {
-                    name: option?.title,
+                    name: !Array.isArray(option) && option.title,
                     link: selected as string,
                   },
                 })
               }
+              onDropdownVisibleChange={onOpenFontSelect}
               renderOption={FontSelectOption}
               labelCol={8}
               selectCol={14}
@@ -241,17 +253,18 @@ const SettingsAlertsBlock = ({
             <SelectInput
               label="Donation sum font:"
               value={sum_font.name}
-              list={fonts}
+              list={fontList}
               modificator="form-select"
-              setValue={(selected, option) =>
+              onChange={(selected, option) =>
                 setFormData({
                   ...formData,
                   sum_font: {
-                    name: option?.title,
+                    name: !Array.isArray(option) && option.title,
                     link: selected as string,
                   },
                 })
               }
+              onDropdownVisibleChange={onOpenFontSelect}
               renderOption={FontSelectOption}
               labelCol={8}
               selectCol={14}

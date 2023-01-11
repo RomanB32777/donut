@@ -333,7 +333,7 @@ const BadgePage = ({
                           : null
                       }
                       value={selectedUser}
-                      setValue={(selected) =>
+                      onChange={(selected) =>
                         setSelectedUser(selected as string)
                       }
                       placeholder="Choose your donator address"

@@ -16,10 +16,11 @@ import {
 import {
   userRoles,
   IUserBase,
-  IShortUserData,
-  IUser,
-  IDonatPage,
+  IDonatPageWithoutBanners,
   IEditUserData,
+  IShortUserData,
+  IDonatPage,
+  IUser,
 } from "./types/user";
 import { blockchainsType, exchangeNameTypes } from "./types/wallet";
 import {
@@ -65,10 +66,11 @@ export type {
   // user
   userRoles,
   IUserBase,
-  IShortUserData,
-  IUser,
-  IDonatPage,
+  IDonatPageWithoutBanners,
   IEditUserData,
+  IShortUserData,
+  IDonatPage,
+  IUser,
 
   // wallet
   blockchainsType,

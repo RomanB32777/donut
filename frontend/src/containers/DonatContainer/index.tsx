@@ -253,7 +253,7 @@ const DonatContainer = () => {
 
                 <div className="bottom">
                   <BaseButton
-                    title={btn_text || "Send donations"}
+                    title={btn_text || "Donate"}
                     onClick={sendBtnHandler}
                     padding="10px 25px"
                     fontSize="21px"
@@ -261,9 +261,6 @@ const DonatContainer = () => {
                     disabled={loadingPage}
                     isMain
                   />
-                  {/* <div className="donat-container__payment_balance">
-                    Your balance: {(balance * usdtKoef).toFixed(2)} USD
-                  </div> */}
                 </div>
               </div>
             </div>

@@ -31,6 +31,27 @@ import NoPage from "./pages/NoPage";
 import { checkWallet } from "utils";
 import { adminPath } from "./consts";
 
+// type customRouteType = {
+//   name?: string;
+//   menu?: boolean;
+//   icon?: React.ReactNode;
+//   roleRequired?: string;
+//   protected?: boolean;
+//   menuOrder?: number;
+//   transparet?: boolean;
+//   hiddenLayoutElements?: boolean;
+//   noPaddingMainConteiner?: boolean;
+//   children?: routeTestType[];
+// };
+
+// type routeTestType = customRouteType | RouteObject;
+// // type routeWithChild = {
+// //   children?: routeTestType[];
+// // };
+// // type moreTest = routeTestType & routeWithChild;
+
+// const test: routeTestType[] = [];
+
 interface IRoute {
   path?: string;
   name?: string;

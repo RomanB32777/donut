@@ -366,7 +366,7 @@ const CreateBadgeForm = ({
                       })
                     )}
                     placeholder="Choose blockchain"
-                    setValue={(value) =>
+                    onChange={(value) =>
                       setFormBadge({
                         ...formBadge,
                         blockchain: value as string,

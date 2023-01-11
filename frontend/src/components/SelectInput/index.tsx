@@ -1,6 +1,8 @@
-import { Col, Row, Select } from "antd";
+import { Col, Row, Select, SelectProps } from "antd";
 import clsx from "clsx";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
+import { FC } from "react";
+
+import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 const { Option } = Select;
@@ -10,7 +12,21 @@ export interface ISelectItem {
   value: string;
 }
 
-const SelectInput = ({
+interface ISelectInput extends SelectProps {
+  value: string | string[];
+  list: ISelectItem[] | null; // string[]
+  label?: string;
+  gutter?: number | [number, number];
+  modificator?: string;
+  labelCol?: number;
+  selectCol?: number;
+  isTags?: boolean;
+  disabled?: boolean;
+  descriptionSelect?: string;
+  renderOption?: (item: ISelectItem) => React.ReactNode;
+}
+
+const SelectInput: FC<ISelectInput> = ({
   value,
   list,
   label,
@@ -24,28 +40,11 @@ const SelectInput = ({
   showSearch,
   labelInValue,
   descriptionSelect,
-  dropdownClassName,
-  setValue,
+  popupClassName,
+  onChange,
   renderOption,
   dropdownRender,
-}: {
-  value: string | string[];
-  list: ISelectItem[] | null; // string[]
-  label?: string;
-  gutter?: number | [number, number];
-  placeholder?: string;
-  modificator?: string;
-  labelCol?: number;
-  selectCol?: number;
-  isTags?: boolean;
-  disabled?: boolean;
-  showSearch?: boolean;
-  labelInValue?: boolean;
-  descriptionSelect?: string;
-  dropdownClassName?: string;
-  setValue?: (value: string | string[], option?: any) => void;
-  renderOption?: (item: ISelectItem) => React.ReactNode;
-  dropdownRender?: (menu: React.ReactElement) => JSX.Element;
+  onDropdownVisibleChange,
 }) => {
   const { isMobile } = useWindowDimensions();
 
@@ -74,13 +73,14 @@ const SelectInput = ({
             }
             placeholder={placeholder || ""}
             mode={isTags ? "tags" : undefined}
-            onChange={setValue}
+            onChange={onChange}
             disabled={(list && Boolean(list.length)) || disabled ? false : true}
             dropdownRender={dropdownRender}
-            popupClassName={dropdownClassName}
+            popupClassName={popupClassName}
             optionLabelProp="title"
             showSearch={showSearch}
             labelInValue={labelInValue}
+            onDropdownVisibleChange={onDropdownVisibleChange}
             showArrow
             // bordered={false}
             // open={true}

@@ -7,6 +7,7 @@ const initUser: IUser = {
   wallet_address: "",
   avatar: "",
   created_at: "",
+  spamFilter: false,
   donat_page: {
     header_banner: "",
     background_banner: "",
