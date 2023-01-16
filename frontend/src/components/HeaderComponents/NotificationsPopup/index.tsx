@@ -17,7 +17,7 @@ import { WalletContext } from "contexts/Wallet";
 import { AlertIcon } from "icons";
 import Loader from "components/Loader";
 
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import { getNotifications } from "store/types/Notifications";
 import { getNotificationMessage } from "utils";
 import "./styles.sass";
@@ -56,7 +56,7 @@ const NotificationsPopup = ({
 
   const updateNotification = async ({ id, read }: INotificationStatus) => {
     const { data, status } = await axiosClient.put(
-      `${baseURL}/api/notification/status`,
+      `/api/notification/status`,
       {
         id,
         read,
@@ -118,7 +118,7 @@ const NotificationsPopup = ({
       const currBlockchain = await walletConf.getCurrentBlockchain();
 
       if (currBlockchain) {
-        const url = `${baseURL}/api/notification/${user}?blockchain=${
+        const url = `/api/notification/${user}?blockchain=${
           currBlockchain.name
         }&limit=${LIMIT_NOTIF}&offset=${LIMIT_NOTIF * currentPage}`; // &sort=read&sortDirection=ASC
 
@@ -228,7 +228,7 @@ const NotificationsPopup = ({
         key={n.id}
       >
         {({ ref }) => (
-          <div className="notifications-popup__content-item" ref={ref}>
+          <div className="item" ref={ref}>
             <Badge
               dot={!n[getNotificationUserRole(n.recipient)]}
               className="dot"
@@ -241,8 +241,9 @@ const NotificationsPopup = ({
                       : "donat_supporter",
                   user: n.donation.username,
                   data: {
-                    sum: n.donation.sum_donation,
+                    sum_donation: n.donation.sum_donation,
                     blockchain: n.donation.blockchain,
+                    donation_message: "",
                   },
                 })}
               {n.badge &&

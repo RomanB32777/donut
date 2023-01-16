@@ -1,6 +1,6 @@
 import { initUser } from "consts";
 import { IUserAction } from "appTypes";
-import { SET_MAIN_PERSON_INFO } from "../../types/PersonInfo";
+import { SET_MAIN_PERSON_INFO } from "store/types/PersonInfo";
 
 const PersonInfoReducer = (state = initUser, action: IUserAction) => {
   switch (action.type) {

@@ -1,4 +1,4 @@
-import DonationsContainer from "../containers/DonationsContainer";
+import DonationsContainer from "containers/DonationsContainer";
 
 const DonationsPage = () => <DonationsContainer />;
 

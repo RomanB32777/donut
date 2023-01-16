@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Checkbox, Col, Row } from "antd";
 import FileSaver from "file-saver";
@@ -7,7 +7,6 @@ import { SearchOutlined } from "@ant-design/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { periodItemsTypes } from "types";
 
-import { WalletContext } from "contexts/Wallet";
 import PageTitle from "components/PageTitle";
 import FormInput from "components/FormInput";
 import DatesPicker from "components/DatesPicker";
@@ -20,7 +19,6 @@ import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import axiosClient from "modules/axiosClient";
 import { setUpdateAppNotifications } from "store/types/Notifications";
-import { getUsdKoef } from "utils";
 import { initTableDataItem, ITableData, tableColumns } from "./tableData";
 import { filterPeriodItems } from "consts";
 
@@ -38,8 +36,7 @@ const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
   const dispatch = useDispatch();
-  const { user, notifications, blockchain } = useAppSelector((state) => state);
-  const { walletConf } = useContext(WalletContext);
+  const { user, notifications } = useAppSelector((state) => state);
   const { isMobile, isLaptop } = useWindowDimensions();
 
   const { list, shouldUpdateApp } = notifications;
@@ -54,45 +51,40 @@ const DonationsContainer = () => {
   });
 
   const [tableData, setTableData] = useState<ITableData[]>([]);
-  const [usdtKoef, setUsdtKoef] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const filterBtnClick = () => setVisibleDatesPicker(!visibleDatesPicker);
 
   const getDonationsData = async () => {
     try {
       setLoading(true);
-      const currBlockchain = await walletConf.getCurrentBlockchain();
-
-      if (currBlockchain) {
-        const queryFormString = Object.keys(queryForm).reduce(
-          (acc, key) =>
-            queryForm[key as keyof IQueryForm]
-              ? acc + `&${key}=${queryForm[key as keyof IQueryForm]}`
-              : acc,
-          ""
+      const queryFormString = Object.keys(queryForm).reduce(
+        (acc, key) =>
+          queryForm[key as keyof IQueryForm]
+            ? acc + `&${key}=${queryForm[key as keyof IQueryForm]}`
+            : acc,
+        ""
+      );
+      const { id, roleplay, spam_filter } = user;
+      const { data } = await axiosClient.get(
+        `/api/donation/page/data/${id}?roleplay=${roleplay}${queryFormString}&spam_filter=${spam_filter}`
+      ); // &limit=${LIMIT_DONATS}&offset=${0}
+      if (data && data.length) {
+        const forTableData: ITableData[] = data.map(
+          (donat: any, key: number) => ({
+            key: donat.id || key,
+            name: donat.username,
+            donationToken: donat.sum_donation,
+            donationUSD: (+donat.sum_usd_donation).toFixed(2), // usdtKoef
+            blockchain: donat.blockchain,
+            date: donat.created_at || "-",
+            role: user.roleplay,
+            message: donat.donation_message,
+          })
         );
-        const blockchain = currBlockchain.name;
-        const { data } = await axiosClient.get(
-          `/api/donation/page/data/${user.id}?roleplay=${user.roleplay}${queryFormString}&blockchain=${blockchain}`
-        ); // &limit=${LIMIT_DONATS}&offset=${0}
-        if (data.donations && data.donations.length) {
-          const forTableData: ITableData[] = data.donations.map(
-            (donat: any, key: number) => ({
-              key: donat.id || key,
-              name: donat.username,
-              donationToken: donat.sum_donation,
-              donationUSD: (+donat.sum_donation * usdtKoef).toFixed(2),
-              message: donat.donation_message || "-",
-              blockchain: donat.blockchain || blockchain,
-              date: donat.created_at || "-",
-              role: user.roleplay,
-            })
-          );
-          setTableData(forTableData);
-        } else {
-          setTableData([]);
-        }
+        setTableData(forTableData);
+      } else {
+        setTableData([]);
       }
     } catch (error) {
       console.log(error);
@@ -104,16 +96,18 @@ const DonationsContainer = () => {
   const sendQuery = async () => {
     await getDonationsData();
   };
-
   const exportToExel = () => {
-    const heading = tableColumns.reduce(
-      (acc, curr) => ({ ...acc, [curr.key as string]: curr.title as string }),
-      {}
-    );
+    const heading = Object.keys(initTableDataItem).reduce((acc, curr) => {
+      const fromTableColumns = tableColumns.find((c) => c.key === curr);
+      return {
+        ...acc,
+        [curr]: fromTableColumns ? fromTableColumns.title : curr,
+      };
+    }, {});
 
     const exelData: ITableData[] = tableData.map((d) =>
       Object.keys(d)
-        .filter((d) => d !== "role" && d !== "key")
+        .filter((d) => !["role", "key"].includes(d))
         .reduce(
           (acc, key) => ({ ...acc, [key]: d[key as keyof ITableData] }),
           initTableDataItem
@@ -161,25 +155,12 @@ const DonationsContainer = () => {
   );
 
   useEffect(() => {
-    const initPage = async () => {
-      dispatch(setUpdateAppNotifications(true));
-      const currBlockchain = walletConf.blockchains.find(
-        (b) => b.name === blockchain
-      );
-      if (currBlockchain) {
-        await getUsdKoef(
-          currBlockchain.nativeCurrency.exchangeName,
-          setUsdtKoef
-        );
-      }
-    };
-
-    initPage();
-  }, [walletConf, blockchain]);
+    dispatch(setUpdateAppNotifications(true));
+  }, []);
 
   useEffect(() => {
-    user.id && usdtKoef && shouldUpdateApp && getDonationsData();
-  }, [user, usdtKoef, list, shouldUpdateApp]);
+    user.id && shouldUpdateApp && getDonationsData();
+  }, [user, list, shouldUpdateApp]);
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",
@@ -189,7 +170,7 @@ const DonationsContainer = () => {
   const { timePeriod, searchStr, groupByName } = queryForm;
 
   return (
-    <>
+    <div className="donations-container fadeIn">
       <PageTitle formatId="page_title_donations" />
       <div className="donations-header">
         <Row justify="space-between">
@@ -224,6 +205,7 @@ const DonationsContainer = () => {
                         timePeriod: selected as string,
                       })
                     }
+                    disabled={visibleDatesPicker}
                   />
                 </Col>
                 {!isCreator && (
@@ -324,7 +306,7 @@ const DonationsContainer = () => {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

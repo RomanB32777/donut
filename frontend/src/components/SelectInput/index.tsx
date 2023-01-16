@@ -1,6 +1,6 @@
-import { Col, Row, Select, SelectProps } from "antd";
-import clsx from "clsx";
 import { FC } from "react";
+import clsx from "clsx";
+import { Col, Row, Select, SelectProps } from "antd";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
@@ -13,7 +13,7 @@ export interface ISelectItem {
 }
 
 interface ISelectInput extends SelectProps {
-  value: string | string[];
+  // value: string | string[];
   list: ISelectItem[] | null; // string[]
   label?: string;
   gutter?: number | [number, number];
@@ -36,7 +36,7 @@ const SelectInput: FC<ISelectInput> = ({
   labelCol,
   selectCol,
   isTags,
-  disabled,
+  disabled = false,
   showSearch,
   labelInValue,
   descriptionSelect,
@@ -47,17 +47,18 @@ const SelectInput: FC<ISelectInput> = ({
   onDropdownVisibleChange,
 }) => {
   const { isMobile } = useWindowDimensions();
-
   return (
     <div className="selectInput">
       <Row gutter={gutter || 0}>
-        <Col
-          md={labelCol || (label ? 12 : 0)}
-          xs={24}
-          className="selectInput__label_wrapper"
-        >
-          <span className="selectInput__label">{label}</span>
-        </Col>
+        {label && (
+          <Col
+            md={labelCol || 12}
+            xs={24}
+            className="selectInput__label_wrapper"
+          >
+            <span className="selectInput__label">{label}</span>
+          </Col>
+        )}
         <Col
           md={selectCol || (label ? 12 : 24)}
           xs={24}
@@ -71,17 +72,19 @@ const SelectInput: FC<ISelectInput> = ({
                 ? (value as string[])
                 : (value as string) || null
             }
+            className="app-select"
             placeholder={placeholder || ""}
             mode={isTags ? "tags" : undefined}
             onChange={onChange}
-            disabled={(list && Boolean(list.length)) || disabled ? false : true}
+            disabled={!(list && Boolean(list.length)) || disabled}
             dropdownRender={dropdownRender}
-            popupClassName={popupClassName}
+            popupClassName={clsx("app-dropdown", popupClassName)}
             optionLabelProp="title"
             showSearch={showSearch}
             labelInValue={labelInValue}
             onDropdownVisibleChange={onDropdownVisibleChange}
             showArrow
+            // suffixIcon={<SmallToggleListArrowIcon />}
             // bordered={false}
             // open={true}
           >

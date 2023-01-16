@@ -1,10 +1,10 @@
 import { Col, Row } from "antd";
 import dayjsModule from "modules/dayjsModule";
 
-import { DateTimezoneFormatter } from "../../../../utils";
+import { DateTimezoneFormatter } from "utils";
 import "./styles.sass";
 
-const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
+const WidgetItem = ({ donat }: { donat: any }) => (
   <div className="widget__items">
     <Row gutter={[32, 0]}>
       <Col span={24}>
@@ -16,7 +16,7 @@ const WidgetItem = ({ donat, usdtKoef }: { donat: any; usdtKoef: number }) => (
                   {donat.username}
                 </div>
                 <div className="widget__item_header_sum sum">
-                  {(Number(donat.sum_donation) * usdtKoef).toFixed(2)}&nbsp; USD
+                  {(Number(donat.sum_donation)).toFixed(2)}&nbsp; USD
                 </div>
               </div>
             </Col>

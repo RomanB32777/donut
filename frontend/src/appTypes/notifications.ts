@@ -1,4 +1,4 @@
-import { INotification } from "types";
+import { INotification, INotificationQueries } from "types";
 
 interface INotificationsState {
   list: INotification[];
@@ -10,4 +10,9 @@ interface INotificationsAction {
   payload: INotificationsState;
 }
 
-export type { INotificationsState, INotificationsAction };
+interface INotificationParams extends INotificationQueries {
+  user: number | string;
+  shouldUpdateApp?: boolean;
+}
+
+export type { INotificationsState, INotificationsAction, INotificationParams };

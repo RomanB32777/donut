@@ -54,15 +54,13 @@ const DonatContainer = () => {
 
   const [usdtKoef, setUsdtKoef] = useState(0);
   const [balance, setBalance] = useState(0);
-
   const [form, setForm] = useState<ISendDonat>({
     ...initSendDonatData,
   });
-
   const [loadingPage, setLoadingPage] = useState<boolean>(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
 
-  const { username, message, amount, selectedBlockchain, isAnonymous } = form;
+  const { username, message, amount, selectedBlockchain, is_anonymous } = form;
 
   const closeSuccessPopup = () => {
     setIsOpenSuccessModal(false);
@@ -73,7 +71,7 @@ const DonatContainer = () => {
     navigate(`/${adminPath}/donations`);
   };
 
-  const sendBtnHandler = async () => {
+  const sendBtnHandler = async () =>
     await triggerContract({
       form,
       user,
@@ -86,7 +84,14 @@ const DonatContainer = () => {
       setLoading: setLoadingPage,
       setIsOpenSuccessModal,
     });
-  };
+
+  const isValidateForm = useMemo(
+    () =>
+      Object.keys(form)
+        .filter((key) => !["selectedGoal", "is_anonymous"].includes(key))
+        .every((val) => Boolean(val)),
+    [form]
+  );
 
   useEffect(() => {
     name && dispatch(tryToGetPersonInfo(name));
@@ -94,14 +99,12 @@ const DonatContainer = () => {
 
   useEffect(() => {
     const setUser = async () => {
-      setLoadingPage(true);
       const blockchainData = await walletConf.getBlockchainData();
 
       if (blockchainData) {
         await walletConf.getBalance(setBalance);
         user.id && setForm((prev) => ({ ...prev, username: user.username }));
       }
-      setLoadingPage(false);
     };
     setUser();
   }, [walletConf, user]);
@@ -118,19 +121,9 @@ const DonatContainer = () => {
     personInfo.id && dispatch(getGoals(personInfo.id));
   }, [personInfo]);
 
-  // const isNotRegisterWallet = useMemo(
-  //   () => !metamaskWalletIsIntall() && !tronWalletIsIntall(),
-  //   []
-  // );
-
-  const isValidateForm = useMemo(
-    () => Object.values(form).every((val) => Boolean(val)),
-    [form]
-  );
-
   if (!personInfo.id) return null;
 
-  if ((!isValidateForm && loadingPage) || !blockchain)
+  if (!blockchain)
     return (
       <div className="loader-page">
         <Loader size="big" />
@@ -209,10 +202,10 @@ const DonatContainer = () => {
                       addonAfter={
                         <div className="username-switch">
                           <SwitchForm
-                            label={!isMobile ? "Turn off to be anonymous" : ""}
-                            checked={isAnonymous}
+                            label={!isMobile ? "Turn on to be anonymous" : ""}
+                            checked={is_anonymous}
                             setValue={(flag) =>
-                              setForm({ ...form, isAnonymous: flag })
+                              setForm({ ...form, is_anonymous: flag })
                             }
                             labelModificator="switch-label"
                             maxWidth={250}
@@ -234,7 +227,7 @@ const DonatContainer = () => {
                         });
                       }}
                       modificator="inputs-message"
-                      placeholder={`Message to ${username}`}
+                      placeholder={`Message to ${personInfo.username}`}
                       maxLength={maxLengthDescription}
                       disabled={loadingPage}
                       isVisibleLength
@@ -269,6 +262,7 @@ const DonatContainer = () => {
         <LoadingModalComponent
           open={isValidateForm && loadingPage}
           message="Please don’t close this window untill donation confirmation"
+          centered
         />
         <SuccessModalComponent
           open={isOpenSuccessModal}

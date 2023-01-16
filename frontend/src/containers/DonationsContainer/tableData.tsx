@@ -1,7 +1,7 @@
 import type { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
 import { userRoles } from "types";
-import { DateFormatter, DateTimezoneFormatter } from "../../utils";
+import { DateFormatter, DateTimezoneFormatter } from "utils";
 
 interface ITableData {
   name: string;
@@ -57,8 +57,6 @@ export const tableColumns: ColumnsType<ITableData> = [
     dataIndex: "message",
     key: "message",
     width: "30%",
-    // responsive: ['lg'],
-    // ellipsis: true,
   },
   {
     title: "Date and Time, UTM",

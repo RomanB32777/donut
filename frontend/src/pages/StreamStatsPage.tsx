@@ -1,4 +1,4 @@
-import StreamStatsContainer from "../containers/WidgetPageContainers/StreamStatsContainer";
+import StreamStatsContainer from "containers/WidgetPageContainers/StreamStatsContainer";
 
 const StreamStatsPage = () => <StreamStatsContainer />;
 

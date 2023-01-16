@@ -174,7 +174,7 @@ const StatsModal = ({
                 onChange={(value) =>
                   setFormData({
                     ...formData,
-                    data_type: value as string,
+                    data_type: value as statsDataTypes,
                   })
                 }
                 labelCol={6}

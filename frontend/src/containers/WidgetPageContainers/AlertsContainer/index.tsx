@@ -18,12 +18,12 @@ import {
   addSuccessNotification,
   getFontsList,
   getSounds,
-  loadFont,
+  loadFonts,
   sendFile,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
 import { initAlertData } from "consts";
-import { IAlert, IFont } from "appTypes";
+import { IAlert } from "appTypes";
 import "./styles.sass";
 
 const AlertsContainer = () => {
@@ -42,31 +42,19 @@ const AlertsContainer = () => {
       );
 
       const soundsFolderName: fileUploadTypes = "sound";
+      const { name_font, message_font, sum_font } = data;
 
-      const getFontInfo = (type: string): IFont => ({
-        name: data[`${type}_font`],
-        link:
-          fonts.find(({ value }) => value === data[`${type}_font`])?.key || "",
+      const loadedFonts = await loadFonts({
+        fonts,
+        fields: { name_font, message_font, sum_font },
       });
-
-      const name_font = getFontInfo("name");
-      const message_font = getFontInfo("message");
-      const sum_font = getFontInfo("sum");
-
-      await Promise.all([
-        loadFont(name_font),
-        loadFont(message_font),
-        loadFont(sum_font),
-      ]);
 
       const userData: IAlert = {
         ...data,
-        name_font,
-        message_font,
-        sum_font,
+        ...loadedFonts,
         banner: {
           ...formData.banner,
-          preview: data.banner_link || "",
+          preview: data.banner || "",
         },
         sound: data.sound.split(`${soundsFolderName}/`)[1] || "",
       };
@@ -88,33 +76,16 @@ const AlertsContainer = () => {
   const sendData = async () => {
     try {
       setLoading(true);
-      const {
-        banner,
-        message_color,
-        message_font,
-        name_color,
-        name_font,
-        sum_color,
-        sum_font,
-        duration,
-        sound,
-        voice,
-        gender_voice,
-      } = formData;
+      const { banner, message_font, name_font, sum_font, sound, ...fieldValues } = formData;
 
       const soundInfo = soundsList.find((s) => s.name === sound);
 
       const sendingData = JSON.stringify({
-        message_color,
         message_font: message_font.name,
-        name_color,
         name_font: name_font.name,
-        sum_color,
         sum_font: sum_font.name,
-        duration,
         sound: soundInfo?.link || "",
-        voice,
-        gender_voice,
+        ...fieldValues,
       });
 
       if (banner.file || banner.preview) {
@@ -180,11 +151,7 @@ const AlertsContainer = () => {
   );
 
   return (
-    <div className="alerts-container">
-      {/* {fonts.length &&
-        fonts.map((font) => (
-          <StyledText font={font.value} fontLink={font.key} />
-        ))} */}
+    <div className="alerts-container fadeIn">
       <PageTitle formatId="page_title_alerts" />
       <div className="link-top">
         <p>

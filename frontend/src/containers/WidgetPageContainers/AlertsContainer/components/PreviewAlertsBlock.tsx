@@ -1,5 +1,5 @@
 import { Col } from "antd";
-import StyledText from "components/StyledText";
+import { getFontColorStyles } from "utils";
 import { dummyImg } from "consts";
 import { IAlert } from "appTypes";
 
@@ -29,31 +29,17 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
 
         <div className="preview-block_title">
           <p>
-            <StyledText
-              color={name_color}
-              font={name_font.name}
-              fontLink={name_font.link}
-            >
+            <span style={getFontColorStyles(name_color, name_font)}>
               MrBeast
-            </StyledText>
+            </span>
             &nbsp; -&nbsp;
-            <StyledText
-              color={sum_color}
-              font={sum_font.name}
-              fontLink={sum_font.link}
-            >
-              10 USD
-            </StyledText>
+            <span style={getFontColorStyles(sum_color, sum_font)}>10 USD</span>
           </p>
         </div>
         <p className="preview-block_message">
-          <StyledText
-            color={message_color}
-            font={message_font.name}
-            fontLink={message_font.link}
-          >
+          <span style={getFontColorStyles(message_color, message_font)}>
             Thank you for your stream!
-          </StyledText>
+          </span>
         </p>
       </div>
     </Col>

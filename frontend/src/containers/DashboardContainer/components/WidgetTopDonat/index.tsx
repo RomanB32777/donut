@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Empty } from "antd";
 import { stringFormatTypes } from "types";
 import axiosClient from "modules/axiosClient";
-import { WalletContext } from "contexts/Wallet";
 
 import SelectComponent from "components/SelectComponent";
 import TableComponent from "components/TableComponent";
@@ -13,19 +12,17 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { ITableData, tableColums } from "./tableData";
 import { getTimePeriodQuery } from "utils";
 import { filterPeriodItems, widgetApiUrl } from "consts";
-import "./styles.sass";
 
 const LIMIT_DONATS = 6;
 
-const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
+const WidgetTopDonat = () => {
   const { isTablet } = useWindowDimensions();
   const { user, notifications } = useAppSelector((state) => state);
-  const { walletConf } = useContext(WalletContext);
 
   const { list, shouldUpdateApp } = notifications;
-  
+
   const [topDonations, setTopDonations] = useState<ITableData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
@@ -33,20 +30,16 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
   const getTopDonations = async (timePeriod: string) => {
     try {
       setLoading(true);
-      const currBlockchain = await walletConf.getCurrentBlockchain();
-
-      if (currBlockchain) {
-        const blockchain = currBlockchain.name;
-        const { data } = await axiosClient.get(
-          `${widgetApiUrl}/top-donations/${user.id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&blockchain=${blockchain}`
-        );
-        if (data) {
-          const forTableData: ITableData[] = data.map((donat: any) => ({
-            key: donat.id,
-            ...donat,
-          }));
-          setTopDonations(forTableData);
-        }
+      const { id, spam_filter } = user;
+      const { data, status } = await axiosClient.get(
+        `${widgetApiUrl}/top-donations/${id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&spam_filter=${spam_filter}`
+      );
+      if (status === 200) {
+        const forTableData: ITableData[] = data.map((donat: any) => ({
+          ...donat,
+          key: donat.id,
+        }));
+        setTopDonations(forTableData);
       }
     } catch (error) {
       console.log(error);
@@ -86,9 +79,7 @@ const WidgetTopDonat = ({ usdtKoef }: { usdtKoef: number }) => {
         {isTablet &&
           Boolean(topDonations.length) &&
           topDonations.map((donat: any) => {
-            return (
-              <WidgetItem key={donat.key} donat={donat} usdtKoef={usdtKoef} />
-            );
+            return <WidgetItem key={donat.key} donat={donat} />;
           })}
         {isTablet && !Boolean(topDonations.length) && (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

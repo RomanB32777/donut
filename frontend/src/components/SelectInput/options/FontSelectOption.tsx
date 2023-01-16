@@ -1,9 +1,18 @@
 import { IFont } from "appTypes";
 import { InView } from "react-intersection-observer";
 
-import StyledText from "components/StyledText";
 import { loadFont } from "utils";
 import { ISelectItem } from "..";
+
+const FontStyleElement = ({ fontName }: { fontName: string }) => (
+  <span
+    style={{
+      fontFamily: `"${fontName}", sans-serif`,
+    }}
+  >
+    {fontName}
+  </span>
+);
 
 const FontSelectOption = ({ value, key }: ISelectItem) => {
   const handleChange = (font: IFont) => async (status: boolean) => {
@@ -13,12 +22,12 @@ const FontSelectOption = ({ value, key }: ISelectItem) => {
   return (
     <InView onChange={handleChange({ name: value, link: key })}>
       {({ ref }) => (
-        <StyledText font={value} fontLink={key} ref={ref}>
-          {value}
-        </StyledText>
+        <div ref={ref}>
+          <FontStyleElement fontName={value} />
+        </div>
       )}
     </InView>
   );
 };
 
-export default FontSelectOption;
+export { FontStyleElement, FontSelectOption };

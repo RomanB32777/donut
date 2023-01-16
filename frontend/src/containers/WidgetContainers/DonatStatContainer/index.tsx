@@ -1,21 +1,21 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
-import { IStatData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import axiosClient, { baseURL } from "modules/axiosClient";
-import { WalletContext } from "contexts/Wallet";
+import axiosClient from "modules/axiosClient";
 import {
   getCurrentTimePeriodQuery,
+  getFontColorStyles,
+  getFontsList,
   getStatsDataTypeQuery,
-  getUsdKoef,
+  loadFonts,
   renderStatItem,
 } from "utils";
 import { tryToGetPersonInfo } from "store/types/PersonInfo";
 import { alignFlextItemsList, alignItemsList, widgetApiUrl } from "consts";
-import { AlignText } from "appTypes";
+import { AlignText, IWidgetStatData } from "appTypes";
 import "./styles.sass";
 
 const LIMIT = 3;
@@ -23,15 +23,12 @@ const LIMIT = 3;
 const DonatStatContainer = () => {
   const dispatch = useDispatch();
   const { id, name } = useParams();
-  const { walletConf } = useContext(WalletContext);
-
-  const { user, notifications } = useAppSelector((state) => state);
+  const { personInfo, notifications } = useAppSelector((state) => state);
   const { list } = notifications;
 
   const [lastNotif, setLastNotif] = useState<any>({});
   const [renderList, setRenderList] = useState<any[]>([]);
-  const [statData, setStatData] = useState<IStatData | null>(null);
-  const [usdtKoef, setUsdtKoef] = useState<number>(0);
+  const [statData, setStatData] = useState<IWidgetStatData | null>(null);
 
   const getDonations = async () => {
     if (statData) {
@@ -39,18 +36,14 @@ const DonatStatContainer = () => {
         const { time_period, data_type } = statData;
         const customPeriod = time_period.split("-");
 
-        const currBlockchain = await walletConf.getCurrentBlockchain();
-
-        if (currBlockchain) {
-          const { data } = await axiosClient.get(
-            `${widgetApiUrl}/${data_type}/${user.id}?limit=${LIMIT}&${
-              Boolean(customPeriod.length > 1)
-                ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
-                : `timePeriod=${time_period}`
-            }&isStatPage=true&blockchain=${currBlockchain.name}`
-          );
-          data && data.length && setRenderList(data);
-        }
+        const { data } = await axiosClient.get(
+          `${widgetApiUrl}/${data_type}/${personInfo.id}?limit=${LIMIT}&${
+            Boolean(customPeriod.length > 1)
+              ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
+              : `timePeriod=${time_period}&spam_filter=${personInfo.spam_filter}`
+          }&isStatPage=true`
+        );
+        data && data.length && setRenderList(data);
       } catch (error) {
         console.log(error);
       }
@@ -58,40 +51,46 @@ const DonatStatContainer = () => {
   };
 
   const getStatData = async (id: string) => {
-    const response = await axiosClient.get(
-      `${baseURL}/api/widget/stats-widget/${id}`
+    const { data, status } = await axiosClient.get(
+      `/api/widget/stats-widget/${id}`
     );
-    if (response.status === 200) {
-      setStatData(response.data);
+
+    if (status === 200) {
+      const fonts = await getFontsList();
+
+      const { title_font, content_font } = data;
+
+      const loadedFonts = await loadFonts({
+        fonts,
+        fields: { title_font, content_font },
+      });
+
+      const widgetData: IWidgetStatData = {
+        ...data,
+        ...loadedFonts,
+      };
+
+      setStatData(widgetData);
     }
   };
-
-  useEffect(() => {
-    const initPage = async () => {
-      const currBlockchain = await walletConf.getCurrentBlockchain();
-      if (currBlockchain)
-        await getUsdKoef(
-          currBlockchain.nativeCurrency.exchangeName,
-          setUsdtKoef
-        );
-    };
-
-    initPage();
-  }, [walletConf]);
 
   useEffect(() => {
     name && dispatch(tryToGetPersonInfo(name));
   }, [name]);
 
   useEffect(() => {
-    statData && user.id && getDonations();
-  }, [user, statData, lastNotif]);
+    console.log(lastNotif);
+
+    statData && personInfo.id && getDonations();
+  }, [personInfo, statData, lastNotif]);
 
   useEffect(() => {
     id && getStatData(id);
   }, [id]);
 
   useEffect(() => {
+    console.log(list);
+
     list.length && setLastNotif(list[0].donation);
   }, [list]);
 
@@ -112,8 +111,15 @@ const DonatStatContainer = () => {
   );
 
   if (statData) {
-    const { title_color, bar_color, content_color, aligment, template } =
-      statData;
+    const {
+      title_color,
+      title_font,
+      bar_color,
+      content_color,
+      content_font,
+      aligment,
+      template,
+    } = statData;
 
     return (
       <div className="donat-stat">
@@ -122,7 +128,7 @@ const DonatStatContainer = () => {
             className="donat-stat_title"
             style={{
               background: bar_color,
-              color: title_color,
+              ...getFontColorStyles(title_color, title_font),
             }}
           >
             {typeStatData} {timePeriodName && timePeriodName.toLowerCase()}
@@ -136,13 +142,13 @@ const DonatStatContainer = () => {
             <div className="donat-stat_list">
               {Boolean(renderList) &&
                 renderList.map((item) => {
-                  const renderStr = renderStatItem(template, item, usdtKoef);
+                  const renderStr = renderStatItem(template, item);
                   return (
                     <p
                       key={renderStr}
                       className="donat-stat_list-item"
                       style={{
-                        color: content_color,
+                        ...getFontColorStyles(content_color, content_font),
                         textAlign:
                           (alignItemsList[aligment] as AlignText) || "center",
                         // aligment.toLowerCase()
@@ -159,7 +165,7 @@ const DonatStatContainer = () => {
     );
   }
 
-  return null;
+  return <></>;
 };
 
 export default DonatStatContainer;

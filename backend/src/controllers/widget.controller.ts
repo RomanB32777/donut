@@ -10,7 +10,7 @@ import { assetsFolder, isProduction, soundsFolderName, uploadsFolder } from '../
 
 // import dotenv from 'dotenv';
 // dotenv.config();
-const speechClient = new TextToSpeechClient();
+// const speechClient = new TextToSpeechClient();
 
 class WidgetController {
   // alerts
@@ -18,20 +18,15 @@ class WidgetController {
     try {
       const { alertData, username, userId, filelink } = req.body;
       const parseData = JSON.parse(alertData);
+
+      const dataKeys = Object.keys(parseData);
+      const dataValues = Object.values(parseData);
+
       const updatedDBWidget = await db.query(
         `UPDATE alerts SET 
-                message_color = $1,
-                message_font = $2,
-                name_color = $3,
-                name_font = $4,
-                sum_color = $5,
-                sum_font = $6,
-                duration = $7,
-                sound = $8,
-                voice = $9,
-                gender_voice = $10
-                WHERE creator_id = $11 RETURNING *;`,
-        [...Object.values(parseData), userId],
+                ${dataKeys.map((key, index) => `${key} = $${index + 1}`)}
+                WHERE creator_id = $${dataKeys.length + 1} RETURNING *;`,
+        [...dataValues, userId],
       );
       const updatedWidget = updatedDBWidget.rows[0];
 
@@ -44,22 +39,22 @@ class WidgetController {
 
         const updatedBannerWidget = await db.query(
           `UPDATE alerts SET 
-            banner_link = $1
+            banner = $1
             WHERE creator_id = $2 RETURNING *;`,
           [(isProduction ? '/' : `${req.protocol}://${req.headers.host}/`) + filepath, userId],
         );
 
         file.mv(filepath, (err) => err && console.log(err));
 
-        return res.status(200).json({ ...updatedWidget, banner_link: updatedBannerWidget.rows[0].banner_link }); //
+        return res.status(200).json({ ...updatedWidget, banner: updatedBannerWidget.rows[0].banner }); //
       } else if (filelink) {
         await db.query(
           `UPDATE alerts SET 
-            banner_link = $1
+            banner = $1
             WHERE creator_id = $2 RETURNING *;`,
           [filelink, userId],
         );
-        return res.status(200).json({ ...updatedWidget, banner_link: filelink });
+        return res.status(200).json({ ...updatedWidget, banner: filelink });
       }
       return res.status(200).json(updatedWidget);
     } catch (error) {
@@ -73,10 +68,10 @@ class WidgetController {
       const data = await db.query('SELECT * FROM alerts WHERE creator_id = $1', [creator_id]);
       const alertInfo = data.rows[0];
       if (alertInfo) {
-        const { sound, banner_link } = alertInfo;
+        const { sound, banner } = alertInfo;
         const appLink = `${req.protocol}://${req.headers.host}/`;
         const soundPath = isProduction ? sound.slice(1) : sound.split(appLink)[1];
-        const bannerPath = isProduction ? banner_link.slice(1) : banner_link.split(appLink)[1];
+        const bannerPath = isProduction ? banner.slice(1) : banner.split(appLink)[1];
 
         if (!existsSync(soundPath)) {
           const defaultFilesPath = `${assetsFolder}/${soundsFolderName}`;
@@ -99,7 +94,7 @@ class WidgetController {
         if (!existsSync(bannerPath)) {
           const updatedAlertWidget = await db.query(
             `UPDATE alerts SET 
-              banner_link = ''
+              banner = ''
               WHERE creator_id = $1 RETURNING *;`,
             [creator_id],
           );
@@ -188,25 +183,15 @@ class WidgetController {
 
           res.status(200).json(updatedGoalWidget.rows[0]);
         }
-      } else if (goalData.title) {
-        const updatedGoalWidget = await db.query(
-          `UPDATE goals SET 
-                    title = $1,
-                    amount_goal = $2
-                    WHERE creator_id = $3 AND id = $4 RETURNING *;`,
-          [...Object.values(goalData), creator_id, id],
-        );
-        res.status(200).json(updatedGoalWidget.rows[0]);
       } else {
+        const dataKeys = Object.keys(goalData);
         const updatedGoalWidget = await db.query(
-          `UPDATE goals SET 
-                    title_color = $1,
-                    progress_color = $2,
-                    background_color = $3
-                    WHERE creator_id = $4 AND id = $5 RETURNING *;`,
-          [...Object.values(goalData), creator_id, id],
+          `UPDATE goals SET
+              ${dataKeys.map((key, index) => `${key} = $${index + 1}`)}
+              WHERE creator_id = ${creator_id} AND id = '${id}' RETURNING *;`,
+          [...Object.values(goalData)],
         );
-        res.status(200).json(updatedGoalWidget.rows[0]);
+        return res.status(200).json(updatedGoalWidget.rows[0]);
       }
     } catch (error) {
       next(error);
@@ -262,30 +247,14 @@ class WidgetController {
     try {
       const { statData, id } = req.body;
 
-      if (statData.title) {
-        const updatedStatWidget = await db.query(
-          `UPDATE stats SET 
-                        title = $1,
-                        stat_description = $2,
-                        template = $3,
-                        data_type = $4,
-                        time_period = $5
-                        WHERE id = $6 RETURNING *;`,
-          [...Object.values(statData), id],
-        );
-        res.status(200).json(updatedStatWidget.rows[0]);
-      } else {
-        const updatedStatWidget = await db.query(
-          `UPDATE stats SET 
-                        title_color = $1,
-                        bar_color = $2,
-                        content_color = $3,
-                        aligment = $4
-                        WHERE id = $5 RETURNING *;`,
-          [...Object.values(statData), id],
-        );
-        res.status(200).json(updatedStatWidget.rows[0]);
-      }
+      const dataKeys = Object.keys(statData);
+      const updatedStatWidget = await db.query(
+        `UPDATE stats SET
+                ${dataKeys.map((key, index) => `${key} = $${index + 1}`)}
+                WHERE id = '${id}' RETURNING *;`,
+        [...Object.values(statData)],
+      );
+      return res.status(200).json(updatedStatWidget.rows[0]);
     } catch (error) {
       next(error);
     }
@@ -304,7 +273,6 @@ class WidgetController {
   async generateSound(req: Request, res: Response, next: NextFunction) {
     try {
       const { text, gender_voice } = req.query;
-
       const request = {
         input: { text },
         voice: { languageCode: 'en-US', ssmlGender: gender_voice }, // MALE // FEMALE
@@ -316,14 +284,14 @@ class WidgetController {
         'Transfer-Encoding': 'chunked',
       });
 
-      const [response] = await speechClient.synthesizeSpeech(
-        request as google.cloud.texttospeech.v1.ISynthesizeSpeechRequest,
-      );
-      if (response.audioContent) {
-        const bufferStream = new Stream.PassThrough();
-        bufferStream.end(Buffer.from(response.audioContent));
-        bufferStream.pipe(res);
-      }
+      // const [response] = await speechClient.synthesizeSpeech(
+      //   request as google.cloud.texttospeech.v1.ISynthesizeSpeechRequest,
+      // );
+      // if (response.audioContent) {
+      //   const bufferStream = new Stream.PassThrough();
+      //   bufferStream.end(Buffer.from(response.audioContent));
+      //   bufferStream.pipe(res);
+      // }
     } catch (error) {
       console.log(`api, ${error}`);
       next(error);
@@ -332,9 +300,7 @@ class WidgetController {
 
   async uploadSound(req: Request, res: Response, next: NextFunction) {
     try {
-      const { username, userId } = req.body;
-
-      console.log(username, userId);
+      const { username } = req.body;
 
       if (req.files) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;

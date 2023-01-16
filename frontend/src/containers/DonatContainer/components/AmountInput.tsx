@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ISendDonat } from "types";
+import { blockchainsSymbols, ISendDonat } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import FormInput from "components/FormInput";
@@ -28,7 +28,7 @@ const AmountInput = ({
   const blockchain = useAppSelector(({ blockchain }) => blockchain);
   const { walletConf } = useContext(WalletContext);
 
-  const [tabCount, setTabCount] = useState(""); // String(tabCountTypes[0])
+  const [tabCount, setTabCount] = useState<number | null>(null); // String(tabCountTypes[0])
 
   const { amount, selectedBlockchain } = form;
 
@@ -36,7 +36,7 @@ const AmountInput = ({
     selected,
     blockchainInfo,
   }: {
-    selected: string;
+    selected: blockchainsSymbols;
     blockchainInfo: IBlockchain;
   }) => {
     setForm((form) => ({
@@ -47,8 +47,17 @@ const AmountInput = ({
     await getUsdKoef(blockchainInfo.nativeCurrency.exchangeName, setUsdtKoef);
   };
 
-  const setBlockchain = async (selected: string) => {
-    const blockchainInfo = walletConf.blockchains.find(
+  const setAmountValue = (num: string) => {
+    const amountValue = +num;
+    setForm((form) => ({
+      ...form,
+      amount: amountValue,
+    }));
+    setTabCount(tabCountTypes.includes(amountValue) ? amountValue : null);
+  };
+
+  const setBlockchain = async (selected: blockchainsSymbols) => {
+    const blockchainInfo = walletConf.main_contract.blockchains.find(
       (b) => b.nativeCurrency.symbol === selected
     );
     if (blockchainInfo) {
@@ -59,16 +68,20 @@ const AmountInput = ({
     }
   };
 
+  const setTabContent = (key: string) => {
+    setTabCount(+key);
+    setForm((form) => ({
+      ...form,
+      amount: +key,
+    }));
+  };
+
   const selectedBlockchainIconInfo = useMemo(() => {
-    const info = walletConf.blockchains.find(
+    const info = walletConf.main_contract.blockchains.find(
       (b) => b.nativeCurrency.symbol === selectedBlockchain
     );
-    if (info)
-      return {
-        icon: info.icon,
-        color: info.color,
-      };
-  }, [selectedBlockchain]);
+    return info;
+  }, [walletConf, selectedBlockchain]);
 
   const countTabs = useMemo(
     () =>
@@ -81,7 +94,7 @@ const AmountInput = ({
 
   useEffect(() => {
     if (blockchain) {
-      const blockchainInfo = walletConf.blockchains.find(
+      const blockchainInfo = walletConf.main_contract.blockchains.find(
         (b) => b.name === blockchain
       );
       if (blockchainInfo) {
@@ -101,13 +114,8 @@ const AmountInput = ({
   return (
     <div className="item">
       <FormInput
-        value={String(amount)}
-        setValue={(num) => {
-          setForm((form) => ({
-            ...form,
-            amount: +num,
-          }));
-        }}
+        value={amount ? String(amount) : ""}
+        setValue={setAmountValue}
         // disabled={loading}
         typeInput="number"
         addonAfter={
@@ -130,7 +138,7 @@ const AmountInput = ({
                 <span>{selectedBlockchain}</span>
               </div>
             }
-            list={walletConf.blockchains.map(
+            list={walletConf.main_contract.blockchains.map(
               ({ nativeCurrency }) => nativeCurrency.symbol
             )}
             selected={selectedBlockchain}
@@ -144,14 +152,8 @@ const AmountInput = ({
         descriptionInput={
           <>
             <TabsComponent
-              setTabContent={(key) => {
-                setTabCount(key);
-                setForm((form) => ({
-                  ...form,
-                  amount: +key,
-                }));
-              }}
-              activeKey={tabCount}
+              setTabContent={setTabContent}
+              activeKey={String(tabCount)}
               tabs={countTabs}
             />
             <p className="usd-equal">

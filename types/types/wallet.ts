@@ -1,3 +1,14 @@
+enum BlockchainsTypesEnum {
+  evmos = "evmos",
+  klay = "klay-token",
+  usdt = "tether",
+  eth = "ethereum",
+  bnb = "binancecoin",
+  avax = "avalanche-2",
+  usdc = "usd-coin",
+  polygon = "matic-network",
+}
+
 type blockchainsType =
   | "evmos"
   | "klay"
@@ -7,6 +18,7 @@ type blockchainsType =
   | "avax"
   | "usdc"
   | "polygon";
+
 type exchangeNameTypes =
   | "evmos" // evmos
   | "klay-token" // klay
@@ -17,4 +29,15 @@ type exchangeNameTypes =
   | "usd-coin" // usdc
   | "matic-network"; // matic
 
-export type { blockchainsType, exchangeNameTypes };
+type blockchainsSymbols = "KLAY" | "ETHs" | "AGOR" | "tBNB" | "AVAX" | "MATIC";
+
+type BlockchainNameToExchangeName = {
+  [key in blockchainsSymbols]: exchangeNameTypes;
+};
+
+export type {
+  blockchainsType,
+  exchangeNameTypes,
+  blockchainsSymbols,
+  BlockchainNameToExchangeName,
+};

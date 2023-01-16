@@ -1,6 +1,6 @@
 import { Col, Row, Switch, SwitchProps } from "antd";
 import clsx from "clsx";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISliderProps extends SwitchProps {
@@ -42,7 +42,7 @@ const SwitchForm = ({
       >
         {label && (
           <Col
-            md={labelCol || (label ? 12 : 0)}
+            md={labelCol || 12}
             xs={24}
             style={{
               display: "flex",

@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { Navigate, useRoutes, Outlet } from "react-router";
 import { useDispatch } from "react-redux";
-import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "./icons";
+import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "icons";
 import {
   PieChartOutlined,
   SettingOutlined,
@@ -9,27 +9,27 @@ import {
 } from "@ant-design/icons";
 import { userRoles } from "types";
 
-import { useAppSelector } from "./hooks/reduxHooks";
+import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "contexts/Wallet";
-import MainPage from "./pages/MainPage";
-import BadgesPage from "./pages/BadgesPage";
-import DonatPage from "./pages/DonatPage";
-import DonationsPage from "./pages/DonationsPage";
-import AlertsPage from "./pages/AlertsPage";
-import WidgetsPage from "./pages/WidgetsPage";
-import DonationPage from "./pages/DonationPage";
-import StreamStatsPage from "./pages/StreamStatsPage";
-import DonationGoalsPage from "./pages/DonationGoalsPage";
-import SettingsPage from "./pages/SettingsPage";
-import RegistrationContainer from "./containers/RegistrationContainer";
-import Loader from "./components/Loader";
-import DonatMessagePage from "./pages/DonatMessagePage";
-import DonatGoalPage from "./pages/DonatGoalPage";
-import DonatStatPage from "./pages/DonatStatPage";
-import LandingPage from "./pages/LandingPage";
-import NoPage from "./pages/NoPage";
+import MainPage from "pages/MainPage";
+import BadgesPage from "pages/BadgesPage";
+import DonatPage from "pages/DonatPage";
+import DonationsPage from "pages/DonationsPage";
+import AlertsPage from "pages/AlertsPage";
+import WidgetsPage from "pages/WidgetsPage";
+import DonationPage from "pages/DonationPage";
+import StreamStatsPage from "pages/StreamStatsPage";
+import DonationGoalsPage from "pages/DonationGoalsPage";
+import SettingsPage from "pages/SettingsPage";
+import RegistrationContainer from "containers/RegistrationContainer";
+import Loader from "components/Loader";
+import DonatAlertPage from "pages/DonatAlertPage";
+import DonatGoalPage from "pages/DonatGoalPage";
+import DonatStatPage from "pages/DonatStatPage";
+import LandingPage from "pages/LandingPage";
+import NoPage from "pages/NoPage";
 import { checkWallet } from "utils";
-import { adminPath } from "./consts";
+import { adminPath } from "consts";
 
 // type customRouteType = {
 //   name?: string;
@@ -50,7 +50,7 @@ import { adminPath } from "./consts";
 // // };
 // // type moreTest = routeTestType & routeWithChild;
 
-// const test: routeTestType[] = [];
+// const test: routeTestType[] = []; 
 
 interface IRoute {
   path?: string;
@@ -202,7 +202,7 @@ export const routers: IRoute[] = [
   },
   {
     path: "donat-message/:name/:token",
-    element: <DonatMessagePage />,
+    element: <DonatAlertPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },

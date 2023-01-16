@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { blockchainsType, exchangeNameTypes } from "types";
+import { blockchainsSymbols, blockchainsType, exchangeNameTypes } from "types";
 
 interface IWalletInitData {
   userAddress: string | null;
@@ -42,9 +42,8 @@ interface IBlockchain {
   chainName: string;
   badgeName: string;
   color: string;
-  scannerLink: string;
   nativeCurrency: {
-    symbol: string;
+    symbol: blockchainsSymbols;
     name: string;
     exchangeName: exchangeNameTypes;
     decimals?: number;
@@ -59,13 +58,18 @@ interface IBlockchainData {
   address: string;
 }
 
-interface IWalletState {
-  blockchains: IBlockchain[];
-  icon: string;
-  linkInstall: string;
-  abi: any[];
-  bytecode: string;
-}
+type contractTypes = "main_contract" | "commission_contract" | "nft_contract";
+
+type IWalletState = {
+  [contract in contractTypes]: {
+    blockchains: IBlockchain[];
+    icon: string;
+    linkInstall: string;
+    abi: any[];
+    bytecode: string;
+    address?: string;
+  };
+};
 
 type blockchainPayload = blockchainsType | null;
 
@@ -83,13 +87,18 @@ interface IWalletMethods {
   paymentMethod: (objForPay: IPayObj) => Promise<any>;
   getBalance: (setBalance?: (amount: number) => void) => Promise<number>;
   createContract: (objForContract: ICreateContractObj) => Promise<any>;
-  getBadgeURI: (contract_address: string) => Promise<string | null>;
-  mintBadge: (objForMint: IMintBadgeObj) => Promise<any>;
+  getBadgeURI: (contractAddress: string) => Promise<string | null>;
+  mint: (objForMint: IMintBadgeObj) => Promise<any>;
   getQuantityBalance: (
     objForQuantityBalance: IQuantityBalanceObj
   ) => Promise<any>;
+  payForBadgeCreation: (price: number) => Promise<any>
+  getGasPrice: () => Promise<number>;
+  getGasPriceForMethod: (methodName: methodNames) => Promise<number>;
   // getTransactionInfo: (hash: string) => Promise<any>;
 }
+
+type methodNames = keyof IWalletMethods;
 
 interface IWalletConf extends IWalletState, IWalletMethods {}
 
@@ -111,7 +120,9 @@ export type {
   IWalletState,
   blockchainPayload,
   IBlockchainAction,
+  IBlockchainData,
   IWalletMethods,
+  methodNames,
   IWalletConf,
   currencyBlockchainsType,
   IWalletContext,

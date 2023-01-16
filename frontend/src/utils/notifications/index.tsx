@@ -1,12 +1,13 @@
 import { Store } from "react-notifications-component";
-import { baseURL, isProduction } from "../../modules/axiosClient";
+import { IDonationShortInfo } from "types";
+import { baseURL, isProduction } from "modules/axiosClient";
 import {
   INotification,
+  INotificationMessage,
   INotificationWithoutType,
-  typeNotification,
 } from "./types";
 
-export const addNotification = ({ type, title, message }: INotification) => {
+const addNotification = ({ type, title, message }: INotification) => {
   Store.addNotification({
     title,
     message: message || "",
@@ -22,41 +23,35 @@ export const addNotification = ({ type, title, message }: INotification) => {
   });
 };
 
-export const addAuthNotification = () =>
+const addAuthNotification = () =>
   addNotification({
     title: "Authorization",
     message: "To perform this action, please register",
     type: "info",
   });
 
-export const addAuthWalletNotification = (wallet: string) =>
+const addAuthWalletNotification = (wallet: string) =>
   addNotification({
     title: "Authorization",
     message: `You need to log in to your wallet ${wallet}`,
     type: "warning",
   });
 
-export const addErrorNotification = ({
-  message,
-  title,
-}: INotificationWithoutType) =>
+const addErrorNotification = ({ message, title }: INotificationWithoutType) =>
   addNotification({
     title: title || "Error",
     message,
     type: "danger",
   });
 
-export const addSuccessNotification = ({
-  message,
-  title,
-}: INotificationWithoutType) =>
+const addSuccessNotification = ({ message, title }: INotificationWithoutType) =>
   addNotification({
     title: title || "Success",
     message,
     type: "success",
   });
 
-export const addNotFoundUserNotification = (
+const addNotFoundUserNotification = (
   title: string = "User with this username not found!"
 ) =>
   addNotification({
@@ -64,7 +59,7 @@ export const addNotFoundUserNotification = (
     title,
   });
 
-export const addInstallWalletNotification = (
+const addInstallWalletNotification = (
   walletName: string,
   installUrl: string
 ) => {
@@ -90,21 +85,39 @@ export const addInstallWalletNotification = (
     });
 };
 
-export const getNotificationMessage = ({
-  type,
-  user,
-  data,
-}: {
-  type: typeNotification;
-  user?: any;
-  data?: any;
-}) => {
+// interface Item<Key> {
+//   name: Key;
+// };
+
+// type Items<Name extends string> = {
+//   [Key in Name]?: Item<Key>;
+// };
+
+// function checkType<T extends string>(items: Items<T>): void {
+//   // items.
+//   return;
+// }
+
+// const items = checkType({
+//   a: {
+//       name: 'a',
+//   },
+// });
+
+// function getNotificationMessage<T extends object>(
+//   args: INotificationMessage<T>
+// ): React.ReactNode {
+
+const getNotificationMessage: <T extends object = IDonationShortInfo>(
+  arg: INotificationMessage
+) => React.ReactNode = (args) => {
+  const { type, user, data } = args;
   switch (type) {
     case "donat_creator":
-      return `${user} sent you ${data.sum} ${data.blockchain}!`;
+      return `${user} sent you ${data?.sum_donation} ${data?.blockchain}!`;
 
     case "donat_supporter":
-      return `You sent ${data.sum} ${data.blockchain} to ${user}!`;
+      return `You sent ${data?.sum_donation} ${data?.blockchain} to ${user}!`;
 
     case "add_badge_creator":
       return (
@@ -182,4 +195,15 @@ export const getNotificationMessage = ({
     default:
       return `notification`;
   }
+};
+
+export {
+  addNotification,
+  addAuthNotification,
+  addAuthWalletNotification,
+  addErrorNotification,
+  addSuccessNotification,
+  addNotFoundUserNotification,
+  addInstallWalletNotification,
+  getNotificationMessage,
 };

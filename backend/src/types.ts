@@ -1,4 +1,4 @@
-import { periodItemsTypes } from 'types/index.js';
+import { periodItemsTypes } from 'types';
 
 enum HttpCode {
   OK = 200,

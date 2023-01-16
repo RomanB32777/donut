@@ -1,6 +1,6 @@
 import { Col, Row, Slider } from "antd";
 import { SliderBaseProps } from "antd/lib/slider"; // SliderMarks
-import useWindowDimensions from "../../hooks/useWindowDimensions";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISliderProps extends SliderBaseProps {
@@ -42,16 +42,18 @@ const SliderForm = ({
         }}
         gutter={gutter || 0}
       >
-        <Col
-          md={labelCol || (label ? 12 : 0)}
-          xs={24}
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <span className="slider-label">{label}</span>
-        </Col>
+        {label && (
+          <Col
+            md={labelCol || 12}
+            xs={24}
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <span className="slider-label">{label}</span>
+          </Col>
+        )}
         <Col md={sliderCol || (label ? 12 : 24)} xs={24}>
           <div
             className="slider-component"

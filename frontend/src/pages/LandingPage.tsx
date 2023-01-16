@@ -1,4 +1,4 @@
-import LandingContainer from "../containers/LandingContainer";
+import LandingContainer from "containers/LandingContainer";
 
 const LandingPage = () => <LandingContainer />;
 

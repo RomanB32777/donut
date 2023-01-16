@@ -40,7 +40,7 @@ const LandingContainer = () => {
       checkWallet({ walletConf, dispatch });
   }, [walletConf]);
 
-  const blockchains = useMemo(() => walletConf.blockchains, [walletConf]);
+  const blockchains = useMemo(() => walletConf.main_contract.blockchains, [walletConf]);
 
   const { rocketImg, moneyImg, listImg } = images;
 

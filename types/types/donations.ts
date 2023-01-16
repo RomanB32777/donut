@@ -1,37 +1,54 @@
 import { IUserBase } from "./user";
-import { blockchainsType } from "./wallet";
+import { blockchainsSymbols, blockchainsType } from "./wallet";
 
-interface IDonation {
-  id: number;
+interface IDonationShortInfo {
+  sum_donation: number;
   blockchain: blockchainsType;
+  donation_message: string;
+}
+
+interface IDonation extends IDonationShortInfo {
+  id: number;
   backer_id: number;
   creator_id: number;
-  sum_donation: number;
-  donation_date: string;
-  donation_message: string;
+  created_at: string;
   goal_id?: string;
 }
 
 interface INewDonatSocketObj {
   supporter: IUserBase;
   creator: IUserBase;
-  blockchain: string;
-  sum: number;
   donation_id: number;
+}
+
+type socketNotificationTypes = "donat" | "add_badge";
+
+interface ISocketNotification<T = IDonationShortInfo> {
+  type: socketNotificationTypes;
+  supporter: string;
+  additional?: T;
 }
 
 interface ISendDonat {
   message: string;
   username: string;
   amount: number;
-  selectedBlockchain: string; // blockchainsType
+  selectedBlockchain: blockchainsSymbols;
   selectedGoal: number | null;
-  isAnonymous: boolean;
+  is_anonymous: boolean;
 }
 
 interface IFullSendDonat extends ISendDonat {
-  creator_address: string;
-  backer_address: string;
+  creator: number;
+  backer: number;
 }
 
-export type { IDonation, INewDonatSocketObj, ISendDonat, IFullSendDonat };
+export type {
+  IDonationShortInfo,
+  IDonation,
+  INewDonatSocketObj,
+  socketNotificationTypes,
+  ISocketNotification,
+  ISendDonat,
+  IFullSendDonat,
+};

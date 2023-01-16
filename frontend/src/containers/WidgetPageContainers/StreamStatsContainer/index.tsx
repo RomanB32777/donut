@@ -10,40 +10,46 @@ import StatsModal from "./components/StatsModal";
 import StatsItem from "./components/StatsItem";
 
 import { getStats } from "store/types/Stats";
+import { getFontsList } from "utils";
 import { initWidgetStatData } from "consts";
+import { ISelectItem } from "components/SelectInput";
 import { IWidgetStatData } from "appTypes";
 import "./styles.sass";
 
 const StreamStatsContainer = () => {
   const dispatch = useDispatch();
   const { user, stats } = useAppSelector((state) => state);
-  const { id } = user;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [fonts, setFonts] = useState<ISelectItem[]>([]);
   const [formData, setFormData] = useState<IWidgetStatData>({
     ...initWidgetStatData,
   });
 
+  const { id } = user;
   const openEditModal = (widget: IWidgetStatData) => {
-    const { id, title, stat_description, template, data_type, time_period } =
-      widget;
+    const { template } = widget;
     setFormData({
-      id,
-      title,
-      stat_description,
+      ...widget,
       template: (template as string).split(" "),
-      data_type,
-      time_period,
     });
     setIsOpenModal(true);
   };
 
   useEffect(() => {
-    id && dispatch(getStats(id));
+    const initFonts = async () => {
+      const fonts = await getFontsList();
+      setFonts(fonts);
+    };
+
+    if (id) {
+      dispatch(getStats(id));
+      initFonts();
+    }
   }, [id]);
 
   return (
-    <div className="streamStatsPage-container stats">
+    <div className="streamStatsPage-container stats fadeIn">
       <PageTitle formatId="page_title_stream_stats" />
       <div className="stats-header">
         <p className="subtitle">
@@ -64,6 +70,7 @@ const StreamStatsContainer = () => {
             .map((widget: IStatData) => (
               <StatsItem
                 key={widget.id}
+                fonts={fonts}
                 statData={widget}
                 openEditModal={openEditModal}
               />

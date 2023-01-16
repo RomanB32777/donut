@@ -18,7 +18,7 @@ CREATE TABLE creators(
     main_color VARCHAR(255) DEFAULT '#2B4BFB',
     background_color VARCHAR(255) DEFAULT '#212127',
     security_string VARCHAR(100) DEFAULT '',
-    spamFilter BOOLEAN DEFAULT 'false',
+    spam_filter BOOLEAN DEFAULT 'false',
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -39,7 +39,7 @@ CREATE TABLE badges(
 
 CREATE TABLE alerts (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,
-    banner_link VARCHAR(255) DEFAULT '',
+    banner VARCHAR(255) DEFAULT '',
     message_color  VARCHAR(10) DEFAULT '#ffffff',
     message_font VARCHAR(255) DEFAULT 'Roboto',
     name_color  VARCHAR(10) DEFAULT '#ffffff',
@@ -68,7 +68,7 @@ CREATE TABLE goals (
     title VARCHAR(255) DEFAULT '',
     amount_goal NUMERIC DEFAULT 1,
     amount_raised NUMERIC DEFAULT 0,
-    isArchive BOOLEAN DEFAULT 'false',
+    is_archive BOOLEAN DEFAULT 'false',
     title_color VARCHAR(10) DEFAULT '#ffffff',
     title_font VARCHAR(255) DEFAULT 'Roboto',
     progress_color VARCHAR(10) DEFAULT '#1D14FF',
@@ -90,8 +90,8 @@ CREATE TABLE stats (
     title_color VARCHAR(10) DEFAULT '#ffffff',
     title_font VARCHAR(255) DEFAULT 'Roboto',
     bar_color VARCHAR(10) DEFAULT '#1D14FF',
-    bar_font VARCHAR(255) DEFAULT 'Roboto',
     content_color VARCHAR(10) DEFAULT '#ffffff',
+    content_font VARCHAR(255) DEFAULT 'Roboto',
     aligment VARCHAR(10) DEFAULT 'Center',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -103,13 +103,13 @@ CREATE TABLE donations(
     backer_id INTEGER,
     FOREIGN KEY (backer_id) REFERENCES users(id) ON DELETE CASCADE,
     sum_donation NUMERIC DEFAULT 0,
-    donation_message VARCHAR(255) DEFAULT '',
+    donation_message VARCHAR(255) DEFAULT '-',
     blockchain VARCHAR(255) DEFAULT '',
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
     goal_id VARCHAR(20) DEFAULT NULL,
     FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE SET NULL,
-    isAnonymous BOOLEAN DEFAULT 'false',
+    is_anonymous BOOLEAN DEFAULT 'false',
     created_at TIMESTAMPTZ DEFAULT Now()
 );
 
@@ -133,4 +133,10 @@ CREATE TABLE users_notifications (
     read BOOLEAN DEFAULT 'false',
     roleplay NotificationRoles DEFAULT NULL,
     UNIQUE (user_id, notification_id)
+);
+
+CREATE TABLE exchange_crypto (
+    coin VARCHAR(15) DEFAULT 'ETHs' PRIMARY KEY,
+    price NUMERIC DEFAULT 0,
+    update_at TIMESTAMPTZ DEFAULT Now() 
 );

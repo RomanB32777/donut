@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { IWalletContext } from "../appTypes";
+import { IWalletContext } from "appTypes";
 import { initValue } from "./values";
 
 const WalletContext = createContext<IWalletContext>(initValue);

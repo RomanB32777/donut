@@ -11,24 +11,38 @@
     .title
         font-size: 15px
 
+    .icon-arrow
+        margin-left: 10px
+
+        svg
+            width: 12px
+            height: 12px
+
     .list-wrapper
         position: absolute
-        // right: 0
         transform: translateX(-50%)
         left: 50%
         top: 110%
         z-index: 10
         max-width: 300px
-        // min-width: 130px
         min-width: 110px
         background: variables.$blue-transparent-color
         border-radius: variables.$border-radius
         backdrop-filter: blur(15px)
 
+    // .bg
+    //     display: block
+    //     height: 100%
+    //     width: 100%
+    //     position: absolute
+    //     left: 0
+    //     top: 0
+    //     backdrop-filter: blur(10px)
+
     .list
         padding: 11px
         overflow-y: auto
-        max-height: 140px
+        max-height: 180px
 
         &-item
             text-align: center

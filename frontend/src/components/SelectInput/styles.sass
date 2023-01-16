@@ -59,6 +59,7 @@
             border-color: variables.$white-color !important
 
     .ant-select-disabled.ant-select:not(.ant-select-customize-input)
+        opacity: .5
         .ant-select-selector
             background: rgba(94, 94, 94, .3)
 
@@ -89,3 +90,28 @@
             align-items: center
             font-size: 20px
             line-height: 25px
+
+.app-dropdown
+    background: variables.$blue-transparent-color
+    border-radius: variables.$border-radius
+    backdrop-filter: blur(15px)
+    color: variables.$grey-color
+
+    .ant-select-item
+        &-option, 
+        &-option .ant-select-item-active
+            color: variables.$grey-color
+
+            .ant-select-item-active
+                .ant-select-item-option-selected
+                    color: variables.$grey-color
+
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled)
+        background: none
+        color: variables.$white-color
+
+    .rc-virtual-list-scrollbar
+        width: 2px !important
+        .rc-virtual-list-scrollbar-thumb
+            background: variables.$main-color !important
+            

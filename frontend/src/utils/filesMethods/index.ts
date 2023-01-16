@@ -1,5 +1,5 @@
 import { defaultAssetsFolders, ISoundInfo } from "types";
-import axiosClient from "../../modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 
 const sendFile = async ({
   file,

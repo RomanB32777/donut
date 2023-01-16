@@ -3,7 +3,7 @@ import { Header } from "antd/lib/layout/layout";
 import clsx from "clsx";
 
 import { MenuMobileIcon } from "icons";
-import Logo from "../LogoComponent";
+import Logo from "components/HeaderComponents/LogoComponent";
 import "./styles.sass";
 
 interface IHeaderComponent {

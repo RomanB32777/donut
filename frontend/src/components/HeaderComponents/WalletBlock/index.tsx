@@ -4,11 +4,12 @@ import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { blockchainsType } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
 import { WalletContext } from "contexts/Wallet";
-
 import Loader from "components/Loader";
 import { CopyIcon, ShareIcon, SmallToggleListArrowIcon } from "icons";
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+
 import { setSelectedBlockchain } from "store/types/Wallet";
 import { copyStr, shortStr } from "utils";
 import { initBlockchainData } from "consts";
@@ -25,23 +26,26 @@ const WalletBlock = ({
   const dispatch = useDispatch();
   const { walletConf } = useContext(WalletContext);
   const { blockchain, user } = useAppSelector((store) => store);
-  const { username, avatar } = user;
+  const { isMobile } = useWindowDimensions();
 
   const [walletData, setWalletData] = useState<IBlockchain>(initBlockchainData);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isOpenSelect, setOpenSelect] = useState(false);
 
+  const { username, avatar } = user;
+
   const copyAddress = () => copyStr(address);
 
-  const blockchainHandler = async (selectedBlockchain: blockchainsType) => {
-    setLoading(true);
-    const newBlockchaind = await walletConf.changeBlockchain(
-      selectedBlockchain
-    );
-    newBlockchaind && dispatch(setSelectedBlockchain(selectedBlockchain));
-    setLoading(false);
-  };
+  const blockchainHandler =
+    (selectedBlockchain: blockchainsType) => async () => {
+      setLoading(true);
+      const newBlockchaind = await walletConf.changeBlockchain(
+        selectedBlockchain
+      );
+      newBlockchaind && dispatch(setSelectedBlockchain(selectedBlockchain));
+      setLoading(false);
+    };
 
   useEffect(() => {
     const getWalletData = async () => {
@@ -53,14 +57,8 @@ const WalletBlock = ({
       if (data && blockchain) {
         setWalletData((initData) => ({
           ...initData,
+          ...blockchain,
           address: data.address,
-          nativeCurrency: {
-            ...initData.nativeCurrency,
-            symbol: blockchain.nativeCurrency.symbol,
-          },
-          icon: blockchain.icon,
-          color: blockchain?.color,
-          scannerLink: blockchain.scannerLink,
         }));
       }
 
@@ -69,7 +67,8 @@ const WalletBlock = ({
     getWalletData();
   }, [blockchain]);
 
-  const { address, nativeCurrency, icon, color, scannerLink } = walletData;
+  const { address, nativeCurrency, icon, color, blockExplorerUrls } =
+    walletData;
   const { symbol } = nativeCurrency;
 
   return (
@@ -118,7 +117,9 @@ const WalletBlock = ({
               <div className="image">
                 {avatar && <img src={avatar} alt={`avatar_${username}`} />}
               </div>
-              <span className="title">{shortStr(address, 8)}</span>
+              <span className="title">
+                {shortStr(address, isMobile ? 2 : 8)}
+              </span>
             </div>
             <div
               className="icons"
@@ -129,24 +130,26 @@ const WalletBlock = ({
               <div className="copy" onClick={copyAddress}>
                 <CopyIcon />
               </div>
-              <div className="share">
-                <a
-                  href={scannerLink + address}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ShareIcon />
-                </a>
-              </div>
+              {blockExplorerUrls && Boolean(blockExplorerUrls.length) && (
+                <div className="share">
+                  <a
+                    href={`${blockExplorerUrls[0]}/address/${address}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ShareIcon />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
-          {walletConf.blockchains.map(
+          {walletConf.main_contract.blockchains.map(
             ({ nativeCurrency, name, icon, color }) => (
               <div
                 key={name}
                 className="item"
                 data-blockchain={name}
-                onClick={() => blockchainHandler(name)}
+                onClick={blockchainHandler(name)}
               >
                 <div className="content">
                   <div className="image" style={{ background: color }}>

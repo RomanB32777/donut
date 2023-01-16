@@ -2,6 +2,7 @@ import {
   NotificationTitleMessage,
   NOTIFICATION_TYPE,
 } from "react-notifications-component";
+import { IDonationShortInfo } from "types";
 
 export interface INotification {
   type: NOTIFICATION_TYPE;
@@ -22,6 +23,16 @@ declare type typeNotification =
   | "remove_badge_creator"
   | "remove_badge_supporter"
   | "failed_badge"
-  | "success_badge"
+  | "success_badge";
 
-export type { typeNotification };
+interface INotificationMessage<T = IDonationShortInfo> {
+  type: typeNotification;
+  user: string;
+  data?: T;
+}
+
+interface IGetNotificationMessage {
+  <T>(arg: INotificationMessage<T>): void;
+} 
+
+export type { INotificationMessage, IGetNotificationMessage, typeNotification };

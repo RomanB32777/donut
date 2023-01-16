@@ -4,9 +4,9 @@ const initSendDonatData: ISendDonat = {
   message: "",
   username: "",
   amount: 0,
-  selectedBlockchain: "evmos",
+  selectedBlockchain: "ETHs",
   selectedGoal: 0,
-  isAnonymous: true,
+  is_anonymous: false,
 };
 
 const initDonationData: IDonation = {
@@ -15,7 +15,7 @@ const initDonationData: IDonation = {
   backer_id: 0,
   creator_id: 0,
   sum_donation: 0,
-  donation_date: "",
+  created_at: "",
   donation_message: "",
 };
 

@@ -1,8 +1,8 @@
 import {
   INotificationsAction,
   INotificationsState,
-} from "../../../appTypes/notifications";
-import { SET_NOTIF, SET_UPDATE_FLAG } from "../../types/Notifications";
+} from "appTypes/notifications";
+import { SET_NOTIF, SET_UPDATE_FLAG } from "store/types/Notifications";
 
 const initialState: INotificationsState = {
   list: [],

@@ -1,30 +1,55 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { SliderMarks } from "antd/lib/slider";
 import { typeAligmnet } from "types";
+
 import BaseButton from "components/BaseButton";
 import ColorPicker from "components/ColorPicker";
 import SliderForm from "components/SliderForm";
-import { IEditStatData } from "appTypes";
+import SelectInput, { ISelectItem } from "components/SelectInput";
+import {
+  FontSelectOption,
+  FontStyleElement,
+} from "components/SelectInput/options/FontSelectOption";
+
+import { notVisibleFontsCount } from "consts";
+import { IWidgetStatData } from "appTypes";
 
 const marksSlider: { [key: number]: typeAligmnet } = {
-    0: "Left",
-    1: "Center",
-    2: "Right",
-  };
+  0: "Left",
+  1: "Center",
+  2: "Right",
+};
 
 const SettingsStatBlock = ({
-  editStatData,
+  fonts,
   loading,
-  sendColorsData,
+  editStatData,
+  editWidgetData,
   setEditStatData,
 }: {
-  editStatData: IEditStatData;
   loading: boolean;
-  sendColorsData: () => Promise<void>;
-  setEditStatData: (editStatData: IEditStatData) => void;
+  fonts: ISelectItem[];
+  editStatData: IWidgetStatData;
+  editWidgetData: () => Promise<void>;
+  setEditStatData: (editStatData: IWidgetStatData) => void;
 }) => {
-  const { title_color, bar_color, content_color, aligment } = editStatData;
+  const {
+    title_color,
+    bar_color,
+    content_color,
+    aligment,
+    title_font,
+    content_font,
+  } = editStatData;
+  const [fontList, setFontList] = useState<ISelectItem[]>(
+    fonts.slice(0, notVisibleFontsCount)
+  );
+
+  const onOpenFontSelect = (isOpen: boolean) =>
+    isOpen
+      ? setFontList(fonts)
+      : setFontList(fonts.slice(0, notVisibleFontsCount));
 
   const valueSlider = useMemo(
     () =>
@@ -79,6 +104,62 @@ const SettingsStatBlock = ({
         </Col>
         <Col span={24}>
           <div className="form-element">
+            <SelectInput
+              label="Goal title font:"
+              value={{
+                value: title_font.name,
+                label: <FontStyleElement fontName={title_font.name} />,
+              }}
+              list={fontList}
+              modificator="form-select"
+              onChange={({ value }, option) =>
+                setEditStatData({
+                  ...editStatData,
+                  title_font: {
+                    name: !Array.isArray(option) && option.title,
+                    link: value,
+                  },
+                })
+              }
+              onDropdownVisibleChange={onOpenFontSelect}
+              renderOption={FontSelectOption}
+              labelCol={10}
+              gutter={[0, 18]}
+              labelInValue
+              showSearch
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SelectInput
+              label="Content font:"
+              value={{
+                value: content_font.name,
+                label: <FontStyleElement fontName={content_font.name} />,
+              }}
+              list={fontList}
+              modificator="form-select"
+              onChange={({ value }, option) =>
+                setEditStatData({
+                  ...editStatData,
+                  content_font: {
+                    name: !Array.isArray(option) && option.title,
+                    link: value,
+                  },
+                })
+              }
+              onDropdownVisibleChange={onOpenFontSelect}
+              renderOption={FontSelectOption}
+              labelCol={10}
+              gutter={[0, 18]}
+              labelInValue
+              showSearch
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
             <SliderForm
               label="Content alignment:"
               marks={marksSlider as SliderMarks}
@@ -104,7 +185,7 @@ const SettingsStatBlock = ({
         <BaseButton
           formatId="profile_form_save_changes_button"
           padding="6px 35px"
-          onClick={sendColorsData}
+          onClick={editWidgetData}
           fontSize="18px"
           disabled={loading}
           isMain

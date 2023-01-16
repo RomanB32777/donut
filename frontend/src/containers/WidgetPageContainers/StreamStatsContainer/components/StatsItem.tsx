@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
@@ -21,15 +21,19 @@ import {
   copyStr,
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
+  loadFonts,
 } from "utils";
-import { IEditStatData } from "appTypes";
+import { ISelectItem } from "components/SelectInput";
+import { IWidgetStatData } from "appTypes";
 
 const StatsItem = ({
+  fonts,
   statData,
   openEditModal,
 }: {
+  fonts: ISelectItem[];
   statData: IStatData;
-  openEditModal?: (data: IStatData) => void;
+  openEditModal?: (data: IWidgetStatData) => void;
 }) => {
   const dispatch = useDispatch();
   const user = useAppSelector(({ user }) => user);
@@ -37,18 +41,26 @@ const StatsItem = ({
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [editStatData, setEditStatData] = useState<IEditStatData>({
-    title_color: "#ffffff",
-    bar_color: "#1D14FF",
-    content_color: "#212127",
-    aligment: "Center",
+  const [editStatData, setEditStatData] = useState<IWidgetStatData>({
+    ...statData,
+    title_font: {
+      name: statData.title_font,
+      link: "",
+    },
+    content_font: {
+      name: statData.content_font,
+      link: "",
+    },
   });
+
+  const { id, title, stat_description, template, data_type, time_period } =
+    editStatData;
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
 
   const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
     event && event.stopPropagation();
-    openEditModal && openEditModal(statData);
+    openEditModal && openEditModal(editStatData);
   };
 
   const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
@@ -56,17 +68,40 @@ const StatsItem = ({
     copyStr(linkForCopy);
   };
 
-  const sendColorsData = async () => {
+  const initStatsItem = async () => {
+    const { title_font, content_font } = statData;
+
+    const loadedFonts = await loadFonts({
+      fonts,
+      fields: { title_font, content_font },
+    });
+
+    // convert statData:IStatData to statsItemValues:IWidgetStatData
+    const statsItemValues = Object.keys(statData).reduce(
+      (values, key) => ({ ...values, [key]: statData[key as keyof IStatData] }),
+      editStatData
+    );
+
+    setEditStatData({ ...statsItemValues, ...loadedFonts });
+  };
+
+  const editWidgetData = async () => {
     try {
       setLoading(true);
       const { id } = statData;
-      const { title_color, bar_color, content_color, aligment } = editStatData;
+      const { title_font, content_font } = editStatData;
+
+      const forSentStatData = Object.keys(editStatData).reduce((obj, key) => {
+        const dataKey = key as keyof IWidgetStatData;
+        if (dataKey === "custom_period") return obj;
+        return { ...obj, [dataKey]: editStatData[dataKey] };
+      }, {});
+
       await axiosClient.put("/api/widget/stats-widget/", {
         statData: {
-          title_color,
-          bar_color,
-          content_color,
-          aligment,
+          ...forSentStatData,
+          title_font: title_font.name,
+          content_font: content_font.name,
         },
         id,
       });
@@ -105,19 +140,6 @@ const StatsItem = ({
     }
   };
 
-  useEffect(() => {
-    const { title_color, bar_color, content_color, aligment } = statData;
-    setEditStatData({
-      title_color,
-      bar_color,
-      content_color,
-      aligment,
-    });
-  }, []);
-
-  const { id, title, stat_description, template, data_type, time_period } =
-    statData;
-
   const linkForCopy = useMemo(
     () => `${baseURL}/donat-stat/${user.username}/${id}`,
     [user, id]
@@ -132,6 +154,10 @@ const StatsItem = ({
     () => getStatsDataTypeQuery(data_type),
     [data_type]
   );
+
+  useEffect(() => {
+    fonts.length && initStatsItem();
+  }, [fonts, statData]);
 
   return (
     <>
@@ -187,18 +213,18 @@ const StatsItem = ({
           <WidgetMobileWrapper
             previewBlock={
               <PreviewStatBlock
-                editStatData={editStatData}
-                statData={statData}
                 loading={loading}
-                sendColorsData={sendColorsData}
+                editStatData={editStatData}
+                editWidgetData={editWidgetData}
               />
             }
             settingsBlock={
               <SettingsStatBlock
-                editStatData={editStatData}
+                fonts={fonts}
                 loading={loading}
+                editStatData={editStatData}
                 setEditStatData={setEditStatData}
-                sendColorsData={sendColorsData}
+                editWidgetData={editWidgetData}
               />
             }
           />

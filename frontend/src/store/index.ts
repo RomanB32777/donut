@@ -1,8 +1,8 @@
 import createSagaMiddleware from "redux-saga";
 import { configureStore } from "@reduxjs/toolkit";
-import { rootWatcher } from "../saga";
+import { rootWatcher } from "saga";
 import { rootReducer } from "./reducers";
-import { initValue } from "../contexts/Wallet";
+import { initValue } from "contexts/Wallet";
 
 const sagaMiddleware = createSagaMiddleware({
   context: { initValue },

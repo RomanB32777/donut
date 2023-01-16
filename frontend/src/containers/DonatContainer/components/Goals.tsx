@@ -27,7 +27,7 @@ const Goals = ({
   };
 
   const goalsActive = useMemo(
-    () => goals.filter((goal) => !goal.isarchive),
+    () => goals.filter((goal) => !goal.is_archive),
     [goals]
   );
 

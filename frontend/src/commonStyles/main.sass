@@ -204,6 +204,9 @@ body,
     height: 100%
     cursor: pointer
 
+  &-arrow
+    display: block
+
   &.rotated
     svg
       transform: rotate(180deg)
@@ -236,6 +239,16 @@ body,
 .pt
   font-family: variables.$pt-font
 
+.fadeIn
+  animation-fill-mode: both
+  animation-name: fadeIn
+  animation-duration: 200ms
+
+.fadeInBlur
+  animation-fill-mode: both
+  animation-name: fadeInBlur
+  animation-duration: 200ms
+
 @media (max-width: 992px)
   .ant-layout
     background: variables.$blue-dark-color
@@ -249,3 +262,18 @@ body,
 
   to
     transform: none
+
+@keyframes fadeIn
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+
+@keyframes fadeInBlur
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+    backdrop-filter: blur(10px)

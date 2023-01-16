@@ -1,5 +1,5 @@
 import { typeAligmnet } from "types";
-import { IAlert, IBadge, IWidgetGoalData, IWidgetStatData } from "../appTypes";
+import { IAlert, IBadge, IWidgetGoalData, IWidgetStatData } from "appTypes";
 
 const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
@@ -40,8 +40,23 @@ const initAlertData: IAlert = {
 };
 
 const initWidgetGoalData: IWidgetGoalData = {
-  widgetAmount: "0",
-  widgetDescription: "",
+  amount_goal: 0,
+  id: 0,
+  title: "",
+  amount_raised: 0,
+  is_archive: false,
+  creator_id: "",
+  title_color: "",
+  title_font: {
+    name: "",
+    link: "",
+  },
+  progress_color: "",
+  progress_font: {
+    name: "",
+    link: "",
+  },
+  background_color: "",
 };
 
 const initWidgetStatData: IWidgetStatData = {
@@ -49,9 +64,21 @@ const initWidgetStatData: IWidgetStatData = {
   title: "",
   stat_description: "",
   template: [],
-  data_type: "top-donations", // filterDataTypeItems["top-donations"]
-  time_period: "today", // "Today"
+  data_type: "top-donations",
+  time_period: "today",
   custom_period: "",
+  title_color: "",
+  title_font: {
+    name: "",
+    link: "",
+  },
+  bar_color: "",
+  content_color: "",
+  content_font: {
+    name: "",
+    link: "",
+  },
+  aligment: "Left",
 };
 
 const initBadgeData: IBadge = {
@@ -63,7 +90,7 @@ const initBadgeData: IBadge = {
   },
   title: "",
   description: "",
-  blockchain: "",
+  blockchain: "evmos",
   URI: "",
   contract_address: "",
   transaction_hash: "",

@@ -15,17 +15,27 @@ import {
 } from "./types/files";
 import {
   userRoles,
+  bannerTypes,
   IUserBase,
   IDonatPageWithoutBanners,
   IEditUserData,
   IShortUserData,
   IDonatPage,
   IUser,
+  userDataKeys,
 } from "./types/user";
-import { blockchainsType, exchangeNameTypes } from "./types/wallet";
 import {
+  blockchainsType,
+  exchangeNameTypes,
+  blockchainsSymbols,
+  BlockchainNameToExchangeName,
+} from "./types/wallet";
+import {
+  IDonationShortInfo,
   IDonation,
   INewDonatSocketObj,
+  socketNotificationTypes,
+  ISocketNotification,
   ISendDonat,
   IFullSendDonat,
 } from "./types/donations";
@@ -37,15 +47,22 @@ import {
   IMintBadgeSocketObj,
 } from "./types/badge";
 import {
+  IGoalWidgetData,
   IGoalData,
-  IAlertBase,
+  goalDataKeys,
   IAlertData,
   typeAligmnet,
   statsDataTypes,
   IStatsDataType,
+  IStatWidgetData,
   IStatData,
 } from "./types/widgets";
-import { INotification } from "./types/notifications";
+import {
+  notificationRoles,
+  notificationKeys,
+  INotification,
+  INotificationQueries,
+} from "./types/notifications";
 
 export type {
   // dates
@@ -65,20 +82,27 @@ export type {
 
   // user
   userRoles,
+  bannerTypes,
   IUserBase,
   IDonatPageWithoutBanners,
   IEditUserData,
   IShortUserData,
   IDonatPage,
   IUser,
+  userDataKeys,
 
   // wallet
   blockchainsType,
   exchangeNameTypes,
+  blockchainsSymbols,
+  BlockchainNameToExchangeName,
 
   // donat
+  IDonationShortInfo,
   IDonation,
   INewDonatSocketObj,
+  socketNotificationTypes,
+  ISocketNotification,
   ISendDonat,
   IFullSendDonat,
 
@@ -90,14 +114,19 @@ export type {
   IMintBadgeSocketObj,
 
   // widgets
+  IGoalWidgetData,
   IGoalData,
-  IAlertBase,
+  goalDataKeys,
   IAlertData,
   typeAligmnet,
   statsDataTypes,
   IStatsDataType,
+  IStatWidgetData,
   IStatData,
 
   // notifications
+  notificationRoles,
+  notificationKeys,
   INotification,
+  INotificationQueries,
 };

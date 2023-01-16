@@ -48,7 +48,6 @@ export const renderStrWithTokens = (
 export const renderStatItem = (
   template: string | string[],
   objToRender: any,
-  usdtKoef: number
 ) => {
   return renderStrWithTokens(template, [
     {
@@ -57,7 +56,7 @@ export const renderStatItem = (
     },
     {
       re: /{sum}/gi,
-      to: `${(+objToRender.sum_donation * usdtKoef).toFixed(2)} USD`,
+      to: `${(+objToRender.sum_donation).toFixed(2)} USD`,
     },
     {
       re: /{message}/gi,

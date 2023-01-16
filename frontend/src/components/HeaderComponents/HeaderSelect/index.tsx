@@ -1,10 +1,12 @@
 import clsx from "clsx";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
+
+import WalletBlock from "components/HeaderComponents/WalletBlock";
+import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
+
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import WalletBlock from "../WalletBlock";
-import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
 import { logoutUser } from "utils";
 import "./styles.sass";
 

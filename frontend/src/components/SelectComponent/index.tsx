@@ -1,9 +1,22 @@
 import clsx from "clsx";
-import { useState } from "react";
-import { SmallToggleListArrowIcon } from "../../icons";
+import React, { useState } from "react";
+import { DownOutlined } from "@ant-design/icons";
 import "./styles.sass";
 
-const SelectComponent = ({
+interface ISelectComponent<T> {
+  title: React.ReactNode;
+  list: T[];
+  selected?: T;
+  headerList?: React.ReactNode;
+  footerList?: React.ReactNode;
+  modificator?: string;
+  listModificator?: string;
+  listItemModificator?: string;
+  listWrapperModificator?: string;
+  selectItem: (item: T) => void;
+}
+
+const SelectComponent = <T extends unknown>({
   title,
   list,
   selected,
@@ -14,21 +27,10 @@ const SelectComponent = ({
   listItemModificator,
   listWrapperModificator,
   selectItem,
-}: {
-  title: React.ReactNode;
-  list: string[];
-  selected?: string;
-  headerList?: React.ReactNode;
-  footerList?: React.ReactNode;
-  modificator?: string;
-  listModificator?: string;
-  listItemModificator?: string;
-  listWrapperModificator?: string;
-  selectItem: (item: string) => void;
-}) => {
+}: React.PropsWithChildren<ISelectComponent<T>>) => {
   const [isOpenSelect, setOpenSelect] = useState(false);
 
-  const itemHandler = (selected: string) => {
+  const itemHandler = (selected: T) => {
     setOpenSelect(false);
     selectItem(selected);
   };
@@ -47,16 +49,16 @@ const SelectComponent = ({
       >
         <div className="title">{title}</div>
         <div
-          className={clsx("icon", {
+          className={clsx("icon", "icon-arrow", {
             rotated: isOpenSelect,
           })}
         >
-          <SmallToggleListArrowIcon />
+          <DownOutlined />
         </div>
       </div>
       {isOpenSelect && (
         <div
-          className={clsx("list-wrapper", {
+          className={clsx("list-wrapper fadeInBlur", {
             [listWrapperModificator as string]: listWrapperModificator,
           })}
         >
@@ -75,7 +77,7 @@ const SelectComponent = ({
                 key={key}
                 onClick={() => itemHandler(item)}
               >
-                {item}
+                {item as React.ReactNode}
               </div>
             ))}
           </div>

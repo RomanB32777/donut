@@ -1,102 +1,132 @@
 import { useEffect, useState } from "react";
 import { Progress } from "antd";
+import { goalDataKeys } from "types";
 
 import { useParams } from "react-router";
-import { IGoalData } from "types";
 
+import axiosClient from "modules/axiosClient";
 import { useAppSelector } from "hooks/reduxHooks";
-import axiosClient, { baseURL } from "modules/axiosClient";
+import { getFontColorStyles, getFontsList, loadFonts } from "utils";
+import { initWidgetGoalData } from "consts";
+import { IWidgetGoalData } from "appTypes";
 import "./styles.sass";
+
+const fontsFields: goalDataKeys[] = ["title_font", "progress_font"];
 
 const DonatGoalContainer = () => {
   const { id, name } = useParams();
   const { list } = useAppSelector(({ notifications }) => notifications);
-  const [lastNotif, setLastNotif] = useState<any>({});
 
-  const [goalData, setGoalData] = useState<IGoalData>({
-    id: 0,
-    title: "",
-    amount_goal: 0,
-    amount_raised: 0,
-    isarchive: false,
-    title_color: "#ffffff",
-    progress_color: "#1D14FF",
-    background_color: "#212127",
-    creator_id: "0",
-  });
+  const [goalData, setGoalData] = useState<IWidgetGoalData | null>(null);
 
-  const getGoalData = async () => {
-    const response = await axiosClient.get(
-      `${baseURL}/api/widget/goals-widget/${name}/${id}`
+  const getGoalData = async (cb: (data: IWidgetGoalData) => any) => {
+    const { data, status } = await axiosClient.get(
+      `/api/widget/goals-widget/${name}/${id}`
     );
-    response.status === 200 && setGoalData(response.data);
+    if (status === 200) {
+      // convert IGoalData -> IWidgetGoalData
+      const widgetData = Object.keys(data).reduce((values, key) => {
+        const keyField = key as goalDataKeys;
+        if (fontsFields.includes(keyField))
+          return {
+            ...values,
+            [keyField]: {
+              name: data[keyField],
+            },
+          };
+        return {
+          ...values,
+          [keyField]: data[keyField],
+        };
+      }, initWidgetGoalData);
+      cb(widgetData);
+    }
+  };
+
+  const getGoalWidgetData = async (widgetData: IWidgetGoalData) => {
+    console.log("init");
+
+    const fonts = await getFontsList();
+
+    const { title_font, progress_font } = widgetData;
+
+    const loadedFonts = await loadFonts({
+      fonts,
+      fields: {
+        title_font: title_font.name,
+        progress_font: progress_font.name,
+      },
+    });
+
+    setGoalData({ ...widgetData, ...loadedFonts });
   };
 
   useEffect(() => {
-    list.length && setLastNotif(list[0].donation);
-  }, [list]);
+    if (list.length && id) {
+      const { donation } = list[0];
 
-  useEffect(() => {
-    if (lastNotif.goal_id && lastNotif.goal_id === id) {
-      getGoalData();
+      if (donation && donation.goal_id === id)
+        getGoalData((data) => setGoalData((prev) => ({ ...prev, ...data })));
     }
-  }, [lastNotif]);
+  }, [list, id]);
 
   useEffect(() => {
-    getGoalData();
-  }, []);
+    id && name && getGoalData(getGoalWidgetData);
+  }, [id, name]);
 
-  const {
-    title,
-    title_color,
-    progress_color,
-    background_color,
-    amount_goal,
-    amount_raised,
-  } = goalData;
+  if (goalData) {
+    const {
+      title,
+      title_color,
+      title_font,
+      progress_color,
+      progress_font,
+      background_color,
+      amount_goal,
+      amount_raised,
+    } = goalData;
 
-  return (
-    <div className="donat-goal">
-      <div className="donat-goal_container">
-        <div className="donat-goal_title">
-          <p>
-            <span
-              style={{
-                color: title_color,
-              }}
-            >
-              {title}
-            </span>
-          </p>
-        </div>
-        <div
-          className="donat-goal_progress"
-          style={{
-            background: background_color,
-          }}
-        >
-          <Progress
-            type="circle"
-            percent={Math.round((amount_raised / amount_goal) * 100)}
-            width={150}
-            strokeColor={progress_color}
-            format={(percent) => (
-              <span
-                style={{
-                  color: "#fff",
-                }}
-              >
-                {percent}%
+    return (
+      <div className="donat-goal">
+        <div className="donat-goal_container">
+          <div className="donat-goal_title">
+            <p>
+              <span style={getFontColorStyles(title_color, title_font)}>
+                {title}
               </span>
-            )}
-          />
-          <p>
-            {amount_raised} / {amount_goal} USD
-          </p>
+            </p>
+          </div>
+          <div
+            className="donat-goal_progress"
+            style={{
+              background: background_color,
+            }}
+          >
+            <Progress
+              type="circle"
+              percent={Math.round((amount_raised / amount_goal) * 100)}
+              width={150}
+              strokeColor={progress_color}
+              format={(percent) => (
+                <span
+                  style={{
+                    color: "#fff",
+                  }}
+                >
+                  {percent}%
+                </span>
+              )}
+            />
+            <p style={getFontColorStyles("#fff", progress_font)}>
+              {amount_raised} / {amount_goal} USD
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <></>;
 };
 
 export default DonatGoalContainer;

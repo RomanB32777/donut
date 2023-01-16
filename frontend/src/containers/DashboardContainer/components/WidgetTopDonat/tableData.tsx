@@ -1,5 +1,5 @@
 import type { ColumnsType } from "antd/es/table";
-import { DateFormatter, DateTimezoneFormatter } from "../../../../utils";
+import { DateFormatter } from "utils";
 
 interface ITableData {
   key: string;
@@ -33,7 +33,7 @@ export const tableColums: ColumnsType<ITableData> = [
     title: "Date and Time, UTM",
     dataIndex: "created_at",
     width: "25%",
-    render: (date) => DateFormatter(DateTimezoneFormatter(date)),
+    render: (date) => DateFormatter(date),
   },
 ];
 

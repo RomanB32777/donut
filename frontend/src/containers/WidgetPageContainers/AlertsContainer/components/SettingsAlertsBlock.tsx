@@ -10,16 +10,18 @@ import { TabsComponent } from "components/TabsComponent";
 import SliderForm from "components/SliderForm";
 import SwitchForm from "components/SwitchForm";
 import SelectComponent from "components/SelectComponent";
-import FontSelectOption from "components/SelectInput/options/FontSelectOption";
+import {
+  FontStyleElement,
+  FontSelectOption,
+} from "components/SelectInput/options/FontSelectOption";
 import UploadSound from "./UploadSound";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { getDefaultImages, sendFile } from "utils";
-import { dummyImg } from "consts";
+import { dummyImg, notVisibleFontsCount } from "consts";
 import { IAlert, IDefaultImagesModal } from "appTypes";
 
 const alertSound = new Audio();
-const notVisibleFontsCount = 1;
 
 const SettingsAlertsBlock = ({
   formData,
@@ -202,15 +204,18 @@ const SettingsAlertsBlock = ({
           <div className="form-element">
             <SelectInput
               label="Message font:"
-              value={message_font.name}
+              value={{
+                value: message_font.name,
+                label: <FontStyleElement fontName={message_font.name} />,
+              }}
               list={fontList}
               modificator="form-select"
-              onChange={(selected, option) =>
+              onChange={({ value }, option) =>
                 setFormData({
                   ...formData,
                   message_font: {
                     name: !Array.isArray(option) && option.title,
-                    link: selected as string,
+                    link: value,
                   },
                 })
               }
@@ -219,6 +224,7 @@ const SettingsAlertsBlock = ({
               labelCol={8}
               selectCol={14}
               gutter={[0, 18]}
+              labelInValue
               showSearch
             />
           </div>
@@ -227,15 +233,18 @@ const SettingsAlertsBlock = ({
           <div className="form-element">
             <SelectInput
               label="Supporter font:"
-              value={name_font.name}
+              value={{
+                value: name_font.name,
+                label: <FontStyleElement fontName={name_font.name} />,
+              }}
               list={fontList}
               modificator="form-select"
-              onChange={(selected, option) =>
+              onChange={({ value }, option) =>
                 setFormData({
                   ...formData,
                   name_font: {
                     name: !Array.isArray(option) && option.title,
-                    link: selected as string,
+                    link: value,
                   },
                 })
               }
@@ -244,6 +253,7 @@ const SettingsAlertsBlock = ({
               labelCol={8}
               selectCol={14}
               gutter={[0, 18]}
+              labelInValue
               showSearch
             />
           </div>
@@ -252,15 +262,18 @@ const SettingsAlertsBlock = ({
           <div className="form-element">
             <SelectInput
               label="Donation sum font:"
-              value={sum_font.name}
+              value={{
+                value: sum_font.name,
+                label: <FontStyleElement fontName={sum_font.name} />,
+              }}
               list={fontList}
               modificator="form-select"
-              onChange={(selected, option) =>
+              onChange={({ value }, option) =>
                 setFormData({
                   ...formData,
                   sum_font: {
                     name: !Array.isArray(option) && option.title,
-                    link: selected as string,
+                    link: value,
                   },
                 })
               }
@@ -269,6 +282,7 @@ const SettingsAlertsBlock = ({
               labelCol={8}
               selectCol={14}
               gutter={[0, 18]}
+              labelInValue
               showSearch
             />
           </div>
@@ -276,16 +290,13 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <Row
-              style={{
-                width: "100%",
-              }}
               gutter={[0, 18]}
               align="middle"
             >
-              <Col sm={8} xs={12}>
+              <Col md={8} xs={24}>
                 <span className="form-element__label">Alert sound:</span>
               </Col>
-              <Col md={4}>
+              <Col md={14} xs={24}>
                 <SelectComponent
                   title={sound}
                   list={soundsList.map((s) => s.name)}

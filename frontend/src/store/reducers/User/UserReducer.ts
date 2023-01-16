@@ -1,6 +1,6 @@
 import { initUser } from "consts";
 import { IUserAction } from "appTypes";
-import { SET_USER } from "../../types/User";
+import { SET_USER } from "store/types/User";
 
 const UserReducer = (state = initUser, action: IUserAction) => {
   switch (action.type) {

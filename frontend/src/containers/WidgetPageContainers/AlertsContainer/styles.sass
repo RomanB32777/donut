@@ -62,7 +62,6 @@
 
         .form
             &-element
-                // padding-right: 60px
                 min-height: 57px
 
                 .form-select
@@ -71,9 +70,28 @@
             &-element:not(:last-child)
                 margin-bottom: 10px
 
-            .select-sound
+            .select-sound   
                 font-family: variables.$pt-font
-                width: max-content
+                // width: max-content
+                max-width: 250px
+                width: 100%
+                height: auto
+                background: variables.$black-transparent-color
+                border: none
+                border-radius: variables.$border-radius
+                padding: 9px 24px
+
+                .block
+                    justify-content: space-between
+
+                    .title
+                        font-style: normal
+                        font-weight: 500
+                        font-size: 20px
+                        line-height: 25px
+
+                    .icon
+                        padding-right: 7px
 
                 .select-header
                     font-size: 18px
@@ -105,7 +123,6 @@
                     color: variables.$grey-color
 
                     .sound-upload
-
                         label
                             cursor: pointer
 

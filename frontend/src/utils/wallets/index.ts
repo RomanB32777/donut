@@ -1,6 +1,8 @@
 import { AnyAction, Dispatch } from "redux";
 import { NavigateFunction } from "react-router-dom";
-import axiosClient from "modules/axiosClient";
+import axios from "axios";
+import { exchangeNameTypes } from "types";
+
 import { setSelectedBlockchain } from "store/types/Wallet";
 import { tryToGetUser } from "store/types/User";
 import { setLoading } from "store/types/Loading";
@@ -11,14 +13,17 @@ import {
   changeBlockchain,
   paymentMethod,
   getQuantityBalance,
-  mintBadge,
+  mint,
   getBadgeURI,
   createContract,
   getBalance,
+  payForBadgeCreation,
+  getGasPrice,
+  getGasPriceForMethod,
 } from "./methods";
-import { IWalletConf } from "appTypes";
+import { IWalletConf, IWalletMethods } from "appTypes";
 
-const walletMethods = {
+const walletMethods: IWalletMethods = {
   isInstall,
   getBlockchainData,
   getCurrentBlockchain,
@@ -27,19 +32,24 @@ const walletMethods = {
   getBalance,
   createContract,
   getBadgeURI,
-  mintBadge,
+  mint,
   getQuantityBalance,
+  payForBadgeCreation,
+  getGasPrice,
+  getGasPriceForMethod,
 };
 
 const getUsdKoef = async (
-  blockchain: string, // currencyTypes
+  blockchain: exchangeNameTypes,
   setUsdtKoef?: (price: number) => void
 ) => {
-  const { data } = await axiosClient.get(
+  const { data } = await axios.get(
     `https://api.coingecko.com/api/v3/simple/price?ids=${blockchain}&vs_currencies=usd`
   );
-  setUsdtKoef && data[blockchain] && setUsdtKoef(+data[blockchain].usd);
-  if (data[blockchain]) return +data[blockchain].usd;
+  if (data[blockchain]) {
+    setUsdtKoef && setUsdtKoef(+data[blockchain].usd);
+    return +data[blockchain].usd;
+  }
   return 0;
 };
 

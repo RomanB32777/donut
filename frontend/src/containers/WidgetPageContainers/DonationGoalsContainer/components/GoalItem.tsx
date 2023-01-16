@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
-import { IGoalData } from "types";
+import { goalDataKeys, IGoalData } from "types";
 
 import LinkCopy from "components/LinkCopy";
 import WidgetMobileWrapper from "components/WidgetMobileWrapper";
@@ -15,15 +15,23 @@ import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import axiosClient, { baseURL } from "modules/axiosClient";
 import { getGoals } from "store/types/Goals";
-import { addNotification, addSuccessNotification, copyStr } from "utils";
-import { IEditGoalData } from "appTypes";
+import {
+  addNotification,
+  addSuccessNotification,
+  copyStr,
+  loadFonts,
+} from "utils";
+import { ISelectItem } from "components/SelectInput";
+import { IWidgetGoalData } from "appTypes";
 
 const GoalItem = ({
+  fonts,
   goalData,
   openEditModal,
 }: {
+  fonts: ISelectItem[];
   goalData: IGoalData;
-  openEditModal?: (data: IGoalData) => void;
+  openEditModal?: (data: IWidgetGoalData) => void;
 }) => {
   const dispatch = useDispatch();
   const user = useAppSelector(({ user }) => user);
@@ -31,18 +39,27 @@ const GoalItem = ({
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [editGoalData, setEditGoalData] = useState<IEditGoalData>({
-    title_color: "#ffffff",
-    progress_color: "#1D14FF",
-    background_color: "#212127",
+  const [editGoalData, setEditGoalData] = useState<IWidgetGoalData>({
+    ...goalData,
+    title_font: {
+      name: goalData.title_font,
+      link: "",
+    },
+    progress_font: {
+      name: goalData.progress_font,
+      link: "",
+    },
   });
 
+  const { id, title, amount_goal, amount_raised, is_archive, progress_color } =
+    editGoalData;
+
   const handleActiveDetails = () =>
-    !isarchive && setisActiveDetails(!isActiveDetails);
+    !is_archive && setisActiveDetails(!isActiveDetails);
 
   const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
     event && event.stopPropagation();
-    openEditModal && openEditModal(goalData);
+    openEditModal && openEditModal(editGoalData);
   };
 
   const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
@@ -50,16 +67,37 @@ const GoalItem = ({
     copyStr(linkForCopy);
   };
 
-  const sendColorsData = async () => {
+  const initGoalItem = async () => {
+    if (fonts) {
+      const { title_font, progress_font } = goalData;
+
+      const loadedFonts = await loadFonts({
+        fonts,
+        fields: { title_font, progress_font },
+      });
+
+      // convert IGoalData -> IWidgetGoalData
+      const goalItemValues = Object.keys(goalData).reduce(
+        (values, key) => ({
+          ...values,
+          [key]: goalData[key as goalDataKeys],
+        }),
+        editGoalData
+      );
+      setEditGoalData({ ...goalItemValues, ...loadedFonts });
+    }
+  };
+
+  const editWidgetData = async () => {
     try {
       setLoading(true);
       const { id } = goalData;
-      const { title_color, progress_color, background_color } = editGoalData;
+      const { title_font, progress_font } = editGoalData;
       await axiosClient.put("/api/widget/goals-widget/", {
         goalData: {
-          title_color,
-          progress_color,
-          background_color,
+          ...editGoalData,
+          title_font: title_font.name,
+          progress_font: progress_font.name,
         },
         creator_id: user.id,
         id,
@@ -99,22 +137,14 @@ const GoalItem = ({
     }
   };
 
-  useEffect(() => {
-    const { title_color, progress_color, background_color } = goalData;
-    setEditGoalData({
-      title_color,
-      progress_color,
-      background_color,
-    });
-  }, []);
-
-  const { id, title, amount_goal, amount_raised, isarchive } = goalData;
-  const { progress_color } = editGoalData;
-
   const linkForCopy = useMemo(
     () => `${baseURL}/donat-goal/${user.username}/${id}`,
     [user, id]
   );
+
+  useEffect(() => {
+    fonts && fonts.length && initGoalItem();
+  }, [fonts, goalData]);
 
   return (
     <>
@@ -123,7 +153,7 @@ const GoalItem = ({
           active: isActiveDetails,
         })}
         style={{
-          cursor: !isarchive ? "pointer" : "auto",
+          cursor: !is_archive ? "pointer" : "auto",
         }}
         onClick={handleActiveDetails}
       >
@@ -166,7 +196,7 @@ const GoalItem = ({
               </Col>
               {!isLaptop && (
                 <Col span={13}>
-                  {!isarchive && (
+                  {!is_archive && (
                     <div className="goals-item__link">
                       <LinkCopy link={linkForCopy} isSimple />
                     </div>
@@ -176,12 +206,12 @@ const GoalItem = ({
             </Row>
           </Col>
           <div className="goals-item__btns">
-            {isLaptop && !isarchive && (
+            {isLaptop && !is_archive && (
               <div className="goals-item__btns_item" onClick={clickCopyBtn}>
                 <CopyIcon />
               </div>
             )}
-            {!isarchive && (
+            {!is_archive && (
               <div
                 className="goals-item__btns_item"
                 onClick={clickEditBtn}
@@ -210,18 +240,18 @@ const GoalItem = ({
           <WidgetMobileWrapper
             previewBlock={
               <PreviewGoalBlock
-                editGoalData={editGoalData}
-                goalData={goalData}
                 loading={loading}
-                sendColorsData={sendColorsData}
+                editGoalData={editGoalData}
+                editWidgetData={editWidgetData}
               />
             }
             settingsBlock={
               <SettingsGoalBlock
-                editGoalData={editGoalData}
+                fonts={fonts}
                 loading={loading}
+                editGoalData={editGoalData}
                 setEditGoalData={setEditGoalData}
-                sendColorsData={sendColorsData}
+                editWidgetData={editWidgetData}
               />
             }
           />

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { WalletContext } from "../../../contexts/Wallet";
+import { WalletContext } from "contexts/Wallet";
 import "./styles.sass";
 
 export const HeaderBanner = () => {

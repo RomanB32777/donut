@@ -13,7 +13,7 @@ import BadgePage from "./BadgePage";
 import CreateBadgeForm from "./CreateBadge";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import { setUpdateAppNotifications } from "store/types/Notifications";
 import { IBadge } from "appTypes";
 import { addNotification } from "utils";
@@ -39,17 +39,14 @@ const BadgesContainer = () => {
   const queryID = searchParams.get("id");
 
   const getBadges = async (id: number) => {
-    const currBlockchain = await walletConf.getCurrentBlockchain();
-    if (currBlockchain) {
-      const url =
-        user.roleplay === "creators"
-          ? `${baseURL}/api/badge/${id}?blockchain=${currBlockchain.name}&status=success`
-          : `${baseURL}/api/badge/badges-backer/${id}?blockchain=${currBlockchain.name}&status=success`;
+    const url =
+      user.roleplay === "creators"
+        ? `/api/badge/${id}?status=success`
+        : `/api/badge/badges-backer/${id}?status=success`;
 
-      const { data } = await axiosClient.get(url);
-      if (Array.isArray(data) && data.length) {
-        setBadgesList(data);
-      }
+    const { data } = await axiosClient.get(url);
+    if (Array.isArray(data) && data.length) {
+      setBadgesList(data);
     }
   };
 
@@ -197,7 +194,7 @@ const BadgesContainer = () => {
     );
 
   return (
-    <div className="badges-container">
+    <div className="badges-container fadeIn">
       <PageTitle formatId="page_title_badges" />
 
       {user && user.id && user.roleplay && user.roleplay === "creators" && (
@@ -210,6 +207,7 @@ const BadgesContainer = () => {
             padding="6px 43px"
             fontSize="18px"
             onClick={() => setIsOpenCreateForm(true)}
+            disabled
             isMain
           />
         </div>

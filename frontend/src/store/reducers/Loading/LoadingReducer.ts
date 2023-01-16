@@ -1,5 +1,5 @@
-import { ILoadingAction } from "../../../appTypes";
-import { SET_LOADING } from "../../types/Loading";
+import { ILoadingAction } from "appTypes";
+import { SET_LOADING } from "store/types/Loading";
 
 const initialState = true;
 

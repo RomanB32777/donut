@@ -10,7 +10,9 @@ import GoalItem from "./components/GoalItem";
 import GoalsModal from "./components/GoalsModal";
 
 import { getGoals } from "store/types/Goals";
+import { getFontsList } from "utils";
 import { initWidgetGoalData } from "consts";
+import { ISelectItem } from "components/SelectInput";
 import { IWidgetGoalData } from "appTypes";
 import "./styles.sass";
 
@@ -23,23 +25,27 @@ const DonationGoalsContainer = () => {
   const [formData, setFormData] = useState<IWidgetGoalData>({
     ...initWidgetGoalData,
   });
+  const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
-  const openEditModal = (widget: IGoalData) => {
-    const { id, amount_goal, title } = widget;
-    setFormData({
-      id,
-      widgetAmount: String(amount_goal),
-      widgetDescription: title,
-    });
+  const openEditModal = (widget: IWidgetGoalData) => {
+    setFormData(widget);
     setIsOpenModal(true);
   };
 
   useEffect(() => {
-    user.id && dispatch(getGoals(user.id));
+    const initFonts = async () => {
+      const fonts = await getFontsList();
+      setFonts(fonts);
+    };
+
+    if (user.id) {
+      dispatch(getGoals(user.id));
+      initFonts();
+    }
   }, [user, list]);
 
   return (
-    <div className="donationGoalsPage-container">
+    <div className="donationGoalsPage-container fadeIn">
       <PageTitle formatId="page_title_donation_goals" />
       <div className="goals-header">
         <p className="subtitle">
@@ -55,13 +61,14 @@ const DonationGoalsContainer = () => {
       </div>
       <div className="goals-wrapper">
         {Boolean(goals.length) &&
-        Boolean(goals.filter((goal: IGoalData) => !goal.isarchive).length) ? (
+        Boolean(goals.filter((goal) => !goal.is_archive).length) ? (
           goals
-            .filter((goal: IGoalData) => !goal.isarchive)
+            .filter((goal) => !goal.is_archive)
             .reverse()
-            .map((goal: IGoalData) => (
+            .map((goal) => (
               <GoalItem
                 key={goal.id}
+                fonts={fonts}
                 goalData={goal}
                 openEditModal={openEditModal}
               />
@@ -73,12 +80,12 @@ const DonationGoalsContainer = () => {
       <PageTitle formatId="page_title_donation_history" />
       <div className="goals-archiveWrapper">
         {Boolean(goals.length) &&
-        Boolean(goals.filter((goal: IGoalData) => goal.isarchive).length) ? (
+        Boolean(goals.filter((goal: IGoalData) => goal.is_archive).length) ? (
           goals
-            .filter((goal: IGoalData) => goal.isarchive)
+            .filter((goal: IGoalData) => goal.is_archive)
             .reverse()
             .map((goal: IGoalData) => (
-              <GoalItem key={goal.id} goalData={goal} />
+              <GoalItem key={goal.id} goalData={goal} fonts={[]} />
             ))
         ) : (
           <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />

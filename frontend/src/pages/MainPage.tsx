@@ -1,5 +1,5 @@
-import MainContainer from "../containers/MainContainer";
+import DashboardContainer from "containers/DashboardContainer";
 
-const MainPage = () => <MainContainer />;
+const MainPage = () => <DashboardContainer />;
 
 export default MainPage;

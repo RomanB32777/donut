@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, rmSync } from 'fs';
+import { IShortUserData, IUser } from 'types';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
-import { IShortUserData } from 'types/index.js';
 import { uploadsFolder, isProduction } from '../consts.js';
 
 class UserController {
@@ -43,21 +43,22 @@ class UserController {
         [wallet_address, (username.includes('@') ? username : '@' + username).toLowerCase(), roleplay],
       );
       const newUserInfo = newUser.rows[0];
-      const userId = newUserInfo.id;
 
-      if (roleplay === 'creators') {
-        const security_string = getRandomStr(10);
-        await db.query(`INSERT INTO creators (user_id, security_string) values ($1, $2) RETURNING *`, [
-          userId,
-          security_string,
-        ]);
-        const alertID = getRandomStr(6);
-        await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, userId]);
-        return res.status(200).json(newUserInfo);
-      } else {
-        await db.query(`INSERT INTO backers (user_id) values ($1) RETURNING *`, [userId]); // username.toLowerCase(),
+      if (newUserInfo) {
+        const userId = newUserInfo.id;
+
+        if (roleplay === 'creators') {
+          const security_string = getRandomStr(10);
+          const alertID = getRandomStr(6);
+          await db.query(`INSERT INTO creators (user_id, security_string) values ($1, $2) RETURNING *`, [
+            userId,
+            security_string,
+          ]);
+          await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, userId]);
+        }
         return res.status(200).json(newUserInfo);
       }
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }
@@ -82,8 +83,9 @@ class UserController {
     try {
       const { address } = req.params;
       const user = await db.query(
-        `
-          SELECT u.*, to_jsonb(c.*) as donat_page
+        `SELECT u.*, 
+            to_jsonb(c.*) - ARRAY['id', 'user_id', 'spam_filter'] as donat_page,
+            c.spam_filter
           FROM users u
           LEFT JOIN creators c
           ON c.user_id = u.id
@@ -112,7 +114,9 @@ class UserController {
     try {
       const { username } = req.params;
       const creator = await db.query(
-        `SELECT u.*, to_jsonb(c.*) as donat_page
+        `SELECT u.*, 
+            to_jsonb(c.*) - ARRAY['id', 'user_id', 'spam_filter'] as donat_page,
+            c.spam_filter
           FROM users u
           LEFT JOIN creators c
           ON c.user_id = u.id
@@ -129,30 +133,44 @@ class UserController {
 
   async editUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { welcome_text, btn_text, main_color, background_color, username, user_id } = req.body;
-      let editedUser = {};
+      const { donat_page, spam_filter, id } = req.body as IUser;
+      const user = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
 
-      const user = await db.query(`SELECT * FROM users WHERE id = $1`, [user_id]);
+      if (user.rowCount) {
+        const { id, roleplay } = user.rows[0];
 
-      if (username) {
-        const editedUsername = await db.query(`UPDATE users SET username = $1 WHERE id = $2 RETURNING *`, [
-          username,
-          user.rows[0].id,
-        ]);
-        editedUser = {
-          ...editedUser,
-          username: editedUsername.rows[0].username,
-        };
-      } else {
-        if (user.rows[0].roleplay === 'creators') {
-          const editedDBUser = await db.query(
-            `UPDATE creators SET welcome_text = $1, btn_text = $2, main_color = $3, background_color = $4 WHERE user_id = $5 RETURNING *`,
-            [welcome_text, btn_text, main_color, background_color, user.rows[0].id],
+        if (roleplay === 'creators' && donat_page) {
+          const values = Object.values(donat_page);
+          if (values.length) {
+            const editedUser = await db.query(
+              `UPDATE creators SET ${Object.keys(donat_page).map(
+                (key, index) => `${key} = $${index + 1}`,
+              )} WHERE user_id = ${id} RETURNING *`,
+              [...values],
+            );
+            return res.status(200).json(editedUser.rows[0]);
+          }
+        }
+
+        if (typeof spam_filter !== 'undefined')
+          await db.query(`UPDATE creators SET spam_filter = $1 WHERE user_id = ${id} RETURNING *`, [spam_filter]);
+
+        const bodyKeyFields = Object.keys(req.body).filter(
+          (field: string) => field !== 'id' && field !== 'spam_filter',
+        );
+        const changedFields = bodyKeyFields.map((field) => req.body[field]);
+
+        if (changedFields.length) {
+          const editedUser = await db.query(
+            `UPDATE users SET ${bodyKeyFields
+              .map((field, index) => `${field} = $${index + 1}`)
+              .join(', ')} WHERE id = ${id} RETURNING *`,
+            [...changedFields],
           );
-          editedUser = editedDBUser.rows[0];
+          return res.status(200).json(editedUser.rows[0]);
         }
       }
-      res.status(200).json({ editedUser });
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }
@@ -175,6 +193,7 @@ class UserController {
 
         res.status(200).json({ message: 'success' });
       }
+      res.status(204).json({});
     } catch (error) {
       next(error);
     }

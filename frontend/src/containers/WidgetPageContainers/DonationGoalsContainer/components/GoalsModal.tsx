@@ -27,7 +27,7 @@ const GoalsModal = ({
   const { user } = useAppSelector((state) => state);
   const [loading, setLoading] = useState(false);
 
-  const { widgetAmount, widgetDescription } = formData;
+  const { amount_goal, title } = formData;
 
   const closeEditModal = () => {
     setFormData({
@@ -39,19 +39,19 @@ const GoalsModal = ({
   const sendData = async () => {
     try {
       setLoading(true);
-      const { widgetDescription, widgetAmount, id } = formData;
+      const { amount_goal, title, id } = formData;
       id
         ? await axiosClient.put("/api/widget/goals-widget/", {
             goalData: {
-              title: widgetDescription,
-              amount_goal: +widgetAmount,
+              title,
+              amount_goal,
             },
             creator_id: user.id,
             id,
           })
         : await axiosClient.post("/api/widget/goals-widget/", {
-            title: widgetDescription,
-            amount_goal: +widgetAmount,
+            title,
+            amount_goal,
             creator_id: user.id,
           });
       dispatch(getGoals(user.id));
@@ -87,10 +87,8 @@ const GoalsModal = ({
               <FormInput
                 label="Goal description:"
                 name="widgetDescription"
-                value={widgetDescription}
-                setValue={(value) =>
-                  setFormData({ ...formData, widgetDescription: value })
-                }
+                value={title}
+                setValue={(value) => setFormData({ ...formData, title: value })}
                 labelCol={6}
                 inputCol={14}
                 gutter={[0, 18]}
@@ -102,10 +100,10 @@ const GoalsModal = ({
               <FormInput
                 label="Amount to raise:"
                 name="widgetAmount"
-                value={widgetAmount}
+                value={String(amount_goal)}
                 typeInput="number"
                 setValue={(value) =>
-                  setFormData({ ...formData, widgetAmount: value })
+                  setFormData({ ...formData, amount_goal: +value })
                 }
                 addonAfter={<span>USD</span>}
                 labelCol={6}

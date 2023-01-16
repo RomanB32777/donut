@@ -1,4 +1,4 @@
-import BadgesContainer from "../containers/BadgesContainer";
+import BadgesContainer from "containers/BadgesContainer";
 
 const BadgesPage = () => (
     <BadgesContainer/>

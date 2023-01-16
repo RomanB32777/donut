@@ -9,7 +9,7 @@ import BaseButton from "components/BaseButton";
 import UploadImage from "components/UploadImage";
 import LinkCopy from "components/LinkCopy";
 import SelectInput from "components/SelectInput";
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import {
   LoadingModalComponent,
   SuccessModalComponent,
@@ -75,7 +75,7 @@ const BadgePage = ({
     try {
       const { id, contract_address } = activeBadge;
       const { data } = await axiosClient.get(
-        `${baseURL}/api/badge/holders/${id}/${contract_address}`
+        `/api/badge/holders/${id}/${contract_address}`
       );
       data && setHolders(data);
     } catch (error) {
@@ -97,7 +97,7 @@ const BadgePage = ({
   const assignBadge = async (contributor_id: number) => {
     try {
       const { id, contract_address, creator_id, title } = activeBadge;
-      const res = await axiosClient.post(`${baseURL}/api/badge/assign-badge`, {
+      const res = await axiosClient.post(`/api/badge/assign-badge`, {
         id,
         contract_address,
         contributor_id,
@@ -136,7 +136,7 @@ const BadgePage = ({
       if (selectedUserObj) {
         const selectedUserAddress = selectedUserObj.wallet_address;
 
-        await walletConf.mintBadge({
+        await walletConf.mint({
           contract_address,
           addressTo: selectedUserAddress,
         });
@@ -183,7 +183,7 @@ const BadgePage = ({
     formBadge;
 
   return (
-    <div className="create_badges">
+    <div className="create_badges fadeIn">
       <div className="create_badges__container">
         <div className="create_badges__title">
           <div className="arrow_icon icon" onClick={backBtn}>
@@ -290,7 +290,7 @@ const BadgePage = ({
                             size="large"
                             maxStyle={{
                               color: "#FFFFFF",
-                              backgroundColor: "#1D14FF",
+                              backgroundColor: "#E94560",
                               cursor: "pointer",
                             }}
                           >
@@ -304,7 +304,7 @@ const BadgePage = ({
                                   <Avatar src={holder.avatar} />
                                 ) : (
                                   <Avatar
-                                    style={{ backgroundColor: "#1D14FF" }}
+                                    style={{ backgroundColor: "#E94560" }}
                                   >
                                     {holder.username[1]}
                                   </Avatar>

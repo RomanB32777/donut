@@ -1,16 +1,16 @@
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { blockchainsType } from "types";
+
+import { addInstallWalletNotification } from "..";
+import { transferAbi } from "consts";
 import {
   ICreateContractObj,
   IMintBadgeObj,
   IPayObj,
   IQuantityBalanceObj,
   IWalletConf,
-} from "../../appTypes";
-import { addInstallWalletNotification } from "..";
-
-const metamaskTransferAbi =
-  '[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address payable","name":"_creator","type":"address"}],"name":"transferMoney","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"withdrawPendingBalance","outputs":[],"stateMutability":"payable","type":"function"},{"stateMutability":"payable","type":"receive"}]';
+  methodNames,
+} from "appTypes";
 
 export function isInstall() {
   return (window as any).hasOwnProperty("ethereum");
@@ -48,8 +48,10 @@ export async function getCurrentBlockchain(this: IWalletConf) {
     const network = await provider.getNetwork(); // await provider.send("eth_chainId", []);
 
     if (network.chainId) {
-      const currentBlockchain = this.blockchains.find(
-        ({ chainId }) => chainId === `0x${Number(network.chainId).toString(16)}`
+      const currentBlockchain = this.main_contract.blockchains.find(
+        ({ chainId }) =>
+          chainId.toLowerCase() ===
+          `0x${Number(network.chainId).toString(16)}`.toLowerCase()
       );
       return currentBlockchain || null; // or this.blockchains[0] ???
     }
@@ -71,7 +73,9 @@ export async function changeBlockchain(
     method: "eth_chainId",
   });
 
-  const blockchain = this.blockchains.find((b) => b.name === blockchainName);
+  const blockchain = this.main_contract.blockchains.find(
+    (b) => b.name === blockchainName
+  );
 
   if (blockchain) {
     const { chainId, chainName, nativeCurrency, rpcUrls, blockExplorerUrls } =
@@ -129,13 +133,14 @@ export async function paymentMethod({
 }: IPayObj) {
   const smartContract = new ethers.Contract(
     contract,
-    JSON.parse(metamaskTransferAbi),
+    JSON.parse(transferAbi),
     signer
   );
   const tx = await smartContract.transferMoney(addressTo, {
-    value: ethers.utils.parseEther(sum),
+    value: utils.parseEther(sum),
   });
   await tx.wait();
+  return tx;
 }
 
 export async function getBalance(
@@ -147,8 +152,8 @@ export async function getBalance(
     const balance = await blockchainData.provider.getBalance(
       blockchainData.address
     );
-    const intBalance = Number(ethers.utils.formatEther(balance.toString()));
-    setBalance && intBalance && setBalance(intBalance);
+    const intBalance = Number(utils.formatEther(balance.toString()));
+    setBalance && setBalance(intBalance);
     return intBalance;
   }
   return 0;
@@ -172,7 +177,7 @@ export async function createContract({
 
 export async function getBadgeURI(this: IWalletConf, contract_address: string) {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-  const { abi } = this;
+  const { abi } = this.main_contract;
   if (abi) {
     const currentContract = new ethers.Contract(
       contract_address,
@@ -185,15 +190,15 @@ export async function getBadgeURI(this: IWalletConf, contract_address: string) {
   return "";
 }
 
-export async function mintBadge(this: IWalletConf, mintObj: IMintBadgeObj) {
-  const { abi } = this;
-  if (abi) {
-    const { contract_address, addressTo } = mintObj;
+export async function mint(this: IWalletConf, mintObj: IMintBadgeObj) {
+  const { abi, address } = this.nft_contract;
+  if (address) {
+    const { addressTo } = mintObj;
     const provider = new ethers.providers.Web3Provider(
       (window as any).ethereum
     );
     const signer = provider.getSigner(0);
-    const currentContract = new ethers.Contract(contract_address, abi, signer);
+    const currentContract = new ethers.Contract(address, abi, signer);
     const tx = await currentContract.mint(addressTo, 1, 1);
     await tx.wait();
   } else return;
@@ -203,7 +208,7 @@ export async function getQuantityBalance(
   this: IWalletConf,
   objForQuantityBalance: IQuantityBalanceObj
 ) {
-  const { abi } = this;
+  const { abi } = this.main_contract;
   if (abi) {
     const { supporter_address, contract_address, isCreator } =
       objForQuantityBalance;
@@ -222,4 +227,71 @@ export async function getQuantityBalance(
     return quantityBadgeNum;
   }
   return null;
+}
+
+export async function payForBadgeCreation(this: IWalletConf, price: number) {
+  const { address, abi } = this.commission_contract;
+
+  if (address) {
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const signer = provider.getSigner(0);
+    const commissionContract = new ethers.Contract(address, abi, signer);
+    // const formatPrice = utils.parseEther(String(price));
+
+    // console.log(" TETTTTE", utils.parseEther(String(price))); //ethers.BigNumber.from(String(price)));
+
+    // const decimals = 18;
+    const input = String(price); // Note: this is a string, e.g. user input
+    const amount = ethers.utils.parseEther(input);
+
+    console.log(amount.toNumber());
+
+    const tx = await commissionContract.payForBadgeCreation({
+      value: amount,
+    });
+    await tx.wait();
+    return tx;
+  }
+  return;
+}
+
+export async function getGasPrice(this: IWalletConf) {
+  const blockchainData = await this.getBlockchainData();
+
+  if (blockchainData) {
+    const { provider } = blockchainData;
+    const gasPrice = await provider.getGasPrice();
+    const numberPrice = utils.formatUnits(gasPrice, "ether");
+    return Number(numberPrice);
+  }
+  return 0;
+}
+
+export async function getGasPriceForMethod(
+  this: IWalletConf,
+  methodName: methodNames
+) {
+  const { address, abi } = this.nft_contract;
+  if (address) {
+    const gasPrice = await this.getGasPrice();
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const contract = new ethers.Contract(address, abi, provider);
+
+    console.log(contract, methodName);
+
+    const functionGasPrice = await contract.estimateGas[methodName](
+      "0xDEd725B3d5daAD06398D4b4Ca0Af462921325194",
+      1,
+      1,
+      []
+    );
+    console.log(functionGasPrice);
+
+    return functionGasPrice.toNumber() * gasPrice;
+  }
+  return 0;
 }

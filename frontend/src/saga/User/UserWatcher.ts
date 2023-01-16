@@ -1,4 +1,5 @@
 import { call, put, takeEvery } from "redux-saga/effects";
+import { IUser } from "types";
 import axiosClient from "modules/axiosClient";
 import { setLoading } from "store/types/Loading";
 import { setUser, TRY_TO_GET_USER } from "store/types/User";
@@ -11,8 +12,8 @@ const asyncGetUser = async (address: string) => {
 
 function* UserWorker(action: any): any {
   yield put(setLoading(true));
-  const data = yield call(asyncGetUser, action.payload);
-  if (data) yield put(setUser(data));
+  const user: IUser = yield call(asyncGetUser, action.payload);
+  if (user) yield put(setUser(user));
   yield put(setLoading(false));
 }
 

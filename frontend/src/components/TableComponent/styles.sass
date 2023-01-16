@@ -1,70 +1,87 @@
 @use 'commonStyles/variables'
 
-.ant-table,
-.ant-table-cell,
-.ant-pagination-item
-    background: none !important
-    color: variables.$white-color !important
-    font-family: variables.$pt-font
-    font-style: normal
-    font-size: 17px
-    line-height: 22px
-    color: variables.$white-color
-
-    a
-        color: variables.$white-color
-        text-decoration: underline
-
 .app-table
-    .ant-table-tbody > tr > td,
-    .ant-table-thead > tr > th
-        border-bottom: none
-
-.ant-table-thead
-    .ant-table-cell
-        font-weight: 600 !important
-
-    .ant-table-column-title
-        z-index: 0
-
-.ant-pagination
-    align-items: baseline
-
-    .ant-pagination-prev,
-    .ant-pagination-next
-        min-width: auto
-        button
-            color: variables.$white-color !important
-            background: none !important
-            border: none !important
-
-        &.ant-pagination-disabled
-            button
-                color: variables.$grey-color !important
-
+    .ant-table,
+    .ant-table-cell,
     .ant-pagination-item
-        border: none
-        min-width: auto
-        a
-            color: variables.$white-color !important
-            font-family: variables.$pt-font
-            font-style: normal
-            font-size: 15px
-            line-height: 20px
-            padding: 0
-
-    .ant-pagination-item-active
-        a
-            color: variables.$main-color !important
-
-    .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis,
-    .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
-    .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon,
-    .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-link-icon
+        background: none !important
         color: variables.$white-color !important
         font-family: variables.$pt-font
         font-style: normal
-        font-size: 12px
+        font-size: 17px
+        line-height: 22px
+        color: variables.$white-color
+
+        a
+            color: variables.$white-color
+            text-decoration: underline
+
+    .app-table
+        .ant-table-tbody > tr > td,
+        .ant-table-thead > tr > th
+            border-bottom: none
+
+    .ant-table-thead
+        .ant-table-cell
+            font-weight: 600 !important
+
+        .ant-table-column-title
+            z-index: 0
+
+    .ant-pagination
+        align-items: baseline
+
+        .ant-pagination-prev,
+        .ant-pagination-next
+            min-width: auto
+            button
+                color: variables.$white-color !important
+                background: none !important
+                border: none !important
+
+            &.ant-pagination-disabled
+                button
+                    color: variables.$grey-color !important
+
+        .ant-pagination-item
+            border: none
+            min-width: auto
+            a
+                color: variables.$white-color !important
+                font-family: variables.$pt-font
+                font-style: normal
+                font-size: 15px
+                line-height: 20px
+                padding: 0
+
+        .ant-pagination-item-active
+            a
+                color: variables.$main-color !important
+
+        .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis,
+        .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+        .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon,
+        .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-link-icon
+            color: variables.$white-color !important
+            font-family: variables.$pt-font
+            font-style: normal
+            font-size: 12px
+
+.ant-table-wrapper
+    .ant-table:not(.ant-table-bordered)
+        .ant-table-tbody > tr > td,
+        .ant-table-tbody > tr:last-child > td
+            border: none
+
+.app-table
+    .table-loader
+        display: flex !important
+        align-items: center
+        justify-content: center
+
+    .ant-spin-nested-loading 
+        .ant-spin-blur
+            opacity: 0
 
 @media (max-width: 768px)
     .ant-table

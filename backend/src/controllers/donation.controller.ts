@@ -1,16 +1,10 @@
-import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import { IFilterPeriodItems, periodItemsTypes, exchangeNameTypes, IFullSendDonat } from 'types/index.js';
+import { IFilterPeriodItems, periodItemsTypes, IFullSendDonat } from 'types/index.js';
 import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
 import db from '../db.js';
-
-// const currenciesFormatApi: { [key in exchangeNameTypes]: string } = {
-//   // tEVMOS: 'evmos',
-//   // KLAY: 'klay-token',
-//   // TRX: 'tron',
-//   evmos: '',
-//   'klay-token': '',
-// };
+import badWordsFilter from '../modules/badWords/index.js';
+import { getUsdKoef, getUsername, parseBool } from '../utils.js';
+import { exchangeNames } from '../consts.js';
 
 // const dateParams: IFilterPeriodItems = {
 //   today: 'Today',
@@ -43,14 +37,6 @@ const dateTrancCurrentParams: IFullFilterPeriodItems = {
   custom: 'custom',
 };
 
-// const getUsdKoef = async (blockchain: exchangeNameTypes) => {
-//   const blockchainForTransfer = currenciesFormatApi[blockchain];
-//   const { data } = await axios.default.get(
-//     `https://api.coingecko.com/api/v3/simple/price?ids=${blockchainForTransfer}&vs_currencies=usd`,
-//   );
-//   return +data[blockchainForTransfer].usd;
-// };
-
 const getTimePeriod = (period: periodItemsTypes) => `
     d.created_at >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} 
   `;
@@ -67,32 +53,37 @@ const getTimeCurrentPeriod = ({
 }) => {
   if (period === 'all') return 'true';
   if (period === 'custom' && startDate && endDate) {
-    return `to_timestamp(created_at,'YYYY/MM/DD') 
+    return `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
         BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
         AND to_timestamp('${endDate}', 'DD/MM/YYYY')`;
   }
-  return `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(created_at, 'YYYY/MM/DD T HH24:MI:SS'))
+  return `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(d.created_at::text, 'YYYY/MM/DD T HH24:MI:SS'))
     = date_trunc('${dateTrancCurrentParams[period]}', current_date${period === 'yesterday' ? ' - 1' : ''})`;
 };
 // date_trunc('${}', to_timestamp(created_at, 'YYYY/MM/DD T HH24:MI:SS')) AS date_group
 
+const getSumInUsd = (usdKoefs: any) =>
+  `CASE d.blockchain ${Object.keys(exchangeNames)
+    .map((c) => `WHEN '${c}' THEN ${usdKoefs[c]}`)
+    .join(' ')}
+        ELSE 1
+        END`;
+
 class DonationController {
   async createDonation(req: Request, res: Response, next: NextFunction) {
     try {
-      const { creator_address, backer_address, message, selectedBlockchain, amount, selectedGoal } =
+      const { creator, backer, message, selectedBlockchain, amount, selectedGoal, is_anonymous } =
         req.body as IFullSendDonat;
-      if (creator_address && backer_address) {
-        const creator = await db.query(`SELECT * FROM users WHERE wallet_address = $1`, [creator_address]);
-        const backer = await db.query(`SELECT * FROM users WHERE wallet_address = $1`, [backer_address]);
+      if (creator && backer) {
         const donation = await db.query(
-          `INSERT INTO donations (backer_id, sum_donation, donation_message, blockchain, goal_id, creator_id) values ($1, $2, $3, $4, $5, $6) RETURNING *`,
-          [backer.rows[0].id, amount, message, selectedBlockchain, selectedGoal, creator.rows[0].id],
+          `INSERT INTO donations (backer_id, sum_donation, donation_message, blockchain, goal_id, is_anonymous, creator_id) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+          [backer, amount, message, selectedBlockchain, selectedGoal, is_anonymous, creator],
         );
 
-        if (donation.rows[0]) {
-          res.status(200).json({ message: 'success', donation: donation.rows[0] });
-        }
+        if (donation.rows[0]) return res.status(200).json(donation.rows[0]);
+        return res.status(204).json({});
       }
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }
@@ -119,39 +110,47 @@ class DonationController {
   async getLatestDonations(req: Request, res: Response, next: NextFunction) {
     try {
       const { user_id } = req.params;
-      const { limit, timePeriod, isStatPage, startDate, endDate, blockchain } = req.query;
+      const { limit, timePeriod, isStatPage, startDate, endDate, spam_filter } = req.query;
+
+      const usdKoefs = await getUsdKoef();
 
       const data = await db.query(
         `
-                SELECT  u.username,
-                        d.id,
-                        d.donation_message, 
-                        d.created_at, 
-                        d.sum_donation 
-                FROM donations d
-                LEFT JOIN users u
-                ON d.backer_id = u.id 
-                WHERE d.creator_id = $1 
-                AND ${
-                  isStatPage
-                    ? getTimeCurrentPeriod({
-                        period: timePeriod as fullPeriodItems,
-                        startDate: startDate as string,
-                        endDate: endDate as string,
-                      })
-                    : getTimePeriod(timePeriod as periodItemsTypes)
-                }
-                ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
-                ORDER BY d.created_at DESC
-                ${limit ? `LIMIT ${limit}` : ''}`,
+          SELECT  ${getUsername()}
+                  d.id,
+                  d.donation_message, 
+                  d.created_at, 
+                  d.sum_donation * ${getSumInUsd(usdKoefs)} as sum_donation
+          FROM donations d
+          LEFT JOIN users u
+          ON d.backer_id = u.id 
+          WHERE d.creator_id = $1 
+          AND ${
+            isStatPage
+              ? getTimeCurrentPeriod({
+                  period: timePeriod as fullPeriodItems,
+                  startDate: startDate as string,
+                  endDate: endDate as string,
+                })
+              : getTimePeriod(timePeriod as periodItemsTypes)
+          }
+          ORDER BY d.created_at DESC
+          ${limit ? `LIMIT ${limit}` : ''}`,
         [user_id],
       );
-      if (data && data.rows && data.rows.length > 0) {
-        res.status(200).json(data.rows);
-      } else {
-        res.status(200).json([]);
+      if (data.rowCount) {
+        const donations = parseBool(spam_filter)
+          ? data.rows.map((d) => ({
+              ...d,
+              donation_message: d.donation_message ? badWordsFilter.clean(d.donation_message) : '-',
+            }))
+          : data.rows;
+        return res.status(200).json(donations);
       }
+      return res.status(200).json([]);
     } catch (error) {
+      console.log('axios ?');
+
       next(error);
     }
   }
@@ -159,11 +158,11 @@ class DonationController {
   async getTopDonations(req: Request, res: Response, next: NextFunction) {
     try {
       const { user_id } = req.params;
-      const { limit, timePeriod, startDate, endDate, isStatPage, blockchain } = req.query;
+      const { limit, timePeriod, startDate, endDate, isStatPage, spam_filter } = req.query;
 
       const data = await db.query(
         `
-          SELECT  u.username,
+          SELECT  ${getUsername()}
                   d.id,
                   d.donation_message,
                   d.blockchain,
@@ -182,16 +181,21 @@ class DonationController {
                 })
               : getTimePeriod(timePeriod as periodItemsTypes)
           }
-          ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
           ORDER BY sum_donation DESC
           ${limit ? `LIMIT ${limit}` : ''}`,
         [user_id],
       );
-      if (data.rows.length) {
-        res.status(200).json(data.rows);
-      } else {
-        res.status(200).json([]);
+
+      if (data.rowCount) {
+        const donations = parseBool(spam_filter)
+          ? data.rows.map((d) => ({
+              ...d,
+              donation_message: d.donation_message ? badWordsFilter.clean(d.donation_message) : '-',
+            }))
+          : data.rows;
+        return res.status(200).json(donations);
       }
+      return res.status(200).json([]);
     } catch (error) {
       next(error);
     }
@@ -200,34 +204,50 @@ class DonationController {
   async getTopSupporters(req: Request, res: Response, next: NextFunction) {
     try {
       const { user_id } = req.params;
-      const { limit, timePeriod, isStatPage, startDate, endDate, blockchain } = req.query;
+      const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
+
+      const usdKoefs = await getUsdKoef();
+
+      const joinBlock = `
+        FROM donations d
+          LEFT JOIN users u
+          ON d.backer_id = u.id
+        `;
+
+      const whereBlock = `d.creator_id = $1 AND ${
+        isStatPage
+          ? getTimeCurrentPeriod({
+              period: timePeriod as fullPeriodItems,
+              startDate: startDate as string,
+              endDate: endDate as string,
+            })
+          : getTimePeriod(timePeriod as periodItemsTypes)
+      }`;
 
       const data = await db.query(
         `
-          SELECT  u.username,
-                  SUM(sum_donation::numeric) AS sum_donation 
-          FROM donations d
-          LEFT JOIN users u
-          ON d.backer_id = u.id 
-          WHERE d.creator_id = $1
-          AND ${
-            isStatPage
-              ? getTimeCurrentPeriod({
-                  period: timePeriod as fullPeriodItems,
-                  startDate: startDate as string,
-                  endDate: endDate as string,
-                })
-              : getTimePeriod(timePeriod as periodItemsTypes)
-          }
-          ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
-          GROUP BY u.username
-          ORDER BY sum_donation DESC 
-          ${limit ? `LIMIT ${limit}` : ''}`,
+        SELECT * FROM (
+            SELECT 'anonymous' as username,
+                COALESCE(SUM(sum_donation * ${getSumInUsd(usdKoefs)}), 0)::numeric AS sum_donation 
+              ${joinBlock}
+              WHERE	d.is_anonymous = 'true'
+              AND ${whereBlock}
+          UNION
+            SELECT u.username, 
+                COALESCE(SUM(sum_donation * ${getSumInUsd(usdKoefs)}), 0)::numeric AS sum_donation 
+              ${joinBlock}
+              WHERE	d.is_anonymous = 'false'
+              AND ${whereBlock}
+              GROUP BY u.username
+              ORDER BY sum_donation DESC 
+              ${limit ? `LIMIT ${limit}` : ''}
+          ) as result
+          WHERE result.sum_donation > 0`,
         [user_id],
       );
 
       if (data.rowCount) return res.status(200).json(data.rows);
-      else return res.status(200).json([]);
+      return res.status(200).json([]);
     } catch (error) {
       next(error);
     }
@@ -236,15 +256,16 @@ class DonationController {
   async getStatsDonations(req: Request, res: Response, next: NextFunction) {
     try {
       const { user_id } = req.params;
-      const { timePeriod, blockchain } = req.query;
+      const { timePeriod } = req.query;
+
+      const usdKoefs = await getUsdKoef();
 
       const data = await db.query(
         `
             SELECT date_trunc('${dateTrancSelectParams[timePeriod as periodItemsTypes]}', created_at) AS date_group,
-                    SUM(sum_donation::numeric) AS sum_donation 
+              COALESCE(SUM(sum_donation * ${getSumInUsd(usdKoefs)}), 0)::numeric AS sum_donation 
             FROM donations d
             WHERE d.creator_id = $1 AND ${getTimePeriod(timePeriod as periodItemsTypes)}
-            ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
             GROUP BY date_group
             ORDER BY date_group ASC`,
         [user_id],
@@ -259,47 +280,56 @@ class DonationController {
   async getDonationsData(req: Request, res: Response, next: NextFunction) {
     try {
       const { user_id } = req.params;
-      const { roleplay, timePeriod, limit, offset, startDate, endDate, groupByName, searchStr, blockchain } = req.query;
+      const { roleplay, timePeriod, limit, offset, startDate, endDate, groupByName, searchStr, spam_filter } =
+        req.query;
 
       const isGroup = groupByName === 'true';
       const isCreator = roleplay === 'creators';
 
-      const data = await db.query(
-        `
-                SELECT u.username,
-                       ${
-                         isGroup
-                           ? `SUM(d.sum_donation::numeric) AS sum_donation`
-                           : `d.id,
-                    d.donation_message, 
-                    d.created_at,
-                    d.blockchain,
-                    d.sum_donation`
-                       }
-                FROM donations d
-                LEFT JOIN users u
-                ON  ${isCreator ? 'd.backer_id' : 'd.creator_id'} = u.id 
-                WHERE ${isCreator ? 'd.creator_id' : 'd.backer_id'} = $1 AND
-                ${
-                  startDate && endDate
-                    ? `to_timestamp(d.created_at,'YYYY/MM/DD') 
-                    BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
-                    AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
-                    : `${getTimePeriod(timePeriod as periodItemsTypes)}`
-                }
-                ${searchStr ? ` AND u.username LIKE '%${(searchStr as string).toLowerCase()}%'` : ''}
-                ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
-                ${isGroup ? `GROUP BY u.username ORDER BY d.sum_donation DESC` : 'ORDER BY d.created_at DESC'}
-                LIMIT ${limit || 'ALL'}
-                OFFSET ${offset || 0}`,
-        [user_id],
-      );
+      const usdKoefs = await getUsdKoef();
 
-      if (data && data.rows && data.rows.length > 0) {
-        res.status(200).json({ donations: data.rows, length: data.rowCount });
-      } else {
-        res.status(200).json({ donations: [] });
+      if (!isGroup) {
+        const data = await db.query(
+          `${searchStr ? 'SELECT * FROM (' : ''}
+              SELECT ${isCreator ? getUsername() : 'u.username,'}
+                  d.id,
+                  d.donation_message, 
+                  d.created_at,
+                  d.blockchain,
+                  d.sum_donation,
+                  d.sum_donation * ${getSumInUsd(usdKoefs)} as sum_usd_donation
+              FROM donations d
+              LEFT JOIN users u
+              ON  ${isCreator ? 'd.backer_id' : 'd.creator_id'} = u.id 
+              WHERE ${isCreator ? 'd.creator_id' : 'd.backer_id'} = $1 AND
+              ${
+                startDate && endDate
+                  ? `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
+                  BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
+                  AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
+                  : `${getTimePeriod(timePeriod as periodItemsTypes)}`
+              }
+              
+              ORDER BY d.created_at DESC
+              LIMIT ${limit || 'ALL'}
+              OFFSET ${offset || 0}
+          ${searchStr ? `) as result WHERE username LIKE '%${(searchStr as string).toLowerCase()}%'` : ''}`,
+          [user_id],
+        );
+        // ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
+        if (data.rowCount) {
+          const donations = parseBool(spam_filter)
+            ? data.rows.map((d) => ({
+                ...d,
+                donation_message: d.donation_message ? badWordsFilter.clean(d.donation_message) : '-',
+              }))
+            : data.rows;
+          return res.status(200).json(donations);
+        }
+      } else if (isGroup) {
       }
+
+      return res.status(200).json([]);
     } catch (error) {
       next(error);
     }

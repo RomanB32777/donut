@@ -1,18 +1,27 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
 import { useDispatch } from "react-redux";
-import { io, Socket } from "socket.io-client";
-import { baseURL, isProduction, socketsBaseUrl } from "../../modules/axiosClient";
-import { getNotifications } from "../../store/types/Notifications";
 import { useParams } from "react-router";
+import { io, Socket } from "socket.io-client";
+
+import { baseURL, isProduction, socketsBaseUrl } from "modules/axiosClient";
+import { useAppSelector } from "hooks/reduxHooks";
+import { getNotifications } from "store/types/Notifications";
 
 export const DonatWebSocketContext = createContext<Socket | null>(null);
 
 const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
   const { name } = useParams();
   const dispatch = useDispatch();
+  const { id, spam_filter } = useAppSelector(({ personInfo }) => personInfo);
   const [valueContext, setValueContext] = useState<null | Socket>(null);
 
-  const setUnloginUserSocket = (username: string) => {
+  const setUnloginUserSocket = ({
+    username,
+    spam_filter,
+  }: {
+    username: string;
+    spam_filter: boolean;
+  }) => {
     const socket = io(isProduction ? baseURL : socketsBaseUrl, {
       path: "/sockt/",
       query: {
@@ -20,22 +29,31 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    socket.on("new_notification", (data) => {
-      console.log(data);
-      dispatch(getNotifications({ user: username }));
+    socket.on("new_notification", () => {
+      dispatch(
+        getNotifications({
+          user: username,
+          limit: 1,
+          spam_filter,
+          roleplay: "recipient",
+        })
+      );
     });
     return socket;
   };
 
   useEffect(() => {
     if (name) {
-      const socketUnlogin = setUnloginUserSocket(name);
+      const socketUnlogin = setUnloginUserSocket({
+        username: name,
+        spam_filter,
+      });
       setValueContext(socketUnlogin);
       return () => {
         socketUnlogin.disconnect();
       };
     }
-  }, [name]);
+  }, [id, name]);
   // useEffect(() => console.log(valueContext), [valueContext]);
 
   return (

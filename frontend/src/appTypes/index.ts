@@ -11,32 +11,43 @@ import {
   blockchainPayload,
   IBlockchainAction,
   IWalletMethods,
+  IBlockchainData,
+  methodNames,
   IWalletConf,
   currencyBlockchainsType,
   IWalletContext,
 } from "./wallet";
 import { IUserAction } from "./user";
 import {
+  INotificationsState,
+  INotificationsAction,
+  INotificationParams,
+} from "./notifications";
+import {
   AlignText,
   IFont,
   keyPeriodItems,
   IGoalAction,
-  IEditGoalData,
   IWidgetGoalData,
   IStatAction,
-  IEditStatData,
   IWidgetStatData,
   IAlert,
 } from "./widgets";
+import {
+  GetObjDifferentKeys,
+  GetObjSameKeys,
+  MergeTwoObjects,
+  DeepMergeTwoTypes,
+} from "./generics";
 
 interface ILoadingAction {
   type: string;
   payload: boolean;
 }
 
-interface IAnyAction {
+interface IAnyAction<P = any> {
   type: string;
-  payload: any;
+  payload: P;
 }
 
 interface IFiltersForm {
@@ -89,20 +100,31 @@ export type {
   IWalletState,
   blockchainPayload,
   IBlockchainAction,
+  IBlockchainData,
   IWalletMethods,
+  methodNames,
   IWalletConf,
   currencyBlockchainsType,
   IWalletContext,
+
+  // notifications
+  INotificationsState,
+  INotificationsAction,
+  INotificationParams,
 
   // widgets
   AlignText,
   IFont,
   keyPeriodItems,
   IGoalAction,
-  IEditGoalData,
   IWidgetGoalData,
   IStatAction,
   IWidgetStatData,
-  IEditStatData,
   IAlert,
+
+  // generics
+  GetObjDifferentKeys,
+  GetObjSameKeys,
+  MergeTwoObjects,
+  DeepMergeTwoTypes,
 };

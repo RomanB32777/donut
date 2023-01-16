@@ -1,4 +1,4 @@
-import SettingsContainer from "../containers/SettingsContainer";
+import SettingsContainer from "containers/SettingsContainer";
 
 const SettingsPage = () => <SettingsContainer />;
 

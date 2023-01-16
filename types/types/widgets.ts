@@ -1,31 +1,37 @@
 import { allPeriodItemsTypes } from "./dates";
 
-interface IGoalData {
+
+interface IGoalWidgetData<FontType = string> {
+  title_color: string;
+  title_font: FontType;
+  progress_color: string;
+  progress_font: FontType;
+  background_color: string;
+}
+
+interface IGoalData<FontType = string> extends IGoalWidgetData<FontType> {
   id: number;
   title: string;
   amount_goal: number;
   amount_raised: number;
-  isarchive: boolean;
-  title_color: string;
-  progress_color: string;
-  background_color: string;
+  is_archive: boolean;
   creator_id: string;
 }
 
-interface IAlertBase {
+type goalDataKeys = keyof IGoalData
+
+interface IAlertData<FontType = string, BannerType = string>  {
+  banner: BannerType;
   message_color: string;
+  message_font: FontType;
   name_color: string;
+  name_font: FontType;
   sum_color: string;
+  sum_font: FontType;
   duration: number;
   sound: string;
   voice: boolean;
   gender_voice: string;
-}
-
-interface IAlertData extends IAlertBase {
-  message_font: string;
-  name_font: string;
-  sum_font: string;
 }
 
 // stats-data
@@ -37,25 +43,32 @@ type IStatsDataType = {
   [key in statsDataTypes]: string;
 };
 
-interface IStatData {
-  id: number;
-  title: string;
-  stat_description: string;
-  template: string[];
-  data_type: statsDataTypes;
-  time_period: allPeriodItemsTypes;
+interface IStatWidgetData<FontType = string> {
   title_color: string;
+  title_font: FontType;
   bar_color: string;
   content_color: string;
+  content_font: FontType;
   aligment: typeAligmnet;
 }
 
+interface IStatData<FontType = string> extends IStatWidgetData<FontType> {
+  id: number;
+  title: string;
+  stat_description: string;
+  template: string | string[];
+  data_type: statsDataTypes;
+  time_period: allPeriodItemsTypes;
+}
+
 export type {
+  IGoalWidgetData,
   IGoalData,
-  IAlertBase,
+  goalDataKeys,
   IAlertData,
   typeAligmnet,
   statsDataTypes,
   IStatsDataType,
+  IStatWidgetData,
   IStatData,
 };

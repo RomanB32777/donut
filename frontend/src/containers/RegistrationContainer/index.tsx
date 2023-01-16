@@ -5,16 +5,16 @@ import { useDispatch } from "react-redux";
 import { IShortUserData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { WalletContext } from "../../contexts/Wallet";
-import BaseButton from "../../components/BaseButton";
-import FormInput from "../../components/FormInput";
+import { WalletContext } from "contexts/Wallet";
+import BaseButton from "components/BaseButton";
+import FormInput from "components/FormInput";
 import Loader from "components/Loader";
 
-import axiosClient from "../../modules/axiosClient";
-import { tryToGetUser } from "../../store/types/User";
-import { addNotification, checkWallet } from "../../utils";
-import { adminPath } from "../../consts";
-import registerImg from "../../assets/registerImg.png";
+import axiosClient from "modules/axiosClient";
+import { tryToGetUser } from "store/types/User";
+import { addNotification, checkWallet } from "utils";
+import { adminPath } from "consts";
+import registerImg from "assets/registerImg.png";
 import "./styles.sass";
 
 const RegistrationContainer = () => {

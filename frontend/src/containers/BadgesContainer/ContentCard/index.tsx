@@ -46,9 +46,7 @@ const ContentCard = ({
 
   return (
     <div
-      className={clsx("content-panel", {
-        // ableToDelete,
-      })}
+      className="content-panel"
       style={{
         cursor: title.length ? "pointer" : "auto",
       }}

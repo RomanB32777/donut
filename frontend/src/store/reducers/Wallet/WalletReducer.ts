@@ -1,5 +1,5 @@
-import { blockchainPayload, IBlockchainAction } from "../../../appTypes";
-import { SET_MAIN_WALLET } from "../../types/Wallet";
+import { blockchainPayload, IBlockchainAction } from "appTypes";
+import { SET_MAIN_WALLET } from "store/types/Wallet";
 
 const initialState: blockchainPayload = null;
 

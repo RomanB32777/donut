@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Modal, ModalProps } from "antd";
 import clsx from "clsx";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
-import Loader from "../Loader";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import Loader from "components/Loader";
 import "./styles.sass";
 
 interface IModalComponent extends ModalProps {
@@ -56,9 +56,9 @@ interface ILoadingModalComponent extends IModalComponent {
 
 export const LoadingModalComponent = ({
   message,
-  open,
+  ...props
 }: ILoadingModalComponent) => (
-  <ModalComponent open={open} closable={false} width={600}>
+  <ModalComponent {...props} closable={false} width={600}>
     <div className="donat-loading">
       <p className="message">{message}</p>
       <Loader size="big" />
@@ -78,6 +78,7 @@ export const SuccessModalComponent = ({
   onClose,
   showDurationPopup,
   description,
+  ...props
 }: ISuccessModalComponent) => {
   const { isTablet, isMobile } = useWindowDimensions();
 
@@ -102,9 +103,7 @@ export const SuccessModalComponent = ({
     >
       <div className="modal-success">
         <p className="message">{message}</p>
-        {description && (
-          <p className="description">{description}</p>
-        )}
+        {description && <p className="description">{description}</p>}
       </div>
     </ModalComponent>
   );

@@ -1,20 +1,45 @@
+import { useState } from "react";
 import { Col, Row } from "antd";
+
 import BaseButton from "components/BaseButton";
 import ColorPicker from "components/ColorPicker";
-import { IEditGoalData } from "appTypes";
+import SelectInput, { ISelectItem } from "components/SelectInput";
+import {
+  FontSelectOption,
+  FontStyleElement,
+} from "components/SelectInput/options/FontSelectOption";
+import { notVisibleFontsCount } from "consts";
+import { IWidgetGoalData } from "appTypes";
 
 const SettingsGoalBlock = ({
-  editGoalData,
+  fonts,
   loading,
-  sendColorsData,
+  editGoalData,
+  editWidgetData,
   setEditGoalData,
 }: {
-  editGoalData: IEditGoalData;
   loading: boolean;
-  sendColorsData: () => Promise<void>;
-  setEditGoalData: (editGoalData: IEditGoalData) => void;
+  fonts: ISelectItem[];
+  editGoalData: IWidgetGoalData;
+  editWidgetData: () => Promise<void>;
+  setEditGoalData: (editGoalData: IWidgetGoalData) => void;
 }) => {
-  const { title_color, progress_color, background_color } = editGoalData;
+  const [fontList, setFontList] = useState<ISelectItem[]>(
+    fonts.slice(0, notVisibleFontsCount)
+  );
+
+  const {
+    title_color,
+    progress_color,
+    background_color,
+    title_font,
+    progress_font,
+  } = editGoalData;
+
+  const onOpenFontSelect = (isOpen: boolean) =>
+    isOpen
+      ? setFontList(fonts)
+      : setFontList(fonts.slice(0, notVisibleFontsCount));
 
   return (
     <Col xl={13} md={24}>
@@ -61,12 +86,68 @@ const SettingsGoalBlock = ({
             />
           </div>
         </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SelectInput
+              label="Goal title font:"
+              value={{
+                value: title_font.name,
+                label: <FontStyleElement fontName={title_font.name} />,
+              }}
+              list={fontList}
+              modificator="form-select"
+              onChange={({ value }, option) =>
+                setEditGoalData({
+                  ...editGoalData,
+                  title_font: {
+                    name: !Array.isArray(option) && option.title,
+                    link: value,
+                  },
+                })
+              }
+              onDropdownVisibleChange={onOpenFontSelect}
+              renderOption={FontSelectOption}
+              labelCol={9}
+              gutter={[0, 18]}
+              labelInValue
+              showSearch
+            />
+          </div>
+        </Col>
+        <Col span={24}>
+          <div className="form-element">
+            <SelectInput
+              label="Goal progress font:"
+              value={{
+                value: progress_font.name,
+                label: <FontStyleElement fontName={progress_font.name} />,
+              }}
+              list={fontList}
+              modificator="form-select"
+              onChange={({ value }, option) =>
+                setEditGoalData({
+                  ...editGoalData,
+                  progress_font: {
+                    name: !Array.isArray(option) && option.title,
+                    link: value,
+                  },
+                })
+              }
+              onDropdownVisibleChange={onOpenFontSelect}
+              renderOption={FontSelectOption}
+              labelCol={9}
+              gutter={[0, 18]}
+              labelInValue
+              showSearch
+            />
+          </div>
+        </Col>
       </Row>
       <div className="btn-block">
         <BaseButton
           formatId="profile_form_save_changes_button"
           padding="6px 35px"
-          onClick={sendColorsData}
+          onClick={editWidgetData}
           fontSize="18px"
           disabled={loading}
           isMain

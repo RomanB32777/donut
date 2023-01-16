@@ -1,8 +1,9 @@
 import { HTMLInputTypeAttribute } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
+
+import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const FormInput = ({
   label,
@@ -52,7 +53,7 @@ const FormInput = ({
       <Row gutter={gutter || 0}>
         {label && (
           <Col
-            md={labelCol || (label ? 12 : 0)}
+            md={labelCol || 12}
             xs={24}
             className={clsx({
               alignCenter: !isTextarea,
@@ -95,6 +96,8 @@ const FormInput = ({
                   withAddonAfter: Boolean(addonAfter),
                   withAddonBefore: Boolean(addonBefore),
                 })}
+                value={value}
+                onChange={(e) => setValue && setValue(e.target.value)}
                 disabled={disabled || !Boolean(setValue)}
                 name={name || ""}
                 placeholder={placeholder || ""}
@@ -102,8 +105,6 @@ const FormInput = ({
                 min={0}
                 maxLength={maxLength || 524288}
                 onWheel={(e) => e.currentTarget.blur()}
-                value={value}
-                onChange={(e) => setValue && setValue(e.target.value)}
               />
             )}
             {isVisibleLength && (

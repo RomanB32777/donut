@@ -1,4 +1,4 @@
-import NoPageContainer from "../containers/NoPageContainer";
+import NoPageContainer from "containers/NoPageContainer";
 
 const NoPage = () => <NoPageContainer />;
 

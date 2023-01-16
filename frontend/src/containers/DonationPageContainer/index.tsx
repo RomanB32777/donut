@@ -2,7 +2,7 @@ import { Col, Row, QRCode } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import clsx from "clsx";
-import { defaultAssetsFolders } from "types";
+import { bannerTypes, defaultAssetsFolders, IDonatPage } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
@@ -15,7 +15,6 @@ import UploadImage, { UploadAfterEl } from "components/UploadImage";
 import FormInput from "components/FormInput";
 import ModalComponent from "components/ModalComponent";
 import { SmallToggleListArrowIcon } from "icons";
-import { IFileInfo, IDefaultImagesModal } from "appTypes";
 import { tryToGetUser } from "store/types/User";
 import {
   addNotification,
@@ -23,42 +22,18 @@ import {
   getDefaultImages,
   sendFile,
 } from "utils";
+import { initDonatPage } from "consts";
+import { IFileInfo } from "appTypes";
+import { IBannerModalInfo } from "./types";
 import "./styles.sass";
-
-type donationImageTypes = "header" | "banner";
-
-interface IDonationInfoData {
-  header: IFileInfo;
-  banner: IFileInfo;
-  welcome_text: string;
-  btn_text: string;
-  main_color: string;
-  background_color: string;
-}
-
-interface IBannerModalInfo extends IDefaultImagesModal {
-  folder: defaultAssetsFolders;
-}
 
 const DonationPageContainer = () => {
   const dispatch = useDispatch();
   const { id, wallet_address, username, donat_page } = useAppSelector(
     ({ user }) => user
   );
-  const [donationInfoData, setDonationInfoData] = useState<IDonationInfoData>({
-    banner: {
-      preview: "",
-      file: null,
-    },
-    header: {
-      preview: "",
-      file: null,
-    },
-    welcome_text: "",
-    btn_text: "",
-    main_color: "#ffffff",
-    background_color: "#ffffff",
-  });
+  const [donationInfoData, setDonationInfoData] =
+    useState<IDonatPage<IFileInfo>>(initDonatPage);
 
   const [isOpenQR, setIsOpenQR] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -81,22 +56,18 @@ const DonationPageContainer = () => {
   const closeBannersPopup = () =>
     setBannerModalInfo((prev) => ({ ...prev, isOpen: false }));
 
-  const selectDefaultBanner = ({
-    image,
-    imageType,
-  }: {
-    image: string;
-    imageType: donationImageTypes;
-  }) => {
-    setDonationInfoData({
-      ...donationInfoData,
-      [imageType]: {
-        file: null,
-        preview: image,
-      },
-    });
-    closeBannersPopup();
-  };
+  const selectDefaultBanner =
+    ({ image, imageType }: { image: string; imageType: bannerTypes }) =>
+    () => {
+      setDonationInfoData({
+        ...donationInfoData,
+        [imageType]: {
+          file: null,
+          preview: image,
+        },
+      });
+      closeBannersPopup();
+    };
 
   const onImageDownload = () => {
     const canvas = document
@@ -116,37 +87,52 @@ const DonationPageContainer = () => {
   const sendData = async () => {
     try {
       setLoading(true);
-      const {
-        header,
-        banner,
-        welcome_text,
-        btn_text,
-        main_color,
-        background_color,
-      } = donationInfoData;
+      const { header_banner, background_banner } = donationInfoData;
+
+      const excludedСhangesFields: bannerTypes[] = [
+        "background_banner",
+        "header_banner",
+      ];
+
       await axiosClient.put("/api/user/edit/", {
-        welcome_text,
-        btn_text,
-        main_color,
-        background_color,
-        user_id: id,
+        donat_page: Object.keys(donationInfoData)
+          .filter(
+            (field) => !excludedСhangesFields.includes(field as any) /// ???
+          )
+          .reduce(
+            (obj, field) => ({
+              ...obj,
+              [field]: donationInfoData[field as keyof IDonatPage],
+            }),
+            {}
+          ),
+        id: id,
       });
 
       let fileType: defaultAssetsFolders = "header";
-      if (header.file || header.preview !== donat_page.header_banner) {
+      if (
+        header_banner.file ||
+        header_banner.preview !== donat_page.header_banner
+      ) {
+        const { file, preview } = header_banner;
         await sendFile({
-          file: header.file,
-          filelink: header.preview,
+          file,
+          filelink: preview,
           username,
           userId: id,
           url: `/api/user/edit-creator-image/${fileType}`,
         });
       }
-      if (banner.file || banner.preview !== donat_page.background_banner) {
+      if (
+        background_banner.file ||
+        background_banner.preview !== donat_page.background_banner
+      ) {
+        const { file, preview } = background_banner;
+
         fileType = "background";
         await sendFile({
-          file: banner.file,
-          filelink: banner.preview,
+          file,
+          filelink: preview,
           username,
           userId: id,
           url: `/api/user/edit-creator-image/${fileType}`,
@@ -168,23 +154,35 @@ const DonationPageContainer = () => {
   };
 
   useEffect(() => {
-    if (id)
+    if (id) {
+      const {
+        header_banner,
+        background_banner,
+        welcome_text,
+        btn_text,
+        main_color,
+        background_color,
+        security_string,
+      } = donat_page;
+
       setDonationInfoData((prevInfo) => ({
         ...prevInfo,
-        header: {
-          preview: donat_page.header_banner || "",
-          file: prevInfo.header.file,
+        header_banner: {
+          preview: header_banner || "",
+          file: prevInfo.header_banner.file,
         },
-        banner: {
-          preview: donat_page.background_banner || "",
-          file: prevInfo.banner.file,
+        background_banner: {
+          preview: background_banner || "",
+          file: prevInfo.background_banner.file,
         },
-        welcome_text: donat_page.welcome_text,
-        btn_text: donat_page.btn_text,
-        main_color: donat_page.main_color,
-        background_color: donat_page.background_color,
+        welcome_text,
+        btn_text,
+        main_color,
+        background_color,
+        security_string,
       }));
-  }, [id]);
+    }
+  }, [id, donat_page]);
 
   const linkForSupport = useMemo(
     () => baseURL + "/support/" + username, //+ "/" + user.security_string,
@@ -192,8 +190,8 @@ const DonationPageContainer = () => {
   );
 
   const {
-    header,
-    banner,
+    header_banner,
+    background_banner,
     welcome_text,
     btn_text,
     main_color,
@@ -205,7 +203,7 @@ const DonationPageContainer = () => {
   const isHeaderBanner = useMemo(() => folder === "header", [folder]);
 
   return (
-    <div className="donationPage-container">
+    <div className="donationPage-container fadeIn">
       <PageTitle formatId="page_title_donation_page" />
       <div className="link-top">
         <p>Via the link below your supporters can send you donations</p>
@@ -256,11 +254,11 @@ const DonationPageContainer = () => {
               <UploadImage
                 label="Header banner:"
                 formats={["PNG", "JPG", "JPEG"]}
-                filePreview={header.preview}
+                filePreview={header_banner.preview}
                 setFile={({ preview, file }) =>
                   setDonationInfoData({
                     ...donationInfoData,
-                    header: {
+                    header_banner: {
                       file,
                       preview,
                     },
@@ -286,11 +284,11 @@ const DonationPageContainer = () => {
               <UploadImage
                 label="Background banner:"
                 formats={["PNG", "JPG", "JPEG"]}
-                filePreview={banner.preview}
+                filePreview={background_banner.preview}
                 setFile={({ preview, file }) =>
                   setDonationInfoData({
                     ...donationInfoData,
-                    banner: {
+                    background_banner: {
                       file,
                       preview,
                     },
@@ -406,12 +404,12 @@ const DonationPageContainer = () => {
                 className={clsx("default-banner", {
                   long: isHeaderBanner,
                 })}
-                onClick={() =>
-                  selectDefaultBanner({
-                    image,
-                    imageType: isHeaderBanner ? "header" : "banner",
-                  })
-                }
+                onClick={selectDefaultBanner({
+                  image,
+                  imageType: isHeaderBanner
+                    ? "header_banner"
+                    : "background_banner",
+                })}
               >
                 <img src={image} alt={`banner-${key}`} />
               </div>

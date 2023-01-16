@@ -35,6 +35,7 @@ services:
     volumes:
       - ./backend/uploads:/backend/uploads
       - ./backend/assets:/backend/assets
+      # - ./backend/src/modules/badWords:/backend/src/modules/badWords
 
   sockets:
     build: ./sockets

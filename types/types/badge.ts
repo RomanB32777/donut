@@ -1,4 +1,5 @@
 import { IUserBase } from "./user";
+import { blockchainsType } from "./wallet";
 
 type badgeStatus = "success" | "failed" | "pending";
 
@@ -10,7 +11,7 @@ interface IBadgeShort {
 
 interface IBadgeInfo extends IBadgeShort {
   contributor_user_id_list?: string;
-  blockchain: string;
+  blockchain: blockchainsType;
   transaction_hash: string;
   result: badgeStatus | null;
 }

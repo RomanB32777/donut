@@ -1,4 +1,7 @@
-import { INotificationsState } from "appTypes/notifications";
+import {
+  INotificationParams,
+  INotificationsState,
+} from "appTypes/notifications";
 
 const SET_NOTIF = "SET_NOTIF";
 const SET_UPDATE_FLAG = "SET_UPDATE_FLAG";
@@ -17,12 +20,11 @@ const setUpdateAppNotifications = (shouldUpdateApp: boolean) => ({
 const getNotifications = ({
   user,
   shouldUpdateApp = true,
-}: {
-  user: number | string;
-  shouldUpdateApp?: boolean;
-}) => ({
+  spam_filter = false,
+  ...queries
+}: INotificationParams) => ({
   type: GET_NOTIF,
-  payload: { user, shouldUpdateApp },
+  payload: { user, shouldUpdateApp, spam_filter, ...queries },
 });
 
 export {

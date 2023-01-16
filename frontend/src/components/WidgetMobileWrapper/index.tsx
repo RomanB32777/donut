@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Row } from "antd";
 import { EyeOutlined, SettingOutlined } from "@ant-design/icons";
-import { TabsComponent } from "../TabsComponent";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
-import { typesTabContent } from "../../appTypes";
+import { TabsComponent } from "components/TabsComponent";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import { typesTabContent } from "appTypes";
 
 const WidgetMobileWrapper = ({
   previewBlock,
@@ -50,6 +50,7 @@ const WidgetMobileWrapper = ({
     <div className="tabs-wrapper">
       {tabContent !== "All" && (
         <TabsComponent
+          modificator="fadeIn"
           setTabContent={(key) => setTabContent(key as typesTabContent)}
           tabs={[
             {
@@ -74,7 +75,9 @@ const WidgetMobileWrapper = ({
           isBigTabs
         />
       )}
-      {contents.map((block) => block.type === tabContent && block.content)}
+      <div className="blocks fadeIn">
+        {contents.map((block) => block.type === tabContent && block.content)}
+      </div>
     </div>
   );
 };

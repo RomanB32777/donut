@@ -13,9 +13,21 @@ import {
   initWidgetStatData,
 } from "./widgets";
 
-import { storageWalletKey, initBlockchainData, walletInfo } from "./wallet";
+import {
+  storageWalletKey,
+  initBlockchainData,
+  walletInfo,
+  mainAbi,
+  transferAbi,
+  commissionAbi,
+} from "./wallet";
 import { initSendDonatData, initDonationData } from "./donations";
-import { initUser } from "./user";
+import {
+  initFileInfo,
+  initUser,
+  initUserWithFiles,
+  initDonatPage,
+} from "./user";
 
 import dummyImg from "assets/big_don.png";
 
@@ -27,6 +39,8 @@ const ipfsFileformat = "jpg";
 
 const adminPath = "admin";
 
+const notVisibleFontsCount = 1;
+
 export {
   // app
   url,
@@ -35,6 +49,7 @@ export {
   ipfsFileformat,
   adminPath,
   dummyImg,
+  notVisibleFontsCount,
 
   // dates
   filterPeriodItems,
@@ -45,6 +60,9 @@ export {
   storageWalletKey,
   initBlockchainData,
   walletInfo,
+  mainAbi,
+  transferAbi,
+  commissionAbi,
 
   // donations
   initSendDonatData,
@@ -59,5 +77,8 @@ export {
   initWidgetStatData,
 
   // user
+  initFileInfo,
   initUser,
+  initDonatPage,
+  initUserWithFiles,
 };

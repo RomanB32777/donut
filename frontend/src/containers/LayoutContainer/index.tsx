@@ -1,18 +1,14 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router";
 import { BackTop, Layout } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
 import { IRoute, Pages, routers } from "routes";
-import { WebSocketContext } from "components/Websocket";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 
-import { getNotifications } from "store/types/Notifications";
-import { getBadgesStatus } from "utils";
 import { adminPath } from "consts";
 import { useAppSelector } from "hooks/reduxHooks";
 import "./styles.sass";
@@ -40,10 +36,8 @@ const addToMenu = (
 };
 
 const LayoutApp = () => {
-  const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { id, username, roleplay } = useAppSelector(({ user }) => user);
-  const socket = useContext(WebSocketContext);
+  const { id, roleplay } = useAppSelector(({ user }) => user);
   const { width, isTablet } = useWindowDimensions();
 
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
@@ -60,13 +54,6 @@ const LayoutApp = () => {
   useEffect(() => {
     isTablet ? setCollapsed(true) : setCollapsed(false);
   }, [width]);
-
-  useEffect(() => {
-    if (id) {
-      socket && getBadgesStatus({ username, id }, socket);
-      dispatch(getNotifications({ user: username }));
-    }
-  }, [id, socket]);
 
   const menuItems: IRoute[] = useMemo(() => {
     const menuShowItems = routers.reduce((acc, route) => {

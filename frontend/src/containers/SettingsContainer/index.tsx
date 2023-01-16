@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
+import { IUser, userDataKeys } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import axiosClient from "modules/axiosClient";
@@ -22,8 +23,18 @@ import {
   sendFile,
   shortStr,
 } from "utils";
+import { initUserWithFiles } from "consts";
 import { IFileInfo } from "appTypes";
 import "./styles.sass";
+
+const excludedСhangesFields: userDataKeys[] = [
+  "id",
+  "donat_page",
+  "created_at",
+  "roleplay",
+];
+
+const filesFields: userDataKeys[] = ["avatar"];
 
 const SettingsContainer = () => {
   const user = useAppSelector(({ user }) => user);
@@ -31,60 +42,48 @@ const SettingsContainer = () => {
   const navigate = useNavigate();
   const { walletConf } = useContext(WalletContext);
 
-  const [formSettings, setFormSettings] = useState<{
-    avatar: IFileInfo;
-    username: string;
-    wallet: string;
-    spamFilter: boolean;
-  }>({
-    avatar: {
-      preview: "",
-      file: null,
-    },
-    username: "",
-    wallet: "",
-    spamFilter: false,
-  });
+  const [formSettings, setFormSettings] =
+    useState<IUser<IFileInfo>>(initUserWithFiles);
 
   const [loading, setSettingsLoading] = useState<boolean>(false);
 
-  const usernameBtnClick = async () => {
-    if (!loading) {
-      try {
-        setSettingsLoading(true);
-        const { username } = formSettings;
-        await axiosClient.put("/api/user/edit/", {
-          username,
-          user_id: user.id,
-        });
-        dispatch(tryToGetUser(user.wallet_address));
-        addSuccessNotification({ message: "Data saved successfully" });
-      } catch (error) {
-        addNotification({
-          type: "danger",
-          title: "Error",
-          message:
-            (error as any)?.response?.data?.message ||
-            `An error occurred while saving data`,
-        });
-      } finally {
-        setSettingsLoading(false);
-      }
-    }
-  };
+  const { username, wallet_address, avatar, spam_filter } = formSettings;
 
-  const avatarBtnClick = async () => {
-    if (!loading) {
+  const changeUserData = async (
+    changedFields: {
+      key: userDataKeys;
+      value: any;
+    }[]
+  ) => {
+    if (!loading && changedFields.length) {
       try {
         setSettingsLoading(true);
-        const { avatar } = formSettings;
-        avatar.file &&
-          (await sendFile({
-            file: avatar.file,
+
+        const fileField = changedFields.find((f) =>
+          filesFields.includes(f.key)
+        );
+
+        if (fileField) {
+          await sendFile({
+            file: fileField.value,
             username: user.username,
             url: "/api/user/edit-image/",
             isEdit: true,
-          }));
+          });
+        }
+
+        await axiosClient.put("/api/user/edit/", {
+          ...changedFields
+            .filter((f) => !filesFields.includes(f.key))
+            .reduce(
+              (acc, { key, value }) => ({
+                ...acc,
+                [key]: value,
+              }),
+              {}
+            ),
+          id: user.id,
+        });
         dispatch(tryToGetUser(user.wallet_address));
         addSuccessNotification({ message: "Data saved successfully" });
       } catch (error) {
@@ -98,22 +97,37 @@ const SettingsContainer = () => {
       } finally {
         setSettingsLoading(false);
       }
-    }
+    } else
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message: "An error occurred while saving data",
+      });
   };
 
-  useEffect(() => {
-    const { id, username, avatar } = user;
-    id &&
-      setFormSettings({
-        ...formSettings,
-        username: username,
-        wallet: user.wallet_address,
-        avatar: {
-          ...formSettings.avatar,
-          preview: avatar || "",
-        },
-      });
-  }, [user]);
+  const usernameBtnClick = async () =>
+    await changeUserData([{ key: "username", value: username }]);
+
+  const saveSettings = async () => {
+    await changeUserData(
+      changedElements.map((field) => {
+        const key = field as userDataKeys;
+        if (key === "avatar")
+          return {
+            key,
+            value: formSettings[key].file,
+          };
+
+        return {
+          key,
+          value: formSettings[key],
+        };
+      })
+    );
+  };
+
+  const avatarBtnClick = async () =>
+    await changeUserData([{ key: "avatar", value: avatar.file }]);
 
   const deleteProfile = async () => {
     await axiosClient.delete(`/api/user/${user.id}`);
@@ -125,10 +139,37 @@ const SettingsContainer = () => {
     [user]
   );
 
-  const { username, wallet, avatar, spamFilter } = formSettings;
+  const changedElements = useMemo(
+    () =>
+      Object.keys(formSettings).filter((key) => {
+        const keyType = key as keyof IUser<IFileInfo>;
+
+        if (excludedСhangesFields.includes(keyType)) return false;
+
+        if (keyType === "avatar")
+          return formSettings[keyType].preview !== user[keyType];
+        else return formSettings[keyType] !== user[keyType];
+      }),
+    [formSettings, user]
+  );
+
+  useEffect(() => {
+    const { id, username, wallet_address, spam_filter, avatar } = user;
+    id &&
+      setFormSettings({
+        ...formSettings,
+        username,
+        wallet_address,
+        spam_filter,
+        avatar: {
+          ...formSettings.avatar,
+          preview: avatar || "",
+        },
+      });
+  }, [user]);
 
   return (
-    <div className="settingsPage-container">
+    <div className="settingsPage-container fadeIn">
       <PageTitle formatId="page_title_settings" />
       <div className="stats-drawer__form">
         <Row gutter={[0, 18]} className="form">
@@ -156,9 +197,7 @@ const SettingsContainer = () => {
                 <Col span={7}>
                   <div
                     className={clsx("form-element__action", {
-                      // active: avatar.preview.length
-                      //   ? avatar.preview !== user.avatar
-                      //   : avatar.preview !== user.avatar,
+                      active: avatar.preview !== user.avatar,
                     })}
                     onClick={avatarBtnClick}
                   >
@@ -207,7 +246,7 @@ const SettingsContainer = () => {
                     value={shortWalletToken}
                     addonBefore={
                       <div className="wallet-icon">
-                        <img src={walletConf.icon} alt="walletIcon" />
+                        <img src={walletConf.main_contract.icon} alt="walletIcon" />
                       </div>
                     }
                     addonsModificator="wallet-addon"
@@ -220,7 +259,7 @@ const SettingsContainer = () => {
                   <div
                     className="form-element__action"
                     onClick={() => {
-                      copyStr(wallet, "address");
+                      copyStr(wallet_address, "address");
                     }}
                   >
                     Copy
@@ -229,21 +268,23 @@ const SettingsContainer = () => {
               </Row>
             </div>
           </Col>
-          <Col xl={18} xs={24}>
-            <div className="form-element">
-              <SwitchForm
-                label="Spam filter:"
-                checked={spamFilter}
-                setValue={(flag) =>
-                  setFormSettings({ ...formSettings, spamFilter: flag })
-                }
-                labelModificator="switch-label"
-                labelCol={5}
-                switchCol={2}
-                gutter={[0, 16]}
-              />
-            </div>
-          </Col>
+          {user.roleplay === "creators" && (
+            <Col xl={18} xs={24}>
+              <div className="form-element">
+                <SwitchForm
+                  label="Spam filter:"
+                  checked={spam_filter}
+                  setValue={(flag) =>
+                    setFormSettings({ ...formSettings, spam_filter: flag })
+                  }
+                  labelModificator="switch-label"
+                  labelCol={5}
+                  switchCol={2}
+                  gutter={[0, 16]}
+                />
+              </div>
+            </Col>
+          )}
           <Col span={24}>
             <div className="btn-bottom">
               <ConfirmPopup confirm={deleteProfile}>
@@ -260,7 +301,8 @@ const SettingsContainer = () => {
                 padding="6px 30px"
                 fontSize="18px"
                 modificator="save-btn"
-                disabled={loading}
+                onClick={saveSettings}
+                disabled={loading || !username || !changedElements.length}
                 isMain
               />
             </div>

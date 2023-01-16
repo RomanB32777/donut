@@ -17,36 +17,34 @@ import { addNotification } from "utils";
 
 const registerSupporter = async ({
   username,
-  walletConf,
+  wallet_address, // sender address
   dispatch,
 }: {
   username: string;
-  walletConf: IWalletConf;
+  wallet_address: string;
   dispatch: Dispatch<AnyAction>;
 }): Promise<IUser | null> => {
-  const { data } = await axiosClient.get(
+  const checkedData = await axiosClient.get(
     `/api/user/check-username/${username}`
   );
 
-  if (data.error) {
-    console.log(data.error);
+  const { error } = checkedData.data;
+  if (error) {
+    console.log(checkedData.data.error);
     return null;
   }
 
-  const blockchainData = await walletConf.getBlockchainData();
-  if (blockchainData) {
-    const { address } = blockchainData;
-    const { data, status } = await axiosClient.post("/api/user/", {
-      username,
-      roleplay: "backers",
-      wallet_address: address,
-    } as IShortUserData);
+  const { data, status } = await axiosClient.post("/api/user/", {
+    username,
+    roleplay: "backers",
+    wallet_address,
+  } as IShortUserData);
 
-    if (status === 200) {
-      dispatch(tryToGetUser(address));
-      return data;
-    }
+  if (status === 200) {
+    dispatch(tryToGetUser(wallet_address));
+    return data;
   }
+
   return null;
 };
 
@@ -56,7 +54,7 @@ const sendDonation = async ({
   socket,
   usdtKoef,
   personInfo,
-  walletConf,
+  wallet_address,
   dispatch,
   setIsOpenSuccessModal,
 }: {
@@ -65,31 +63,43 @@ const sendDonation = async ({
   socket: Socket | null;
   usdtKoef: number;
   personInfo: IUser;
-  walletConf: IWalletConf;
+  wallet_address: string; // sender address
   dispatch: Dispatch<AnyAction>;
   setIsOpenSuccessModal: (state: boolean) => void;
 }) => {
-  const { username, selectedBlockchain, amount, message, selectedGoal } = form;
+  const {
+    username,
+    selectedBlockchain,
+    amount,
+    message,
+    selectedGoal,
+    is_anonymous,
+  } = form;
 
   let userInfo: IUser | null = user;
   let newSocket: Socket | null = null;
 
   if (!userInfo.id) {
-    userInfo = await registerSupporter({ username, walletConf, dispatch });
+    userInfo = await registerSupporter({
+      username,
+      wallet_address, // sender address
+      dispatch,
+    });
     newSocket = userInfo && connectSocket(userInfo.username, dispatch);
   }
 
   if (selectedBlockchain && userInfo) {
-    const { data } = await axiosClient.post("/api/donation/", {
-      creator_address: personInfo.wallet_address,
-      backer_address: userInfo.wallet_address,
+    const { data, status } = await axiosClient.post("/api/donation/", {
+      creator: personInfo.id,
+      backer: userInfo.id,
       amount,
       selectedBlockchain,
       message,
       selectedGoal: selectedGoal || null,
+      is_anonymous,
     } as IFullSendDonat);
 
-    if (data.donation) {
+    if (status === 200 && data) {
       const emitObj: INewDonatSocketObj = {
         supporter: {
           username: userInfo.username,
@@ -97,11 +107,9 @@ const sendDonation = async ({
         },
         creator: {
           username: personInfo.username,
-          id: data.donation.creator_id,
+          id: data.creator_id,
         },
-        blockchain: selectedBlockchain, // "tEVMOS"
-        sum: amount,
-        donation_id: data.donation.id,
+        donation_id: data.id,
       };
 
       if (socket) socket.emit("new_donat", emitObj);
@@ -113,7 +121,7 @@ const sendDonation = async ({
           goalData: {
             donat: amount * usdtKoef,
           },
-          creator_id: data.donation.creator_id,
+          creator_id: data.creator_id,
           id: selectedGoal,
         }));
 
@@ -159,7 +167,7 @@ const triggerContract = async ({
           setLoading(true);
 
           if (balance >= Number(amount)) {
-            const currentBlockchain = await walletConf.getCurrentBlockchain()
+            const currentBlockchain = await walletConf.getCurrentBlockchain();
 
             if (currentBlockchain) {
               const res = await walletConf.paymentMethod({
@@ -176,7 +184,7 @@ const triggerContract = async ({
                   socket,
                   usdtKoef,
                   personInfo,
-                  walletConf,
+                  wallet_address: address, // sender address
                   dispatch,
                   setIsOpenSuccessModal,
                 }));

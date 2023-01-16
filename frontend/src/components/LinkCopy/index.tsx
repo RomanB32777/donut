@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { CopyIcon } from "../../icons";
-import { copyStr, shortStr } from "../../utils";
+import { CopyIcon } from "icons";
+import { copyStr, shortStr } from "utils";
 import "./styles.sass";
 
 const LinkCopy = ({
