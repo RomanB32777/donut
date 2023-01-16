@@ -1,5 +1,5 @@
-import e, { NextFunction, Request, Response } from 'express';
-import { INotificationQueries } from 'types/index.js';
+import { NextFunction, Request, Response } from 'express';
+import { INotification, INotificationQueries } from 'types';
 import db from '../db.js';
 import badWordsFilter from '../modules/badWords/index.js';
 import { getUsername, parseBool } from '../utils.js';
@@ -51,8 +51,8 @@ class NotificationController {
               ${offset ? `OFFSET ${offset}` : ''}`,
           [userId],
         );
-        if (recipientNotifications.rowCount)
-          return parseBool(spam_filter)
+        if (recipientNotifications.rowCount) {
+          const notifications: INotification[] = parseBool(spam_filter)
             ? recipientNotifications.rows.map((notification) => {
                 const { donation } = notification;
                 if (donation)
@@ -68,6 +68,8 @@ class NotificationController {
                 return notification;
               })
             : recipientNotifications.rows;
+          return notifications;
+        }
         return [];
       };
 
@@ -103,7 +105,10 @@ class NotificationController {
           ${offset ? `OFFSET ${offset}` : ''}`,
           [userId],
         );
-        if (senderNotifications.rowCount) return senderNotifications.rows;
+        if (senderNotifications.rowCount) {
+          const notifications: INotification[] = senderNotifications.rows;
+          return notifications;
+        }
         return [];
       };
 
@@ -126,7 +131,9 @@ class NotificationController {
 
       const recipientNotifications = await getRecipientNotifications();
       const senderNotifications = await getSenderNotifications();
-      const notifications = [...recipientNotifications, ...senderNotifications];
+      const notifications = [...senderNotifications, ...recipientNotifications].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
       return res.status(200).json({
         notifications,
         totalLength: notifications.length,

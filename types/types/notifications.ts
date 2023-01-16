@@ -12,15 +12,7 @@ interface INotification {
   read: boolean;
   donation?: IDonation;
   badge?: IBadgeInfo;
-  // user_id: number;
 }
-
-// const t = {
-//   donation: {
-//     username: "@sdgsdg32",
-//     is_anonymous: false,
-//   },
-// };
 
 type notificationKeys = keyof INotification;
 

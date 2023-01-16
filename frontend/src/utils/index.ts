@@ -45,8 +45,8 @@ import { initUser, storageWalletKey } from "consts";
 const getBadgesStatus = async (user: any, socket?: any) => {
   // const url =
   //   user.roleplay === "creators"
-  //     ? `${baseURL}/api/badge/${user.id}?blockchain=${currBlockchain.name}&status=pending`
-  //     : `${baseURL}/api/badge/badges-backer/${user.id}?blockchain=${currBlockchain.name}&status=pending`;
+  //     ? `${baseURL}/api/badge/${user.id}?status=pending`
+  //     : `${baseURL}/api/badge/badges-backer/${user.id}?status=pending`;
   // const { data } = await axiosClient.get(url);
   // if (Array.isArray(data) && data.length) {
   //   const pendingBadges = data; //.slice(0, 1);

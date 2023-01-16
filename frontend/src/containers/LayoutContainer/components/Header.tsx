@@ -46,13 +46,13 @@ const Header = ({
       visibleGamburger
     >
       <>
-        {/* {id && (
+        {id && (
           <NotificationsPopup
             user={id}
             handlerNotificationPopup={handlerNotificationPopup}
             isNotificationPopupOpened={isNotificationPopupOpened}
           />
-        )} */}
+        )}
 
         {username && (
           <HeaderSelect

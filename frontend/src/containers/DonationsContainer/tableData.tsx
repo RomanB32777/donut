@@ -41,7 +41,8 @@ export const tableColumns: ColumnsType<ITableData> = [
     key: "donationToken",
     width: "15%",
     align: "center",
-    render: (text, { blockchain }) => text + ` ${blockchain}`,
+    render: (num, { blockchain }) =>
+      num && blockchain ? num + ` ${blockchain}` : "-",
   },
   {
     title: "Donation, USD",
@@ -57,6 +58,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     dataIndex: "message",
     key: "message",
     width: "30%",
+    render: (message) => message || "-",
   },
   {
     title: "Date and Time, UTM",

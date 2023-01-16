@@ -309,14 +309,13 @@ class DonationController {
                   AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
                   : `${getTimePeriod(timePeriod as periodItemsTypes)}`
               }
-              
               ORDER BY d.created_at DESC
               LIMIT ${limit || 'ALL'}
               OFFSET ${offset || 0}
           ${searchStr ? `) as result WHERE username LIKE '%${(searchStr as string).toLowerCase()}%'` : ''}`,
           [user_id],
         );
-        // ${blockchain ? ` AND d.blockchain = '${blockchain}'` : ''}
+
         if (data.rowCount) {
           const donations = parseBool(spam_filter)
             ? data.rows.map((d) => ({
@@ -327,6 +326,46 @@ class DonationController {
           return res.status(200).json(donations);
         }
       } else if (isGroup) {
+        const joinBlock = `
+          FROM donations d
+            LEFT JOIN users u
+            ON  ${isCreator ? 'd.backer_id' : 'd.creator_id'} = u.id 
+          `;
+
+        const whereBlock = `${isCreator ? 'd.creator_id' : 'd.backer_id'} = $1 AND
+          ${
+            startDate && endDate
+              ? `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
+              BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
+              AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
+              : `${getTimePeriod(timePeriod as periodItemsTypes)}`
+          }`;
+
+        const data = await db.query(
+          `
+          SELECT * FROM (
+              SELECT 'anonymous' as username,
+                  COALESCE(SUM(sum_donation * ${getSumInUsd(usdKoefs)}), 0)::numeric AS sum_usd_donation
+                ${joinBlock}
+                WHERE	d.is_anonymous = 'true'
+                AND ${whereBlock}
+            UNION
+              SELECT u.username,
+                  COALESCE(SUM(sum_donation * ${getSumInUsd(usdKoefs)}), 0)::numeric AS sum_usd_donation
+                ${joinBlock}
+                WHERE	d.is_anonymous = 'false'
+                AND ${whereBlock}
+                GROUP BY u.username
+                ORDER BY sum_usd_donation DESC
+                LIMIT ${limit || 'ALL'}
+                OFFSET ${offset || 0}
+            ) as result
+            WHERE result.sum_usd_donation > 0 ${
+              searchStr ? `AND username LIKE '%${(searchStr as string).toLowerCase()}%'` : ''
+            }`,
+          [user_id],
+        );
+        return res.status(200).json(data.rows);
       }
 
       return res.status(200).json([]);
