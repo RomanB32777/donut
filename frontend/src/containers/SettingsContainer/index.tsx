@@ -195,14 +195,14 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 <Col span={7}>
-                  <span
+                  <p
                     className={clsx("action", {
                       active: changedElements.includes("avatar"),
                     })}
                     onClick={avatarBtnClick}
                   >
                     Change
-                  </span>
+                  </p>
                 </Col>
               </Row>
             </div>
@@ -224,14 +224,14 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 <Col span={7}>
-                  <span
+                  <p
                     className={clsx("action", {
                       active: changedElements.includes("username"),
                     })}
                     onClick={usernameBtnClick}
                   >
                     Change
-                  </span>
+                  </p>
                 </Col>
               </Row>
             </div>
@@ -259,14 +259,14 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 <Col span={7}>
-                  <span
+                  <p
                     className="action copy"
                     onClick={() => {
                       copyStr(wallet_address, "address");
                     }}
                   >
                     Copy
-                  </span>
+                  </p>
                 </Col>
               </Row>
             </div>

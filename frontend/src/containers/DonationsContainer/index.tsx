@@ -250,7 +250,7 @@ const DonationsContainer = () => {
         </Row>
       </div>
       {visibleDatesPicker && (
-        <div className="donations-selectDates">
+        <div className="donations-selectDates fadeIn">
           <p>Choose the exact time period</p>
           <DatesPicker
             setValue={(startDate, endDate) =>
