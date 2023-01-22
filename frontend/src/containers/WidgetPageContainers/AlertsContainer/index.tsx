@@ -51,9 +51,7 @@ const AlertsContainer = () => {
         ...formData.banner,
         preview: data.banner || "",
       },
-      sound: sound.includes(baseURL)
-        ? sound.split(`${soundsFolderName}/`)[1]
-        : sound,
+      sound: sound.split(`${soundsFolderName}/`)[1],
     };
 
     setFormData({

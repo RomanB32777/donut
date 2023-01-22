@@ -380,7 +380,7 @@ const SettingsAlertsBlock = ({
         >
           <Row gutter={[16, 32]} justify="space-between">
             {images.map((image, key) => (
-              <Col md={8} key={`banner-${image}-${key}`}>
+              <Col md={8} sm={12} xs={24} key={`banner-${image}-${key}`}>
                 <div
                   className="default-banner"
                   onClick={() => selectDefaultBanner(image)}

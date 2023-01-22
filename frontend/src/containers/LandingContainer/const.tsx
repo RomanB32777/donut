@@ -51,7 +51,7 @@ const features = [
   },
   {
     icon: <PencilLandingIcon />,
-    title: "mainpage_feature_five_title",
+    title: "Everything is customizable",
     description:
       "Use your own distinctive colors, texts and images. Customize widgets and donation page. Your imagination is the only limit.",
   },
