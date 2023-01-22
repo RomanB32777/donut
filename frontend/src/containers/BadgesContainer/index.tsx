@@ -15,6 +15,7 @@ import Loader from "components/Loader";
 import { useAppSelector } from "hooks/reduxHooks";
 import axiosClient from "modules/axiosClient";
 import { setUpdateAppNotifications } from "store/types/Notifications";
+import { scrollToPosition } from "utils";
 
 import "./styles.sass";
 
@@ -41,12 +42,19 @@ const BadgesContainer = () => {
   const toBadgePage = (badgeData: IBadgeInfo) => {
     setSearchParams(`id=${badgeData.id}`);
     setActiveBadge({ ...badgeData });
+    scrollToPosition();
   };
 
-  const backToMainPage = () => {
+  const toCreationForm = () => {
+    setIsOpenCreateForm(true);
+    scrollToPosition();
+  };
+
+  const backToMainPage = (updateList: boolean = false) => () => {
     setActiveBadge(null);
     setIsOpenCreateForm(false);
     removeQueryParams();
+    updateList && getBadges();
   };
 
   const getBadges = async () => {
@@ -82,10 +90,8 @@ const BadgesContainer = () => {
   }, [queryID, badgesList]);
 
   useEffect(() => {
-    if (id && !isOpenCreateForm && shouldUpdateApp) {
-      getBadges();
-    }
-  }, [id, isOpenCreateForm, list, shouldUpdateApp]);
+    if (id && shouldUpdateApp) getBadges();
+  }, [id, list, shouldUpdateApp]);
 
   useEffect(() => {
     dispatch(setUpdateAppNotifications(true));
@@ -109,7 +115,7 @@ const BadgesContainer = () => {
       <PageTitle formatId="page_title_badges" />
 
       {user && user.id && user.roleplay && user.roleplay === "creators" && (
-        <div className="badges-container__new-badge-wrapper">
+        <div className="new-badge-wrapper">
           <span>
             <FormattedMessage id="badges_page_new_title" />
           </span>
@@ -117,13 +123,13 @@ const BadgesContainer = () => {
             formatId="create_badge_form_button"
             padding="6px 43px"
             fontSize="18px"
-            onClick={() => setIsOpenCreateForm(true)}
+            onClick={toCreationForm}
             isMain
           />
         </div>
       )}
 
-      <div className="badges-container__list">
+      <div className="list">
         <Row gutter={[36, 36]}>
           {Boolean(badgesList.length) ? (
             badgesList.map((badge) => (

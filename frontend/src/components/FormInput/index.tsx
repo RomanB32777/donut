@@ -63,17 +63,9 @@ const FormInput = ({
           </Col>
         )}
         <Col md={inputCol || (label ? 12 : 24)} xs={24}>
-          <div
-            className={clsx("input", {
-              [modificator as string]: modificator,
-            })}
-          >
+          <div className={clsx("input", modificator)}>
             {addonBefore && (
-              <div
-                className={clsx("addonBefore", {
-                  [addonsModificator as string]: addonsModificator,
-                })}
-              >
+              <div className={clsx("addonBefore", addonsModificator)}>
                 {addonBefore}
               </div>
             )}
@@ -113,11 +105,7 @@ const FormInput = ({
               </p>
             )}
             {addonAfter && (
-              <div
-                className={clsx("addonAfter", {
-                  [addonsModificator as string]: addonsModificator,
-                })}
-              >
+              <div className={clsx("addonAfter", addonsModificator)}>
                 {addonAfter}
               </div>
             )}
@@ -131,11 +119,7 @@ const FormInput = ({
             md={inputCol || (label ? 12 : 24)}
             xs={24}
           >
-            <div
-              className={clsx("description", {
-                [descriptionModificator as string]: descriptionModificator,
-              })}
-            >
+            <div className={clsx("description", descriptionModificator)}>
               {descriptionInput}
             </div>
           </Col>

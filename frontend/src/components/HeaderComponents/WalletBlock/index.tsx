@@ -79,9 +79,7 @@ const WalletBlock = ({
   return (
     <div
       ref={blockRef}
-      className={clsx("wallet-wrapper", {
-        [modificator as string]: modificator,
-      })}
+      className={clsx("wallet-wrapper", modificator)}
       onClick={handlerPopup}
     >
       {loading ? (
@@ -113,11 +111,7 @@ const WalletBlock = ({
         </div>
       )}
       {Boolean(isOpenSelect) && (
-        <div
-          className={clsx("popup", {
-            [popupModificator as string]: popupModificator,
-          })}
-        >
+        <div className={clsx("popup fadeIn", popupModificator)}>
           <div className="item">
             <div className="content">
               <div className="image">

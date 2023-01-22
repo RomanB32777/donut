@@ -64,7 +64,7 @@ const HeaderSelect = ({
           <SmallToggleListArrowIcon />
         </div>
         {Boolean(isOpenSelect) && (
-          <div className="popup">
+          <div className="popup fadeIn">
             <div className="item">
               <div className="content" onClick={logout}>
                 <div className="img icon">

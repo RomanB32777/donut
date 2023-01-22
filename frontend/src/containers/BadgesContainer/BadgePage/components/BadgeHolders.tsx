@@ -40,6 +40,7 @@ const BadgeHolders = ({
                 color: "#FFFFFF",
                 backgroundColor: "#E94560",
                 cursor: "pointer",
+                border: "none",
               }}
             >
               {holders.map((holder: any) => (
@@ -49,9 +50,12 @@ const BadgeHolders = ({
                   placement="top"
                 >
                   {holder.avatar ? (
-                    <Avatar src={holder.avatar} />
+                    <Avatar src={holder.avatar} className="holder-avatar" />
                   ) : (
-                    <Avatar style={{ backgroundColor: "#E94560" }}>
+                    <Avatar
+                      className="holder-avatar"
+                      style={{ backgroundColor: "#E94560" }}
+                    >
                       {holder.username[1]}
                     </Avatar>
                   )}

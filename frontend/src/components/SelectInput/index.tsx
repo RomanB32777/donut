@@ -60,9 +60,7 @@ const SelectInput: FC<ISelectInput> = ({
         <Col
           md={selectCol || (label ? 12 : 24)}
           xs={24}
-          className={clsx("input", {
-            [modificator as string]: modificator,
-          })}
+          className={clsx("input", modificator)}
         >
           <Select
             value={

@@ -35,9 +35,7 @@ export const HeaderComponent = ({
 }: IHeaderComponent) => {
   return (
     <Header
-      className={clsx("site-layout-background", {
-        [modificator as string]: modificator,
-      })}
+      className={clsx("site-layout-background", modificator)}
       hidden={hidden}
       onClick={onClick}
       style={{
@@ -47,9 +45,7 @@ export const HeaderComponent = ({
       <Row
         justify="space-between"
         align="middle"
-        className={clsx("header-container", {
-          [contentModificator as string]: contentModificator,
-        })}
+        className={clsx("header-container", contentModificator)}
       >
         {visibleGamburger && (
           <div

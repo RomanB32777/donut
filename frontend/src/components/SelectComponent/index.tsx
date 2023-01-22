@@ -44,12 +44,7 @@ const SelectComponent = <T extends unknown>({
   useOnClickOutside(isOpenSelect, blockRef, selectHandler);
 
   return (
-    <div
-      className={clsx("select", {
-        [modificator as string]: modificator,
-      })}
-      ref={blockRef}
-    >
+    <div className={clsx("select", modificator)} ref={blockRef}>
       <div
         className="block"
         onClick={() => {
@@ -67,16 +62,10 @@ const SelectComponent = <T extends unknown>({
       </div>
       {isOpenSelect && (
         <div
-          className={clsx("list-wrapper fadeInBlur", {
-            [listWrapperModificator as string]: listWrapperModificator,
-          })}
+          className={clsx("list-wrapper fadeInBlur", listWrapperModificator)}
         >
           {headerList}
-          <div
-            className={clsx("list", {
-              [listModificator as string]: listModificator,
-            })}
-          >
+          <div className={clsx("list", listModificator)}>
             {list.map((item, key) => (
               <div
                 className={clsx("list-item", {

@@ -71,7 +71,11 @@ const initLoadingSteps: StepProps[] = [
   },
 ];
 
-const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
+const CreateBadgeForm = ({
+  backBtn,
+}: {
+  backBtn: (updateList?: boolean) => () => void;
+}) => {
   const dispatch = useDispatch();
   const { user, blockchain } = useAppSelector((state) => state);
 
@@ -154,7 +158,8 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
   const closeSuccessPopup = () => {
     setIsOpenSuccessModal(false);
     setFormBadge({ ...initBadgeData });
-    backBtn();
+    const backMethod = backBtn(true);
+    backMethod();
   };
 
   const createBadge = async () => {
@@ -250,7 +255,7 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
   return (
     <div className="create_badges fadeIn">
       <div className="title badges-title">
-        <div className="icon" onClick={backBtn}>
+        <div className="icon" onClick={backBtn()}>
           <LeftArrowIcon />
         </div>
         <PageTitle formatId="create_badge_form_button" notMarginBottom />
@@ -260,7 +265,7 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
           <div className="upload-block">
             <UploadImage
               label="Upload Image"
-              formats={["JPG"]} // "PNG"
+              formats={["PNG", "JPG", "JPEG", "GIF"]}
               sizeStr="5 MB"
               filePreview={image.preview}
               setFile={({ preview, file }) =>
@@ -357,7 +362,7 @@ const CreateBadgeForm = ({ backBtn }: { backBtn: () => void }) => {
                 <BaseButton
                   title="Cancel"
                   padding="6px 35px"
-                  onClick={backBtn}
+                  onClick={backBtn()}
                   fontSize="18px"
                   disabled={loading}
                   isBlack

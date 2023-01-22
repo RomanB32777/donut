@@ -16,17 +16,19 @@
     display: flex
     flex-direction: column
     align-items: center
-   
-    &__new-badge-wrapper
+
+    .new-badge-wrapper
         width: 100%
         display: flex
         flex-direction: row
         align-items: center
         justify-content: space-between
+        margin-bottom: 62px
 
         @media (max-width: 768px)
             flex-direction: column
             align-items: flex-start
+
         span
             font-family: variables.$pt-font
             font-style: normal
@@ -34,12 +36,9 @@
             font-size: 20px
             line-height: 25px
             color: variables.$white-color
+
             @media (max-width: 768px)
                 margin-bottom: 20px
-    &__list 
-        margin-top: 62px
+
+    .list
         width: 100%
-        // display: flex
-        // flex-direction: row
-        // align-items: center
-        // flex-wrap: wrap

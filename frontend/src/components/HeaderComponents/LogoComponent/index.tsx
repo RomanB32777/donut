@@ -18,10 +18,7 @@ const Logo = ({
   };
 
   return (
-    <div
-      className={clsx("main-logo", { [modificator as string]: modificator })}
-      onClick={redirect}
-    >
+    <div className={clsx("main-logo", modificator)} onClick={redirect}>
       <span>Crypto Donutz</span>
     </div>
   );

@@ -49,11 +49,7 @@ const SwitchForm = ({
               alignItems: "center",
             }}
           >
-            <span
-              className={clsx("slider-label", {
-                [labelModificator as string]: labelModificator,
-              })}
-            >
+            <span className={clsx("slider-label", labelModificator)}>
               {label}
             </span>
           </Col>

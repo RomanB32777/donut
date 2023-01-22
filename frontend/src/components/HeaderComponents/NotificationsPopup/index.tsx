@@ -282,7 +282,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
       </div> */}
 
       {isNotificationPopupOpened && (
-        <div className="popup">
+        <div className="popup fadeIn">
           <div className="wrapper">
             <div className="content">
               <div

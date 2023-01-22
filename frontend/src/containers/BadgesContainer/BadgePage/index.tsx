@@ -19,7 +19,7 @@ const BadgePage = ({
   backBtn,
 }: {
   activeBadge: IBadgeInfo;
-  backBtn: () => void;
+  backBtn: (updateList?: boolean) => () => void;
   deleteBadge: (badge: IBadgeInfo) => Promise<void>;
 }) => {
   const socket = useContext(WebSocketContext);
@@ -28,8 +28,9 @@ const BadgePage = ({
   const [badgeInfo, setBadgeInfo] = useState<IBadgeInfo>(activeBadge);
   const [supporters, setSupporters] = useState<IShortUserData[]>([]);
   const [holders, setHolders] = useState<IShortUserData[]>([]);
+  const [updateList, setUpdateList] = useState(false);
 
-  const { image, title, is_creator, quantity, assigned } = badgeInfo;
+  const { image, title, is_creator, quantity, assigned, token_id } = badgeInfo;
 
   const updateBadgeData = async () => {
     try {
@@ -37,6 +38,7 @@ const BadgePage = ({
       const { data, status } = await axiosClient.get(
         `/api/badge/${id}/${wallet_address}`
       );
+      !token_id && setUpdateList(true);
       status === 200 && setBadgeInfo((prev) => ({ ...prev, ...data }));
     } catch (error) {
       console.log(error);
@@ -102,13 +104,13 @@ const BadgePage = ({
   return (
     <div className="badge-page fadeIn">
       <div className="title badges-title">
-        <div className="icon" onClick={backBtn}>
+        <div className="icon" onClick={backBtn(updateList)}>
           <LeftArrowIcon />
         </div>
         <PageTitle title={title} notMarginBottom />
       </div>
       <Row gutter={[4, 4]} className="form" justify="space-between">
-        <Col xl={10} md={12}>
+        <Col xl={10} xs={24}>
           <div className="upload-block">
             <UploadImage
               label="Badge Image"
@@ -120,13 +122,13 @@ const BadgePage = ({
             />
           </div>
         </Col>
-        <Col xl={13} md={24}>
+        <Col xl={13} xs={24}>
           <BadgeDetails
             badgeInfo={badgeInfo}
             updateBadgeData={updateBadgeData}
           />
           {is_creator && (
-            <Row gutter={[0, 32]}>
+            <Row gutter={[0, 24]}>
               {Boolean(holders.length) && (
                 <Col span={24}>
                   <BadgeHolders holders={holders} getHolders={getHolders} />
