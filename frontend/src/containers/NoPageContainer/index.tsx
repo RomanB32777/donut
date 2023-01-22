@@ -15,7 +15,7 @@ const NoPageContainer = () => {
         extra={
           <BaseButton
             title="Back to Dashboard"
-            onClick={() => navigate(`/${adminPath}`, { replace: true })}
+            onClick={() => navigate(`/${adminPath}/dashboard`, { replace: true })}
             padding="8px 32px"
             fontSize="18px"
             isMain

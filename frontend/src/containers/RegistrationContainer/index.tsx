@@ -20,7 +20,7 @@ import "./styles.sass";
 const RegistrationContainer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
 
   const { id } = useAppSelector(({ user }) => user);
 
@@ -29,7 +29,7 @@ const RegistrationContainer = () => {
   const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
 
   const tryToLogin = async () => {
-    const blockchainData = await walletConf.getBlockchainData();
+    const blockchainData = await walletConf.getWalletData();
 
     if (blockchainData) {
       const { address } = blockchainData;
@@ -52,7 +52,7 @@ const RegistrationContainer = () => {
 
             if (status === 200) {
               dispatch(tryToGetUser(address));
-              navigate(`/${adminPath}`);
+              navigate(`/${adminPath}/dashboard`);
             }
           }
         }
@@ -73,7 +73,7 @@ const RegistrationContainer = () => {
       setLoading(false);
     };
 
-    id ? navigate(`/${adminPath}`) : checkBlockchain();
+    id ? navigate(`/${adminPath}/dashboard`) : checkBlockchain();
   }, [id, walletConf]);
 
   if (loading)
@@ -85,18 +85,18 @@ const RegistrationContainer = () => {
 
   return (
     <div className="registration-modal">
-      <span className="registration-modal__title">
+      <span className="title">
         <FormattedMessage id="registration_modal_title" />
       </span>
-      <div className="registration-modal__img">
+      <div className="img">
         <img src={registerImg} alt="registerImg" />
       </div>
-      <div className="registration-modal__username-input">
-        <span className="registration-modal__username-input__title">
+      <div className="username-input">
+        <span className="title">
           <FormattedMessage id="registration_modal_input_title" />
         </span>
 
-        <div className="registration-modal__username-input__input">
+        <div className="input">
           <FormInput
             value={username}
             setValue={(value) => {
@@ -112,7 +112,7 @@ const RegistrationContainer = () => {
           />
         </div>
         {isUsernameError && (
-          <div className="registration-modal__username-input__error">
+          <div className="error">
             <FormattedMessage id="registration_modal_input_username_error" />
           </div>
         )}

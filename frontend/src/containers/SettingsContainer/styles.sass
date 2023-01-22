@@ -9,15 +9,19 @@
         margin-left: 20px
 
 .form-element
-    &__action
+    .action
         font-family: variables.$pt-font
         font-size: 20px
         line-height: 25px
         color: variables.$grey-color
-        cursor: pointer
         transition: .4s
+        cursor: pointer
 
-        &.active
+        &:not(.copy)
+            pointer-events: none
+
+        &:not(.copy).active
+            pointer-events: auto
             color: variables.$main-color
 
         @media (max-width: 768px)

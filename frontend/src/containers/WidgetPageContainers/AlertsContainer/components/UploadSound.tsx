@@ -16,9 +16,9 @@ const UploadSound = ({ sendFile }: { sendFile: (file: File) => Promise<void> }) 
           audio.src = e?.target?.result as string;
           audio.addEventListener(
             "loadedmetadata",
-            () => {
+            async () => {
               const duration = Math.round(audio.duration);
-              if (duration <= maxDuration) sendFile(file);
+              if (duration <= maxDuration) await sendFile(file);
               else reject(`File size limit exceeded (max - ${maxDuration}s)`);
             },
             false

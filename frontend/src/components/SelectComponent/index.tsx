@@ -1,6 +1,7 @@
+import React, { useRef, useState } from "react";
 import clsx from "clsx";
-import React, { useState } from "react";
 import { DownOutlined } from "@ant-design/icons";
+import useOnClickOutside from "hooks/useClickOutside";
 import "./styles.sass";
 
 interface ISelectComponent<T> {
@@ -14,6 +15,7 @@ interface ISelectComponent<T> {
   listItemModificator?: string;
   listWrapperModificator?: string;
   selectItem: (item: T) => void;
+  renderOption?: (item: T) => React.ReactNode;
 }
 
 const SelectComponent = <T extends unknown>({
@@ -27,19 +29,26 @@ const SelectComponent = <T extends unknown>({
   listItemModificator,
   listWrapperModificator,
   selectItem,
+  renderOption,
 }: React.PropsWithChildren<ISelectComponent<T>>) => {
+  const blockRef = useRef(null);
   const [isOpenSelect, setOpenSelect] = useState(false);
+
+  const selectHandler = () => setOpenSelect((prev) => !prev);
 
   const itemHandler = (selected: T) => {
     setOpenSelect(false);
     selectItem(selected);
   };
 
+  useOnClickOutside(isOpenSelect, blockRef, selectHandler);
+
   return (
     <div
       className={clsx("select", {
         [modificator as string]: modificator,
       })}
+      ref={blockRef}
     >
       <div
         className="block"
@@ -77,7 +86,7 @@ const SelectComponent = <T extends unknown>({
                 key={key}
                 onClick={() => itemHandler(item)}
               >
-                {item as React.ReactNode}
+                {renderOption ? renderOption(item) : (item as React.ReactNode)}
               </div>
             ))}
           </div>

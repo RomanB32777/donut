@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { IUser, userDataKeys } from "types";
+import { userDataKeys } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import axiosClient from "modules/axiosClient";
@@ -24,7 +24,7 @@ import {
   shortStr,
 } from "utils";
 import { initUserWithFiles } from "consts";
-import { IFileInfo } from "appTypes";
+import { IUserWithFiles } from "appTypes";
 import "./styles.sass";
 
 const excludedСhangesFields: userDataKeys[] = [
@@ -40,10 +40,10 @@ const SettingsContainer = () => {
   const user = useAppSelector(({ user }) => user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
 
   const [formSettings, setFormSettings] =
-    useState<IUser<IFileInfo>>(initUserWithFiles);
+    useState<IUserWithFiles>(initUserWithFiles);
 
   const [loading, setSettingsLoading] = useState<boolean>(false);
 
@@ -142,7 +142,7 @@ const SettingsContainer = () => {
   const changedElements = useMemo(
     () =>
       Object.keys(formSettings).filter((key) => {
-        const keyType = key as keyof IUser<IFileInfo>;
+        const keyType = key as keyof IUserWithFiles;
 
         if (excludedСhangesFields.includes(keyType)) return false;
 
@@ -195,14 +195,14 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 <Col span={7}>
-                  <div
-                    className={clsx("form-element__action", {
-                      active: avatar.preview !== user.avatar,
+                  <span
+                    className={clsx("action", {
+                      active: changedElements.includes("avatar"),
                     })}
                     onClick={avatarBtnClick}
                   >
                     Change
-                  </div>
+                  </span>
                 </Col>
               </Row>
             </div>
@@ -224,14 +224,14 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 <Col span={7}>
-                  <div
-                    className={clsx("form-element__action", {
-                      active: username !== user.username,
+                  <span
+                    className={clsx("action", {
+                      active: changedElements.includes("username"),
                     })}
                     onClick={usernameBtnClick}
                   >
                     Change
-                  </div>
+                  </span>
                 </Col>
               </Row>
             </div>
@@ -246,7 +246,10 @@ const SettingsContainer = () => {
                     value={shortWalletToken}
                     addonBefore={
                       <div className="wallet-icon">
-                        <img src={walletConf.main_contract.icon} alt="walletIcon" />
+                        <img
+                          src={walletConf.main_contract.icon}
+                          alt="walletIcon"
+                        />
                       </div>
                     }
                     addonsModificator="wallet-addon"
@@ -256,14 +259,14 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 <Col span={7}>
-                  <div
-                    className="form-element__action"
+                  <span
+                    className="action copy"
                     onClick={() => {
                       copyStr(wallet_address, "address");
                     }}
                   >
                     Copy
-                  </div>
+                  </span>
                 </Col>
               </Row>
             </div>

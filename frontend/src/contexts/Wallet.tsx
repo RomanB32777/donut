@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import { IWalletContext } from "appTypes";
+import { IWalletConf } from "appTypes";
 import { initValue } from "./values";
 
-const WalletContext = createContext<IWalletContext>(initValue);
+const WalletContext = createContext<IWalletConf>(initValue);
 
 const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   return (

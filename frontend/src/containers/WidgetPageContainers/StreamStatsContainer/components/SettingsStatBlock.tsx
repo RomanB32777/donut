@@ -3,7 +3,6 @@ import { Col, Row } from "antd";
 import { SliderMarks } from "antd/lib/slider";
 import { typeAligmnet } from "types";
 
-import BaseButton from "components/BaseButton";
 import ColorPicker from "components/ColorPicker";
 import SliderForm from "components/SliderForm";
 import SelectInput, { ISelectItem } from "components/SelectInput";
@@ -23,17 +22,19 @@ const marksSlider: { [key: number]: typeAligmnet } = {
 
 const SettingsStatBlock = ({
   fonts,
-  loading,
+  children,
   editStatData,
-  editWidgetData,
   setEditStatData,
 }: {
-  loading: boolean;
   fonts: ISelectItem[];
+  children?: React.ReactNode;
   editStatData: IWidgetStatData;
-  editWidgetData: () => Promise<void>;
   setEditStatData: (editStatData: IWidgetStatData) => void;
 }) => {
+  const [fontList, setFontList] = useState<ISelectItem[]>(
+    fonts.slice(0, notVisibleFontsCount)
+  );
+
   const {
     title_color,
     bar_color,
@@ -42,9 +43,6 @@ const SettingsStatBlock = ({
     title_font,
     content_font,
   } = editStatData;
-  const [fontList, setFontList] = useState<ISelectItem[]>(
-    fonts.slice(0, notVisibleFontsCount)
-  );
 
   const onOpenFontSelect = (isOpen: boolean) =>
     isOpen
@@ -181,16 +179,7 @@ const SettingsStatBlock = ({
           </div>
         </Col>
       </Row>
-      <div className="btn-block">
-        <BaseButton
-          formatId="profile_form_save_changes_button"
-          padding="6px 35px"
-          onClick={editWidgetData}
-          fontSize="18px"
-          disabled={loading}
-          isMain
-        />
-      </div>
+      {children}
     </Col>
   );
 };

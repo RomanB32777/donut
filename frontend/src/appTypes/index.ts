@@ -1,11 +1,9 @@
-import { IBadgeData, periodItemsTypes } from "types";
+import { periodItemsTypes } from "types";
 import { IFileInfo } from "./files";
 import {
   IWalletInitData,
   IPayObj,
-  IQuantityBalanceObj,
   IMintBadgeObj,
-  ICreateContractObj,
   IBlockchain,
   IWalletState,
   blockchainPayload,
@@ -15,9 +13,9 @@ import {
   methodNames,
   IWalletConf,
   currencyBlockchainsType,
-  IWalletContext,
 } from "./wallet";
-import { IUserAction } from "./user";
+import { IUserAction, IDonatPageWithFiles, IUserWithFiles } from "./user";
+import { IBadge } from "./badges";
 import {
   INotificationsState,
   INotificationsAction,
@@ -67,10 +65,6 @@ interface IDefaultImagesModal {
 
 type typesTabContent = "All" | "Settings" | "Preview";
 
-interface IBadge extends IBadgeData {
-  image: IFileInfo;
-}
-
 interface IStringObj {
   [key: string]: string;
 }
@@ -89,13 +83,13 @@ export type {
 
   // user
   IUserAction,
+  IDonatPageWithFiles,
+  IUserWithFiles,
 
   // wallet
   IWalletInitData,
   IPayObj,
-  IQuantityBalanceObj,
   IMintBadgeObj,
-  ICreateContractObj,
   IBlockchain,
   IWalletState,
   blockchainPayload,
@@ -105,7 +99,6 @@ export type {
   methodNames,
   IWalletConf,
   currencyBlockchainsType,
-  IWalletContext,
 
   // notifications
   INotificationsState,

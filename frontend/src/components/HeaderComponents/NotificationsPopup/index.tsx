@@ -12,6 +12,7 @@ import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
 
 import { useAppSelector } from "hooks/reduxHooks";
+import useOnClickOutside from "hooks/useClickOutside";
 import { AlertIcon } from "icons";
 import Loader from "components/Loader";
 
@@ -27,29 +28,34 @@ interface INotificationStatus {
   read: boolean;
 }
 
-const NotificationsPopup = ({
-  user,
-  isNotificationPopupOpened,
-  handlerNotificationPopup,
-}: {
-  user: number;
-  isNotificationPopupOpened: boolean;
-  handlerNotificationPopup: (e: React.MouseEvent<HTMLDivElement>) => void;
-}) => {
+const NotificationsPopup = ({ user }: { user: number }) => {
   const dispatch = useDispatch();
   const { list } = useAppSelector(({ notifications }) => notifications);
 
   const contentRef = useRef<HTMLDivElement>(null);
+  const blockRef = useRef(null);
+
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
   const [fetching, setFetching] = useState(false);
+  const [isNotificationPopupOpened, setNotificationPopupOpened] =
+    useState(false);
+
+  const handlerNotificationPopup = () =>
+    setNotificationPopupOpened((prev) => !prev);
 
   const checkIsRecipient = (recipient: number) => recipient === user;
 
   const getNotificationUserRole = (recipient: number) =>
     checkIsRecipient(recipient) ? "read_recipient" : "read_sender";
+
+  useOnClickOutside(
+    isNotificationPopupOpened,
+    blockRef,
+    handlerNotificationPopup
+  );
 
   const updateNotification = async ({ id, read }: INotificationStatus) => {
     const { data, status } = await axiosClient.put(`/api/notification/status`, {
@@ -261,7 +267,7 @@ const NotificationsPopup = ({
   }, [handleScroll]);
 
   return (
-    <div className="notifications">
+    <div className="notifications" ref={blockRef}>
       {/* <div
         className="icon icon-notifications"
         onClick={handlerNotificationPopup}

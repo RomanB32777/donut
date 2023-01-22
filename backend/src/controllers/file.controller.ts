@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { readdirSync, existsSync } from 'fs';
-import { ISoundInfo } from 'types/index.js';
+import { ISoundInfo } from 'types';
 import { assetsFolder, isProduction, soundsFolderName, uploadsFolder } from '../consts.js';
 
 class FileController {

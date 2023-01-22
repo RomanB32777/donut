@@ -18,6 +18,7 @@ interface ISelectInput extends SelectProps {
   label?: string;
   gutter?: number | [number, number];
   modificator?: string;
+  labelModificator?: string;
   labelCol?: number;
   selectCol?: number;
   isTags?: boolean;
@@ -33,6 +34,7 @@ const SelectInput: FC<ISelectInput> = ({
   gutter,
   placeholder,
   modificator,
+  labelModificator,
   labelCol,
   selectCol,
   isTags,
@@ -51,18 +53,14 @@ const SelectInput: FC<ISelectInput> = ({
     <div className="selectInput">
       <Row gutter={gutter || 0}>
         {label && (
-          <Col
-            md={labelCol || 12}
-            xs={24}
-            className="selectInput__label_wrapper"
-          >
-            <span className="selectInput__label">{label}</span>
+          <Col md={labelCol || 12} xs={24} className="label_wrapper">
+            <span className={clsx("label", labelModificator)}>{label}</span>
           </Col>
         )}
         <Col
           md={selectCol || (label ? 12 : 24)}
           xs={24}
-          className={clsx("selectInput__input", {
+          className={clsx("input", {
             [modificator as string]: modificator,
           })}
         >
@@ -103,7 +101,7 @@ const SelectInput: FC<ISelectInput> = ({
             offset={(!isMobile ? labelCol : 0) || (label && !isMobile ? 12 : 0)}
             md={selectCol || (label ? 12 : 24)}
           >
-            <p className="selectInput__description">{descriptionSelect}</p>
+            <p className="description">{descriptionSelect}</p>
           </Col>
         </Row>
       )}

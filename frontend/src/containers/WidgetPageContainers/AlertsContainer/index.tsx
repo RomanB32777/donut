@@ -4,14 +4,14 @@ import { fileUploadTypes, ISoundInfo } from "types";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import PageTitle from "components/PageTitle";
-import BaseButton from "components/BaseButton";
 import LinkCopy from "components/LinkCopy";
 import SettingsAlertsBlock from "./components/SettingsAlertsBlock";
 import PreviewAlertsBlock from "./components/PreviewAlertsBlock";
 import WidgetMobileWrapper from "components/WidgetMobileWrapper";
+import FormBtnsBlock from "components/FormBtnsBlock";
 import Loader from "components/Loader";
 
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import {
   addErrorNotification,
   addNotification,
@@ -22,7 +22,7 @@ import {
   sendFile,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
-import { initAlertData } from "consts";
+import { initAlertData, baseURL } from "consts";
 import { IAlert } from "appTypes";
 import "./styles.sass";
 
@@ -34,49 +34,69 @@ const AlertsContainer = () => {
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
   const [soundsList, setSoundsList] = useState<ISoundInfo[]>([]);
 
+  // data: IAlertData
+  const setAlertData = async (data: any) => {
+    const soundsFolderName: fileUploadTypes = "sound";
+    const { name_font, message_font, sum_font, sound } = data;
+
+    const loadedFonts = await loadFonts({
+      fonts,
+      fields: { name_font, message_font, sum_font },
+    });
+
+    const userData: IAlert = {
+      ...data,
+      ...loadedFonts,
+      banner: {
+        ...formData.banner,
+        preview: data.banner || "",
+      },
+      sound: sound.includes(baseURL)
+        ? sound.split(`${soundsFolderName}/`)[1]
+        : sound,
+    };
+
+    setFormData({
+      ...formData,
+      ...userData,
+    });
+  };
+
   const getAlertsWidgetData = async () => {
     if (id && fonts) {
       setLoading(true);
-      const { data } = await axiosClient.get(
+      const { data, status } = await axiosClient.get(
         "/api/widget/get-alerts-widget/" + id
       );
-
-      const soundsFolderName: fileUploadTypes = "sound";
-      const { name_font, message_font, sum_font } = data;
-
-      const loadedFonts = await loadFonts({
-        fonts,
-        fields: { name_font, message_font, sum_font },
-      });
-
-      const userData: IAlert = {
-        ...data,
-        ...loadedFonts,
-        banner: {
-          ...formData.banner,
-          preview: data.banner || "",
-        },
-        sound: data.sound.split(`${soundsFolderName}/`)[1] || "",
-      };
-
-      setFormData({
-        ...formData,
-        ...userData,
-      });
+      if (status === 200) await setAlertData(data);
       setLoading(false);
     }
   };
 
-  const checkSuccessSending = (status?: number) => {
-    status === 200
-      ? addSuccessNotification({ message: "Data saved successfully" })
-      : addErrorNotification({ message: "saving error" });
+  const checkSuccessSending = ({
+    data,
+    status,
+  }: {
+    data: any;
+    status: number;
+  }) => {
+    if (status === 200) {
+      addSuccessNotification({ message: "Data saved successfully" });
+      setAlertData(data);
+    } else addErrorNotification({ message: "saving error" });
   };
 
-  const sendData = async () => {
+  const sendData = (isReset?: boolean) => async () => {
     try {
       setLoading(true);
-      const { banner, message_font, name_font, sum_font, sound, ...fieldValues } = formData;
+      const {
+        banner,
+        message_font,
+        name_font,
+        sum_font,
+        sound,
+        ...fieldValues
+      } = formData;
 
       const soundInfo = soundsList.find((s) => s.name === sound);
 
@@ -88,7 +108,18 @@ const AlertsContainer = () => {
         ...fieldValues,
       });
 
-      if (banner.file || banner.preview) {
+      if (!(banner.file || banner.preview) || isReset) {
+        const { data, status } = await axiosClient.put(
+          "/api/widget/edit-alerts-widget/",
+          {
+            alertData: sendingData,
+            username,
+            userId: id,
+            isReset,
+          }
+        );
+        checkSuccessSending({ data, status });
+      } else if (banner.file || banner.preview) {
         const res = await sendFile({
           file: banner.file,
           filelink: banner.preview,
@@ -100,17 +131,7 @@ const AlertsContainer = () => {
           },
           url: "/api/widget/edit-alerts-widget/",
         });
-        checkSuccessSending(res?.status);
-      } else {
-        const { status } = await axiosClient.put(
-          "/api/widget/edit-alerts-widget/",
-          {
-            alertData: sendingData,
-            username,
-            userId: id,
-          }
-        );
-        checkSuccessSending(status);
+        res && checkSuccessSending({ data: res.data, status: res.status });
       }
     } catch (error) {
       addNotification({
@@ -124,6 +145,8 @@ const AlertsContainer = () => {
       setLoading(false);
     }
   };
+
+  const resetData = sendData(true);
 
   useEffect(() => {
     const initSounds = async () => {
@@ -183,16 +206,11 @@ const AlertsContainer = () => {
             }
           />
         )}
-        <div className="saveBottom">
-          <BaseButton
-            formatId="profile_form_save_changes_button"
-            padding="6px 35px"
-            onClick={sendData}
-            fontSize="18px"
-            disabled={loading}
-            isMain
-          />
-        </div>
+        <FormBtnsBlock
+          saveMethod={sendData()}
+          resetMethod={resetData}
+          disabled={loading}
+        />
       </div>
       {/* <ChromePicker color={color} onChangeComplete={handleChange} disableAlpha /> */}
     </div>

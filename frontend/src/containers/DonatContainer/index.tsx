@@ -39,7 +39,7 @@ const DonatContainer = () => {
   const { user, personInfo, blockchain } = useAppSelector((state) => state);
   const { isMobile } = useWindowDimensions();
 
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
   const socket = useContext(WebSocketContext);
   // const mainWallet = useAppSelector((state: any) => state.wallet);
   const { donat_page, avatar } = personInfo;
@@ -99,7 +99,7 @@ const DonatContainer = () => {
 
   useEffect(() => {
     const setUser = async () => {
-      const blockchainData = await walletConf.getBlockchainData();
+      const blockchainData = await walletConf.getWalletData();
 
       if (blockchainData) {
         await walletConf.getBalance(setBalance);
@@ -136,7 +136,7 @@ const DonatContainer = () => {
       style={{ backgroundImage: `url(${background_banner})` }}
     >
       <HeaderComponent
-        logoUrl={user.id ? `/${adminPath}/donations` : `/${adminPath}`}
+        logoUrl={user.id ? `/${adminPath}/donations` : `/${adminPath}/dashboard`}
         backgroundColor={background_color}
         modificator="headerBlock"
         contentModificator="headerBlock-content"
@@ -267,7 +267,8 @@ const DonatContainer = () => {
         <SuccessModalComponent
           open={isOpenSuccessModal}
           onClose={closeSuccessPopup}
-          message={`You’ve successfully sent ${amount} ${selectedBlockchain} to ${name}`}
+          message={`You've successfully sent ${amount} ${selectedBlockchain} to ${name}`}
+          description="Check your donation history in «Donations» section"
         />
       </div>
     </div>

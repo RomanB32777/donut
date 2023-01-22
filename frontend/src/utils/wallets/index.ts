@@ -8,14 +8,10 @@ import { tryToGetUser } from "store/types/User";
 import { setLoading } from "store/types/Loading";
 import {
   isInstall,
-  getBlockchainData,
+  getWalletData,
   getCurrentBlockchain,
   changeBlockchain,
   paymentMethod,
-  getQuantityBalance,
-  mint,
-  getBadgeURI,
-  createContract,
   getBalance,
   payForBadgeCreation,
   getGasPrice,
@@ -25,18 +21,19 @@ import { IWalletConf, IWalletMethods } from "appTypes";
 
 const walletMethods: IWalletMethods = {
   isInstall,
-  getBlockchainData,
+  getWalletData,
   getCurrentBlockchain,
   changeBlockchain,
-  paymentMethod,
+
   getBalance,
-  createContract,
-  getBadgeURI,
-  mint,
-  getQuantityBalance,
-  payForBadgeCreation,
   getGasPrice,
   getGasPriceForMethod,
+  transfer_contract_methods: {
+    paymentMethod,
+  },
+  commission_contract_methods: {
+    payForBadgeCreation,
+  },
 };
 
 const getUsdKoef = async (
@@ -62,16 +59,21 @@ const checkWallet = async ({
   dispatch: Dispatch<AnyAction>;
   navigate?: NavigateFunction;
 }) => {
-  const blockchainData = await walletConf.getBlockchainData();
-  const currentBlockchain = await walletConf.getCurrentBlockchain();
+  const blockchainData = await walletConf.getWalletData();
 
-  if (blockchainData && currentBlockchain) {
-    dispatch(setSelectedBlockchain(currentBlockchain.name));
+  if (blockchainData) {
+    const currentBlockchain = await walletConf.getCurrentBlockchain();
+    if (currentBlockchain)
+      dispatch(setSelectedBlockchain(currentBlockchain.name));
+    else if (navigate) {
+      const newBlockchaind = await walletConf.changeBlockchain("evmos");
+      newBlockchaind ? dispatch(setSelectedBlockchain("evmos")) : navigate("/");
+    }
     dispatch(tryToGetUser(blockchainData.address));
-  } else if (!currentBlockchain && navigate) {
-    const newBlockchaind = await walletConf.changeBlockchain("evmos");
-    newBlockchaind ? dispatch(setSelectedBlockchain("evmos")) : navigate("/");
-  } else dispatch(setLoading(false));
+  } else {
+    navigate && navigate("/");
+    dispatch(setLoading(false));
+  }
 };
 
 export { walletMethods, getUsdKoef, checkWallet };

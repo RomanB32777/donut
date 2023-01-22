@@ -1,5 +1,4 @@
-import { ethers } from 'ethers'
-import { blockchainsSymbols } from 'types/index.js';
+import { blockchainsSymbols } from 'types';
 import { exchangeNames } from './consts.js';
 import db from './db.js';
 import axiosDefault from './modules/axiosDefault.js';
@@ -16,7 +15,7 @@ const getRandomStr = (length: number) => {
 };
 
 const parseBool = (param: any) =>
-  !(param === 'false' || param === '0' || param === '' || param === 'null' || param === undefined);
+  !(param === 'false' || param === '0' || param === '' || param === 'null' || param === undefined || param === null);
 
 const getUsername = () => `
   CASE

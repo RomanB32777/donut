@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Empty } from "antd";
 import { useDispatch } from "react-redux";
 import { IGoalData } from "types";
@@ -32,6 +32,15 @@ const DonationGoalsContainer = () => {
     setIsOpenModal(true);
   };
 
+  const activeGoals = useMemo(
+    () => goals.filter((goal: IGoalData) => !goal.is_archive) || [],
+    [goals]
+  );
+  const archivedGoals = useMemo(
+    () => goals.filter((goal: IGoalData) => goal.is_archive),
+    [goals]
+  );
+
   useEffect(() => {
     const initFonts = async () => {
       const fonts = await getFontsList();
@@ -45,9 +54,9 @@ const DonationGoalsContainer = () => {
   }, [user, list]);
 
   return (
-    <div className="donationGoalsPage-container fadeIn">
+    <div className="goals fadeIn">
       <PageTitle formatId="page_title_donation_goals" />
-      <div className="goals-header">
+      <div className="header">
         <p className="subtitle">
           Start fundraising for a specific purchase or goal.
         </p>
@@ -59,12 +68,11 @@ const DonationGoalsContainer = () => {
           isMain
         />
       </div>
-      <div className="goals-wrapper">
-        {Boolean(goals.length) &&
-        Boolean(goals.filter((goal) => !goal.is_archive).length) ? (
+      <div className="wrapper">
+        {Boolean(activeGoals.length) &&
+        Boolean(activeGoals.filter((goal) => !goal.is_archive).length) ? (
           goals
             .filter((goal) => !goal.is_archive)
-            .reverse()
             .map((goal) => (
               <GoalItem
                 key={goal.id}
@@ -78,15 +86,11 @@ const DonationGoalsContainer = () => {
         )}
       </div>
       <PageTitle formatId="page_title_donation_history" />
-      <div className="goals-archiveWrapper">
-        {Boolean(goals.length) &&
-        Boolean(goals.filter((goal: IGoalData) => goal.is_archive).length) ? (
-          goals
-            .filter((goal: IGoalData) => goal.is_archive)
-            .reverse()
-            .map((goal: IGoalData) => (
-              <GoalItem key={goal.id} goalData={goal} fonts={[]} />
-            ))
+      <div className="archiveWrapper">
+        {Boolean(archivedGoals.length) ? (
+          archivedGoals.map((goal: IGoalData) => (
+            <GoalItem key={goal.id} goalData={goal} fonts={[]} />
+          ))
         ) : (
           <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}

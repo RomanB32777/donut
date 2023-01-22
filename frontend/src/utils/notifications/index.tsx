@@ -1,6 +1,6 @@
 import { Store } from "react-notifications-component";
 import { IDonationShortInfo } from "types";
-import { baseURL, isProduction } from "modules/axiosClient";
+import { baseURL, isProduction } from "consts";
 import {
   INotification,
   INotificationMessage,

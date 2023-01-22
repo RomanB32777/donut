@@ -42,45 +42,6 @@ import { setUser } from "store/types/User";
 import { setSelectedBlockchain } from "store/types/Wallet";
 import { initUser, storageWalletKey } from "consts";
 
-const getBadgesStatus = async (user: any, socket?: any) => {
-  // const url =
-  //   user.roleplay === "creators"
-  //     ? `${baseURL}/api/badge/${user.id}?status=pending`
-  //     : `${baseURL}/api/badge/badges-backer/${user.id}?status=pending`;
-  // const { data } = await axiosClient.get(url);
-  // if (Array.isArray(data) && data.length) {
-  //   const pendingBadges = data; //.slice(0, 1);
-  //   if (pendingBadges.length) {
-  //     const resultTransactions = await Promise.all(
-  //       pendingBadges.map(async (badge) => {
-  //         const walletKey = process.env.REACT_APP_WALLET || "metamask";
-  //         const wallet = walletsConf[walletKey];
-  //         const transactionInfo = await wallet.getTransactionInfo(
-  //           badge.transaction_hash
-  //         );
-  //         if (transactionInfo?.receipt) {
-  //           const result = transactionInfo.receipt?.result;
-  //           if (result) {
-  //             const resultObj = {
-  //               result,
-  //               badge_id: badge.id,
-  //               transaction_hash: badge.transaction_hash,
-  //               username: user.username,
-  //               user_id: user.id,
-  //             };
-  //             socket.emit("check_badge", resultObj);
-  //             return resultObj;
-  //           }
-  //           return transactionInfo;
-  //         }
-  //         return null;
-  //       })
-  //     );
-  //     return resultTransactions;
-  //   }
-  // }
-};
-
 const scrollToPosition = (top = 0) => {
   try {
     window.scroll({
@@ -106,6 +67,17 @@ const logoutUser = ({
   navigate("/");
 };
 
+const isValidateFilledForm = (valuesArray: any[]) =>
+  valuesArray.every((val) => Boolean(val));
+
+const delay = ({ ms, cb }: { ms: number; cb: (params?: any) => any }) =>
+  new Promise<void>((resolve) => {
+    setTimeout(() => {
+      cb();
+      resolve();
+    }, ms);
+  });
+
 export {
   // notifications
   addNotification,
@@ -116,9 +88,6 @@ export {
   addNotFoundUserNotification,
   addInstallWalletNotification,
   getNotificationMessage,
-
-  // badges
-  getBadgesStatus,
 
   // strings
   getRandomStr,
@@ -157,4 +126,6 @@ export {
   // app
   scrollToPosition,
   logoutUser,
+  isValidateFilledForm,
+  delay,
 };

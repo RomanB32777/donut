@@ -12,14 +12,7 @@ import Logo from "components/HeaderComponents/LogoComponent";
 
 import { checkWallet, scrollToPosition } from "utils";
 import { adminPath, storageWalletKey } from "consts";
-import {
-  // blockchains,
-  cryptoSteps,
-  features,
-  help,
-  images,
-  socialNetworks,
-} from "./const";
+import { cryptoSteps, features, help, images, socialNetworks } from "./const";
 import "./styles.sass";
 
 const LandingContainer = () => {
@@ -27,10 +20,10 @@ const LandingContainer = () => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const { id } = useAppSelector(({ user }) => user);
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
 
   const signUp = async () => {
-    if (id) navigate(`/${adminPath}`);
+    if (id) navigate(`/${adminPath}/dashboard`);
     else navigate("/register");
     scrollToPosition();
   };
@@ -40,7 +33,10 @@ const LandingContainer = () => {
       checkWallet({ walletConf, dispatch });
   }, [walletConf]);
 
-  const blockchains = useMemo(() => walletConf.main_contract.blockchains, [walletConf]);
+  const blockchains = useMemo(
+    () => walletConf.main_contract.blockchains,
+    [walletConf]
+  );
 
   const { rocketImg, moneyImg, listImg } = images;
 
@@ -48,7 +44,7 @@ const LandingContainer = () => {
     <div className="landing">
       <HeaderComponent
         visibleLogo
-        logoUrl={`/${adminPath}`}
+        logoUrl={`/${adminPath}/dashboard`}
         modificator="landing-header landing-padding"
       >
         <BaseButton

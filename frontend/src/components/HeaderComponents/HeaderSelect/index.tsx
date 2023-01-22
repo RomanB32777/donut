@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import clsx from "clsx";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
@@ -7,41 +8,43 @@ import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
+import useOnClickOutside from "hooks/useClickOutside";
 import { logoutUser } from "utils";
 import "./styles.sass";
 
 const HeaderSelect = ({
   title,
-  isOpenSelect,
   isNotVisibleAvatarInMobile,
-  handlerHeaderSelect,
 }: {
   title: string;
-  isOpenSelect: boolean;
   isNotVisibleAvatarInMobile?: boolean;
-  handlerHeaderSelect?: (e?: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id, avatar } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
+  const blockRef = useRef(null);
+
+  const [isOpenSelect, setIsOpenSelect] = useState(false);
+
+  const handlerSelect = () => setIsOpenSelect((prev) => !prev);
 
   const logout = (e: React.MouseEvent<HTMLDivElement>) => {
-    handlerHeaderSelect && handlerHeaderSelect(e);
+    setIsOpenSelect && setIsOpenSelect(false);
     logoutUser({ dispatch, navigate });
   };
 
+  useOnClickOutside(isOpenSelect, blockRef, handlerSelect);
+
   return (
-    <div className="header-select">
+    <div ref={blockRef} className="header-select">
       {!isMobile && <WalletBlock />}
       <div
         className={clsx("info", {
           withoutArrow: isOpenSelect === undefined,
           withWalletBlock: !isMobile,
         })}
-        onClick={(e: React.MouseEvent<HTMLDivElement>) =>
-          handlerHeaderSelect && handlerHeaderSelect(e)
-        }
+        onClick={handlerSelect}
       >
         {Boolean(id) && (
           <div

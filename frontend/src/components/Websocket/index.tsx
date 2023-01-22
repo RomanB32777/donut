@@ -5,9 +5,9 @@ import { io, Socket } from "socket.io-client";
 import { ISocketNotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { baseURL, isProduction, socketsBaseUrl } from "modules/axiosClient";
 import { getNotifications } from "store/types/Notifications";
 import { addNotification, getNotificationMessage } from "utils";
+import { baseURL, isProduction, socketsBaseUrl } from "consts";
 
 const WebSocketContext = createContext<Socket | null>(null);
 

@@ -80,8 +80,8 @@ const GoalsModal = ({
       onCancel={closeEditModal}
       width={880}
     >
-      <div className="goals-modal">
-        <Row gutter={[0, 18]} className="goals-modal__form" justify="center">
+      <div className="modal">
+        <Row gutter={[0, 18]} className="form" justify="center">
           <Col span={24}>
             <div className="form-element">
               <FormInput
@@ -113,8 +113,8 @@ const GoalsModal = ({
             </div>
           </Col>
         </Row>
-        <div className="goals-modal__btns">
-          <div className="goals-modal__btns_save">
+        <div className="btns">
+          <div className="save">
             <BaseButton
               formatId="profile_form_save_goal_button"
               padding="6px 35px"
@@ -124,7 +124,7 @@ const GoalsModal = ({
               isMain
             />
           </div>
-          <div className="goals-modal__btns_cancel">
+          <div className="cancel">
             <BaseButton
               formatId="profile_form_cancel_button"
               padding="6px 35px"

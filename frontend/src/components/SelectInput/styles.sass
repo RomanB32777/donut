@@ -3,11 +3,11 @@
 .selectInput
     width: 100%
 
-    &__label_wrapper
+    .label_wrapper
         display: flex
         align-items: center
 
-    &__label
+    .label
         font-family: variables.$pt-font
         font-style: normal
         font-weight: 400
@@ -15,7 +15,7 @@
         line-height: 25px
         color: variables.$white-color
 
-    &__description
+    .description
         margin-top: 10px
         margin-bottom: 0
         font-family: variables.$pt-font
@@ -43,6 +43,13 @@
         .ant-select-arrow
             color: variables.$white-color
             padding-right: 20px
+
+    .ant-select
+        .ant-select-selection-placeholder
+            font-family: variables.$pt-font
+            font-style: normal
+            font-weight: 400
+            color: variables.$grey-color
 
     .ant-select-show-search.ant-select
         .ant-select-selector
@@ -98,7 +105,7 @@
     color: variables.$grey-color
 
     .ant-select-item
-        &-option, 
+        &-option,
         &-option .ant-select-item-active
             color: variables.$grey-color
 
@@ -114,4 +121,25 @@
         width: 2px !important
         .rc-virtual-list-scrollbar-thumb
             background: variables.$main-color !important
-            
+
+.blockchain-option
+    display: flex
+    align-items: center
+
+    .image
+        width: 24px
+        height: 24px
+        border-radius: 50%
+        display: flex
+        justify-content: center
+        align-items: center
+        overflow: hidden
+        background: variables.$main-color
+
+        img
+            object-fit: cover
+            width: 100%
+            height: 100%
+
+    .title
+        margin-left: 10px

@@ -23,17 +23,25 @@ CREATE TABLE creators(
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TYPE BadgeStatus AS ENUM('success', 'failed', 'pending');
-
 CREATE TABLE badges(
     id SERIAL PRIMARY KEY,
-    contract_address VARCHAR(255) DEFAULT '',
+    title VARCHAR(255) DEFAULT '',
     blockchain VARCHAR(255) DEFAULT '',
-    contributor_user_id_list VARCHAR(2047) DEFAULT '',
-    transaction_hash VARCHAR DEFAULT '',
-    transaction_status BadgeStatus DEFAULT NULL,
+    image VARCHAR DEFAULT '',
+    description VARCHAR DEFAULT '',
+    quantity INTEGER DEFAULT 1,
+    token_id INTEGER,
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT Now()
+);
+
+CREATE TABLE users_assigned_badges(
+    id BIGSERIAL PRIMARY KEY,
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    badge_id INTEGER,
+    FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT Now()
 );
 
@@ -53,15 +61,6 @@ CREATE TABLE alerts (
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
--- CREATE TABLE sounds (
---     id SERIAL PRIMARY KEY,
---     creator_id INTEGER,
---     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
---     sound VARCHAR(500) DEFAULT '',
---     created_at TIMESTAMPTZ DEFAULT Now(),
---     UNIQUE (creator_id, sound)
--- );
 
 CREATE TABLE goals (
     id VARCHAR(20) DEFAULT '' PRIMARY KEY,

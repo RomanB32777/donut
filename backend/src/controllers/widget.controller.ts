@@ -1,23 +1,39 @@
 import { NextFunction, Request, Response } from 'express';
-import { Stream } from 'stream';
+// import { Stream } from 'stream';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, readdirSync } from 'fs';
-import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
+// import { TextToSpeechClient } from '@google-cloud/text-to-speech';
+// import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
-import { assetsFolder, isProduction, soundsFolderName, uploadsFolder } from '../consts.js';
+import {
+  assetsFolder,
+  initAlertWidget,
+  initGoalWidget,
+  initStatWidget,
+  isProduction,
+  soundsFolderName,
+  uploadsFolder,
+} from '../consts.js';
 
-// import dotenv from 'dotenv';
-// dotenv.config();
 // const speechClient = new TextToSpeechClient();
 
 class WidgetController {
   // alerts
   async editAlertsWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const { alertData, username, userId, filelink } = req.body;
+      const { alertData, username, userId, filelink, isReset } = req.body;
       const parseData = JSON.parse(alertData);
+
+      if (isReset) {
+        const updatedDBWidget = await db.query(
+          `UPDATE alerts SET ${Object.keys(initAlertWidget).map(
+            (key) => `${key} = DEFAULT`,
+          )} WHERE creator_id = $1 RETURNING *`,
+          [userId],
+        );
+        return res.status(200).json(updatedDBWidget.rows[0]);
+      }
 
       const dataKeys = Object.keys(parseData);
       const dataValues = Object.values(parseData);
@@ -126,7 +142,7 @@ class WidgetController {
   async getGoalWidgets(req: Request, res: Response, next: NextFunction) {
     try {
       const creator_id = req.params.creator_id;
-      const data = await db.query('SELECT * FROM goals WHERE creator_id = $1', [creator_id]);
+      const data = await db.query('SELECT * FROM goals WHERE creator_id = $1 ORDER BY created_at DESC', [creator_id]);
       res.status(200).json(data.rows);
     } catch (error) {
       next(error);
@@ -153,7 +169,17 @@ class WidgetController {
 
   async editGoalWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const { goalData, creator_id, id } = req.body;
+      const { goalData, creator_id, id, isReset } = req.body;
+
+      if (isReset) {
+        const updatedDBWidget = await db.query(
+          `UPDATE goals SET ${Object.keys(initGoalWidget).map(
+            (key) => `${key} = DEFAULT`,
+          )} WHERE creator_id = $1 AND id = $2 RETURNING *`,
+          [creator_id, id],
+        );
+        return res.status(200).json(updatedDBWidget.rows[0]);
+      }
 
       if (goalData.donat) {
         const goalWidget = await db.query(
@@ -226,7 +252,7 @@ class WidgetController {
   async getStatWidgets(req: Request, res: Response, next: NextFunction) {
     try {
       const { creator_id } = req.params;
-      const data = await db.query('SELECT * FROM stats WHERE creator_id = $1', [creator_id]);
+      const data = await db.query('SELECT * FROM stats WHERE creator_id = $1 ORDER BY created_at DESC', [creator_id]);
       res.status(200).json(data.rows);
     } catch (error) {
       next(error);
@@ -245,7 +271,15 @@ class WidgetController {
 
   async editStatWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const { statData, id } = req.body;
+      const { statData, id, isReset } = req.body;
+
+      if (isReset) {
+        const updatedDBWidget = await db.query(
+          `UPDATE stats SET ${Object.keys(initStatWidget).map((key) => `${key} = DEFAULT`)} WHERE id = $1 RETURNING *`,
+          [id],
+        );
+        return res.status(200).json(updatedDBWidget.rows[0]);
+      }
 
       const dataKeys = Object.keys(statData);
       const updatedStatWidget = await db.query(

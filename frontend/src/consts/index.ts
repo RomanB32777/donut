@@ -3,16 +3,13 @@ import {
   filterCurrentPeriodItems,
   filterDataTypeItems,
 } from "./dates";
-
 import {
   alignItemsList,
   alignFlextItemsList,
   initAlertData,
-  initBadgeData,
   initWidgetGoalData,
   initWidgetStatData,
 } from "./widgets";
-
 import {
   storageWalletKey,
   initBlockchainData,
@@ -22,6 +19,7 @@ import {
   commissionAbi,
 } from "./wallet";
 import { initSendDonatData, initDonationData } from "./donations";
+import { initBadgeData, initBadgeDataWithoutFile } from "./badges";
 import {
   initFileInfo,
   initUser,
@@ -31,7 +29,15 @@ import {
 
 import dummyImg from "assets/big_don.png";
 
-const url = "/images/";
+const isProduction = process.env.REACT_APP_NODE_ENV === "production";
+
+const baseURL =
+  `${isProduction ? "https" : "http"}://${window.location.hostname}` +
+  (!isProduction ? `:${process.env.REACT_APP_BACKEND_PORT || 4000}` : "");
+
+const socketsBaseUrl = `http://${window.location.hostname}:4005`;
+
+// const url = "/images/";
 const widgetApiUrl = "/api/donation/widgets";
 
 const ipfsFilename = "badge";
@@ -43,7 +49,9 @@ const notVisibleFontsCount = 1;
 
 export {
   // app
-  url,
+  isProduction,
+  baseURL,
+  socketsBaseUrl,
   widgetApiUrl,
   ipfsFilename,
   ipfsFileformat,
@@ -68,11 +76,14 @@ export {
   initSendDonatData,
   initDonationData,
 
+  // badges
+  initBadgeData,
+  initBadgeDataWithoutFile,
+
   // widgets
   alignItemsList,
   alignFlextItemsList,
   initAlertData,
-  initBadgeData,
   initWidgetGoalData,
   initWidgetStatData,
 

@@ -1,5 +1,5 @@
-import { IFileInfo } from "appTypes";
-import { IDonatPage, IUser } from "types";
+import { IDonatPageWithFiles, IFileInfo, IUserWithFiles } from "appTypes";
+import { IUser } from "types";
 
 const initFileInfo: IFileInfo = {
   preview: "",
@@ -25,7 +25,7 @@ const initUser: IUser = {
   },
 };
 
-const initDonatPage: IDonatPage<IFileInfo> = {
+const initDonatPage: IDonatPageWithFiles = {
   header_banner: initFileInfo,
   background_banner: initFileInfo,
   welcome_text: "",
@@ -35,7 +35,7 @@ const initDonatPage: IDonatPage<IFileInfo> = {
   security_string: "",
 };
 
-const initUserWithFiles: IUser<IFileInfo> = {
+const initUserWithFiles: IUserWithFiles = {
   id: 0,
   username: "",
   roleplay: "creators",

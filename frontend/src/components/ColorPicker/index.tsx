@@ -1,4 +1,5 @@
 import { Col, Row } from "antd";
+import { getRandomStr } from "utils";
 import "./styles.sass";
 
 const ColorPicker = ({
@@ -16,7 +17,7 @@ const ColorPicker = ({
   gutter?: number | [number, number];
   setColor: (color: string) => void;
 }) => {
-  const idForInput = `color_${label.split(" ").join("_")}`;
+  const idForInput = `color_${label.split(" ").join("_") + getRandomStr(4)}`;
   return (
     <div className="colorPicker">
       <Row

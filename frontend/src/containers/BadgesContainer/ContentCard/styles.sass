@@ -1,49 +1,49 @@
 @use 'commonStyles/variables'
 
-
-.badge-panel
-    width: 100%
-
-.content-panel
+.badge
     width: 100%
     height: 100%
-    max-height: 310px
+    max-height: 300px
     display: flex
     flex-direction: column
     border-radius: variables.$border-radius
     overflow: hidden
     position: relative
     transition: all .4s ease
-    background: variables.$grey-background-color
+    background: variables.$blue-transparent-color
+    box-shadow: variables.$shadow
+    cursor: pointer
 
     a
         text-decoration: none
         outline: none
         border: none
-    // @media screen and ( max-width: 640px )
-    //     width: calc(50% - 8px)
-    &__image
+
+    .image
         width: 100%
         display: flex
         justify-content: center
         align-items: center
+        background: variables.$blue-transparent-color
+
         img
             height: 100%
             width: 100%
             object-fit: cover
             transition: all .6s ease
-            border-radius: 15px
-    &__info
+            border-radius: variables.$border-radius
+    .info
         display: flex
         flex-direction: column
         box-sizing: border-box
         overflow: hidden
         padding: 13px
         max-height: 100px
-        &-title
-            font-family: variables.$inter-font
+
+        .title
+            font-family: variables.$pt-font
             font-style: normal
-            font-weight: 700
+            font-weight: 400
             font-size: 18px
             line-height: 22px
             color: variables.$white-color
@@ -54,14 +54,15 @@
             text-decoration: none
             outline: none
             border: none
-        &-subtitle
+
+        .subtitle
             max-width: 100%
             max-height: 44px
             text-overflow: ellipsis
             word-break: break-all
             margin-top: 4px
             font-style: normal
-            font-weight: 700
+            font-weight: 400
             font-size: 11px
             line-height: 14px
             font-family: variables.$pt-font
@@ -74,9 +75,9 @@
             -webkit-box-orient: vertical
             text-overflow: ellipsis
 
-    &__delete-icon
-        transition: all .6s ease-in-out
+    .delete-icon
         position: absolute
+        z-index: 1
         box-sizing: border-box
         padding: 8px 8px 4px
         border-radius: 5px
@@ -85,15 +86,15 @@
         top: 24px
         background: variables.$grey-background-color
         color: variables.$white-color
-        z-index: 1
+        transition: all .6s ease-in-out
         // opacity: 0
 
 // .ableToDelete
 //     &:hover
 //         .content-panel
-//             &__delete-icon
+//             .delete-icon
 //                 opacity: 1
 
-//             &__image
+//             .image
 //                 img
 //                     opacity: 0.6

@@ -3,24 +3,17 @@ import { blockchainsType } from "./wallet";
 
 type badgeStatus = "success" | "failed" | "pending";
 
-interface IBadgeShort {
-  id?: number;
-  contract_address: string;
-  creator_id: number;
-}
-
-interface IBadgeInfo extends IBadgeShort {
-  contributor_user_id_list?: string;
-  blockchain: blockchainsType;
-  transaction_hash: string;
-  result: badgeStatus | null;
-}
-
-interface IBadgeData extends IBadgeInfo {
+interface IBadgeInfo<ImageType = string> {
+  id: number;
   title: string;
   description: string;
   quantity: number;
-  URI?: string;
+  image: ImageType;
+  blockchain: blockchainsType;
+  creator_id: number;
+  token_id?: number;
+  assigned?: number;
+  is_creator?: boolean;
 }
 
 interface IMintBadgeSocketObj {
@@ -32,10 +25,15 @@ interface IMintBadgeSocketObj {
   };
 }
 
+interface IQueryPriceParams {
+  address: string;
+  quantity: string;
+  token_id: string;
+}
+
 export type {
   badgeStatus,
-  IBadgeShort,
   IBadgeInfo,
-  IBadgeData,
   IMintBadgeSocketObj,
+  IQueryPriceParams,
 };

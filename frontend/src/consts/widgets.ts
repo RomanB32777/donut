@@ -1,5 +1,5 @@
 import { typeAligmnet } from "types";
-import { IAlert, IBadge, IWidgetGoalData, IWidgetStatData } from "appTypes";
+import { IAlert, IWidgetGoalData, IWidgetStatData } from "appTypes";
 
 const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
@@ -81,28 +81,10 @@ const initWidgetStatData: IWidgetStatData = {
   aligment: "Left",
 };
 
-const initBadgeData: IBadge = {
-  id: 0,
-  creator_id: 0,
-  image: {
-    preview: "",
-    file: null,
-  },
-  title: "",
-  description: "",
-  blockchain: "evmos",
-  URI: "",
-  contract_address: "",
-  transaction_hash: "",
-  result: "pending",
-  quantity: 0,
-};
-
 export {
   alignItemsList,
   alignFlextItemsList,
   initAlertData,
   initWidgetGoalData,
   initWidgetStatData,
-  initBadgeData,
 };

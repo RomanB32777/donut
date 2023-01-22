@@ -10,6 +10,7 @@ import { setSelectedBlockchain } from "store/types/Wallet";
 import { getUsdKoef } from "utils";
 import { useAppSelector } from "hooks/reduxHooks";
 import { IBlockchain } from "appTypes";
+import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
 
 const tabCountTypes = [5, 10, 15];
 
@@ -26,7 +27,7 @@ const AmountInput = ({
 }) => {
   const dispatch = useDispatch();
   const blockchain = useAppSelector(({ blockchain }) => blockchain);
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
 
   const [tabCount, setTabCount] = useState<number | null>(null); // String(tabCountTypes[0])
 
@@ -139,11 +140,15 @@ const AmountInput = ({
               </div>
             }
             list={walletConf.main_contract.blockchains.map(
-              ({ nativeCurrency }) => nativeCurrency.symbol
+              ({ name, nativeCurrency }) => nativeCurrency.symbol
             )}
             selected={selectedBlockchain}
             selectItem={setBlockchain}
+            renderOption={(item) => (
+              <BlockchainOption value={item} key={item} />
+            )}
             modificator="inputs-select"
+            listWrapperModificator="blockchains-list"
           />
         }
         addonsModificator="select-blockchain"

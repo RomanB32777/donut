@@ -80,7 +80,7 @@ export const SuccessModalComponent = ({
   description,
   ...props
 }: ISuccessModalComponent) => {
-  const { isTablet, isMobile } = useWindowDimensions();
+  const { isTablet } = useWindowDimensions();
 
   useEffect(() => {
     let timeOut: NodeJS.Timeout | undefined;
@@ -99,9 +99,9 @@ export const SuccessModalComponent = ({
       width={isTablet ? 500 : 700}
       topModal={!isTablet}
       noPadding
-      centered={isMobile as boolean}
+      centered
     >
-      <div className="modal-success">
+      <div className="modal-success" onClick={onClose}>
         <p className="message">{message}</p>
         {description && <p className="description">{description}</p>}
       </div>

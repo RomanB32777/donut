@@ -7,10 +7,10 @@ import { INotification } from "types";
 import { useAppSelector } from "hooks/reduxHooks";
 import { tryToGetPersonInfo } from "store/types/PersonInfo";
 
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import { getFontColorStyles, getFontsList, loadFonts } from "utils";
+import { initAlertData, baseURL } from "consts";
 import { IAlert } from "appTypes";
-import { initAlertData } from "consts";
 
 import bigImg from "assets/big_don.png";
 import "./styles.sass";

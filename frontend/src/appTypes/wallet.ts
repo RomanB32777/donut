@@ -12,26 +12,10 @@ interface IPayObj {
   signer?: any;
 }
 
-interface IQuantityBalanceObj {
-  contract_address: string;
-  supporter_address: string;
-  isCreator: boolean;
-}
-
 interface IMintBadgeObj {
   contract_address: string;
   addressTo: string;
   signer?: any;
-}
-
-interface ICreateContractObj {
-  _uri: string;
-  abi: any;
-  bytecode: string;
-  setLoadingStep: (steps: {
-    loadingStep?: number;
-    finishedStep?: number;
-  }) => void;
 }
 
 interface IBlockchain {
@@ -58,14 +42,28 @@ interface IBlockchainData {
   address: string;
 }
 
-type contractTypes = "main_contract" | "commission_contract" | "nft_contract";
+enum ContractTypesEnum {
+  main_contract = "main_contract",
+  commission_contract = "commission_contract",
+  transfer_contract = "transfer_contract",
+}
+
+type contractTypes = keyof typeof ContractTypesEnum;
+
+enum ContractTypeMethodsEnum {
+  main_contract_methods = "main_contract_methods",
+  commission_contract_methods = "commission_contract_methods",
+  transfer_contract_methods = "transfer_contract_methods",
+}
+
+// type contractTypeMethods = keyof typeof ContractTypeMethodsEnum;
 
 type IWalletState = {
   [contract in contractTypes]: {
     blockchains: IBlockchain[];
-    icon: string;
-    linkInstall: string;
     abi: any[];
+    icon?: string;
+    linkInstall?: string;
     bytecode: string;
     address?: string;
   };
@@ -80,21 +78,30 @@ interface IBlockchainAction {
 
 interface IWalletMethods {
   isInstall: () => boolean;
-  getBlockchainData: () => Promise<IBlockchainData | null>;
+  getWalletData: () => Promise<IBlockchainData | null>;
   getCurrentBlockchain: () => Promise<IBlockchain | null>;
-  // findAndGetBlockchain: (blockchainName: blockchainsType) => IBlockchain | null;
   changeBlockchain: (blockchainName: blockchainsType) => Promise<any>;
-  paymentMethod: (objForPay: IPayObj) => Promise<any>;
-  getBalance: (setBalance?: (amount: number) => void) => Promise<number>;
-  createContract: (objForContract: ICreateContractObj) => Promise<any>;
-  getBadgeURI: (contractAddress: string) => Promise<string | null>;
-  mint: (objForMint: IMintBadgeObj) => Promise<any>;
-  getQuantityBalance: (
-    objForQuantityBalance: IQuantityBalanceObj
-  ) => Promise<any>;
-  payForBadgeCreation: (price: number) => Promise<any>
   getGasPrice: () => Promise<number>;
-  getGasPriceForMethod: (methodName: methodNames) => Promise<number>;
+  getGasPriceForMethod: (
+    // now in main contract
+    methodName: methodNames,
+    mathodParameters: any[]
+  ) => Promise<number>;
+  getBalance: (setBalance?: (amount: number) => void) => Promise<number>;
+
+  // main
+  [ContractTypeMethodsEnum.transfer_contract_methods]: {
+    paymentMethod: (objForPay: IPayObj) => Promise<any>;
+  };
+
+  // commision
+  [ContractTypeMethodsEnum.commission_contract_methods]: {
+    payForBadgeCreation: (price: number) => Promise<any>;
+  };
+
+  // getQuantityBalance: (objForQuantityBalance: IQuantityBalanceObj) => Promise<any>;
+  // findAndGetBlockchain: (blockchainName: blockchainsType) => IBlockchain | null;
+  // safeTransferFrom: (transferBadgeInfo: ITransferBadgeInfo) => Promise<any>;
   // getTransactionInfo: (hash: string) => Promise<any>;
 }
 
@@ -106,16 +113,10 @@ type currencyBlockchainsType = {
   [key in exchangeNameTypes]: string;
 };
 
-interface IWalletContext {
-  walletConf: IWalletConf;
-}
-
 export type {
   IWalletInitData,
   IPayObj,
-  IQuantityBalanceObj,
   IMintBadgeObj,
-  ICreateContractObj,
   IBlockchain,
   IWalletState,
   blockchainPayload,
@@ -125,5 +126,4 @@ export type {
   methodNames,
   IWalletConf,
   currencyBlockchainsType,
-  IWalletContext,
 };

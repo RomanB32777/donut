@@ -1,97 +1,14 @@
 @use 'commonStyles/variables'
 
-.create_badges
-    &__title 
-        display: flex
-        align-items: center
-        color: variables.$white-color
-        margin-bottom: 23px
+.badges-title
+    display: flex
+    align-items: center
+    color: variables.$white-color
+    margin-bottom: 23px
 
-        .arrow_icon
-            cursor: pointer
-            margin-right: 15px
-
-    .btns-bottom
-        margin-top: 40px
-        display: flex
-        justify-content: flex-end
-
-        @media (max-width: 576px)
-            justify-content: center
-
-        .delete-btn
-            margin-right: 20px
-
-.details
-    &__title
-        font-family: variables.$pt-font
-        font-style: normal
-        font-weight: 400
-        font-size: 20px
-        line-height: 25px
-        color: variables.$white-color
-
-    &__content
-        background: variables.$grey-background-color
-        border-radius: variables.$border-radius
-        font-family: variables.$inter-font
-        font-style: normal
-        font-weight: 600
-        font-size: 15px
-        line-height: 20px
-        margin-bottom: 25px
-        padding: 0px 20px
-
-        &_row
-            padding: 20px 0
-            &_title
-                margin: 0
-                color: variables.$white-color
-
-            &_value
-                margin: 0
-                color: variables.$grey-color
-
-
-            .link-wrapper 
-                .simpleLink-block 
-                    .link
-                        font-family: variables.$inter-font
-                        font-weight: 600
-                        font-size: 15px
-                        line-height: 20px
-
-                    .icon svg
-                        width: 13px
-
-
-            &:not(:last-child)
-                border-bottom: 1px solid variables.$black-color
-                
-    &__users
-        background: variables.$grey-background-color
-        border-radius: variables.$border-radius
-        padding: 8px 15px
-
-        &.center
-            display: flex
-            justify-content: center
-            padding: 8px 15px 12px
-
-    &__select_user
-        .ant-select,
-        .ant-select:not(.ant-select-customize-input)
-
-            .ant-select-selector
-                background: variables.$grey-background-color !important
-                border: none !important
-                border-color: transparent !important
-
-            .ant-select-selection-item
-                font-family: variables.$inter-font
-                font-weight: 600
-                font-size: 15px
-                color: variables.$grey-color
+    .icon
+        cursor: pointer
+        margin-right: 15px
 
 .badges-container
     width: 100%

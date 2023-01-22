@@ -5,7 +5,7 @@ import "./styles.sass";
 export const HeaderBanner = () => {
   const [currBlockchain, setCurrBlockchain] = useState<string>("");
 
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
 
   useEffect(() => {
     const getCurrentBlockchain = async () => {

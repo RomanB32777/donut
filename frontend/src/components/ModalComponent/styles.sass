@@ -46,11 +46,6 @@
         flex-direction: column
         align-items: center
         justify-content: center
-        background: url('../../assets/modalBg.png')
-        background-repeat: no-repeat
-        background-size: cover
-        background-position-y: 45%
-        height: 93vh
         border-radius: variables.$border-radius
 
         .message,
@@ -60,34 +55,27 @@
             font-style: normal
 
         .message
-            max-width: 70%
+            max-width: 80%
             margin-bottom: 25px
             font-weight: 600
-            font-size: 32px
-            line-height: 37px
+            font-size: 25px
+            line-height: 30px
             color: variables.$green-color
 
         .description
             max-width: 85%
-            margin-top: 75px
+            margin-top: 20px
             font-weight: 400
             font-size: 25px
             line-height: 30px
-            color: #F6F7F1
+            color: variables.$white-color
 
         @media (max-width: 992px)
-            height: 55vh
-
-            .message
-                max-width: 90%
-                font-size: 27px
-                line-height: 32px
-
+            .message,
             .description
                 max-width: 90%
-                font-size: 22px
-                line-height: 30px
-                margin-top: 15px
+                font-size: 18px
+                line-height: 22px
 
     .donat-loading
         display: flex

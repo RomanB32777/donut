@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Col, Row } from "antd";
 
-import BaseButton from "components/BaseButton";
 import ColorPicker from "components/ColorPicker";
 import SelectInput, { ISelectItem } from "components/SelectInput";
 import {
@@ -13,15 +12,13 @@ import { IWidgetGoalData } from "appTypes";
 
 const SettingsGoalBlock = ({
   fonts,
-  loading,
+  children,
   editGoalData,
-  editWidgetData,
   setEditGoalData,
 }: {
-  loading: boolean;
   fonts: ISelectItem[];
+  children?: React.ReactNode;
   editGoalData: IWidgetGoalData;
-  editWidgetData: () => Promise<void>;
   setEditGoalData: (editGoalData: IWidgetGoalData) => void;
 }) => {
   const [fontList, setFontList] = useState<ISelectItem[]>(
@@ -143,16 +140,7 @@ const SettingsGoalBlock = ({
           </div>
         </Col>
       </Row>
-      <div className="btn-block">
-        <BaseButton
-          formatId="profile_form_save_changes_button"
-          padding="6px 35px"
-          onClick={editWidgetData}
-          fontSize="18px"
-          disabled={loading}
-          isMain
-        />
-      </div>
+      {children}
     </Col>
   );
 };

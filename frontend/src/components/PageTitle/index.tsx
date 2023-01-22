@@ -1,18 +1,27 @@
+import clsx from "clsx";
 import { FormattedMessage } from "react-intl";
 
 import "./styles.sass";
 
-const PageTitle = (prop: { formatId: string; notMarginBottom?: boolean }) => {
+const PageTitle = ({
+  formatId,
+  title = "",
+  notMarginBottom,
+  modificator,
+}: {
+  formatId?: string;
+  title?: string;
+  notMarginBottom?: boolean;
+  modificator?: string;
+}) => {
   return (
     <div
-      className="page-title"
+      className={clsx("page-title", modificator)}
       style={{
-        marginBottom: prop.notMarginBottom ? 0 : 23,
+        marginBottom: notMarginBottom ? 0 : 23,
       }}
     >
-      <span>
-        <FormattedMessage id={prop.formatId} />
-      </span>
+      <span>{formatId ? <FormattedMessage id={formatId} /> : title}</span>
     </div>
   );
 };

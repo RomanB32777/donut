@@ -3,9 +3,9 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { io, Socket } from "socket.io-client";
 
-import { baseURL, isProduction, socketsBaseUrl } from "modules/axiosClient";
 import { useAppSelector } from "hooks/reduxHooks";
 import { getNotifications } from "store/types/Notifications";
+import { baseURL, isProduction, socketsBaseUrl } from "consts";
 
 export const DonatWebSocketContext = createContext<Socket | null>(null);
 

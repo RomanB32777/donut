@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Navigate, useRoutes, Outlet } from "react-router";
 import { useDispatch } from "react-redux";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "icons";
@@ -27,9 +27,11 @@ import DonatAlertPage from "pages/DonatAlertPage";
 import DonatGoalPage from "pages/DonatGoalPage";
 import DonatStatPage from "pages/DonatStatPage";
 import LandingPage from "pages/LandingPage";
+import HelpCenter from "pages/HelpCenter";
 import NoPage from "pages/NoPage";
 import { checkWallet } from "utils";
 import { adminPath } from "consts";
+import AdminContainer from "containers/AdminContainer";
 
 // type customRouteType = {
 //   name?: string;
@@ -50,7 +52,7 @@ import { adminPath } from "consts";
 // // };
 // // type moreTest = routeTestType & routeWithChild;
 
-// const test: routeTestType[] = []; 
+// const test: routeTestType[] = [];
 
 interface IRoute {
   path?: string;
@@ -71,11 +73,12 @@ interface IRoute {
 //protected Route state
 type ProtectedRouteType = {
   roleRequired?: userRoles;
+  // children?: React.ReactNode;
 };
 
 const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
   const dispatch = useDispatch();
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
   const { user, loading } = useAppSelector((state) => state);
   const { id, roleplay } = user;
 
@@ -86,7 +89,7 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
   if (!id && loading) return <Loader size="big" />;
 
   //if the role required is there or not
-  if (roleRequired) {
+  if (roleRequired)
     return id ? (
       roleRequired === roleplay ? (
         <Outlet />
@@ -96,9 +99,7 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
     ) : (
       <Navigate to="/register" />
     );
-  } else {
-    return id ? <Outlet /> : <Navigate to="/register" />;
-  }
+  return id ? <Outlet /> : <Navigate to="/register" />;
 };
 
 export const routers: IRoute[] = [
@@ -110,8 +111,13 @@ export const routers: IRoute[] = [
   },
   {
     path: adminPath,
-    element: <ProtectedRoutes />,
+    element: (
+      <AdminContainer>
+        <ProtectedRoutes />
+      </AdminContainer>
+    ),
     protected: true,
+    name: "Admin",
     children: [
       {
         element: <ProtectedRoutes roleRequired="creators" />,
@@ -119,7 +125,7 @@ export const routers: IRoute[] = [
         protected: true,
         children: [
           {
-            path: "",
+            path: "dashboard",
             element: <MainPage />,
             name: "Dashboard",
             icon: <PieChartOutlined />,
@@ -192,31 +198,49 @@ export const routers: IRoute[] = [
   },
   {
     path: "register",
+    name: "Registration",
     element: <RegistrationContainer />,
   },
   {
     path: "support/:name",
+    name: "Donat page",
     element: <DonatPage />,
     hiddenLayoutElements: true,
     noPaddingMainConteiner: true,
   },
   {
     path: "donat-message/:name/:token",
+    name: "Donat alert page",
     element: <DonatAlertPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
   {
     path: "donat-goal/:name/:id",
+    name: "Donat goal page",
     element: <DonatGoalPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
   {
     path: "donat-stat/:name/:id",
+    name: "Donat stat page",
     element: <DonatStatPage />,
     hiddenLayoutElements: true,
     transparet: true,
+  },
+  {
+    path: "help",
+    name: "Help center",
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: "center?/:theme",
+        element: <HelpCenter />,
+        hiddenLayoutElements: true,
+        noPaddingMainConteiner: true,
+      },
+    ],
   },
   {
     path: "*",
@@ -224,16 +248,16 @@ export const routers: IRoute[] = [
   },
 ];
 
-type routerPathsType = Record<string, string>;
-// type routerPathsType<T> = Record<T, string>;
+type routerPathsValue = { path: string; name: string };
+type routerPathsType = Record<string, routerPathsValue>;
 
-const addRouteWithPath = ({ path }: IRoute, routersAcc: any) => {
+const addRouteWithPath = ({ path, name }: IRoute, routersAcc: any) => {
   if (path && !path.includes("*")) {
     const pathValue = path.split("/")[0];
     const key = pathValue || "main";
     return {
       ...routersAcc,
-      [key]: pathValue || "/",
+      [key]: { path: pathValue || "/", name },
     };
   }
   return routersAcc;
@@ -250,7 +274,7 @@ const initRoutersObj = (
       return { ...newObjWithParent, ...newObjWithChilds };
     }
     return addRouteWithPath(route, obj);
-  }, initObj as Record<keyof typeof initObj, string>);
+  }, initObj as Record<keyof typeof initObj, routerPathsValue>);
   return routerPages;
 };
 

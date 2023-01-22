@@ -1,4 +1,5 @@
-import { periodItemsTypes } from 'types';
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import { IUser, periodItemsTypes } from 'types';
 
 enum HttpCode {
   OK = 200,
@@ -13,6 +14,18 @@ interface AppError extends Error {
   status: HttpCode;
 }
 
+interface RequestParams {}
+
+interface ResponseBody {}
+
+interface RequestBody {}
+
+interface RequestQuery {}
+
+interface RequestBodyUser extends IUser {
+  isReset?: boolean;
+}
+
 type additionalPeriodItems = 'yesterday' | 'all' | 'custom';
 
 type fullPeriodItems = periodItemsTypes & additionalPeriodItems;
@@ -21,4 +34,16 @@ type IFullFilterPeriodItems<T = string> = {
   [key in fullPeriodItems]: T;
 };
 
-export type { HttpCode, AppError, fullPeriodItems, IFullFilterPeriodItems };
+export type {
+  HttpCode,
+  AppError,
+  RequestParams,
+  ResponseBody,
+  RequestBody,
+  RequestQuery,
+  
+  RequestBodyUser,
+
+  fullPeriodItems,
+  IFullFilterPeriodItems,
+};

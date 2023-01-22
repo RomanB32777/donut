@@ -14,6 +14,7 @@ const asyncGetStats = async (creator_id: string) => {
 function* StatsWorker(action: any): any {
   yield put(setLoading(true));
   const data: any = yield call(asyncGetStats, action.payload);
+  
   if (data) {
     yield put(setStats(data));
   }

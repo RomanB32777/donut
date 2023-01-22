@@ -1,6 +1,6 @@
 import { CheckOutlined } from "@ant-design/icons";
 import clsx from "clsx";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { blockchainsType } from "types";
 
@@ -9,6 +9,7 @@ import Loader from "components/Loader";
 import { CopyIcon, ShareIcon, SmallToggleListArrowIcon } from "icons";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
+import useOnClickOutside from "hooks/useClickOutside";
 
 import { setSelectedBlockchain } from "store/types/Wallet";
 import { copyStr, shortStr } from "utils";
@@ -24,8 +25,9 @@ const WalletBlock = ({
   popupModificator?: string;
 }) => {
   const dispatch = useDispatch();
-  const { walletConf } = useContext(WalletContext);
+  const walletConf = useContext(WalletContext);
   const { blockchain, user } = useAppSelector((store) => store);
+  const blockRef = useRef(null);
   const { isMobile } = useWindowDimensions();
 
   const [walletData, setWalletData] = useState<IBlockchain>(initBlockchainData);
@@ -36,6 +38,7 @@ const WalletBlock = ({
   const { username, avatar } = user;
 
   const copyAddress = () => copyStr(address);
+  const handlerPopup = () => setOpenSelect((prev) => !prev);
 
   const blockchainHandler =
     (selectedBlockchain: blockchainsType) => async () => {
@@ -47,10 +50,12 @@ const WalletBlock = ({
       setLoading(false);
     };
 
+  useOnClickOutside(isOpenSelect, blockRef, handlerPopup);
+
   useEffect(() => {
     const getWalletData = async () => {
       setLoading(true);
-      const data = await walletConf.getBlockchainData();
+      const data = await walletConf.getWalletData();
       const blockchain = await walletConf.getCurrentBlockchain();
       await walletConf.getBalance(setBalance);
 
@@ -73,10 +78,11 @@ const WalletBlock = ({
 
   return (
     <div
+      ref={blockRef}
       className={clsx("wallet-wrapper", {
         [modificator as string]: modificator,
       })}
-      onClick={() => setOpenSelect((prev) => !prev)}
+      onClick={handlerPopup}
     >
       {loading ? (
         <Loader size="small" />

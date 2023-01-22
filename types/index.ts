@@ -41,10 +41,9 @@ import {
 } from "./types/donations";
 import {
   badgeStatus,
-  IBadgeShort,
   IBadgeInfo,
-  IBadgeData,
   IMintBadgeSocketObj,
+  IQueryPriceParams,
 } from "./types/badge";
 import {
   IGoalWidgetData,
@@ -108,10 +107,9 @@ export type {
 
   // badge
   badgeStatus,
-  IBadgeShort,
   IBadgeInfo,
-  IBadgeData,
   IMintBadgeSocketObj,
+  IQueryPriceParams,
 
   // widgets
   IGoalWidgetData,

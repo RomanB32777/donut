@@ -1,0 +1,42 @@
+@use 'commonStyles/variables'
+
+.helpCenter
+    .header-wrapper
+        .header
+            width: calc(100% - 350px)
+            margin-left: 350px
+
+            @media (max-width: 992px)
+                width: 100%
+                margin-left: 0
+
+    .content-item
+        img
+            max-width: 100%
+
+    .content-text
+        font-family: variables.$pt-font
+        font-style: normal
+        font-weight: 400
+        font-size: 22px
+        line-height: 27px
+        color: variables.$white-color
+
+        &.stepItem
+            position: relative
+            padding-left: 20px
+
+            &::before
+                content: ''
+                position: absolute
+                left: 0
+                top: 8px
+                display: block
+                width: 10px
+                height: 10px
+                border-radius: 50%
+                background: variables.$main-color
+
+        a
+            color: variables.$white-color
+            text-decoration: underline

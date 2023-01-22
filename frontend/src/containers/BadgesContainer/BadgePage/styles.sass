@@ -1,0 +1,77 @@
+@use 'commonStyles/variables'
+
+.badge-page
+    .details
+        .information-title
+            font-family: variables.$pt-font
+            font-style: normal
+            font-weight: 400
+            font-size: 20px
+            line-height: 25px
+            color: variables.$white-color
+            margin: 0
+            margin-bottom: 12px
+
+        .content
+            background: variables.$blue-transparent-color
+            border-radius: variables.$border-radius
+            margin-bottom: 20px
+            padding: 0px 25px
+
+            .row
+                padding: 15px 0
+
+                .title,
+                .value
+                    font-family: variables.$pt-font
+                    color: variables.$white-color
+                    font-style: normal
+                    font-size: 18px
+                    line-height: 22px
+                    margin: 0
+
+                .title
+                    font-weight: 700
+
+                .value
+                    font-weight: 400
+
+                .link-wrapper
+                    .simpleLink-block
+                        .link
+                            font-family: variables.$inter-font
+                            font-weight: 600
+                            font-size: 15px
+                            line-height: 20px
+
+                        .icon svg
+                            width: 13px
+
+                &:not(:last-child)
+                    border-bottom: 1px solid variables.$black-color
+
+    .holders
+        .users
+            background: variables.$blue-transparent-color
+            border-radius: variables.$border-radius
+            padding: 8px 15px
+
+            &.center
+                display: flex
+                justify-content: center
+                padding: 8px 15px 12px
+
+    .holders .title,
+    .select_label
+        font-family: variables.$pt-font
+        font-style: normal
+        font-weight: 400
+        font-size: 20px
+        line-height: 25px
+        margin-bottom: 10px
+
+    .btn-bottom
+        display: flex
+
+        @media (min-width: 1200px)
+            justify-content: flex-end

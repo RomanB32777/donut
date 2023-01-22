@@ -157,7 +157,7 @@ const triggerContract = async ({
   const { amount, username } = form;
   if (amount && username) {
     try {
-      const blockchainData = await walletConf.getBlockchainData();
+      const blockchainData = await walletConf.getWalletData();
 
       if (blockchainData && blockchainData.address) {
         const { signer, address } = blockchainData;
@@ -170,15 +170,15 @@ const triggerContract = async ({
             const currentBlockchain = await walletConf.getCurrentBlockchain();
 
             if (currentBlockchain) {
-              const res = await walletConf.paymentMethod({
+              const res = await walletConf.transfer_contract_methods.paymentMethod({
                 contract: currentBlockchain.address,
                 addressTo: wallet_address,
                 sum: String(amount),
                 signer,
               });
 
-              res &&
-                (await sendDonation({
+              if (res)
+                await sendDonation({
                   form,
                   user,
                   socket,
@@ -187,7 +187,7 @@ const triggerContract = async ({
                   wallet_address: address, // sender address
                   dispatch,
                   setIsOpenSuccessModal,
-                }));
+                });
             }
           } else {
             addNotification({

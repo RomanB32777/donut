@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { Col } from "antd";
-import BaseButton from "components/BaseButton";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import {
   getCurrentTimePeriodQuery,
@@ -12,13 +11,11 @@ import { alignFlextItemsList, alignItemsList } from "consts";
 import { AlignText, IWidgetStatData } from "appTypes";
 
 const PreviewStatBlock = ({
-  loading,
+  children,
   editStatData,
-  editWidgetData,
 }: {
-  loading: boolean;
+  children?: React.ReactNode;
   editStatData: IWidgetStatData;
-  editWidgetData: () => Promise<void>;
 }) => {
   const { isLaptop } = useWindowDimensions();
   const {
@@ -97,18 +94,7 @@ const PreviewStatBlock = ({
           </div>
         </div>
       </div>
-      {isLaptop && (
-        <div className="btn-block">
-          <BaseButton
-            formatId="profile_form_save_changes_button"
-            padding="6px 35px"
-            onClick={editWidgetData}
-            fontSize="18px"
-            disabled={loading}
-            isMain
-          />
-        </div>
-      )}
+      {isLaptop && children}
     </Col>
   );
 };

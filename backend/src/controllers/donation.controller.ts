@@ -1,17 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { IFilterPeriodItems, periodItemsTypes, IFullSendDonat } from 'types/index.js';
-import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
-import db from '../db.js';
+import { IFilterPeriodItems, periodItemsTypes, IFullSendDonat } from 'types';
 import badWordsFilter from '../modules/badWords/index.js';
+import db from '../db.js';
 import { getUsdKoef, getUsername, parseBool } from '../utils.js';
 import { exchangeNames } from '../consts.js';
-
-// const dateParams: IFilterPeriodItems = {
-//   today: 'Today',
-//   '7days': 'Last 7 days',
-//   '30days': 'Last 30 days',
-//   year: 'This year',
-// };
+import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
 
 const dateParams: IFilterPeriodItems = {
   today: '',
@@ -94,10 +87,16 @@ class DonationController {
       const { user_id } = req.params;
       const supporters = await db.query(
         `
-          SELECT u.* FROM donations d
-          LEFT JOIN users u
-          ON d.backer_id = u.id 
-          WHERE d.creator_id = $1
+          SELECT u.*
+          FROM (
+              SELECT u.username
+              FROM donations d
+              JOIN users u
+              ON d.backer_id = u.id 
+              WHERE d.creator_id = $1 AND d.is_anonymous != True 
+              GROUP BY u.username
+          ) us
+          JOIN users u ON u.username = us.username
         `,
         [user_id],
       );

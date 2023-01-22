@@ -4,9 +4,7 @@ import { useDispatch } from "react-redux";
 import clsx from "clsx";
 import { bannerTypes, defaultAssetsFolders, IDonatPage } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
-import useWindowDimensions from "hooks/useWindowDimensions";
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import BaseButton from "components/BaseButton";
 import PageTitle from "components/PageTitle";
 import ColorPicker from "components/ColorPicker";
@@ -14,7 +12,11 @@ import LinkCopy from "components/LinkCopy";
 import UploadImage, { UploadAfterEl } from "components/UploadImage";
 import FormInput from "components/FormInput";
 import ModalComponent from "components/ModalComponent";
+import FormBtnsBlock from "components/FormBtnsBlock";
 import { SmallToggleListArrowIcon } from "icons";
+
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import { tryToGetUser } from "store/types/User";
 import {
   addNotification,
@@ -22,8 +24,8 @@ import {
   getDefaultImages,
   sendFile,
 } from "utils";
-import { initDonatPage } from "consts";
-import { IFileInfo } from "appTypes";
+import { initDonatPage, baseURL } from "consts";
+import { IDonatPageWithFiles } from "appTypes";
 import { IBannerModalInfo } from "./types";
 import "./styles.sass";
 
@@ -33,7 +35,7 @@ const DonationPageContainer = () => {
     ({ user }) => user
   );
   const [donationInfoData, setDonationInfoData] =
-    useState<IDonatPage<IFileInfo>>(initDonatPage);
+    useState<IDonatPageWithFiles>(initDonatPage);
 
   const [isOpenQR, setIsOpenQR] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -84,7 +86,7 @@ const DonationPageContainer = () => {
     }
   };
 
-  const sendData = async () => {
+  const sendData = (isReset?: boolean) => async () => {
     try {
       setLoading(true);
       const { header_banner, background_banner } = donationInfoData;
@@ -107,37 +109,41 @@ const DonationPageContainer = () => {
             {}
           ),
         id: id,
+        isReset,
       });
 
-      let fileType: defaultAssetsFolders = "header";
-      if (
-        header_banner.file ||
-        header_banner.preview !== donat_page.header_banner
-      ) {
-        const { file, preview } = header_banner;
-        await sendFile({
-          file,
-          filelink: preview,
-          username,
-          userId: id,
-          url: `/api/user/edit-creator-image/${fileType}`,
-        });
-      }
-      if (
-        background_banner.file ||
-        background_banner.preview !== donat_page.background_banner
-      ) {
-        const { file, preview } = background_banner;
+      if (!isReset) {
+        let fileType: defaultAssetsFolders = "header";
+        if (
+          header_banner.file ||
+          header_banner.preview !== donat_page.header_banner
+        ) {
+          const { file, preview } = header_banner;
+          await sendFile({
+            file,
+            filelink: preview,
+            username,
+            userId: id,
+            url: `/api/user/edit-creator-image/${fileType}`,
+          });
+        }
+        if (
+          background_banner.file ||
+          background_banner.preview !== donat_page.background_banner
+        ) {
+          const { file, preview } = background_banner;
 
-        fileType = "background";
-        await sendFile({
-          file,
-          filelink: preview,
-          username,
-          userId: id,
-          url: `/api/user/edit-creator-image/${fileType}`,
-        });
+          fileType = "background";
+          await sendFile({
+            file,
+            filelink: preview,
+            username,
+            userId: id,
+            url: `/api/user/edit-creator-image/${fileType}`,
+          });
+        }
       }
+
       dispatch(tryToGetUser(wallet_address));
       addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
@@ -152,6 +158,8 @@ const DonationPageContainer = () => {
       setLoading(false);
     }
   };
+
+  const resetData = sendData(true);
 
   useEffect(() => {
     if (id) {
@@ -226,7 +234,7 @@ const DonationPageContainer = () => {
           </div>
         </div>
         {isOpenQR && (
-          <div className="qr-wrapper">
+          <div className="qr-wrapper fadeIn">
             <div className="qr-block">
               <QRCode
                 errorLevel="H"
@@ -378,16 +386,11 @@ const DonationPageContainer = () => {
             </div>
           </Col>
         </Row>
-        <div className="saveBottom">
-          <BaseButton
-            formatId="profile_form_save_changes_button"
-            padding="6px 35px"
-            onClick={sendData}
-            fontSize="18px"
-            disabled={loading}
-            isMain
-          />
-        </div>
+        <FormBtnsBlock
+          saveMethod={sendData()}
+          resetMethod={resetData}
+          disabled={loading}
+        />
       </div>
       <ModalComponent
         open={isOpen}

@@ -1,19 +1,14 @@
 import { Col, Progress } from "antd";
-
-import BaseButton from "components/BaseButton";
-
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { IWidgetGoalData } from "appTypes";
 import { getFontColorStyles } from "utils";
 
 const PreviewGoalBlock = ({
-  loading,
   editGoalData,
-  editWidgetData,
+  children,
 }: {
-  loading: boolean;
   editGoalData: IWidgetGoalData;
-  editWidgetData: () => Promise<void>;
+  children?: React.ReactNode;
 }) => {
   const { isLaptop } = useWindowDimensions();
   const {
@@ -34,7 +29,7 @@ const PreviewGoalBlock = ({
       }}
     >
       <div className="preview-block">
-        <div className="preview-block_title">
+        <div className="title">
           <p>
             <span style={getFontColorStyles(title_color, title_font)}>
               {title}
@@ -42,7 +37,7 @@ const PreviewGoalBlock = ({
           </p>
         </div>
         <div
-          className="preview-block_goal"
+          className="goal"
           style={{
             background: background_color,
           }}
@@ -65,18 +60,7 @@ const PreviewGoalBlock = ({
           <p style={getFontColorStyles("#fff", progress_font)}>75 / 100 USD</p>
         </div>
       </div>
-      {isLaptop && (
-        <div className="btn-block">
-          <BaseButton
-            formatId="profile_form_save_changes_button"
-            padding="6px 35px"
-            onClick={editWidgetData}
-            fontSize="18px"
-            disabled={loading}
-            isMain
-          />
-        </div>
-      )}
+      {isLaptop && children}
     </Col>
   );
 };

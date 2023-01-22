@@ -1,0 +1,47 @@
+@use 'commonStyles/variables'
+
+.sidebar
+    &-content
+        display: flex
+        flex-direction: column
+        justify-content: space-between
+        opacity: 0
+        height: 85%
+        margin-top: 40px
+        transition: .2s
+
+        &.visible
+            opacity: 1
+            overflow: auto
+
+    &-wallet
+        margin: 0 16px 10px 24px
+
+        .wallet-popup
+            position: relative
+            z-index: 1
+            top: -15px
+            padding: 25px 5px 10px
+
+    &-btmEl
+        display: flex
+        align-items: center
+        margin: 4px
+        padding: 0 24px
+        width: fit-content
+        color: variables.$grey-color
+
+        @media (min-width: 768px) and (max-width: 992px)
+            padding: 0 48px
+
+        &:hover
+            color: variables.$white-color
+
+        svg
+            width: 24px
+            height: 24px
+
+        .btmEl-link
+            font-family: variables.$inter-font
+            font-size: 14px
+            margin-left: 10px

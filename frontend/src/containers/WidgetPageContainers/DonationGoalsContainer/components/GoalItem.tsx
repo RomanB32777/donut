@@ -10,10 +10,11 @@ import { CopyIcon, PencilIcon, TrashBinIcon } from "icons";
 import ConfirmPopup from "components/ConfirmPopup";
 import PreviewGoalBlock from "./PreviewGoalBlock";
 import SettingsGoalBlock from "./SettingsGoalBlock";
+import FormBtnsBlock from "components/FormBtnsBlock";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import { getGoals } from "store/types/Goals";
 import {
   addNotification,
@@ -23,6 +24,7 @@ import {
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
 import { IWidgetGoalData } from "appTypes";
+import { baseURL } from "consts";
 
 const GoalItem = ({
   fonts,
@@ -88,7 +90,8 @@ const GoalItem = ({
     }
   };
 
-  const editWidgetData = async () => {
+  // useCallback(}, [dispatch, editGoalData, goalData, user]  ???
+  const editWidgetData = (isReset?: boolean) => async () => {
     try {
       setLoading(true);
       const { id } = goalData;
@@ -100,6 +103,7 @@ const GoalItem = ({
           progress_font: progress_font.name,
         },
         creator_id: user.id,
+        isReset,
         id,
       });
       dispatch(getGoals(user.id));
@@ -116,6 +120,8 @@ const GoalItem = ({
       setLoading(false);
     }
   };
+
+  const resetData = editWidgetData(true);
 
   const deleteGoalWidget = async () => {
     try {
@@ -149,12 +155,10 @@ const GoalItem = ({
   return (
     <>
       <div
-        className={clsx("goals-item", {
+        className={clsx("item", {
           active: isActiveDetails,
+          archived: is_archive,
         })}
-        style={{
-          cursor: !is_archive ? "pointer" : "auto",
-        }}
         onClick={handleActiveDetails}
       >
         <Row>
@@ -187,9 +191,9 @@ const GoalItem = ({
               }}
             >
               <Col xl={9} xs={24}>
-                <div className="goals-item__mainInfo">
-                  <p className="goals-item__mainInfo_title">{title}</p>
-                  <p className="goals-item__mainInfo_description">
+                <div className="mainInfo">
+                  <p className="title">{title}</p>
+                  <p className="description">
                     Raised: {amount_raised}/{amount_goal} USD
                   </p>
                 </div>
@@ -197,7 +201,7 @@ const GoalItem = ({
               {!isLaptop && (
                 <Col span={13}>
                   {!is_archive && (
-                    <div className="goals-item__link">
+                    <div className="link">
                       <LinkCopy link={linkForCopy} isSimple />
                     </div>
                   )}
@@ -205,15 +209,15 @@ const GoalItem = ({
               )}
             </Row>
           </Col>
-          <div className="goals-item__btns">
+          <div className="btns">
             {isLaptop && !is_archive && (
-              <div className="goals-item__btns_item" onClick={clickCopyBtn}>
+              <div className="btn-item" onClick={clickCopyBtn}>
                 <CopyIcon />
               </div>
             )}
             {!is_archive && (
               <div
-                className="goals-item__btns_item"
+                className="btn-item"
                 onClick={clickEditBtn}
                 style={{ marginRight: 10 }}
               >
@@ -221,7 +225,7 @@ const GoalItem = ({
               </div>
             )}
             <div
-              className="goals-item__btns_item"
+              className="btn-item"
               onClick={(e: React.MouseEvent<HTMLDivElement>) =>
                 e.stopPropagation()
               }
@@ -236,23 +240,29 @@ const GoalItem = ({
         </Row>
       </div>
       {isActiveDetails && (
-        <div className="goals-item__details">
+        <div className="details">
           <WidgetMobileWrapper
             previewBlock={
-              <PreviewGoalBlock
-                loading={loading}
-                editGoalData={editGoalData}
-                editWidgetData={editWidgetData}
-              />
+              <PreviewGoalBlock editGoalData={editGoalData}>
+                <FormBtnsBlock
+                  saveMethod={editWidgetData()}
+                  resetMethod={resetData}
+                  disabled={loading}
+                />
+              </PreviewGoalBlock>
             }
             settingsBlock={
               <SettingsGoalBlock
                 fonts={fonts}
-                loading={loading}
                 editGoalData={editGoalData}
                 setEditGoalData={setEditGoalData}
-                editWidgetData={editWidgetData}
-              />
+              >
+                <FormBtnsBlock
+                  saveMethod={editWidgetData()}
+                  resetMethod={resetData}
+                  disabled={loading}
+                />
+              </SettingsGoalBlock>
             }
           />
         </div>

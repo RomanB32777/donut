@@ -26,7 +26,6 @@ const StreamStatsContainer = () => {
     ...initWidgetStatData,
   });
 
-  const { id } = user;
   const openEditModal = (widget: IWidgetStatData) => {
     const { template } = widget;
     setFormData({
@@ -42,11 +41,12 @@ const StreamStatsContainer = () => {
       setFonts(fonts);
     };
 
+    const { id } = user;
     if (id) {
-      dispatch(getStats(id));
+      dispatch(getStats(user.id));
       initFonts();
     }
-  }, [id]);
+  }, [user]);
 
   return (
     <div className="streamStatsPage-container stats fadeIn">
@@ -65,16 +65,14 @@ const StreamStatsContainer = () => {
       </div>
       <div className="stats-wrapper">
         {Boolean(stats.length) ? (
-          stats
-            .reverse()
-            .map((widget: IStatData) => (
-              <StatsItem
-                key={widget.id}
-                fonts={fonts}
-                statData={widget}
-                openEditModal={openEditModal}
-              />
-            ))
+          stats.map((widget: IStatData) => (
+            <StatsItem
+              key={widget.id}
+              fonts={fonts}
+              statData={widget}
+              openEditModal={openEditModal}
+            />
+          ))
         ) : (
           <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}

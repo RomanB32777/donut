@@ -10,11 +10,12 @@ import ConfirmPopup from "components/ConfirmPopup";
 import WidgetMobileWrapper from "components/WidgetMobileWrapper";
 import SettingsStatBlock from "./SettingsStatBlock";
 import PreviewStatBlock from "./PreviewStatBlock";
+import FormBtnsBlock from "components/FormBtnsBlock";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { useAppSelector } from "hooks/reduxHooks";
 import { getStats } from "store/types/Stats";
-import axiosClient, { baseURL } from "modules/axiosClient";
+import axiosClient from "modules/axiosClient";
 import {
   addNotification,
   addSuccessNotification,
@@ -24,6 +25,7 @@ import {
   loadFonts,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
+import { baseURL } from "consts";
 import { IWidgetStatData } from "appTypes";
 
 const StatsItem = ({
@@ -85,7 +87,7 @@ const StatsItem = ({
     setEditStatData({ ...statsItemValues, ...loadedFonts });
   };
 
-  const editWidgetData = async () => {
+  const editWidgetData = (isReset?: boolean) => async () => {
     try {
       setLoading(true);
       const { id } = statData;
@@ -103,6 +105,7 @@ const StatsItem = ({
           title_font: title_font.name,
           content_font: content_font.name,
         },
+        isReset,
         id,
       });
       dispatch(getStats(user.id));
@@ -119,6 +122,8 @@ const StatsItem = ({
       setLoading(false);
     }
   };
+
+  const resetData = editWidgetData(true);
 
   const deleteStatWidget = async () => {
     try {
@@ -212,20 +217,26 @@ const StatsItem = ({
         <div className="stats-item__details">
           <WidgetMobileWrapper
             previewBlock={
-              <PreviewStatBlock
-                loading={loading}
-                editStatData={editStatData}
-                editWidgetData={editWidgetData}
-              />
+              <PreviewStatBlock editStatData={editStatData}>
+                <FormBtnsBlock
+                  saveMethod={editWidgetData()}
+                  resetMethod={resetData}
+                  disabled={loading}
+                />
+              </PreviewStatBlock>
             }
             settingsBlock={
               <SettingsStatBlock
                 fonts={fonts}
-                loading={loading}
                 editStatData={editStatData}
                 setEditStatData={setEditStatData}
-                editWidgetData={editWidgetData}
-              />
+              >
+                <FormBtnsBlock
+                  saveMethod={editWidgetData()}
+                  resetMethod={resetData}
+                  disabled={loading}
+                />
+              </SettingsStatBlock>
             }
           />
         </div>

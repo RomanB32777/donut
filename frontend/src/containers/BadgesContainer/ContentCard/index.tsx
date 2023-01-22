@@ -1,81 +1,44 @@
-import { useState, useEffect, useMemo } from "react";
-import clsx from "clsx";
-import { IBadgeShort } from "types";
-
+import { IBadgeInfo } from "types";
 import ConfirmPopup from "components/ConfirmPopup";
-import Loader from "components/Loader";
 import { TrashBinIcon } from "icons";
-
-import { useAppSelector } from "hooks/reduxHooks";
-import { initBadgeData } from "consts";
-import { IBadge } from "appTypes";
-import testIMG from "assets/person.png";
 import "./styles.sass";
 
 const ContentCard = ({
   data,
   onClick,
   deleteBadge,
-  getBadgeData,
 }: {
-  data: IBadgeShort;
-  onClick: (badge: IBadge) => void;
-  deleteBadge: (badge: IBadge) => void;
-  getBadgeData: (badge: IBadgeShort) => Promise<any>;
+  data: IBadgeInfo;
+  onClick: (badge: IBadgeInfo) => void;
+  deleteBadge: (badge: IBadgeInfo) => void;
 }) => {
-  const { id, wallet_address } = useAppSelector(({ user }) => user);
-  const [badgeData, setBadgeData] = useState<IBadge>({
-    ...initBadgeData,
-    ...data,
-  });
+  const { image, title, description, is_creator, token_id } = data;
 
-  useEffect(() => {
-    const getCardData = async () => {
-      const cardData = await getBadgeData(data);
-      cardData && setBadgeData({ ...badgeData, ...cardData });
-    };
-    wallet_address && getCardData();
-  }, [wallet_address, data]);
-
-  const { image, title, description, creator_id } = badgeData;
-
-  const ableToDelete = useMemo(
-    () => id && title && id === creator_id,
-    [id, title, creator_id]
-  );
+  const openBadgePape = () => onClick(data);
+  const deleteBadgePape = () => deleteBadge(data);
 
   return (
-    <div
-      className="content-panel"
-      style={{
-        cursor: title.length ? "pointer" : "auto",
-      }}
-      onClick={() => title.length && onClick(badgeData)}
-    >
-      <div className="content-panel__Link">
+    <div className="badge" onClick={openBadgePape}>
+      <div className="link">
         <div
-          className="content-panel__image"
+          className="image"
           style={{
-            height: image.preview && image.preview.length > 0 ? 220 : 256,
+            height: image ? 220 : 256,
           }}
         >
-          {image.preview && image.preview.length > 0 ? (
-            <img src={image.preview || testIMG} alt={title} />
-          ) : (
-            <Loader size="big" />
-          )}
+          <img src={image} alt={title} />
         </div>
-        <div className="content-panel__info">
-          <span className="content-panel__info-title">{title}</span>
-          <span className="content-panel__info-subtitle">{description}</span>
+        <div className="info">
+          <span className="title">{title}</span>
+          <span className="subtitle">{description}</span>
         </div>
       </div>
-      {ableToDelete && (
+      {is_creator && !token_id && (
         <div
-          className="content-panel__delete-icon"
+          className="delete-icon"
           onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
         >
-          <ConfirmPopup confirm={() => deleteBadge(badgeData)}>
+          <ConfirmPopup confirm={deleteBadgePape}>
             <div>
               <TrashBinIcon />
             </div>

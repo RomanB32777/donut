@@ -27,15 +27,18 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=NenadoTak1987
       - DB_NAME=donut
+      - WALLET_KEY=key
+      - CONTRACT_API_KEY=key
+      - CONTRACT_ADDRESS=0xE15B011f681632AFcC7F4a732D4b356da0fAC86A
       - GOOGLE_APPLICATION_CREDENTIALS=serviceaccount.json
     depends_on:
       - db
     networks:
      - web
     volumes:
-      - ./backend/uploads:/backend/uploads
-      - ./backend/assets:/backend/assets
-      # - ./backend/src/modules/badWords:/backend/src/modules/badWords
+      - ./backend/uploads:/backend/uploads/
+      - ./backend/assets:/backend/assets/
+      - ./backend/src/modules/badWords:/backend/src/modules/badWords
 
   sockets:
     build: ./sockets

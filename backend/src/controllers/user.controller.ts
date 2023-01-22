@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, rmSync } from 'fs';
-import { IShortUserData, IUser } from 'types';
+import { IShortUserData } from 'types';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
-import { uploadsFolder, isProduction } from '../consts.js';
+import { uploadsFolder, isProduction, initDonatPage } from '../consts.js';
+import { RequestParams, ResponseBody, RequestQuery, RequestBodyUser } from '../types.js';
 
 class UserController {
   async checkUsername(req: Request, res: Response, next: NextFunction) {
@@ -131,13 +132,27 @@ class UserController {
     }
   }
 
-  async editUser(req: Request, res: Response, next: NextFunction) {
+  async editUser(
+    req: Request<RequestParams, ResponseBody, RequestBodyUser, RequestQuery>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const { donat_page, spam_filter, id } = req.body as IUser;
+      const { donat_page, spam_filter, id, isReset } = req.body;
       const user = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
 
       if (user.rowCount) {
         const { id, roleplay } = user.rows[0];
+
+        if (isReset) {
+          const editedUser = await db.query(
+            `UPDATE creators SET ${Object.keys(initDonatPage).map(
+              (key) => `${key} = DEFAULT`,
+            )} WHERE user_id = $1 RETURNING *`,
+            [id],
+          );
+          return res.status(200).json(editedUser.rows[0]);
+        }
 
         if (roleplay === 'creators' && donat_page) {
           const values = Object.values(donat_page);
@@ -158,7 +173,7 @@ class UserController {
         const bodyKeyFields = Object.keys(req.body).filter(
           (field: string) => field !== 'id' && field !== 'spam_filter',
         );
-        const changedFields = bodyKeyFields.map((field) => req.body[field]);
+        const changedFields = bodyKeyFields.map((field) => req.body[field as keyof RequestBodyUser]);
 
         if (changedFields.length) {
           const editedUser = await db.query(
