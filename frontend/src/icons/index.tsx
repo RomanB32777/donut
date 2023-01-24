@@ -191,8 +191,8 @@ export const PencilIcon = () => (
 )
 
 export const UploadIcon = () => (
-    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18.8997 37.7991H10.4997C8.18007 37.7991 6.29967 35.9187 6.29968 33.5991L6.29984 8.39919C6.29986 6.07961 8.18026 4.19922 10.4998 4.19922H29.4003C31.7199 4.19922 33.6003 6.07962 33.6003 8.39922V19.9492M27.3003 31.5737L31.5953 27.2992M31.5953 27.2992L35.7003 31.3805M31.5953 27.2992V37.7992" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.44983 18.9015H5.24983C4.09002 18.9015 3.14983 17.9613 3.14983 16.8015L3.14991 4.20155C3.14992 3.04176 4.09012 2.10156 5.24991 2.10156H14.7001C15.8599 2.10156 16.8002 3.04176 16.8002 4.20156V9.97656M13.6502 15.7888L15.7976 13.6516M15.7976 13.6516L17.8502 15.6922M15.7976 13.6516V18.9016" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 )
 

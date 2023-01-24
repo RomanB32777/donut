@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, useState } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 
@@ -47,6 +47,11 @@ const FormInput = ({
   setValue?: (value: string) => void;
 }) => {
   const { isMobile } = useWindowDimensions();
+  const [active, setActive] = useState(false);
+
+  const onFocus = () => setActive(true);
+
+  const onBlur = () => setActive(false);
 
   return (
     <div className="formInput">
@@ -65,7 +70,9 @@ const FormInput = ({
         <Col md={inputCol || (label ? 12 : 24)} xs={24}>
           <div className={clsx("input", modificator)}>
             {addonBefore && (
-              <div className={clsx("addonBefore", addonsModificator)}>
+              <div
+                className={clsx("addonBefore", addonsModificator, { active })}
+              >
                 {addonBefore}
               </div>
             )}
@@ -90,6 +97,8 @@ const FormInput = ({
                 })}
                 value={value}
                 onChange={(e) => setValue && setValue(e.target.value)}
+                onFocus={onFocus}
+                onBlur={onBlur}
                 disabled={disabled || !Boolean(setValue)}
                 name={name || ""}
                 placeholder={placeholder || ""}
@@ -105,7 +114,9 @@ const FormInput = ({
               </p>
             )}
             {addonAfter && (
-              <div className={clsx("addonAfter", addonsModificator)}>
+              <div
+                className={clsx("addonAfter", addonsModificator, { active })}
+              >
                 {addonAfter}
               </div>
             )}

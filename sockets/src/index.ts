@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
         const donation = await db.query(`SELECT * from donations WHERE id = $1;`, [donation_id]);
 
         if (donation.rows[0]) {
-          const { id, sum_donation, blockchain, donation_message } = donation.rows[0];
+          const { id, sum_donation, blockchain, donation_message, is_anonymous } = donation.rows[0];
 
           const newTransaction = await db.query(`INSERT INTO notifications (donation) values ($1) RETURNING id;`, [id]);
           if (newTransaction.rows[0]) {
@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
             userSockets.forEach((socketID) => {
               const sendObj: ISocketNotification = {
                 type: 'donat',
-                supporter: supporter.username,
+                supporter: is_anonymous ? 'anonymous' : supporter.username,
                 additional: {
                   sum_donation,
                   blockchain,

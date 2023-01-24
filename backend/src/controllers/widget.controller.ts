@@ -169,7 +169,7 @@ class WidgetController {
 
   async editGoalWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const { goalData, creator_id, id, isReset } = req.body;
+      const { goalData, creator_id, id, isReset } = req.body;    
 
       if (isReset) {
         const updatedDBWidget = await db.query(
@@ -192,6 +192,7 @@ class WidgetController {
             Number(amount_raised) + goalData.donat <= Number(amount_goal)
               ? Number(amount_raised) + goalData.donat
               : Number(amount_goal);
+
           let updatedGoalWidget = await db.query(
             `UPDATE goals SET 
                         amount_raised = $1

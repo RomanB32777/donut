@@ -1,13 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { RefObject, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { DownOutlined } from "@ant-design/icons";
 import useOnClickOutside from "hooks/useClickOutside";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISelectComponent<T> {
   title: React.ReactNode;
   list: T[];
   selected?: T;
+  styles?: React.CSSProperties;
   headerList?: React.ReactNode;
   footerList?: React.ReactNode;
   modificator?: string;
@@ -21,6 +24,7 @@ interface ISelectComponent<T> {
 const SelectComponent = <T extends unknown>({
   title,
   list,
+  styles,
   selected,
   headerList,
   footerList,
@@ -32,7 +36,10 @@ const SelectComponent = <T extends unknown>({
   renderOption,
 }: React.PropsWithChildren<ISelectComponent<T>>) => {
   const blockRef = useRef(null);
+  const { width } = useWindowDimensions();
   const [isOpenSelect, setOpenSelect] = useState(false);
+
+  const selectRoot = document.getElementById("select-root");
 
   const selectHandler = () => setOpenSelect((prev) => !prev);
 
@@ -41,16 +48,31 @@ const SelectComponent = <T extends unknown>({
     selectItem(selected);
   };
 
+  const notSelectedElementsHandler = (e: React.MouseEvent<HTMLDivElement>) =>
+    e.stopPropagation();
+
   useOnClickOutside(isOpenSelect, blockRef, selectHandler);
 
+  const listStyles = useMemo(() => {
+    const refCurrent = blockRef as RefObject<HTMLElement>;
+
+    if (isOpenSelect && refCurrent && width) {
+      const elInfo = refCurrent.current?.getBoundingClientRect();
+      if (elInfo) {
+        const { top, left, height, width: widthEl } = elInfo;
+        return {
+          top: window.pageYOffset + top + height + 5,
+          left,
+          width: widthEl,
+        };
+      }
+    }
+    return {};
+  }, [isOpenSelect, width]);
+
   return (
-    <div className={clsx("select", modificator)} ref={blockRef}>
-      <div
-        className="block"
-        onClick={() => {
-          setOpenSelect(!isOpenSelect);
-        }}
-      >
+    <div className={clsx("select", modificator)} style={styles} ref={blockRef}>
+      <div className="block" onClick={selectHandler}>
         <div className="title">{title}</div>
         <div
           className={clsx("icon", "icon-arrow", {
@@ -60,28 +82,36 @@ const SelectComponent = <T extends unknown>({
           <DownOutlined />
         </div>
       </div>
-      {isOpenSelect && (
-        <div
-          className={clsx("list-wrapper fadeInBlur", listWrapperModificator)}
-        >
-          {headerList}
-          <div className={clsx("list", listModificator)}>
-            {list.map((item, key) => (
-              <div
-                className={clsx("list-item", {
-                  [listItemModificator as string]: listItemModificator,
-                  active: item === title || item === selected,
-                })}
-                key={key}
-                onClick={() => itemHandler(item)}
-              >
-                {renderOption ? renderOption(item) : (item as React.ReactNode)}
+      {isOpenSelect &&
+        selectRoot &&
+        createPortal(
+          <div
+            className={clsx("list-wrapper fadeIn", listWrapperModificator)}
+            style={listStyles}
+          >
+            <div className="list-content">
+              <div onClick={notSelectedElementsHandler}>{headerList}</div>
+              <div className={clsx("list", listModificator)}>
+                {list.map((item, key) => (
+                  <div
+                    className={clsx("list-item", {
+                      [listItemModificator as string]: listItemModificator,
+                      active: item === title || item === selected,
+                    })}
+                    key={key}
+                    onClick={() => itemHandler(item)}
+                  >
+                    {renderOption
+                      ? renderOption(item)
+                      : (item as React.ReactNode)}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {footerList}
-        </div>
-      )}
+              <div onClick={notSelectedElementsHandler}>{footerList}</div>
+            </div>
+          </div>,
+          selectRoot
+        )}
     </div>
   );
 };

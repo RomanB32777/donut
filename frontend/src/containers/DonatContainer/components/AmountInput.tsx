@@ -12,14 +12,16 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { IBlockchain } from "appTypes";
 import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
 
-const tabCountTypes = [5, 10, 15];
+const tabCountTypes = [5, 10, 30];
 
 const AmountInput = ({
   form,
+  color,
   usdtKoef,
   setForm,
   setUsdtKoef,
 }: {
+  color: string;
   form: ISendDonat;
   usdtKoef: number;
   setForm: (value: React.SetStateAction<ISendDonat>) => void;
@@ -115,9 +117,8 @@ const AmountInput = ({
   return (
     <div className="item">
       <FormInput
-        value={amount ? String(amount) : ""}
+        value={String(amount)}
         setValue={setAmountValue}
-        // disabled={loading}
         typeInput="number"
         addonAfter={
           <SelectComponent
@@ -147,8 +148,9 @@ const AmountInput = ({
             renderOption={(item) => (
               <BlockchainOption value={item} key={item} />
             )}
-            modificator="inputs-select"
             listWrapperModificator="blockchains-list"
+            modificator="inputs-select"
+            styles={{ background: color }}
           />
         }
         addonsModificator="select-blockchain"

@@ -29,7 +29,7 @@ const HeaderSelect = ({
 
   const handlerSelect = () => setIsOpenSelect((prev) => !prev);
 
-  const logout = (e: React.MouseEvent<HTMLDivElement>) => {
+  const logout = () => {
     setIsOpenSelect && setIsOpenSelect(false);
     logoutUser({ dispatch, navigate });
   };

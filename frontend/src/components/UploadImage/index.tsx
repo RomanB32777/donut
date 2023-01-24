@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { UploadIcon } from "icons";
+import { UploadIcon, TrashBinIcon } from "icons";
 import { addNotification } from "utils";
 import { IFileInfo } from "appTypes";
 import "./styles.sass";
@@ -46,6 +46,7 @@ const UploadImage = ({
   bigSize,
   afterEl,
   isBanner,
+  isWithClearIcon,
 }: {
   imgName?: string;
   label: string;
@@ -59,6 +60,7 @@ const UploadImage = ({
   bigSize?: boolean;
   isBanner?: boolean;
   afterEl?: React.ReactNode;
+  isWithClearIcon?: boolean;
   setFile?: (fileInfo: IFileInfo) => void;
 }) => {
   const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false);
@@ -86,6 +88,11 @@ const UploadImage = ({
     }
   };
 
+  const clear = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setFile && setFile({ file: null, preview: "" });
+  };
+
   const imgExist = useMemo(
     () => filePreview || (imgName && imgName.length > 0),
     [filePreview, imgName]
@@ -101,11 +108,11 @@ const UploadImage = ({
         justify={afterEl ? "space-between" : "start"}
       >
         <Col md={labelCol || 12} xs={24}>
-          <div className="file-input__texts">
-            <p className="file-input__title">{label}</p>
+          <div className="text">
+            <p className="title">{label}</p>
             {formats?.length && !disabled && (
               <p
-                className="file-input__formats"
+                className="formats"
                 style={{
                   maxWidth: sizeStr && "none",
                 }}
@@ -118,7 +125,7 @@ const UploadImage = ({
         </Col>
         <Col md={inputCol || 12} xs={24}>
           <div
-            className={clsx("file-input__row", {
+            className={clsx("row", {
               banner: isBanner,
               bigSize,
               transparent: Boolean(filePreview?.length),
@@ -126,13 +133,11 @@ const UploadImage = ({
             onMouseEnter={() => !disabled && setIsMouseOnAvatar(true)}
             onMouseLeave={() => !disabled && setIsMouseOnAvatar(false)}
           >
-            <div className="file-input__row__image">
-              {imgExist && (
-                <img src={filePreview || imgName} alt={label} />
-              )}
+            <div className="image">
+              {imgExist && <img src={filePreview || imgName} alt={label} />}
             </div>
             {!disabled && (
-              <div className="file-input__row__button">
+              <div className="button">
                 <input
                   type="file"
                   onChange={saveFile}
@@ -140,15 +145,19 @@ const UploadImage = ({
                     formats?.map((f) => `image/${f.toLowerCase()}`).join(",") ||
                     "image/jpeg,image/jpg,image/png"
                   }
-                  // disabled={disabled || false}
                 />
                 <div
-                  className={clsx("file-input__row__back", { bigSize })}
+                  className={clsx("back", { bigSize })}
                   style={{
                     opacity: isMouseOnAvatar || !imgExist ? "1" : "0",
                   }}
                 >
                   <UploadIcon />
+                  {isWithClearIcon && imgExist && (
+                    <div className="clear-icon" onClick={clear}>
+                      <TrashBinIcon />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

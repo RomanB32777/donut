@@ -283,6 +283,7 @@ const DonationPageContainer = () => {
                 labelCol={6}
                 inputCol={10}
                 isBanner
+                isWithClearIcon
               />
             </div>
           </Col>
@@ -313,6 +314,7 @@ const DonationPageContainer = () => {
                 labelCol={6}
                 inputCol={10}
                 isBanner
+                isWithClearIcon
               />
             </div>
           </Col>

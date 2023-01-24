@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { FormattedMessage } from "react-intl";
 import { useDispatch } from "react-redux";
+import request from "axios";
 import { IShortUserData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -26,42 +27,47 @@ const RegistrationContainer = () => {
 
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [isUsernameError, setIsUsernameError] = useState<boolean>(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+
+  const inputHnadler = (value: string) => {
+    setUsernameError(null);
+    if (username.length === 0) setUsername("@" + value);
+    else if (value.length < username.length && value.length === 2)
+      setUsername("");
+    else setUsername(value);
+  };
 
   const tryToLogin = async () => {
-    const blockchainData = await walletConf.getWalletData();
+    try {
+      const blockchainData = await walletConf.getWalletData();
 
-    if (blockchainData) {
-      const { address } = blockchainData;
-      if (address) {
-        const { data, status } = await axiosClient.get(
-          `/api/user/check-username/${username}`
-        );
+      if (blockchainData) {
+        const { address } = blockchainData;
+        if (address) {
+          const { status } = await axiosClient.post("/api/user/", {
+            username,
+            roleplay: "creators",
+            wallet_address: address,
+          } as IShortUserData);
 
-        if (status === 200) {
-          const { error } = data;
-
-          if (error) {
-            setIsUsernameError(true);
-          } else {
-            const { status } = await axiosClient.post("/api/user/", {
-              username,
-              roleplay: "creators",
-              wallet_address: address,
-            } as IShortUserData);
-
-            if (status === 200) {
-              dispatch(tryToGetUser(address));
-              navigate(`/${adminPath}/dashboard`);
-            }
+          if (status === 200) {
+            dispatch(tryToGetUser(address));
+            navigate(`/${adminPath}/dashboard`);
           }
+        } else
+          addNotification({
+            type: "danger",
+            title: "Auth error",
+            message: "An error occurred while authorizing the wallet",
+          });
+      }
+    } catch (error) {
+      if (request.isAxiosError(error)) {
+        const { response } = error;
+        if (response) {
+          const { data } = response;
+          setUsernameError((data as any).message);
         }
-      } else {
-        addNotification({
-          type: "danger",
-          title: "Auth error",
-          message: "An error occurred while authorizing the wallet",
-        });
       }
     }
   };
@@ -96,35 +102,20 @@ const RegistrationContainer = () => {
           <FormattedMessage id="registration_modal_input_title" />
         </span>
 
-        <div className="input">
-          <FormInput
-            value={username}
-            setValue={(value) => {
-              setIsUsernameError(false);
-              if (username.length === 0) {
-                setUsername("@" + value);
-              } else if (value.length < username.length && value.length === 2) {
-                setUsername("");
-              } else {
-                setUsername(value);
-              }
-            }}
+        <div className="register-input">
+          <FormInput value={username} setValue={inputHnadler} />
+        </div>
+        {usernameError && <div className="error">{usernameError}</div>}
+
+        <div className="btn-wrapper">
+          <BaseButton
+            formatId="registration_modal_input_button"
+            onClick={tryToLogin}
+            modificator="register-btn"
+            disabled={!Boolean(username.length)}
+            isMain
           />
         </div>
-        {isUsernameError && (
-          <div className="error">
-            <FormattedMessage id="registration_modal_input_username_error" />
-          </div>
-        )}
-
-        <BaseButton
-          formatId="registration_modal_input_button"
-          onClick={tryToLogin}
-          padding="8px 64px"
-          fontSize="21px"
-          disabled={!Boolean(username.length)}
-          isMain
-        />
       </div>
     </div>
   );

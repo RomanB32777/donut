@@ -70,7 +70,15 @@ class DonationController {
       if (creator && backer) {
         const donation = await db.query(
           `INSERT INTO donations (backer_id, sum_donation, donation_message, blockchain, goal_id, is_anonymous, creator_id) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-          [backer, amount, message, selectedBlockchain, selectedGoal, is_anonymous, creator],
+          [
+            backer,
+            amount,
+            message,
+            selectedBlockchain,
+            parseBool(selectedGoal) ? selectedGoal : null,
+            is_anonymous,
+            creator,
+          ],
         );
 
         if (donation.rows[0]) return res.status(200).json(donation.rows[0]);
@@ -148,8 +156,6 @@ class DonationController {
       }
       return res.status(200).json([]);
     } catch (error) {
-      console.log('axios ?');
-
       next(error);
     }
   }

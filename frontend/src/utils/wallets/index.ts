@@ -9,6 +9,7 @@ import { setLoading } from "store/types/Loading";
 import {
   isInstall,
   getWalletData,
+  requestAccounts,
   getCurrentBlockchain,
   changeBlockchain,
   paymentMethod,
@@ -17,10 +18,13 @@ import {
   getGasPrice,
   getGasPriceForMethod,
 } from "./methods";
+import { checkIsExistUser } from "../asyncMethods";
 import { IWalletConf, IWalletMethods } from "appTypes";
+import { logoutUser } from "utils";
 
 const walletMethods: IWalletMethods = {
   isInstall,
+  requestAccounts,
   getWalletData,
   getCurrentBlockchain,
   changeBlockchain,
@@ -59,19 +63,30 @@ const checkWallet = async ({
   dispatch: Dispatch<AnyAction>;
   navigate?: NavigateFunction;
 }) => {
-  const blockchainData = await walletConf.getWalletData();
+  const walletData = await walletConf.getWalletData();
 
-  if (blockchainData) {
+  if (walletData) {
+    const { address } = walletData;
     const currentBlockchain = await walletConf.getCurrentBlockchain();
-    if (currentBlockchain)
+    if (currentBlockchain) {
+      // set blockchain and check user registr
       dispatch(setSelectedBlockchain(currentBlockchain.name));
-    else if (navigate) {
+      const isExistUser = await checkIsExistUser(address);
+
+      if (isExistUser) {
+        dispatch(tryToGetUser(address));
+        return true;
+        // not registered user - to registration page
+      } else if (navigate) navigate("/register");
+
+      // ????
+      return true;
+    } else if (navigate) {
       const newBlockchaind = await walletConf.changeBlockchain("evmos");
       newBlockchaind ? dispatch(setSelectedBlockchain("evmos")) : navigate("/");
     }
-    dispatch(tryToGetUser(blockchainData.address));
   } else {
-    navigate && navigate("/");
+    if (navigate) logoutUser({ dispatch, navigate });
     dispatch(setLoading(false));
   }
 };

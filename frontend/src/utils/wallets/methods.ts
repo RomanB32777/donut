@@ -1,12 +1,18 @@
 import { ethers, Contract, utils } from "ethers";
 import { blockchainsType } from "types";
 
-import { addInstallWalletNotification } from "..";
+import { addAuthWalletNotification, addInstallWalletNotification } from "..";
 import { storageWalletKey } from "consts";
 import { IPayObj, IWalletConf, methodNames } from "appTypes";
 
 export function isInstall() {
   return (window as any).hasOwnProperty("ethereum");
+}
+
+export async function requestAccounts() {
+  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+  const adresses = await provider.send("eth_requestAccounts", []);
+  return Boolean(adresses?.length);
 }
 
 export async function getWalletData(this: IWalletConf) {
@@ -15,7 +21,17 @@ export async function getWalletData(this: IWalletConf) {
       (window as any).ethereum
     );
 
-    await provider.send("eth_requestAccounts", []);
+    const accounts = await provider.listAccounts();
+    if (!accounts.length) {
+      localStorage.removeItem(storageWalletKey);
+      addAuthWalletNotification();
+      return null;
+    }
+
+    if (localStorage.getItem(storageWalletKey)) {
+      await provider.send("eth_requestAccounts", []);
+    }
+
     const signer = provider.getSigner(0);
     const address = await signer.getAddress();
     return {
@@ -27,7 +43,7 @@ export async function getWalletData(this: IWalletConf) {
     localStorage.removeItem(storageWalletKey);
     addInstallWalletNotification(
       "Metamask",
-      "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+      this.main_contract.linkInstall || ""
     );
     return null;
   }

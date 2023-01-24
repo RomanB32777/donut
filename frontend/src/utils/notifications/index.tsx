@@ -30,10 +30,10 @@ const addAuthNotification = () =>
     type: "info",
   });
 
-const addAuthWalletNotification = (wallet: string) =>
+const addAuthWalletNotification = () =>
   addNotification({
     title: "Authorization",
-    message: `You need to log in to your wallet ${wallet}`,
+    message: `You need to log in to your wallet`,
     type: "warning",
   });
 
@@ -84,29 +84,6 @@ const addInstallWalletNotification = (
       ),
     });
 };
-
-// interface Item<Key> {
-//   name: Key;
-// };
-
-// type Items<Name extends string> = {
-//   [Key in Name]?: Item<Key>;
-// };
-
-// function checkType<T extends string>(items: Items<T>): void {
-//   // items.
-//   return;
-// }
-
-// const items = checkType({
-//   a: {
-//       name: 'a',
-//   },
-// });
-
-// function getNotificationMessage<T extends object>(
-//   args: INotificationMessage<T>
-// ): React.ReactNode {
 
 const getNotificationMessage: <T extends object = IDonationShortInfo>(
   arg: INotificationMessage

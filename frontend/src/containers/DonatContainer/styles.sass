@@ -4,6 +4,8 @@
     padding-bottom: 40px
     background-repeat: no-repeat
     background-size: cover
+    background-position: center
+    min-height: 100vh
 
     .donat-container
         max-width: 720px
@@ -15,6 +17,7 @@
         margin: 40px auto 0
         padding-bottom: 34px
         border-radius: variables.$border-radius
+        backdrop-filter: blur(15px)
 
         .payment_wrapper
             width: 100%
@@ -46,9 +49,6 @@
                     transition: all .4s ease
                     -webkit-box-shadow: variables.$shadow
                     box-shadow: variables.$shadow
-
-                    // &:hover
-                    //     border-color: variables.$main-color
 
                     p
                         margin: 0
@@ -123,7 +123,7 @@
 
                 &-addon
                     background: variables.$blue-dark-color
-                    padding: 10.75px
+                    padding: 11.5px
 
                 &-select
                     height: 100%
@@ -139,7 +139,6 @@
                     line-height: 22px
                     font-size: 17px
                     border: 0
-                    border-radius: variables.$border-radius
                     font-family: variables.$pt-font
                     color: variables.$white-color
 
@@ -217,6 +216,11 @@
                 margin-left: 10px
 
     .headerBlock
+        position: relative
+        z-index: 1
+        background: variables.$black-transparent-color
+        backdrop-filter: blur(15px)
+
         &-content
             margin: 0 auto
             max-width: 720px
@@ -261,6 +265,8 @@
         display: flex
         flex-direction: column
         overflow: hidden
+        border-top-left-radius: variables.$border-radius
+        border-top-right-radius: variables.$border-radius
 
         .background
             width: 100%

@@ -16,15 +16,11 @@
 
 .file-input
     width: 100%
-    // display: flex
-    // flex-direction: row
-    // justify-content: space-between
-    // align-items: flex-start
-    // max-width: 550px
 
     @media (max-width: 640px)
         width: 100%
-    &__title
+
+    .title
         margin: 0
         margin-bottom: 12px
         font-family: variables.$pt-font
@@ -33,7 +29,8 @@
         font-size: 20px
         line-height: 25px
         color: variables.$white-color
-    &__formats
+
+    .formats
         max-width: 170px
         font-family: variables.$pt-font
         font-style: normal
@@ -42,7 +39,7 @@
         line-height: 20px
         color: variables.$grey-color
 
-    &__row
+    .row
         position: relative
         display: flex
         flex-direction: row
@@ -66,7 +63,7 @@
         &.transparent
             background: none
 
-        &__image
+        .image
             width: 100%
             height: 100%
             border-radius: variables.$border-radius
@@ -78,7 +75,7 @@
                 object-fit: cover
                 width: 100%
                 height: 100%
-        &__button
+        .button
             position: absolute
             width: 100%
             height: 100%
@@ -88,8 +85,8 @@
                 width: 100%
                 height: 100%
                 opacity: 0
-                z-index: 21
-        &__back
+                z-index: 1
+        .back
             position: absolute
             top: 0
             width: 100%
@@ -99,7 +96,7 @@
             align-items: center
             justify-content: center
             display: flex
-            flex-direction: column
+            flex-direction: row
             align-items: center
             font-family: variables.$inter-font
             color: variables.$white-color
@@ -111,6 +108,12 @@
             svg
                 width: 21px
                 height: 21px
+
+            .clear-icon
+                position: relative
+                z-index: 2
+                cursor: pointer
+                margin-left: 10px
 
             &.bigSize
                 svg

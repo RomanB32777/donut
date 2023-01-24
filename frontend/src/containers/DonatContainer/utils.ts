@@ -1,6 +1,6 @@
-import { IWalletConf } from "appTypes";
 import { AnyAction, Dispatch } from "redux";
 import { Socket } from "socket.io-client";
+import request from "axios";
 import {
   IFullSendDonat,
   INewDonatSocketObj,
@@ -13,7 +13,8 @@ import { connectSocket } from "components/Websocket";
 import axiosClient from "modules/axiosClient";
 import { tryToGetUser } from "store/types/User";
 import { getNotifications } from "store/types/Notifications";
-import { addNotification } from "utils";
+import { addNotification, addErrorNotification, checkIsExistUser } from "utils";
+import { IWalletConf, ProviderRpcError } from "appTypes";
 
 const registerSupporter = async ({
   username,
@@ -24,28 +25,31 @@ const registerSupporter = async ({
   wallet_address: string;
   dispatch: Dispatch<AnyAction>;
 }): Promise<IUser | null> => {
-  const checkedData = await axiosClient.get(
-    `/api/user/check-username/${username}`
-  );
+  try {
+    const { data, status } = await axiosClient.post("/api/user/", {
+      username,
+      roleplay: "backers",
+      wallet_address,
+    } as IShortUserData);
 
-  const { error } = checkedData.data;
-  if (error) {
-    console.log(checkedData.data.error);
+    if (status === 200) {
+      dispatch(tryToGetUser(wallet_address));
+      return data;
+    }
+    return null;
+  } catch (error) {
+    if (request.isAxiosError(error)) {
+      const { response } = error;
+      if (response) {
+        const { data } = response;
+        addErrorNotification({
+          title: "Registration error",
+          message: (data as any).message,
+        });
+      }
+    }
     return null;
   }
-
-  const { data, status } = await axiosClient.post("/api/user/", {
-    username,
-    roleplay: "backers",
-    wallet_address,
-  } as IShortUserData);
-
-  if (status === 200) {
-    dispatch(tryToGetUser(wallet_address));
-    return data;
-  }
-
-  return null;
 };
 
 const sendDonation = async ({
@@ -135,6 +139,7 @@ const triggerContract = async ({
   form,
   user,
   socket,
+  userID,
   usdtKoef,
   balance,
   personInfo,
@@ -145,6 +150,7 @@ const triggerContract = async ({
 }: {
   form: ISendDonat;
   user: IUser;
+  userID: number;
   socket: Socket | null;
   usdtKoef: number;
   balance: number;
@@ -155,27 +161,41 @@ const triggerContract = async ({
   setIsOpenSuccessModal: (state: boolean) => void;
 }) => {
   const { amount, username } = form;
+
   if (amount && username) {
     try {
-      const blockchainData = await walletConf.getWalletData();
+      const walletData = await walletConf.getWalletData();
 
-      if (blockchainData && blockchainData.address) {
-        const { signer, address } = blockchainData;
+      if (walletData && walletData.address) {
+        const { signer, address } = walletData;
         const { wallet_address } = personInfo;
 
         if (address !== wallet_address) {
           setLoading(true);
 
+          if (!userID) {
+            const isExistUser = await checkIsExistUser(username);
+            if (isExistUser) {
+              addNotification({
+                type: "warning",
+                title:
+                  "Unfortunately, this username is already busy. Enter another one",
+              });
+              return;
+            }
+          }
+
           if (balance >= Number(amount)) {
             const currentBlockchain = await walletConf.getCurrentBlockchain();
 
             if (currentBlockchain) {
-              const res = await walletConf.transfer_contract_methods.paymentMethod({
-                contract: currentBlockchain.address,
-                addressTo: wallet_address,
-                sum: String(amount),
-                signer,
-              });
+              const res =
+                await walletConf.transfer_contract_methods.paymentMethod({
+                  contract: currentBlockchain.address,
+                  addressTo: wallet_address,
+                  sum: String(amount),
+                  signer,
+                });
 
               if (res)
                 await sendDonation({
@@ -206,15 +226,18 @@ const triggerContract = async ({
         }
       }
     } catch (error) {
-      console.log("error", error);
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          (error as Error).message ||
-          `An error occurred while sending data`,
-      });
+      const errInfo = error as ProviderRpcError;
+
+      errInfo.code !== "ACTION_REJECTED" &&
+        addNotification({
+          type: "danger",
+          title: "Error",
+          message:
+            errInfo.reason ||
+            (error as any)?.response?.data?.message ||
+            (error as Error).message ||
+            `An error occurred while sending data`,
+        });
     } finally {
       setLoading(false);
     }

@@ -28,6 +28,15 @@
                     border: none
                     background: variables.$black-transparent-color !important
 
+                .search-icon
+                    padding: 13.7px
+                    padding-right: 0
+                    color: variables.$grey-color
+                    transition: .3s
+
+                    &.active
+                        color: variables.$white-color
+
                 @media (max-width: 576px)
                     input
                         font-size: 15px
@@ -49,7 +58,6 @@
         &__right
             &_btn
                 margin-left: auto
-
 
     &-selectDates
         margin-bottom: 40px

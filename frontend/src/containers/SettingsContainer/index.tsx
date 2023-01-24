@@ -262,7 +262,7 @@ const SettingsContainer = () => {
                   <p
                     className="action copy"
                     onClick={() => {
-                      copyStr(wallet_address, "address");
+                      copyStr(wallet_address, "Wallet address");
                     }}
                   >
                     Copy
@@ -290,6 +290,15 @@ const SettingsContainer = () => {
           )}
           <Col span={24}>
             <div className="btn-bottom">
+              <BaseButton
+                formatId="save_changes_button"
+                padding="6px 25px"
+                fontSize="18px"
+                modificator="save-btn"
+                onClick={saveSettings}
+                disabled={loading || !username || !changedElements.length}
+                isMain
+              />
               <ConfirmPopup confirm={deleteProfile}>
                 <BaseButton
                   title="Delete account"
@@ -299,15 +308,6 @@ const SettingsContainer = () => {
                   isBlack
                 />
               </ConfirmPopup>
-              <BaseButton
-                title="Save changes"
-                padding="6px 30px"
-                fontSize="18px"
-                modificator="save-btn"
-                onClick={saveSettings}
-                disabled={loading || !username || !changedElements.length}
-                isMain
-              />
             </div>
           </Col>
         </Row>

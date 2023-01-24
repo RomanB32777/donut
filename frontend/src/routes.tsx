@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Navigate, useRoutes, Outlet } from "react-router";
+import { Navigate, useRoutes, Outlet, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "icons";
 import {
@@ -73,17 +73,17 @@ interface IRoute {
 //protected Route state
 type ProtectedRouteType = {
   roleRequired?: userRoles;
-  // children?: React.ReactNode;
 };
 
 const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const walletConf = useContext(WalletContext);
   const { user, loading } = useAppSelector((state) => state);
   const { id, roleplay } = user;
 
   useEffect(() => {
-    !id && checkWallet({ walletConf, dispatch });
+    checkWallet({ walletConf, dispatch, navigate });
   }, [id, walletConf]);
 
   if (!id && loading) return <Loader size="big" />;

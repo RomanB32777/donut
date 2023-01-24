@@ -15,6 +15,21 @@ import { adminPath, storageWalletKey } from "consts";
 import { cryptoSteps, features, help, images, socialNetworks } from "./const";
 import "./styles.sass";
 
+const LandingBtn = ({
+  id,
+  signUp,
+}: {
+  id: number;
+  signUp: () => Promise<void>;
+}) => (
+  <BaseButton
+    formatId={id ? "mainpage_main_button_logged" : "mainpage_main_button"}
+    onClick={signUp}
+    modificator="landing-btn center-btn"
+    isMain
+  />
+);
+
 const LandingContainer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,10 +37,25 @@ const LandingContainer = () => {
   const { id } = useAppSelector(({ user }) => user);
   const walletConf = useContext(WalletContext);
 
+  const redirectToDashboard = async () => {
+    const isExist = await checkWallet({ walletConf, dispatch, navigate });
+    if (isExist) {
+      scrollToPosition();
+      navigate(`/${adminPath}/dashboard`);
+      return true;
+    }
+    return false;
+  };
+
   const signUp = async () => {
     if (id) navigate(`/${adminPath}/dashboard`);
-    else navigate("/register");
-    scrollToPosition();
+    else {
+      const isRedirect = await redirectToDashboard();
+      if (!isRedirect) {
+        const isUnlockedWallet = await walletConf.requestAccounts();
+        if (isUnlockedWallet) await redirectToDashboard();
+      }
+    }
   };
 
   useEffect(() => {
@@ -66,14 +96,7 @@ const LandingContainer = () => {
               It's time to display crypto donations on a stream, mint NFTs for
               your supporters and have fun!
             </p>
-            <BaseButton
-              formatId={
-                id ? "mainpage_main_button_logged" : "mainpage_main_button"
-              }
-              onClick={signUp}
-              modificator="landing-btn center-btn"
-              isMain
-            />
+            <LandingBtn id={id} signUp={signUp} />
           </div>
         </div>
 
@@ -237,14 +260,8 @@ const LandingContainer = () => {
           <div className="gradient-blue-bg" />
           <div className="content">
             <h4 className="title">Are you ready to grab your Crypto donutz?</h4>
-            <BaseButton
-              formatId={
-                id ? "mainpage_main_button_logged" : "mainpage_main_button"
-              }
-              onClick={signUp}
-              modificator="landing-btn center-btn"
-              isMain
-            />
+            <LandingBtn id={id} signUp={signUp} />
+
             <div className="contacts">
               <Logo />
               <div className="social-networks">

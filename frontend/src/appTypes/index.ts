@@ -1,6 +1,7 @@
 import { periodItemsTypes } from "types";
 import { IFileInfo } from "./files";
 import {
+  ProviderRpcError,
   IWalletInitData,
   IPayObj,
   IMintBadgeObj,
@@ -87,6 +88,7 @@ export type {
   IUserWithFiles,
 
   // wallet
+  ProviderRpcError,
   IWalletInitData,
   IPayObj,
   IMintBadgeObj,

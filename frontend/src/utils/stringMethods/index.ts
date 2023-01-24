@@ -25,7 +25,7 @@ export const copyStr = (str: string, copyObject: string = "link") => {
     const formatCopyObject = copyObject[0].toUpperCase() + copyObject.slice(1);
     addNotification({
       type: "success",
-      title: `${formatCopyObject} successfully copied`,
+      title: `${formatCopyObject} is successfully copied`,
     });
   } catch (error) {
     addNotification({

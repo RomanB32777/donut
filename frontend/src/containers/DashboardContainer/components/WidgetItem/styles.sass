@@ -1,11 +1,16 @@
 @use 'commonStyles/_variables'
 
-.widget__items
-    .widget__item_row   
+.widget-item
+    margin-bottom: 20px
+
+    &:last-child
+        margin-bottom: 0
+
+    .row
         padding: 15px 20px
         display: block
-            
-        &_header
+
+        .header
             display: flex
             justify-content: space-between
             align-items: center
@@ -39,10 +44,10 @@
             font-weight: 400
             color: variables.$white-color
 
-@media (min-width: 992px)
-    .widget__item_row 
-        padding: 15px
-        padding-left: 30px
+    @media (min-width: 992px)
+        .row
+            padding: 15px
+            padding-left: 30px
 
-        .time
-            text-align: left
+            .time
+                text-align: left

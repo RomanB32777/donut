@@ -5,30 +5,30 @@ import { DateTimezoneFormatter } from "utils";
 import "./styles.sass";
 
 const WidgetItem = ({ donat }: { donat: any }) => (
-  <div className="widget__items">
+  <div className="widget-item">
     <Row gutter={[32, 0]}>
       <Col span={24}>
-        <div className="widget__item widget__item_row">
+        <div className="row">
           <Row justify="space-between" align="middle" style={{ width: "100%" }}>
             <Col xs={17} md={18}>
-              <div className="widget__item_header widget__item_row_header">
-                <div className="widget__item_header_name name">
+              <div className="header">
+                <div className="name">
                   {donat.username}
                 </div>
-                <div className="widget__item_header_sum sum">
+                <div className="sum">
                   {(Number(donat.sum_donation)).toFixed(2)}&nbsp; USD
                 </div>
               </div>
             </Col>
             <Col xs={5} md={4}>
-              <div className="widget__item_header_time time">
+              <div className="time">
                 {dayjsModule(DateTimezoneFormatter(donat.created_at))
                   .startOf("minutes")
                   .fromNow()}
               </div>
             </Col>
           </Row>
-          <p className="widget__item_message message">
+          <p className="message">
             {donat.donation_message}
           </p>
         </div>

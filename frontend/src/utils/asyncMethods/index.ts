@@ -1,8 +1,8 @@
 import axiosClient from "modules/axiosClient";
 
-export const checkIsExistUser = async (address: string) => {
+export const checkIsExistUser = async (addressOrUsername: string) => {
   const { data } = await axiosClient.get(
-    `/api/user/check-user-exist/${address}`
+    `/api/user/check-user-exist/${addressOrUsername}`
   );
 
   if (data.notExist) return false;

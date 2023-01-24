@@ -368,8 +368,8 @@ const CreateBadgeForm = ({
                   isBlack
                 />
                 <BaseButton
-                  title="Create badge"
-                  padding="6px 35px"
+                  formatId="create_badge_form_button"
+                  padding="6px 25px"
                   onClick={createBadge}
                   fontSize="18px"
                   modificator="create-btn"
@@ -386,7 +386,7 @@ const CreateBadgeForm = ({
         title="Follow steps"
         closable={false}
         width={550}
-        centered={isTablet as boolean}
+        centered={Boolean(isTablet)}
       >
         <div className="goals-modal">
           <Row gutter={[0, 18]} className="goals-modal__form" justify="center">

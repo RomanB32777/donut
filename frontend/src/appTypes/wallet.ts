@@ -1,6 +1,13 @@
 import { ethers } from "ethers";
 import { blockchainsSymbols, blockchainsType, exchangeNameTypes } from "types";
 
+interface ProviderRpcError extends Error {
+  message: string;
+  code: string;
+  data?: unknown;
+  reason?: string
+}
+
 interface IWalletInitData {
   userAddress: string | null;
 }
@@ -78,6 +85,7 @@ interface IBlockchainAction {
 
 interface IWalletMethods {
   isInstall: () => boolean;
+  requestAccounts: () => Promise<boolean>
   getWalletData: () => Promise<IBlockchainData | null>;
   getCurrentBlockchain: () => Promise<IBlockchain | null>;
   changeBlockchain: (blockchainName: blockchainsType) => Promise<any>;
@@ -114,6 +122,7 @@ type currencyBlockchainsType = {
 };
 
 export type {
+  ProviderRpcError,
   IWalletInitData,
   IPayObj,
   IMintBadgeObj,

@@ -15,6 +15,7 @@ import Loader from "components/Loader";
 import AmountInput from "./components/AmountInput";
 import Goals from "./components/Goals";
 import {
+  ErrorModalComponent,
   LoadingModalComponent,
   SuccessModalComponent,
 } from "components/ModalComponent";
@@ -41,7 +42,6 @@ const DonatContainer = () => {
 
   const walletConf = useContext(WalletContext);
   const socket = useContext(WebSocketContext);
-  // const mainWallet = useAppSelector((state: any) => state.wallet);
   const { donat_page, avatar } = personInfo;
   const {
     background_banner,
@@ -57,9 +57,11 @@ const DonatContainer = () => {
   const [form, setForm] = useState<ISendDonat>({
     ...initSendDonatData,
   });
-  const [loadingPage, setLoadingPage] = useState<boolean>(false);
-  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState<boolean>(false);
+  const [loadingPage, setLoadingPage] = useState(false);
+  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
+  const [isOpenErrorModal, setIsOpenErrorModal] = useState(false);
 
+  const { id, username: usernameState } = user;
   const { username, message, amount, selectedBlockchain, is_anonymous } = form;
 
   const closeSuccessPopup = () => {
@@ -80,6 +82,7 @@ const DonatContainer = () => {
       balance,
       personInfo,
       walletConf,
+      userID: id,
       dispatch,
       setLoading: setLoadingPage,
       setIsOpenSuccessModal,
@@ -98,30 +101,50 @@ const DonatContainer = () => {
   }, [name]);
 
   useEffect(() => {
-    const setUser = async () => {
-      const blockchainData = await walletConf.getWalletData();
+    id && setForm((prev) => ({ ...prev, username: usernameState }));
+  }, [id, usernameState]);
 
-      if (blockchainData) {
-        await walletConf.getBalance(setBalance);
-        user.id && setForm((prev) => ({ ...prev, username: user.username }));
+  useEffect(() => {
+    const initPage = async () => {
+      const res = await checkWallet({ walletConf, dispatch });
+      if (!res) {
+        if (walletConf.isInstall()) {
+          const isUnlockedWallet = await walletConf.requestAccounts();
+          if (isUnlockedWallet) await checkWallet({ walletConf, dispatch });
+        } else {
+          setIsOpenErrorModal(true);
+          setLoadingPage(false);
+        }
+      } else {
+        const blockchainData = await walletConf.getWalletData();
+        if (blockchainData) await walletConf.getBalance(setBalance);
       }
     };
-    setUser();
-  }, [walletConf, user]);
 
-  useEffect(() => {
-    checkWallet({ walletConf, dispatch, navigate });
+    initPage();
   }, [walletConf]);
-
-  useEffect(() => {
-    console.log(blockchain);
-  }, [blockchain]);
 
   useEffect(() => {
     personInfo.id && dispatch(getGoals(personInfo.id));
   }, [personInfo]);
 
   if (!personInfo.id) return null;
+
+  if (isOpenErrorModal)
+    return (
+      <ErrorModalComponent
+        open={true}
+        centered={true}
+        message={`
+          It seems that you don't have a Metamask wallet in your browser. To download it <a
+              href="${walletConf.main_contract.linkInstall}"
+              target="_blank"
+              rel="noreferrer"
+          >
+            click here
+          </a>!`}
+      />
+    );
 
   if (!blockchain)
     return (
@@ -133,23 +156,20 @@ const DonatContainer = () => {
   return (
     <div
       className="donat-wrapper"
-      style={{ backgroundImage: `url(${background_banner})` }}
+      style={{
+        backgroundColor: background_color,
+        backgroundImage: `url(${background_banner})`,
+      }}
     >
       <HeaderComponent
-        logoUrl={user.id ? `/${adminPath}/donations` : `/${adminPath}/dashboard`}
-        backgroundColor={background_color}
+        logoUrl={id ? `/${adminPath}/donations` : "/"}
         modificator="headerBlock"
         contentModificator="headerBlock-content"
         visibleLogo
       >
         <WalletBlock modificator="donut-wallet" />
       </HeaderComponent>
-      <div
-        className="donat-container"
-        style={{
-          background: background_color,
-        }}
-      >
+      <div className="donat-container">
         <div className="info">
           <div className="background">
             <img src={header_banner || SpaceImg} alt="banner" />
@@ -195,7 +215,7 @@ const DonatContainer = () => {
                           });
                         }
                       }}
-                      disabled={Boolean(user.username) || loadingPage}
+                      disabled={Boolean(usernameState) || loadingPage}
                       modificator="inputs-name"
                       addonsModificator="inputs-addon"
                       placeholder="Your username"
@@ -236,6 +256,7 @@ const DonatContainer = () => {
                   </div>
                   <AmountInput
                     form={form}
+                    color={main_color}
                     usdtKoef={usdtKoef}
                     setForm={setForm}
                     setUsdtKoef={setUsdtKoef}

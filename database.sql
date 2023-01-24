@@ -16,7 +16,7 @@ CREATE TABLE creators(
     welcome_text VARCHAR(255) DEFAULT 'Thank you for being my crypto supporter!',
     btn_text VARCHAR(255) DEFAULT 'Donate',
     main_color VARCHAR(255) DEFAULT '#E94560',
-    background_color VARCHAR(255) DEFAULT '#212127',
+    background_color VARCHAR(255) DEFAULT '#1A1A2E',
     security_string VARCHAR(100) DEFAULT '',
     spam_filter BOOLEAN DEFAULT 'false',
     user_id INTEGER,

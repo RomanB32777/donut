@@ -18,66 +18,62 @@
     &.widget-stat
         margin-bottom: 16px
 
-    &_header
+    .header
         display: flex
         justify-content: space-between
         align-items: center
         font-family: variables.$pt-font
         color: variables.$white-color
 
-        &__title
-            font-weight: 400
-            font-size: 20px
+    &-title
+        font-weight: 400
+        font-size: 20px
 
-        &__filter
-            span
-                text-transform: uppercase
-                font-size: 14px
-
-    &__items
+    .items
         margin-top: 20px
 
-    &__item
-        display: flex
-        flex-direction: column
+    &-item
         background: variables.$blue-dark-color
         border-radius: 20px
-        padding: 15px 20px
 
-        &_name,
-        &_sum
-            font-family: variables.$pt-font
-            font-style: normal
+        &.simple
+            display: flex
+            flex-direction: column
+            padding: 15px 20px
 
-        &_name
-            font-size: 17px
-            line-height: 22px
-            font-weight: 600
-            color: variables.$white-color
+            .name,
+            .sum
+                font-family: variables.$pt-font
+                font-style: normal
 
-        &_sum
-            font-size: 15px
-            line-height: 20px
-            font-weight: 400
-            color: variables.$grey-color
-            margin-top: 5px
+            .name
+                font-size: 17px
+                line-height: 22px
+                font-weight: 600
+                color: variables.$white-color
 
-@keyframes infiniteRotating
-    0%
-        transform: rotate(0deg)
-    100%
-        transform: rotate(-360deg)
+            .sum
+                font-size: 15px
+                line-height: 20px
+                font-weight: 400
+                color: variables.$grey-color
+                margin-top: 5px
+
+.filter-list
+    transform: translateX(-15px)
 
 @media (min-width: 768px)
     .widget
         padding: 20px 29px 25px 25px
 
 @media (min-width: 576px)
-    .widget__item
-        flex-direction: row
-        justify-content: space-between
-        align-items: center
-        padding: 22px 24px 22px 14px
+    .widget
+        &-item
+            &.simple
+                flex-direction: row
+                justify-content: space-between
+                align-items: center
+                padding: 22px 24px 22px 14px
 
-        &_sum
-            margin-top: 0px
+                .sum
+                    margin-top: 0px

@@ -56,7 +56,7 @@ const DonationGoalsContainer = () => {
   return (
     <div className="goals fadeIn">
       <PageTitle formatId="page_title_donation_goals" />
-      <div className="header">
+      <div className="headerPage">
         <p className="subtitle">
           Start fundraising for a specific purchase or goal.
         </p>

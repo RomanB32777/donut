@@ -15,7 +15,7 @@ const FormBtnsBlock = ({
     <div className="btns">
       <BaseButton
         formatId="save_changes_button"
-        padding="6px 35px"
+        padding="6px 25px"
         onClick={saveMethod}
         fontSize="18px"
         disabled={disabled}

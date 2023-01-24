@@ -4,8 +4,7 @@ import UserController from '../controllers/user.controller.js';
 const router = Router();
 const userController = new UserController();
 
-router.get('/check-username/:username', userController.checkUsername)
-router.get('/check-user-exist/:address', userController.checkUserExist)
+router.get('/check-user-exist/:field', userController.checkUserExist)
 router.post('/', userController.createUser)
 router.delete('/:id', userController.deleteUser)
 router.get('/id/:id', userController.getUserByID)

@@ -19,6 +19,7 @@ const WidgetTopDonat = () => {
   const { isTablet } = useWindowDimensions();
   const { user, notifications } = useAppSelector((state) => state);
 
+  const { id, spam_filter } = user;
   const { list, shouldUpdateApp } = notifications;
 
   const [topDonations, setTopDonations] = useState<ITableData[]>([]);
@@ -30,7 +31,6 @@ const WidgetTopDonat = () => {
   const getTopDonations = async (timePeriod: string) => {
     try {
       setLoading(true);
-      const { id, spam_filter } = user;
       const { data, status } = await axiosClient.get(
         `${widgetApiUrl}/top-donations/${id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&spam_filter=${spam_filter}`
       );
@@ -50,24 +50,26 @@ const WidgetTopDonat = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    user.id && timePeriod && shouldUpdateApp && getTopDonations(timePeriod);
-  }, [user, activeFilterItem, list, shouldUpdateApp]);
+    if (id && timePeriod && shouldUpdateApp && list.length)
+      getTopDonations(timePeriod);
+  }, [id, activeFilterItem, list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-topDonat">
-      <div className="widget_header">
-        <span className="widget_header__title">Top donations</span>
-        <div className="widget_header__filter">
+      <div className="header">
+        <span className="widget-title">Top donations</span>
+        <div className="filter">
           <SelectComponent
             title={activeFilterItem}
             list={Object.values(filterPeriodItems)}
             selectItem={(selected) =>
               setActiveFilterItem(selected as stringFormatTypes)
             }
+            listWrapperModificator="filter-list"
           />
         </div>
       </div>
-      <div className="widget__items">
+      <div className="items">
         {!isTablet && (
           <TableComponent
             dataSource={topDonations}

@@ -21,12 +21,13 @@ const WidgetTopSup = () => {
   );
   const [topSupporters, setTopSupporters] = useState<any[]>([]);
 
+  const { id } = user;
   const { list, shouldUpdateApp } = notifications;
 
   const getLatestDonations = async (timePeriod: string) => {
     try {
       const { data } = await axiosClient.get(
-        `${widgetApiUrl}/top-supporters/${user.id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`
+        `${widgetApiUrl}/top-supporters/${id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`
       );
       data && setTopSupporters(data);
     } catch (error) {
@@ -38,8 +39,8 @@ const WidgetTopSup = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    user.id && shouldUpdateApp && getLatestDonations(timePeriod);
-  }, [user, list, shouldUpdateApp, activeFilterItem]);
+    id && shouldUpdateApp && list.length && getLatestDonations(timePeriod);
+  }, [id, list, shouldUpdateApp, activeFilterItem]);
 
   return (
     <div className="widget widget-topSup">
@@ -47,27 +48,28 @@ const WidgetTopSup = () => {
         <WidgetLoader />
       ) : (
         <>
-          <div className="widget_header">
-            <span className="widget_header__title">Top supporters</span>
-            <div className="widget_header__filter">
+          <div className="header">
+            <span className="widget-title">Top supporters</span>
+            <div className="filter">
               <SelectComponent
                 title={activeFilterItem}
                 list={Object.values(filterPeriodItems)}
                 selectItem={(selected) =>
                   setActiveFilterItem(selected as stringFormatTypes)
                 }
+                listWrapperModificator="filter-list"
               />
             </div>
           </div>
 
           {Boolean(topSupporters.length) ? (
-            <div className="widget__items">
+            <div className="items">
               <Row gutter={[16, 16]}>
                 {topSupporters.map((donat: any) => (
                   <Col span={12} key={donat.username}>
-                    <div className="widget__item">
-                      <div className="widget__item_name">{donat.username}</div>
-                      <div className="widget__item_sum">
+                    <div className="widget-item simple">
+                      <div className="name">{donat.username}</div>
+                      <div className="sum">
                         {(+donat.sum_donation).toFixed(2)} USD
                       </div>
                     </div>

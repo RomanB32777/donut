@@ -24,7 +24,7 @@ const Header = ({
     >
       <>
         {id && <NotificationsPopup user={id} />}
-        {username && <HeaderSelect title={username} />}
+        {username && <HeaderSelect title={username.slice(1)} />}
       </>
     </HeaderComponent>
   );

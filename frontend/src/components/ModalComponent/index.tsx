@@ -66,6 +66,17 @@ export const LoadingModalComponent = ({
   </ModalComponent>
 );
 
+export const ErrorModalComponent = ({
+  message,
+  ...props
+}: ILoadingModalComponent) => (
+  <ModalComponent {...props} closable={false} width={600}>
+    <div className="modal-error">
+      <p className="message" dangerouslySetInnerHTML={{ __html: message }} />
+    </div>
+  </ModalComponent>
+);
+
 interface ISuccessModalComponent extends ILoadingModalComponent {
   onClose: () => void;
   showDurationPopup?: number;

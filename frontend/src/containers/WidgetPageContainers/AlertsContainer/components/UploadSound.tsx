@@ -2,8 +2,15 @@ import { addNotification } from "utils";
 
 const maxDuration = 5;
 
-const UploadSound = ({ sendFile }: { sendFile: (file: File) => Promise<void> }) => {
+const UploadSound = ({
+  sendFile,
+}: {
+  sendFile: (file: File) => Promise<void>;
+}) => {
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("dfdf");
+    
+    e.stopPropagation();
     const target = e.currentTarget;
     const resulUploaded = new Promise((resolve, reject) => {
       if (target.files && target.files.length) {

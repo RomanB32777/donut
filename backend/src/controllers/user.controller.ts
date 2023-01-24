@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, rmSync } from 'fs';
+import { DatabaseError } from 'pg';
 import { IShortUserData } from 'types';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
@@ -8,29 +9,13 @@ import { uploadsFolder, isProduction, initDonatPage } from '../consts.js';
 import { RequestParams, ResponseBody, RequestQuery, RequestBodyUser } from '../types.js';
 
 class UserController {
-  async checkUsername(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { username } = req.params;
-      const user = await db.query('SELECT * FROM users WHERE username = $1', [username]);
-      if (user.rows.length > 0 && user.rows[0].username === username) {
-        res.status(200).json({ error: true });
-      } else {
-        res.status(200).json({ error: false });
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async checkUserExist(req: Request, res: Response, next: NextFunction) {
     try {
-      const { address } = req.params;
-      const user = await db.query('SELECT * FROM users WHERE wallet_address = $1', [address]);
-      if (user.rows && user.rows.length === 0) {
-        res.status(200).json({ notExist: true });
-      } else {
-        res.status(200).json(user.rows[0]);
-      }
+      const { field } = req.params; // field - address/username
+      const user = await db.query('SELECT * FROM users WHERE wallet_address = $1 OR username = $1', [field]);
+      if (!user.rowCount) return res.status(200).json({ notExist: true });
+
+      return res.status(200).json(user.rows[0]);
     } catch (error) {
       next(error);
     }
@@ -61,6 +46,10 @@ class UserController {
       }
       return res.status(204).json({});
     } catch (error) {
+      const dbError = error as DatabaseError;
+      if (dbError.code == '23505')
+        return res.status(500).json({ message: 'Unfortunately, this username is already busy. Enter another one' });
+
       next(error);
     }
   }

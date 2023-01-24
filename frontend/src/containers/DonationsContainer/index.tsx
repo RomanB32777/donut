@@ -187,6 +187,7 @@ const DonationsContainer = () => {
                       }
                       placeholder="Search by name"
                       modificator={"donations-header__left_input"}
+                      addonsModificator="search-icon"
                       addonBefore={<SearchOutlined />}
                     />
                   </Col>

@@ -121,7 +121,7 @@ const BadgesContainer = () => {
           </span>
           <BaseButton
             formatId="create_badge_form_button"
-            padding="6px 43px"
+            padding="6px 25px"
             fontSize="18px"
             onClick={toCreationForm}
             isMain

@@ -21,6 +21,7 @@ const WidgetLatestDonat = () => {
   );
   const [latestDonations, setLatestDonations] = useState<any[]>([]);
 
+  const { id } = user;
   const { list, shouldUpdateApp } = notifications;
 
   const getLatestDonations = async (timePeriod: string) => {
@@ -39,8 +40,8 @@ const WidgetLatestDonat = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    user.id && shouldUpdateApp && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem, list, shouldUpdateApp]);
+    id && shouldUpdateApp && list.length && getLatestDonations(timePeriod);
+  }, [id, activeFilterItem, list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-latestDonat">
@@ -48,22 +49,25 @@ const WidgetLatestDonat = () => {
         <WidgetLoader />
       ) : (
         <>
-          <div className="widget_header">
-            <span className="widget_header__title">Recent donations</span>
-            <div className="widget_header__filter">
+          <div className="header">
+            <span className="widget-title">Recent donations</span>
+            <div className="filter">
               <SelectComponent
                 title={activeFilterItem}
                 list={Object.values(filterPeriodItems)}
                 selectItem={(selected) =>
                   setActiveFilterItem(selected as stringFormatTypes)
                 }
+                listWrapperModificator="filter-list"
               />
             </div>
           </div>
           {Boolean(latestDonations.length) ? (
-            latestDonations.map((donat: any) => (
-              <WidgetItem key={donat.id} donat={donat} />
-            ))
+            <div className="items">
+              {latestDonations.map((donat: any) => (
+                <WidgetItem key={donat.id} donat={donat} />
+              ))}
+            </div>
           ) : (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}

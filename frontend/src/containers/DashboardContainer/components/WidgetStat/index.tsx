@@ -42,13 +42,14 @@ const WidgetStat = () => {
     filterPeriodItems["7days"]
   );
 
+  const { id } = user;
   const { list, shouldUpdateApp } = notifications;
 
   const getLatestDonations = async (timePeriod: periodItemsTypes) => {
     try {
       setLoading(true);
       const { data } = await axiosClient.get(
-        `${widgetApiUrl}/stats/${user.id}?timePeriod=${timePeriod}`
+        `${widgetApiUrl}/stats/${id}?timePeriod=${timePeriod}`
       );
 
       if (data) {
@@ -100,8 +101,12 @@ const WidgetStat = () => {
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
 
-    user.id && timePeriod && shouldUpdateApp && getLatestDonations(timePeriod);
-  }, [user, activeFilterItem, list, shouldUpdateApp]);
+    id &&
+      timePeriod &&
+      shouldUpdateApp &&
+      list.length &&
+      getLatestDonations(timePeriod);
+  }, [id, activeFilterItem, list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-stat">
@@ -109,15 +114,16 @@ const WidgetStat = () => {
         <WidgetLoader />
       ) : (
         <>
-          <div className="widget_header">
-            <span className="widget_header__title">Stats</span>
-            <div className="widget_header__filter">
+          <div className="header">
+            <span className="widget-title">Stats</span>
+            <div className="filter">
               <SelectComponent
                 title={activeFilterItem}
                 list={Object.values(filterPeriodItems)}
                 selectItem={(selected) =>
                   setActiveFilterItem(selected as stringFormatTypes)
                 }
+                listWrapperModificator="filter-list"
               />
             </div>
           </div>

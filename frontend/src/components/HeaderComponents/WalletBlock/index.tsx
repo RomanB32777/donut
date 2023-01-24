@@ -37,7 +37,7 @@ const WalletBlock = ({
 
   const { username, avatar } = user;
 
-  const copyAddress = () => copyStr(address);
+  const copyAddress = () => copyStr(address, "Wallet address");
   const handlerPopup = () => setOpenSelect((prev) => !prev);
 
   const blockchainHandler =
