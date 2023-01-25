@@ -131,13 +131,13 @@ const CreateBadgeForm = ({
         </div>
         <PageTitle formatId="create_badge_form_button" notMarginBottom />
       </div>
-      <Row gutter={[4, 4]} className="form" justify="space-between">
+      <Row gutter={[4, 16]} className="form" justify="space-between">
         <Col xl={10} md={12}>
           <div className="upload-block">
             <UploadImage
               label="Upload Image"
               formats={["PNG", "JPG", "JPEG", "GIF"]}
-              sizeStr="5 MB"
+              maxFileSize={5}
               filePreview={image.preview}
               setFile={({ preview, file }) =>
                 setFormBadge({

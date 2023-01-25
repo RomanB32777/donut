@@ -1,9 +1,13 @@
 import { ethers, Contract, utils } from "ethers";
 import { blockchainsType } from "types";
 
-import { addAuthWalletNotification, addInstallWalletNotification } from "..";
+import {
+  addAuthWalletNotification,
+  addInstallWalletNotification,
+  addNotification,
+} from "..";
 import { storageWalletKey } from "consts";
-import { IPayObj, IWalletConf, methodNames } from "appTypes";
+import { IPayObj, IWalletConf, methodNames, ProviderRpcError } from "appTypes";
 
 export function isInstall() {
   return (window as any).hasOwnProperty("ethereum");
@@ -112,7 +116,15 @@ export async function changeBlockchain(
             });
             return chainId;
           } catch (addError) {
-            console.log("add error", addError);
+            const errInfo = addError as ProviderRpcError;
+            console.log("add error", errInfo);
+
+            errInfo.code !== 4001 &&
+              addNotification({
+                type: "warning",
+                title: `Failed to switch networks (code - ${errInfo.code})`,
+                message: `To use ${chainName} on Crypto Donutz, switch the network in your wallet's settings.`,
+              });
             return null;
           }
         }

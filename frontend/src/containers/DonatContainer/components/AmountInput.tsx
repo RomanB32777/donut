@@ -71,7 +71,7 @@ const AmountInput = ({
     const amountValue = +num;
     setInputValue(num);
     formHandler({ field: "amount", value: amountValue });
-    setTabCount(tabCountTypes.includes(amountValue) ? amountValue : null);
+    // setTabCount(null);
   };
 
   const setBlockchain = async (selected: blockchainsSymbols) => {
@@ -101,6 +101,11 @@ const AmountInput = ({
     }
   };
 
+  const convertedUsdSum = useMemo(
+    () => parseFloat(String(+amount * usdtKoef)).toFixed(1),
+    [amount, usdtKoef]
+  );
+
   const selectedBlockchainIconInfo = useMemo(() => {
     const info = walletConf.main_contract.blockchains.find(
       (b) => b.nativeCurrency.symbol === selectedBlockchain
@@ -128,6 +133,11 @@ const AmountInput = ({
       }
     }
   }, [walletConf, blockchain]);
+
+  useEffect(() => {
+    const value = +convertedUsdSum;
+    setTabCount(tabCountTypes.includes(value) ? value : null);
+  }, [convertedUsdSum]);
 
   return (
     <div className="item">
@@ -181,7 +191,7 @@ const AmountInput = ({
             />
             <p className="usd-equal">
               Equal to&nbsp;
-              {parseFloat(String(+amount * usdtKoef)).toFixed(1)}
+              {convertedUsdSum}
               &nbsp;USD
             </p>
           </>

@@ -1,17 +1,42 @@
 @use 'commonStyles/variables'
 
 .badge-page
-    .details
-        .information-title
-            font-family: variables.$pt-font
-            font-style: normal
-            font-weight: 400
-            font-size: 20px
-            line-height: 25px
-            color: variables.$white-color
-            margin: 0
-            margin-bottom: 12px
+    .information-title,
+    .image-title
+        font-family: variables.$pt-font
+        font-style: normal
+        font-weight: 400
+        font-size: 20px
+        line-height: 25px
+        color: variables.$white-color
+        margin: 0
+        margin-bottom: 12px
 
+    .image-block
+        position: relative
+        width: 100%
+        float: left
+
+        &::before
+            content: ""
+            display: block
+            margin-top: 100%
+
+        .content
+            position: absolute
+            top: 0
+            left: 0
+            bottom: 0
+            right: 0
+            overflow: hidden
+            border-radius: variables.$border-radius
+
+            img
+                height: 100%
+                width: 100%
+                object-fit: cover
+
+    .details
         .content
             background: variables.$blue-transparent-color
             border-radius: variables.$border-radius

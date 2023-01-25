@@ -6,8 +6,6 @@ import { addNotification } from "utils";
 import { IFileInfo } from "appTypes";
 import "./styles.sass";
 
-const maxFileSize = 3 * 1024 * 1024;
-
 export const UploadAfterEl = ({
   size,
   mdCol = 8,
@@ -39,7 +37,7 @@ const UploadImage = ({
   disabled,
   setFile,
   filePreview,
-  sizeStr,
+  maxFileSize = 3, // MB
   inputCol,
   labelCol,
   gutter,
@@ -53,7 +51,7 @@ const UploadImage = ({
   formats?: string[];
   disabled?: boolean;
   filePreview?: string;
-  sizeStr?: string;
+  maxFileSize?: number;
   inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
@@ -78,12 +76,13 @@ const UploadImage = ({
   };
 
   const saveFile = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    if (ev.target.files && ev.target.files[0].size <= maxFileSize) {
+    const maxFileSizeInBytes = maxFileSize * 1024 * 1024;
+    if (ev.target.files && ev.target.files[0].size <= maxFileSizeInBytes) {
       fileToBase64(ev.target.files[0]);
     } else {
       addNotification({
         type: "danger",
-        title: `File size limit exceeded (max - ${maxFileSize / 1000000}MB)`,
+        title: `File size limit exceeded (max - ${maxFileSize} MB)`,
       });
     }
   };
@@ -114,11 +113,11 @@ const UploadImage = ({
               <p
                 className="formats"
                 style={{
-                  maxWidth: sizeStr && "none",
+                  maxWidth: maxFileSize && "none",
                 }}
               >
                 You can use formats: {formats.join(", ")}
-                {sizeStr && <span>. Max size: {sizeStr}</span>}
+                {maxFileSize && <span>. Max size: {maxFileSize} MB</span>}
               </p>
             )}
           </div>
@@ -134,7 +133,11 @@ const UploadImage = ({
             onMouseLeave={() => !disabled && setIsMouseOnAvatar(false)}
           >
             <div className="image">
-              {imgExist && <img src={filePreview || imgName} alt={label} />}
+              {imgExist && (
+                <div className="content">
+                  <img src={filePreview || imgName} alt={label} />
+                </div>
+              )}
             </div>
             {!disabled && (
               <div className="button">

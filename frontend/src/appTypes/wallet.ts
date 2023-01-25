@@ -3,7 +3,7 @@ import { blockchainsSymbols, blockchainsType, exchangeNameTypes } from "types";
 
 interface ProviderRpcError extends Error {
   message: string;
-  code: string;
+  code: string | number;
   data?: unknown;
   reason?: string
 }

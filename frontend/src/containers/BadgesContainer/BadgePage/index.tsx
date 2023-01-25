@@ -4,7 +4,6 @@ import { IBadgeInfo, IMintBadgeSocketObj, IShortUserData } from "types";
 
 import { WebSocketContext } from "components/Websocket";
 import PageTitle from "components/PageTitle";
-import UploadImage from "components/UploadImage";
 import BadgeDetails from "./components/BadgeDetails";
 import BadgeHolders from "./components/BadgeHolders";
 import BadgeAssignBlock from "./components/BadgeAssignBlock";
@@ -109,20 +108,17 @@ const BadgePage = ({
         </div>
         <PageTitle title={title} notMarginBottom />
       </div>
-      <Row gutter={[4, 4]} className="form" justify="space-between">
-        <Col xl={10} xs={24}>
-          <div className="upload-block">
-            <UploadImage
-              label="Badge Image"
-              filePreview={image}
-              labelCol={24}
-              inputCol={24}
-              disabled
-              bigSize
-            />
+
+      <Row gutter={[4, 16]} className="form" justify="space-between">
+        <Col lg={10} md={8} xs={18}>
+          <p className="image-title">Badge Image</p>
+          <div className="image-block">
+            <div className="content">
+              <img src={image} alt={title} />
+            </div>
           </div>
         </Col>
-        <Col xl={13} xs={24}>
+        <Col lg={13} md={15} xs={24}>
           <BadgeDetails
             badgeInfo={badgeInfo}
             updateBadgeData={updateBadgeData}
