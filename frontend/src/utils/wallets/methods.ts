@@ -94,9 +94,14 @@ export async function changeBlockchain(
         });
         return chainId;
       } catch (switchError: any) {
-        console.log(switchError);
+        const switchErrorInfo = switchError as ProviderRpcError;
+        console.log("switch error", switchErrorInfo);
+
+        // for mobile metamask version
+        const mobileSwichError = switchError.data?.originalError;
+
         // This error code indicates that the chain has not been added to MetaMask.
-        if (switchError.code === 4902) {
+        if (switchErrorInfo.code === 4902 || mobileSwichError?.code === 4902) {
           try {
             await (window as any).ethereum.request({
               method: "wallet_addEthereumChain",
@@ -115,21 +120,18 @@ export async function changeBlockchain(
               ],
             });
             return chainId;
-          } catch (addError) {
+          } catch (addError: any) {
             const errInfo = addError as ProviderRpcError;
             console.log("add error", errInfo);
-
-            errInfo.code !== 4001 &&
-              addNotification({
-                type: "warning",
-                title: `Failed to switch networks (code - ${errInfo.code})`,
-                message: `To use ${chainName} on Crypto Donutz, switch the network in your wallet's settings.`,
-              });
             return null;
           }
         }
         // User rejected the request
-        else if (switchError.code === 4001) return null;
+        else if (
+          switchErrorInfo.code === 4001 ||
+          mobileSwichError?.code === 4001
+        )
+          return null;
         else return null;
       }
     }

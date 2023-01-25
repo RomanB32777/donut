@@ -69,8 +69,6 @@ const LandingContainer = () => {
     return { ...acc, [step]: acc[step] ? [...acc[step], curr] : [curr] };
   }, {} as Record<string, IFeature[]>);
 
-  console.log(mobileFeaturesSteps);
-
   useEffect(() => {
     localStorage.getItem(storageWalletKey) &&
       checkWallet({ walletConf, dispatch });
