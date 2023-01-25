@@ -1,9 +1,32 @@
 import { HTMLInputTypeAttribute, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, RowProps } from "antd";
 import clsx from "clsx";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
+
+interface IFormInput {
+  value: string;
+  label?: string;
+  name?: string;
+  placeholder?: string;
+  typeInput?: HTMLInputTypeAttribute;
+  disabled?: boolean;
+  modificator?: string;
+  descriptionModificator?: string;
+  addonsModificator?: string;
+  descriptionInput?: React.ReactNode;
+  maxLength?: number;
+  isTextarea?: boolean;
+  isVisibleLength?: boolean;
+  inputCol?: number;
+  labelCol?: number;
+  gutter?: number | [number, number];
+  rowProps?: RowProps;
+  addonBefore?: React.ReactNode;
+  addonAfter?: React.ReactNode;
+  setValue?: (value: string) => void;
+}
 
 const FormInput = ({
   label,
@@ -22,30 +45,11 @@ const FormInput = ({
   inputCol,
   labelCol,
   gutter,
+  rowProps,
   addonBefore,
   addonAfter,
   setValue,
-}: {
-  value: string;
-  label?: string;
-  name?: string;
-  placeholder?: string;
-  typeInput?: HTMLInputTypeAttribute;
-  disabled?: boolean;
-  modificator?: string;
-  descriptionModificator?: string;
-  addonsModificator?: string;
-  descriptionInput?: React.ReactNode;
-  maxLength?: number;
-  isTextarea?: boolean;
-  isVisibleLength?: boolean;
-  inputCol?: number;
-  labelCol?: number;
-  gutter?: number | [number, number];
-  addonBefore?: React.ReactNode;
-  addonAfter?: React.ReactNode;
-  setValue?: (value: string) => void;
-}) => {
+}: IFormInput) => {
   const { isMobile } = useWindowDimensions();
   const [active, setActive] = useState(false);
 
@@ -53,9 +57,16 @@ const FormInput = ({
 
   const onBlur = () => setActive(false);
 
+  const onWheel = (e: React.WheelEvent<HTMLInputElement>) =>
+    e.currentTarget.blur();
+
+  const changeHandler = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => setValue && setValue(e.target.value);
+
   return (
     <div className="formInput">
-      <Row gutter={gutter || 0}>
+      <Row gutter={gutter || 0} {...rowProps}>
         {label && (
           <Col
             md={labelCol || 12}
@@ -87,7 +98,7 @@ const FormInput = ({
                 placeholder={placeholder || ""}
                 maxLength={maxLength || 524288}
                 value={value}
-                onChange={(e) => setValue && setValue(e.target.value)}
+                onChange={changeHandler}
               />
             ) : (
               <input
@@ -96,16 +107,16 @@ const FormInput = ({
                   withAddonBefore: Boolean(addonBefore),
                 })}
                 value={value}
-                onChange={(e) => setValue && setValue(e.target.value)}
+                onChange={changeHandler}
                 onFocus={onFocus}
                 onBlur={onBlur}
                 disabled={disabled || !Boolean(setValue)}
-                name={name || ""}
-                placeholder={placeholder || ""}
+                name={name}
+                placeholder={placeholder}
                 type={typeInput || "text"}
-                min={0}
                 maxLength={maxLength || 524288}
-                onWheel={(e) => e.currentTarget.blur()}
+                onWheel={onWheel}
+                min={0}
               />
             )}
             {isVisibleLength && (

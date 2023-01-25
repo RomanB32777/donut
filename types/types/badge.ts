@@ -7,7 +7,6 @@ interface IBadgeInfo<ImageType = string> {
   id: number;
   title: string;
   description: string;
-  quantity: number;
   image: ImageType;
   blockchain: blockchainsType;
   creator_id: number;
@@ -27,7 +26,6 @@ interface IMintBadgeSocketObj {
 
 interface IQueryPriceParams {
   address: string;
-  quantity: string;
   token_id: string;
 }
 

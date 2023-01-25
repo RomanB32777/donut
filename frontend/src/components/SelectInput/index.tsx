@@ -1,6 +1,6 @@
 import { FC } from "react";
 import clsx from "clsx";
-import { Col, Row, Select, SelectProps } from "antd";
+import { Col, Row, RowProps, Select, SelectProps } from "antd";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
@@ -13,7 +13,6 @@ export interface ISelectItem {
 }
 
 interface ISelectInput extends SelectProps {
-  // value: string | string[];
   list: ISelectItem[] | null; // string[]
   label?: string;
   gutter?: number | [number, number];
@@ -24,6 +23,8 @@ interface ISelectInput extends SelectProps {
   isTags?: boolean;
   disabled?: boolean;
   descriptionSelect?: string;
+  rowProps?: RowProps;
+  offset?: number;
   renderOption?: (item: ISelectItem) => React.ReactNode;
 }
 
@@ -39,6 +40,8 @@ const SelectInput: FC<ISelectInput> = ({
   selectCol,
   isTags,
   disabled = false,
+  offset,
+  rowProps,
   showSearch,
   labelInValue,
   descriptionSelect,
@@ -51,7 +54,7 @@ const SelectInput: FC<ISelectInput> = ({
   const { isMobile } = useWindowDimensions();
   return (
     <div className="selectInput">
-      <Row gutter={gutter || 0}>
+      <Row gutter={gutter || 0} {...rowProps}>
         {label && (
           <Col md={labelCol || 12} xs={24} className="label_wrapper">
             <span className={clsx("label", labelModificator)}>{label}</span>
@@ -96,7 +99,7 @@ const SelectInput: FC<ISelectInput> = ({
       {descriptionSelect && (
         <Row>
           <Col
-            offset={(!isMobile ? labelCol : 0) || (label && !isMobile ? 12 : 0)}
+            offset={(!isMobile ? (offset || labelCol) : 0) || (label && !isMobile ? 12 : 0)}
             md={selectCol || (label ? 12 : 24)}
           >
             <p className="description">{descriptionSelect}</p>

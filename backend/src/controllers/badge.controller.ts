@@ -231,8 +231,6 @@ class BadgeController implements IBadgeConfig {
           tokenID = badgeCount.toNumber() + 1;
         }
 
-        console.log(tokenID);
-
         const tx = await contract.mint(supporter, tokenID, 1, []);
         const mintInfo = await tx.wait();
 
@@ -263,7 +261,7 @@ class BadgeController implements IBadgeConfig {
             FROM users_assigned_badges ub
             LEFT JOIN users u
             ON ub.user_id = u.id
-            WHERE ub.badge_id = $1`,
+            WHERE u.id IS NOT NULL AND ub.badge_id = $1`,
         [id],
       );
       if (holders.rowCount) return res.status(200).json(holders.rows);
@@ -280,7 +278,7 @@ class BadgeController implements IBadgeConfig {
   ) {
     try {
       this.setWalletConfig();
-      const { address, quantity, token_id } = req.query;
+      const { address, token_id } = req.query;
 
       const alchemy = new Alchemy(this.settings);
       const provider = await alchemy.config.getProvider();
@@ -295,7 +293,7 @@ class BadgeController implements IBadgeConfig {
         tokenID = badgeCount.toNumber() + 1;
       }
 
-      const mintGasCount = await contract.estimateGas.mint(address, tokenID, Number(quantity), []);
+      const mintGasCount = await contract.estimateGas.mint(address, tokenID, 1, []); // Number(quantity)
 
       if (gasPrice && mintGasCount) {
         const price = (gasPrice.toNumber() * mintGasCount.toNumber()) / 1e18;

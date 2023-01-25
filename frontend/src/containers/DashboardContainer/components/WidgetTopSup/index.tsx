@@ -24,8 +24,11 @@ const WidgetTopSup = () => {
   const { id } = user;
   const { list, shouldUpdateApp } = notifications;
 
-  const getLatestDonations = async (timePeriod: string) => {
+  const getLatestDonations = async (activeFilterItem: string) => {
     try {
+      console.log("getLatestDonations");
+
+      const timePeriod = getTimePeriodQuery(activeFilterItem);
       const { data } = await axiosClient.get(
         `${widgetApiUrl}/top-supporters/${id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`
       );
@@ -38,9 +41,12 @@ const WidgetTopSup = () => {
   };
 
   useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    id && shouldUpdateApp && list.length && getLatestDonations(timePeriod);
-  }, [id, list, shouldUpdateApp, activeFilterItem]);
+    id && getLatestDonations(activeFilterItem);
+  }, [id, activeFilterItem]);
+
+  useEffect(() => {
+    list.length && shouldUpdateApp && getLatestDonations(activeFilterItem);
+  }, [list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-topSup">

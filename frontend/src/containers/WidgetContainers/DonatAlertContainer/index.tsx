@@ -21,7 +21,7 @@ const maxDuration = 5000;
 const DonatAlertContainer = () => {
   const dispatch = useDispatch();
   const { notifications, personInfo } = useAppSelector((state) => state);
-  const { name } = useParams();
+  const { name, security_string } = useParams();
 
   const [lastNotif, setLastNotif] = useState<INotification | null>(null);
 
@@ -52,7 +52,7 @@ const DonatAlertContainer = () => {
 
   const getAlertsWidgetData = async () => {
     const { data } = await axiosClient.get(
-      `/api/widget/get-alerts-widget/${id}`
+      `/api/widget/get-alerts-widget/${id}/${security_string}`
     );
 
     const fonts = await getFontsList();
@@ -83,6 +83,11 @@ const DonatAlertContainer = () => {
   useEffect(() => {
     list.length && setLastNotif(list[0]);
   }, [list]);
+
+  // // for testing
+  // useEffect(() => {
+  //   dispatch(getNotifications({ user: personInfo.id }));
+  // }, [personInfo]);
 
   useEffect(() => {
     const { voice, sound, gender_voice } = alertWidgetData;

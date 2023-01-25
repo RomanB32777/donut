@@ -50,7 +50,7 @@ const WidgetTopDonat = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    if (id && timePeriod && shouldUpdateApp && list.length)
+    if (id && timePeriod && shouldUpdateApp)
       getTopDonations(timePeriod);
   }, [id, activeFilterItem, list, shouldUpdateApp]);
 

@@ -30,7 +30,7 @@ const BadgePage = ({
   const [holders, setHolders] = useState<IShortUserData[]>([]);
   const [updateList, setUpdateList] = useState(false);
 
-  const { image, title, is_creator, quantity, assigned, token_id } = badgeInfo;
+  const { image, title, is_creator, token_id } = badgeInfo;
 
   const updateBadgeData = async () => {
     try {
@@ -134,16 +134,14 @@ const BadgePage = ({
                   <BadgeHolders holders={holders} getHolders={getHolders} />
                 </Col>
               )}
-              {assigned !== quantity && (
-                <Col span={24}>
-                  <BadgeAssignBlock
-                    badgeInfo={activeBadge}
-                    supporters={supporters}
-                    getSupporters={getSupporters}
-                    sendAssignedBadge={sendAssignedBadge}
-                  />
-                </Col>
-              )}
+              <Col span={24}>
+                <BadgeAssignBlock
+                  badgeInfo={activeBadge}
+                  supporters={supporters}
+                  getSupporters={getSupporters}
+                  sendAssignedBadge={sendAssignedBadge}
+                />
+              </Col>
             </Row>
           )}
         </Col>

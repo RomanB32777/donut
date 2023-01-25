@@ -104,7 +104,12 @@ const LandingContainer = () => {
           <div className="gradient-blue-bg" />
           <div className="content">
             <Row justify="space-between" align={isMobile ? "top" : "middle"}>
-              <Col xs={16} md={12}>
+              <Col xs={1} md={10} order={1}>
+                <div className="image">
+                  <img src={rocketImg} alt="rocket" />
+                </div>
+              </Col>
+              <Col xs={23} md={12} order={0}>
                 <p className="subtitle">What is Crypto Donutz?</p>
                 <h1 className="title">
                   Crypto donation platform for streamers
@@ -120,11 +125,6 @@ const LandingContainer = () => {
                   modificator="landing-btn"
                   isMain
                 />
-              </Col>
-              <Col xs={6} md={10}>
-                <div className="image">
-                  <img src={rocketImg} alt="rocket" />
-                </div>
               </Col>
             </Row>
           </div>
@@ -153,12 +153,12 @@ const LandingContainer = () => {
             </Row>
             <div className="commission block">
               <Row justify="space-between" align={isMobile ? "top" : "middle"}>
-                <Col span={10}>
+                <Col xs={{ span: 1, order: 1 }} md={{ span: 10, order: 0 }}>
                   <div className="image">
                     <img src={moneyImg} alt="rocket" />
                   </div>
                 </Col>
-                <Col span={12}>
+                <Col xs={{ span: 23, order: 0 }} md={{ span: 12, order: 1 }}>
                   <div className="content">
                     <h2 className="title">3% commission</h2>
                     <div className="description">
@@ -175,7 +175,12 @@ const LandingContainer = () => {
         <div className="howWork block">
           <div className="gradient-red-bg" />
           <Row justify="space-between" align={isMobile ? "top" : "middle"}>
-            <Col span={16}>
+            <Col xs={1} md={7} order={1}>
+              <div className="image">
+                <img src={listImg} alt="list" />
+              </div>
+            </Col>
+            <Col xs={23} md={16} order={0}>
               <div className="content">
                 <p className="subtitle">How it all works?</p>
                 <h2 className="title">Three steps process</h2>
@@ -190,11 +195,6 @@ const LandingContainer = () => {
                     </div>
                   ))}
                 </div>
-              </div>
-            </Col>
-            <Col span={7}>
-              <div className="image">
-                <img src={listImg} alt="list" />
               </div>
             </Col>
           </Row>
@@ -235,26 +235,28 @@ const LandingContainer = () => {
           </div>
         </div>
 
-        <div className="help block">
-          <h2 className="title">Need help?</h2>
-          <div className="list">
-            {help.map(({ title, icon, description }, index) => (
-              <div className="card" key={index}>
-                <Row align="middle">
-                  <Col span={6}>
-                    <div className="image">{icon}</div>
-                  </Col>
-                  <Col span={18}>
-                    <div className="text">
-                      <p className="title">{title}</p>
-                      <p className="description">{description}</p>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-            ))}
+        {!isMobile && (
+          <div className="help block">
+            <h2 className="title">Need help?</h2>
+            <div className="list">
+              {help.map(({ title, icon, description }, index) => (
+                <div className="card" key={index}>
+                  <Row align="middle">
+                    <Col span={6}>
+                      <div className="image">{icon}</div>
+                    </Col>
+                    <Col span={18}>
+                      <div className="text">
+                        <p className="title">{title}</p>
+                        <p className="description">{description}</p>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="footer">
           <div className="gradient-blue-bg" />

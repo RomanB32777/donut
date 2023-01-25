@@ -141,8 +141,9 @@ const StatsModal = ({
                 value={title}
                 setValue={(value) => setFormData({ ...formData, title: value })}
                 labelCol={6}
-                inputCol={16}
+                inputCol={17}
                 gutter={[0, 18]}
+                rowProps={{ justify: "space-between" }}
               />
             </div>
           </Col>
@@ -156,8 +157,9 @@ const StatsModal = ({
                   setFormData({ ...formData, stat_description: value })
                 }
                 labelCol={6}
-                inputCol={16}
+                inputCol={17}
                 gutter={[0, 18]}
+                rowProps={{ justify: "space-between" }}
                 isTextarea
               />
             </div>
@@ -178,8 +180,9 @@ const StatsModal = ({
                   })
                 }
                 labelCol={6}
-                selectCol={16}
+                selectCol={17}
                 gutter={[0, 18]}
+                rowProps={{ justify: "space-between" }}
               />
             </div>
           </Col>
@@ -199,13 +202,14 @@ const StatsModal = ({
                   })
                 }
                 labelCol={6}
-                selectCol={16}
+                selectCol={17}
                 gutter={[0, 18]}
+                rowProps={{ justify: "space-between" }}
               />
               {time_period === "custom" && (
                 <div className="customDatesPicker">
                   <Row>
-                    <Col offset={isMobile ? 0 : 6}>
+                    <Col offset={isMobile ? 0 : 7}>
                       <DatesPicker
                         setValue={(startDate, endDate) =>
                           setFormData({
@@ -236,9 +240,11 @@ const StatsModal = ({
                 descriptionSelect={currTemplateList
                   .map((t) => t.value)
                   .join(", ")}
-                selectCol={16}
+                offset={7}
                 labelCol={6}
+                selectCol={17}
                 gutter={[0, 18]}
+                rowProps={{ justify: "space-between" }}
                 isTags
               />
             </div>

@@ -209,7 +209,7 @@ export const routers: IRoute[] = [
     noPaddingMainConteiner: true,
   },
   {
-    path: "donat-message/:name/:token",
+    path: "donat-message/:name/:security_string",
     name: "Donat alert page",
     element: <DonatAlertPage />,
     hiddenLayoutElements: true,

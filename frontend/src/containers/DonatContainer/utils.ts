@@ -160,92 +160,84 @@ const triggerContract = async ({
   setLoading: (state: boolean) => void;
   setIsOpenSuccessModal: (state: boolean) => void;
 }) => {
-  const { amount, username } = form;
+  try {
+    const { amount, username } = form;
+    const walletData = await walletConf.getWalletData();
 
-  if (amount && username) {
-    try {
-      const walletData = await walletConf.getWalletData();
+    if (walletData && walletData.address) {
+      const { signer, address } = walletData;
+      const { wallet_address } = personInfo;
 
-      if (walletData && walletData.address) {
-        const { signer, address } = walletData;
-        const { wallet_address } = personInfo;
+      if (address !== wallet_address) {
+        setLoading(true);
 
-        if (address !== wallet_address) {
-          setLoading(true);
-
-          if (!userID) {
-            const isExistUser = await checkIsExistUser(username);
-            if (isExistUser) {
-              addNotification({
-                type: "warning",
-                title:
-                  "Unfortunately, this username is already busy. Enter another one",
-              });
-              return;
-            }
-          }
-
-          if (balance >= Number(amount)) {
-            const currentBlockchain = await walletConf.getCurrentBlockchain();
-
-            if (currentBlockchain) {
-              const res =
-                await walletConf.transfer_contract_methods.paymentMethod({
-                  contract: currentBlockchain.address,
-                  addressTo: wallet_address,
-                  sum: String(amount),
-                  signer,
-                });
-
-              if (res)
-                await sendDonation({
-                  form,
-                  user,
-                  socket,
-                  usdtKoef,
-                  personInfo,
-                  wallet_address: address, // sender address
-                  dispatch,
-                  setIsOpenSuccessModal,
-                });
-            }
-          } else {
+        if (!userID) {
+          const isExistUser = await checkIsExistUser(username);
+          if (isExistUser) {
             addNotification({
               type: "warning",
-              title: "Insufficient balance",
-              message:
-                "Unfortunately, there are not enough funds on your balance to carry out the operation",
+              title:
+                "Unfortunately, this username is already busy. Enter another one",
             });
+            return;
+          }
+        }
+
+        if (balance >= Number(amount)) {
+          const currentBlockchain = await walletConf.getCurrentBlockchain();
+
+          if (currentBlockchain) {
+            const res =
+              await walletConf.transfer_contract_methods.paymentMethod({
+                contract: currentBlockchain.address,
+                addressTo: wallet_address,
+                sum: String(amount),
+                signer,
+              });
+
+            if (res)
+              await sendDonation({
+                form,
+                user,
+                socket,
+                usdtKoef,
+                personInfo,
+                wallet_address: address, // sender address
+                dispatch,
+                setIsOpenSuccessModal,
+              });
           }
         } else {
           addNotification({
             type: "warning",
-            title: "Seriously ?)",
-            message: "You are trying to send a donation to yourself",
+            title: "Insufficient balance",
+            message:
+              "Unfortunately, there are not enough funds on your balance to carry out the operation",
           });
         }
-      }
-    } catch (error) {
-      const errInfo = error as ProviderRpcError;
-
-      errInfo.code !== "ACTION_REJECTED" &&
+      } else {
         addNotification({
-          type: "danger",
-          title: "Error",
-          message:
-            errInfo.reason ||
-            (error as any)?.response?.data?.message ||
-            (error as Error).message ||
-            `An error occurred while sending data`,
+          type: "warning",
+          title: "Seriously ?)",
+          message: "You are trying to send a donation to yourself",
         });
-    } finally {
-      setLoading(false);
+      }
     }
-  } else {
-    addNotification({
-      type: "warning",
-      title: "Not all fields are filled",
-    });
+  } catch (error) {
+    const errInfo = error as ProviderRpcError;
+
+    errInfo.code !== "ACTION_REJECTED" &&
+      addNotification({
+        type: "danger",
+        title: "Error",
+        message:
+          errInfo.reason ||
+          (error as any)?.response?.data?.message ||
+          (error as Error).message ||
+          `An error occurred while sending data`,
+      });
+  } finally {
+    setLoading(false);
   }
 };
 

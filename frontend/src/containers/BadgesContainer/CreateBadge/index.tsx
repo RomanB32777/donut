@@ -1,7 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Col, Row, StepProps, Steps, StepsProps } from "antd";
-import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Col, Row } from "antd";
 import { blockchainsType, IBadgeInfo } from "types";
 
 import { WalletContext } from "contexts/Wallet";
@@ -11,65 +10,17 @@ import FormInput from "components/FormInput";
 import PageTitle from "components/PageTitle";
 import { LeftArrowIcon } from "icons";
 import SelectInput from "components/SelectInput";
-import ModalComponent, {
-  SuccessModalComponent,
-} from "components/ModalComponent";
+import { SuccessModalComponent } from "components/ModalComponent";
 import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
 import SelectedBlockchain from "../SelectedBlockchain";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import useWindowDimensions from "hooks/useWindowDimensions";
 import { setSelectedBlockchain } from "store/types/Wallet";
-import { addNotification, delay, isValidateFilledForm, sendFile } from "utils";
+import { addNotification, isValidateFilledForm, sendFile } from "utils";
 
 import { initBadgeData } from "consts";
 import { IBadge } from "appTypes";
 import "./styles.sass";
-
-const { Step } = Steps;
-
-const customDot: StepsProps["progressDot"] = (dot, { status }) => {
-  if (status === "finish")
-    return (
-      <CheckOutlined
-        style={{
-          color: "#25EC39",
-          position: "absolute",
-          right: "-11px",
-          top: "-10px",
-          fontSize: 25,
-        }}
-      />
-    );
-  if (status === "process")
-    return (
-      <LoadingOutlined
-        style={{
-          color: "#E94560",
-          position: "absolute",
-          right: "-11px",
-          top: "-5px",
-          fontSize: 25,
-        }}
-      />
-    );
-  return dot;
-};
-
-const initLoadingSteps: StepProps[] = [
-  {
-    status: "wait",
-    title: "Pay minting cost",
-  },
-  {
-    status: "wait",
-    title: "Wait for the badge to be minted",
-  },
-  {
-    status: "wait",
-    title: "Verification",
-  },
-];
 
 const CreateBadgeForm = ({
   backBtn,
@@ -81,79 +32,15 @@ const CreateBadgeForm = ({
 
   const walletConf = useContext(WalletContext);
 
-  const { isTablet } = useWindowDimensions();
   const [loading, setLoading] = useState(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
-  const [loadingSteps, setLoadingSteps] = useState<StepProps[]>([
-    ...initLoadingSteps,
-  ]);
 
   const [formBadge, setFormBadge] = useState<IBadge>({
     ...initBadgeData,
   });
 
   const { id, username } = user;
-  const { image, title, description, quantity } = formBadge;
-
-  const setLoadingCurrStep = ({
-    loadingStep,
-    finishedStep,
-  }: {
-    loadingStep?: number;
-    finishedStep?: number;
-  }) => {
-    // const loadingItem = loadingSteps.find((_, key) => key === loadingStep);
-    // const finishedItem = loadingSteps.find((_, key) => key === finishedStep);
-    // // console.log("load status", loadingItem, finishedItem);
-
-    // // const res = loadingSteps.reduce((acc, currStep) => {
-    // //   return [...acc, currStep];
-    // // }, [] as StepProps[]);
-
-    // // console.log(res);
-
-    if (loadingStep === 0) {
-      setLoadingSteps([
-        {
-          status: "process",
-          title: "Pay minting cost",
-        },
-        ...loadingSteps.slice(1, 3),
-      ]);
-    } else if (finishedStep === 0 && loadingStep === 1) {
-      setLoadingSteps((prev) => [
-        {
-          status: "finish",
-          title: "Pay minting cost",
-        },
-        {
-          status: "process",
-          title: "Wait for the badge to be minted",
-        },
-        ...prev.slice(2, 3),
-      ]);
-    } else if (finishedStep === 1 && loadingStep === 2) {
-      setLoadingSteps((prev) => [
-        ...prev.slice(0, 1),
-        {
-          status: "finish",
-          title: "Wait for the badge to be minted",
-        },
-        {
-          status: "process",
-          title: "Verification",
-        },
-      ]);
-    } else if (finishedStep === 2) {
-      setLoadingSteps((prev) => [
-        ...prev.slice(0, 2),
-        {
-          status: "finish",
-          title: "Verification",
-        },
-      ]);
-    }
-  };
+  const { image, title, description } = formBadge;
 
   const closeSuccessPopup = () => {
     setIsOpenSuccessModal(false);
@@ -163,13 +50,12 @@ const CreateBadgeForm = ({
   };
 
   const createBadge = async () => {
-    const { image, title, description, quantity, blockchain } = formBadge;
+    const { image, title, description, blockchain } = formBadge;
     const isValidate = isValidateFilledForm(
       Object.values({
         image: image.file,
         title,
         description,
-        quantity,
         blockchain,
       })
     );
@@ -177,16 +63,9 @@ const CreateBadgeForm = ({
     if (isValidate) {
       try {
         setLoading(true);
-        setLoadingCurrStep({ loadingStep: 0 });
-        await delay({
-          ms: 2000,
-          cb: () => setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 }),
-        });
-
         const sendingData = JSON.stringify({
           title,
           description,
-          quantity,
           blockchain,
           creator_id: id,
         } as IBadgeInfo);
@@ -202,14 +81,7 @@ const CreateBadgeForm = ({
             url: "/api/badge/",
             isEdit: false,
           });
-          if (newBadge) {
-            setLoadingCurrStep({ finishedStep: 1, loadingStep: 2 });
-            await delay({
-              ms: 2500,
-              cb: () => setLoadingCurrStep({ finishedStep: 2 }),
-            });
-            setIsOpenSuccessModal(true);
-          }
+          if (newBadge) setIsOpenSuccessModal(true);
         }
       } catch (error) {
         const errorMessage = (error as Error).message;
@@ -220,7 +92,6 @@ const CreateBadgeForm = ({
           });
       } finally {
         setLoading(false);
-        setLoadingSteps([...initLoadingSteps]);
       }
     } else {
       addNotification({
@@ -283,7 +154,7 @@ const CreateBadgeForm = ({
             />
           </div>
         </Col>
-        <Col xl={12} md={24}>
+        <Col xl={13} md={24}>
           <Row gutter={[0, 18]} className="form">
             <Col span={24}>
               <p className="title">Badge information</p>
@@ -312,18 +183,6 @@ const CreateBadgeForm = ({
                   placeholder="Badge description"
                   modificator="description-area"
                   isTextarea
-                />
-              </div>
-            </Col>
-            <Col span={24}>
-              <div className="form-element">
-                <FormInput
-                  typeInput="number"
-                  value={quantity ? String(quantity) : ""}
-                  setValue={(value) =>
-                    setFormBadge({ ...formBadge, quantity: +value })
-                  }
-                  placeholder="Number of badges to create"
                 />
               </div>
             </Col>
@@ -381,28 +240,6 @@ const CreateBadgeForm = ({
           </Row>
         </Col>
       </Row>
-      <ModalComponent
-        open={loading}
-        title="Follow steps"
-        closable={false}
-        width={550}
-        centered={Boolean(isTablet)}
-      >
-        <div className="goals-modal">
-          <Row gutter={[0, 18]} className="goals-modal__form" justify="center">
-            <Col span={24}>
-              <Steps
-                direction="vertical"
-                progressDot={customDot}
-                items={loadingSteps.map(({ title, status }) => ({
-                  title,
-                  status,
-                }))}
-              />
-            </Col>
-          </Row>
-        </div>
-      </ModalComponent>
       <SuccessModalComponent
         open={isOpenSuccessModal}
         onClose={closeSuccessPopup}

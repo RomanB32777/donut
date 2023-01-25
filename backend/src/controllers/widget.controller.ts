@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-// import { Stream } from 'stream';
+import { Stream } from 'stream';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, readdirSync } from 'fs';
-// import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-// import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
+import { TextToSpeechClient } from '@google-cloud/text-to-speech';
+import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
 import db from '../db.js';
 import { getRandomStr } from '../utils.js';
 import {
@@ -16,7 +16,7 @@ import {
   uploadsFolder,
 } from '../consts.js';
 
-// const speechClient = new TextToSpeechClient();
+const speechClient = new TextToSpeechClient();
 
 class WidgetController {
   // alerts
@@ -80,8 +80,16 @@ class WidgetController {
 
   async getAlertsWidgetData(req: Request, res: Response, next: NextFunction) {
     try {
-      const creator_id = req.params.creator_id;
-      const data = await db.query('SELECT * FROM alerts WHERE creator_id = $1', [creator_id]);
+      const { creator_id, security_string } = req.params;
+      const data = await db.query(
+        `
+          SELECT * FROM alerts a
+          LEFT JOIN creators c
+          ON c.user_id = a.creator_id
+          WHERE a.creator_id = $1 AND c.security_string = $2
+      `,
+        [creator_id, security_string],
+      );
       const alertInfo = data.rows[0];
       if (alertInfo) {
         const { sound, banner } = alertInfo;
@@ -169,7 +177,7 @@ class WidgetController {
 
   async editGoalWidget(req: Request, res: Response, next: NextFunction) {
     try {
-      const { goalData, creator_id, id, isReset } = req.body;    
+      const { goalData, creator_id, id, isReset } = req.body;
 
       if (isReset) {
         const updatedDBWidget = await db.query(
@@ -319,14 +327,14 @@ class WidgetController {
         'Transfer-Encoding': 'chunked',
       });
 
-      // const [response] = await speechClient.synthesizeSpeech(
-      //   request as google.cloud.texttospeech.v1.ISynthesizeSpeechRequest,
-      // );
-      // if (response.audioContent) {
-      //   const bufferStream = new Stream.PassThrough();
-      //   bufferStream.end(Buffer.from(response.audioContent));
-      //   bufferStream.pipe(res);
-      // }
+      const [response] = await speechClient.synthesizeSpeech(
+        request as google.cloud.texttospeech.v1.ISynthesizeSpeechRequest,
+      );
+      if (response.audioContent) {
+        const bufferStream = new Stream.PassThrough();
+        bufferStream.end(Buffer.from(response.audioContent));
+        bufferStream.pipe(res);
+      }
     } catch (error) {
       console.log(`api, ${error}`);
       next(error);

@@ -150,6 +150,11 @@ const StatsItem = ({
     [user, id]
   );
 
+  const renderLinkForCopy = useMemo(
+    () => linkForCopy.replace(id, "⁕⁕⁕⁕⁕"),
+    [linkForCopy, id]
+  );
+
   const timePeriodName = useMemo(
     () => getCurrentTimePeriodQuery(time_period),
     [time_period]
@@ -186,7 +191,7 @@ const StatsItem = ({
               <p>Date period: {timePeriodName} </p>
               <p>Date type: {typeStatData}</p>
               <p>Template: {template}</p>
-              {!isTablet && <LinkCopy link={linkForCopy} isSimple />}
+              {!isTablet && <LinkCopy link={linkForCopy} title={renderLinkForCopy} isSimple />}
             </div>
           </Col>
         </Row>

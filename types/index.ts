@@ -36,8 +36,11 @@ import {
   INewDonatSocketObj,
   socketNotificationTypes,
   ISocketNotification,
+  ISendDonatBase,
   ISendDonat,
   IFullSendDonat,
+  sendDonatFieldsKeys,
+  requiredFields,
 } from "./types/donations";
 import {
   badgeStatus,
@@ -102,8 +105,11 @@ export type {
   INewDonatSocketObj,
   socketNotificationTypes,
   ISocketNotification,
+  ISendDonatBase,
   ISendDonat,
   IFullSendDonat,
+  sendDonatFieldsKeys,
+  requiredFields,
 
   // badge
   badgeStatus,

@@ -148,6 +148,11 @@ const GoalItem = ({
     [user, id]
   );
 
+  const renderLinkForCopy = useMemo(
+    () => linkForCopy.replace(id, "⁕⁕⁕⁕⁕"),
+    [linkForCopy, id]
+  );
+
   useEffect(() => {
     fonts && fonts.length && initGoalItem();
   }, [fonts, goalData]);
@@ -202,7 +207,7 @@ const GoalItem = ({
                 <Col span={13}>
                   {!is_archive && (
                     <div className="link">
-                      <LinkCopy link={linkForCopy} isSimple />
+                      <LinkCopy link={linkForCopy} title={renderLinkForCopy} isSimple />
                     </div>
                   )}
                 </Col>

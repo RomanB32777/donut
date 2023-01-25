@@ -1,16 +1,19 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import clsx from "clsx";
 import { blockchainsSymbols, ISendDonat } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import FormInput from "components/FormInput";
 import SelectComponent from "components/SelectComponent";
 import { TabsComponent } from "components/TabsComponent";
+import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
+
 import { setSelectedBlockchain } from "store/types/Wallet";
 import { getUsdKoef } from "utils";
 import { useAppSelector } from "hooks/reduxHooks";
 import { IBlockchain } from "appTypes";
-import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
+import { IFormHandler } from "../types";
 
 const tabCountTypes = [5, 10, 30];
 
@@ -18,20 +21,23 @@ const AmountInput = ({
   form,
   color,
   usdtKoef,
-  setForm,
+  isNotValid,
+  formHandler,
   setUsdtKoef,
 }: {
   color: string;
   form: ISendDonat;
   usdtKoef: number;
-  setForm: (value: React.SetStateAction<ISendDonat>) => void;
+  isNotValid: boolean;
+  formHandler: ({ field, value }: IFormHandler) => void;
   setUsdtKoef: (num: number) => void;
 }) => {
   const dispatch = useDispatch();
   const blockchain = useAppSelector(({ blockchain }) => blockchain);
   const walletConf = useContext(WalletContext);
 
-  const [tabCount, setTabCount] = useState<number | null>(null); // String(tabCountTypes[0])
+  const [tabCount, setTabCount] = useState<number | null>(null);
+  const [inputValue, setInputValue] = useState("");
 
   const { amount, selectedBlockchain } = form;
 
@@ -42,20 +48,20 @@ const AmountInput = ({
     selected: blockchainsSymbols;
     blockchainInfo: IBlockchain;
   }) => {
-    setForm((form) => ({
-      ...form,
-      selectedBlockchain: selected,
-    }));
+    formHandler({ field: "selectedBlockchain", value: selected });
     dispatch(setSelectedBlockchain(blockchainInfo.name));
     await getUsdKoef(blockchainInfo.nativeCurrency.exchangeName, setUsdtKoef);
   };
 
   const setAmountValue = (num: string) => {
+    // const filteredSymbols = ["+", "-", "e"];
+    // const numericPattern = /^([0-9]+(\.*[0-9]*)?|\.[0-9]+)$/;
+    // console.log(num, numericPattern.test(num));
+    // if (!numericPattern.test(num)) return;
+
     const amountValue = +num;
-    setForm((form) => ({
-      ...form,
-      amount: amountValue,
-    }));
+    setInputValue(num);
+    formHandler({ field: "amount", value: amountValue });
     setTabCount(tabCountTypes.includes(amountValue) ? amountValue : null);
   };
 
@@ -73,10 +79,7 @@ const AmountInput = ({
 
   const setTabContent = (key: string) => {
     setTabCount(+key);
-    setForm((form) => ({
-      ...form,
-      amount: +key,
-    }));
+    formHandler({ field: "amount", value: +key });
   };
 
   const selectedBlockchainIconInfo = useMemo(() => {
@@ -102,10 +105,7 @@ const AmountInput = ({
       );
       if (blockchainInfo) {
         const blockchainSymbol = blockchainInfo.nativeCurrency.symbol;
-        setForm((form) => ({
-          ...form,
-          selectedBlockchain: blockchainSymbol,
-        }));
+        formHandler({ field: "selectedBlockchain", value: blockchainSymbol });
         setBlockchainInfo({
           selected: blockchainSymbol,
           blockchainInfo,
@@ -117,7 +117,7 @@ const AmountInput = ({
   return (
     <div className="item">
       <FormInput
-        value={String(amount)}
+        value={inputValue}
         setValue={setAmountValue}
         typeInput="number"
         addonAfter={
@@ -153,9 +153,10 @@ const AmountInput = ({
             styles={{ background: color }}
           />
         }
-        addonsModificator="select-blockchain"
-        modificator="inputs-amount"
         placeholder="Donation amount"
+        modificator={clsx("inputs-amount", { isNotValid })}
+        addonsModificator="select-blockchain"
+        descriptionModificator="count-modificator"
         descriptionInput={
           <>
             <TabsComponent
@@ -170,7 +171,6 @@ const AmountInput = ({
             </p>
           </>
         }
-        descriptionModificator="count-modificator"
       />
     </div>
   );

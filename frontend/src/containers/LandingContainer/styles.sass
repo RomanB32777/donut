@@ -145,12 +145,11 @@
 
                 .description
                     margin-top: 5px
+                    margin-bottom: 0
 
             .commission
                 .description
                     max-width: 370px
-
-                .image
 
         .howWork
             margin-top: 60px
@@ -266,6 +265,10 @@
                     .link
                         margin-left: 20px
 
+                        svg
+                            width: 32px
+                            height: 32px
+
     @media (max-width: 1024px)
         .landing-padding
             padding: 0 75px
@@ -278,7 +281,6 @@
             padding-top: 0
 
         &-container
-
             .block
                 margin-top: 75px
 
@@ -287,17 +289,18 @@
                 line-height: 25px
 
             .subtitle
-                font-size: 10px
-                line-height: 14px
+                font-size: 16px
+                line-height: 20px
 
             .description
-                font-size: 10px
-                line-height: 14px
+                font-size: 16px
+                line-height: 20px
+                color: variables.$white-color
 
             .landing-btn
-                font-size: 15px
-                line-height: 18px
-                padding: 8px 20px
+                font-size: 20px
+                line-height: 22px
+                padding: 8px 25px
 
             .center-btn
                 margin: 25px auto 0
@@ -328,33 +331,45 @@
                 .image
                     img
                         position: absolute
-                        width: 200px
-                        left: -55px
-                        top: -40px
+                        width: 300px
+                        right: -70px
+                        top: -85px
+                        opacity: .7
 
             .features
                 .feature
                     margin-bottom: 10px
 
                     .title
-                        font-size: 10px
-                        line-height: 14px
+                        font-size: 16px
+                        line-height: 20px
 
                         .icon
                             width: 15px
                             height: 15px
 
+                    .description
+                        color: variables.$grey-color
+
                 .commission
                     .image
                         img
                             position: absolute
-                            width: 220px
-                            left: -35px
+                            width: 350px
+                            left: -330px
                             top: -20px
+                            opacity: .3
+
+                    .content
+                        text-align: center
+
+                        .title
+                            font-size: 25px
+                            line-height: 30px
 
             .howWork
                 .gradient-red-bg
-                    top: 61%
+                    top: 70%
                     left: 40%
                     // width: 120vw
 
@@ -363,7 +378,7 @@
                         margin-top: 10px
 
                         .step
-                            margin-bottom: 10px
+                            margin-bottom: 20px
 
                             .title
                                 font-size: 15px
@@ -378,8 +393,10 @@
                 .image
                     img
                         position: absolute
-                        top: 50px
-                        width: 120px
+                        top: 0
+                        left: -200px
+                        width: 250px
+                        opacity: .3
 
             .blockchains
                 .list
@@ -431,8 +448,8 @@
 
             .footer
                 .title
-                    font-size: 15px
-                    line-height: 18px
+                    font-size: 25px
+                    line-height: 30px
                     margin-top: 45px
 
                 .contacts

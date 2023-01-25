@@ -10,7 +10,7 @@ interface IGoalWidgetData<FontType = string> {
 }
 
 interface IGoalData<FontType = string> extends IGoalWidgetData<FontType> {
-  id: number;
+  id: string;
   title: string;
   amount_goal: number;
   amount_raised: number;
@@ -53,7 +53,7 @@ interface IStatWidgetData<FontType = string> {
 }
 
 interface IStatData<FontType = string> extends IStatWidgetData<FontType> {
-  id: number;
+  id: string;
   title: string;
   stat_description: string;
   template: string | string[];

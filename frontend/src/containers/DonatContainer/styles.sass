@@ -71,7 +71,7 @@
                         margin-top: 10px
                         font-size: 15px
                         line-height: 18px
-                        color: variables.$grey-color
+                        color: variables.$white-color
 
                     @media (max-width: 768px)
                         padding: 10px
@@ -110,6 +110,7 @@
             .bottom
                 display: flex
                 align-items: center
+                justify-content: center
 
             .inputs
                 display: flex
@@ -148,6 +149,9 @@
                 textarea
                     height: 120px
                     position: relative
+
+                    &::placeholder
+                        color: variables.$white-color
 
                 .username-switch
                     width: 220px
@@ -330,3 +334,7 @@
                         .title
                             font-size: 13px
                             line-height: 16px
+
+.isNotValid
+    border-radius: variables.$border-radius
+    border: 1px solid variables.$main-color

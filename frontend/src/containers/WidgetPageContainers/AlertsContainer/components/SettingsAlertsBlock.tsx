@@ -324,8 +324,8 @@ const SettingsAlertsBlock = ({
             <SliderForm
               label="Alert duration:"
               step={1}
-              max={25}
-              min={15}
+              max={10}
+              min={3}
               setValue={(num) => setFormData({ ...formData, duration: num })}
               value={+duration}
               maxWidth={250}

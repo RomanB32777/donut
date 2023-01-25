@@ -41,7 +41,7 @@ const initAlertData: IAlert = {
 
 const initWidgetGoalData: IWidgetGoalData = {
   amount_goal: 0,
-  id: 0,
+  id: "",
   title: "",
   amount_raised: 0,
   is_archive: false,
@@ -60,7 +60,7 @@ const initWidgetGoalData: IWidgetGoalData = {
 };
 
 const initWidgetStatData: IWidgetStatData = {
-  id: 0,
+  id: "",
   title: "",
   stat_description: "",
   template: [],

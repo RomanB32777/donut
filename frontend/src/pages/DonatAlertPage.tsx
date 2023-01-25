@@ -1,10 +1,10 @@
 import DonatAlertContainer from "containers/WidgetContainers/DonatAlertContainer";
 import DonatWebSocketProvider from "components/DonatWebSocket";
 
-const DonatMessagePage = () => (
+const DonatAlertPage = () => (
   <DonatWebSocketProvider>
     <DonatAlertContainer />
   </DonatWebSocketProvider>
 );
 
-export default DonatMessagePage;
+export default DonatAlertPage;

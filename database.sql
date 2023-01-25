@@ -29,7 +29,7 @@ CREATE TABLE badges(
     blockchain VARCHAR(255) DEFAULT '',
     image VARCHAR DEFAULT '',
     description VARCHAR DEFAULT '',
-    quantity INTEGER DEFAULT 1,
+    -- quantity INTEGER DEFAULT 1,
     token_id INTEGER,
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -39,7 +39,7 @@ CREATE TABLE badges(
 CREATE TABLE users_assigned_badges(
     id BIGSERIAL PRIMARY KEY,
     user_id INTEGER,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     badge_id INTEGER,
     FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT Now()
@@ -54,7 +54,7 @@ CREATE TABLE alerts (
     name_font VARCHAR(255) DEFAULT 'Roboto',
     sum_color VARCHAR(10) DEFAULT '#ffffff',
     sum_font VARCHAR(255) DEFAULT 'Roboto',
-    duration NUMERIC DEFAULT 15,
+    duration NUMERIC DEFAULT 10,
     sound VARCHAR(255) DEFAULT 'sound_1',
     voice BOOLEAN DEFAULT 'false',
     gender_voice VARCHAR(10) DEFAULT 'MALE',

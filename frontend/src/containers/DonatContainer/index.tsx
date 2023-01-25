@@ -1,7 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { ISendDonat } from "types";
+import { ISendDonat, requiredFields, sendDonatFieldsKeys } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import { useAppSelector } from "hooks/reduxHooks";
@@ -24,14 +24,17 @@ import SwitchForm from "components/SwitchForm";
 
 import { tryToGetPersonInfo } from "store/types/PersonInfo";
 import { getGoals } from "store/types/Goals";
-import { checkWallet } from "utils";
+import { addNotification, checkWallet } from "utils";
 import { triggerContract } from "./utils";
 import { adminPath, dummyImg, initSendDonatData } from "consts";
+import { IFormHandler } from "./types";
 
 import SpaceImg from "assets/space.png";
 import "./styles.sass";
+import clsx from "clsx";
 
 const maxLengthDescription = 150;
+const requiredFormFields: requiredFields[] = ["amount", "username"];
 
 const DonatContainer = () => {
   const dispatch = useDispatch();
@@ -54,15 +57,53 @@ const DonatContainer = () => {
 
   const [usdtKoef, setUsdtKoef] = useState(0);
   const [balance, setBalance] = useState(0);
-  const [form, setForm] = useState<ISendDonat>({
-    ...initSendDonatData,
-  });
+  const [form, setForm] = useState<ISendDonat>(initSendDonatData);
   const [loadingPage, setLoadingPage] = useState(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
   const [isOpenErrorModal, setIsOpenErrorModal] = useState(false);
+  const [notValidFields, setNotValidFields] = useState<sendDonatFieldsKeys[]>(
+    []
+  );
 
   const { id, username: usernameState } = user;
   const { username, message, amount, selectedBlockchain, is_anonymous } = form;
+
+  const checkValidate = () => {
+    const keys = Object.keys(form) as sendDonatFieldsKeys[];
+    return keys.filter((key) => {
+      if (requiredFormFields.includes(key as any)) return !Boolean(form[key]);
+      return false;
+    });
+  };
+
+  const formHandler = ({ field, value }: IFormHandler) => {
+    setNotValidFields((prev) => prev.filter((f) => f !== field));
+    setForm({
+      ...form,
+      [field]: value,
+    });
+  };
+
+  const usernameHandler = (value: string) => {
+    if (username.length === 0) {
+      setForm({
+        ...form,
+        username: "@" + value,
+      });
+    } else if (value.length < username.length && value.length === 2) {
+      setForm({
+        ...form,
+        username: "",
+      });
+    } else {
+      formHandler({ field: "username", value });
+      setNotValidFields((prev) => prev.filter((f) => f !== "username"));
+      setForm({
+        ...form,
+        username: value,
+      });
+    }
+  };
 
   const closeSuccessPopup = () => {
     setIsOpenSuccessModal(false);
@@ -73,28 +114,30 @@ const DonatContainer = () => {
     navigate(`/${adminPath}/donations`);
   };
 
-  const sendBtnHandler = async () =>
-    await triggerContract({
-      form,
-      user,
-      socket,
-      usdtKoef,
-      balance,
-      personInfo,
-      walletConf,
-      userID: id,
-      dispatch,
-      setLoading: setLoadingPage,
-      setIsOpenSuccessModal,
-    });
-
-  const isValidateForm = useMemo(
-    () =>
-      Object.keys(form)
-        .filter((key) => !["selectedGoal", "is_anonymous"].includes(key))
-        .every((val) => Boolean(val)),
-    [form]
-  );
+  const sendBtnHandler = async () => {
+    const notValidFields = checkValidate();
+    if (notValidFields.length) {
+      setNotValidFields(notValidFields);
+      addNotification({
+        type: "warning",
+        title: "Not all fields are filled",
+      });
+    } else {
+      await triggerContract({
+        form,
+        user,
+        socket,
+        usdtKoef,
+        balance,
+        personInfo,
+        walletConf,
+        userID: id,
+        dispatch,
+        setLoading: setLoadingPage,
+        setIsOpenSuccessModal,
+      });
+    }
+  };
 
   useEffect(() => {
     name && dispatch(tryToGetPersonInfo(name));
@@ -194,29 +237,11 @@ const DonatContainer = () => {
                   <div className="item">
                     <FormInput
                       value={username}
-                      setValue={(value) => {
-                        if (username.length === 0) {
-                          setForm({
-                            ...form,
-                            username: "@" + value,
-                          });
-                        } else if (
-                          value.length < username.length &&
-                          value.length === 2
-                        ) {
-                          setForm({
-                            ...form,
-                            username: "",
-                          });
-                        } else {
-                          setForm({
-                            ...form,
-                            username: value,
-                          });
-                        }
-                      }}
+                      setValue={usernameHandler}
                       disabled={Boolean(usernameState) || loadingPage}
-                      modificator="inputs-name"
+                      modificator={clsx("inputs-name", {
+                        isNotValid: notValidFields.includes("username"),
+                      })}
                       addonsModificator="inputs-addon"
                       placeholder="Your username"
                       addonAfter={
@@ -258,7 +283,8 @@ const DonatContainer = () => {
                     form={form}
                     color={main_color}
                     usdtKoef={usdtKoef}
-                    setForm={setForm}
+                    formHandler={formHandler}
+                    isNotValid={notValidFields.includes("amount")}
                     setUsdtKoef={setUsdtKoef}
                   />
                 </div>
@@ -281,7 +307,7 @@ const DonatContainer = () => {
           </div>
         </div>
         <LoadingModalComponent
-          open={isValidateForm && loadingPage}
+          open={!notValidFields.length && loadingPage}
           message="Please don’t close this window untill donation confirmation"
           centered
         />

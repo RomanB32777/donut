@@ -29,10 +29,12 @@ import "./styles.sass";
 const AlertsContainer = () => {
   const { id, username, donat_page } = useAppSelector(({ user }) => user);
   const { isLaptop } = useWindowDimensions();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<IAlert>({ ...initAlertData });
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
   const [soundsList, setSoundsList] = useState<ISoundInfo[]>([]);
+
+  const { security_string } = donat_page;
 
   // data: IAlertData
   const setAlertData = async (data: any) => {
@@ -64,7 +66,7 @@ const AlertsContainer = () => {
     if (id && fonts) {
       setLoading(true);
       const { data, status } = await axiosClient.get(
-        "/api/widget/get-alerts-widget/" + id
+        `/api/widget/get-alerts-widget/${id}/${security_string}`
       );
       if (status === 200) await setAlertData(data);
       setLoading(false);
@@ -167,8 +169,13 @@ const AlertsContainer = () => {
   }, []);
 
   const linkForStream = useMemo(
-    () => `${baseURL}/donat-message/${username}/${donat_page.security_string}`,
-    [username, donat_page]
+    () => `${baseURL}/donat-message/${username}/${security_string}`,
+    [username, security_string]
+  );
+
+  const renderLinkForStream = useMemo(
+    () => linkForStream.replace(security_string, "⁕⁕⁕⁕⁕"),
+    [linkForStream, security_string]
   );
 
   return (
@@ -179,7 +186,11 @@ const AlertsContainer = () => {
           Paste this link into broadcasting software you use and display your
           incoming donations
         </p>
-        <LinkCopy link={linkForStream} isSimple={!isLaptop} />
+        <LinkCopy
+          link={linkForStream}
+          isSimple={!isLaptop}
+          title={renderLinkForStream}
+        />
       </div>
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />

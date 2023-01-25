@@ -4,12 +4,12 @@ import {
   CodeIcon,
   CrossIcon,
   DashboardLandingIcon,
+  DiscordIcon,
   GraphIcon,
   HelpIcon,
   LinkIcon,
   PencilLandingIcon,
   ShieldLandingIcon,
-  TelegramIcon,
   TwitterIcon,
 } from "icons";
 
@@ -108,11 +108,15 @@ const help = [
 
 const socialNetworks = [
   {
-    link: "",
-    icon: <TelegramIcon />,
+    link: "https://discord.gg/PHEQCjnY",
+    icon: <DiscordIcon />,
   },
+  // {
+  //   link: "",
+  //   icon: <TelegramIcon />,
+  // },
   {
-    link: "",
+    link: "https://twitter.com/CryptoDonutzzz",
     icon: <TwitterIcon />,
   },
 ];

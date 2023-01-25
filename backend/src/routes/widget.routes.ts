@@ -5,7 +5,7 @@ const router = Router();
 const widgetController = new WidgetController();
 
 // alerts
-router.get('/get-alerts-widget/:creator_id', widgetController.getAlertsWidgetData)
+router.get('/get-alerts-widget/:creator_id/:security_string', widgetController.getAlertsWidgetData)
 router.put('/edit-alerts-widget', widgetController.editAlertsWidget)
 
 // goals

@@ -17,8 +17,7 @@ const BadgeDetails = ({
 
   const [loading, setLoading] = useState(false);
 
-  const { title, description, is_creator, quantity, assigned, blockchain } =
-    badgeInfo;
+  const { title, description, is_creator, assigned, blockchain } = badgeInfo;
 
   const selectedBlockchainInfo = useMemo(
     () =>
@@ -65,12 +64,10 @@ const BadgeDetails = ({
         <div className="row">
           <Row justify="space-between">
             <Col md={5} xs={7}>
-              <p className="title">Quantity</p>
+              <p className="title">{is_creator ? "Assigned" : "Quantity"}</p>
             </Col>
             <Col md={18} xs={16}>
-              <p className="value">
-                {is_creator ? `${assigned}/${quantity} assigned` : assigned}
-              </p>
+              <p className="value">{assigned}</p>
             </Col>
           </Row>
         </div>
@@ -82,7 +79,10 @@ const BadgeDetails = ({
             <Col md={18} xs={16}>
               <div className="value">
                 {selectedBlockchainInfo && (
-                  <SelectedBlockchain blockchainInfo={selectedBlockchainInfo} />
+                  <SelectedBlockchain
+                    blockchainInfo={selectedBlockchainInfo}
+                    modificator="absolute"
+                  />
                 )}
               </div>
             </Col>

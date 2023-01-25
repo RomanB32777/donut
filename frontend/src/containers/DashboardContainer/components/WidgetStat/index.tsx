@@ -101,11 +101,7 @@ const WidgetStat = () => {
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
 
-    id &&
-      timePeriod &&
-      shouldUpdateApp &&
-      list.length &&
-      getLatestDonations(timePeriod);
+    id && timePeriod && shouldUpdateApp && getLatestDonations(timePeriod);
   }, [id, activeFilterItem, list, shouldUpdateApp]);
 
   return (

@@ -40,7 +40,7 @@ const WidgetLatestDonat = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    id && shouldUpdateApp && list.length && getLatestDonations(timePeriod);
+    id && shouldUpdateApp && getLatestDonations(timePeriod);
   }, [id, activeFilterItem, list, shouldUpdateApp]);
 
   return (

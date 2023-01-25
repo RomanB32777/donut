@@ -193,7 +193,7 @@ const DonationPageContainer = () => {
   }, [id, donat_page]);
 
   const linkForSupport = useMemo(
-    () => baseURL + "/support/" + username, //+ "/" + user.security_string,
+    () => baseURL + "/support/" + username,
     [username]
   );
 

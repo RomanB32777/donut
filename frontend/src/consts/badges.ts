@@ -5,7 +5,6 @@ const initBadgeData: IBadge = {
   id: 0,
   title: "",
   description: "",
-  quantity: 0,
   image: {
     preview: "",
     file: null,
@@ -18,7 +17,6 @@ const initBadgeDataWithoutFile: IBadgeInfo = {
   id: 0,
   title: "",
   description: "",
-  quantity: 0,
   image: "",
   blockchain: "polygon",
   creator_id: 0,

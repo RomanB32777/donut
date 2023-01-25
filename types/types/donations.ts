@@ -29,10 +29,13 @@ interface ISocketNotification<T = IDonationShortInfo> {
   additional?: T;
 }
 
-interface ISendDonat {
-  message: string;
+interface ISendDonatBase {
   username: string;
   amount: number;
+}
+
+interface ISendDonat extends ISendDonatBase {
+  message: string;
   selectedBlockchain: blockchainsSymbols;
   selectedGoal: number | null;
   is_anonymous: boolean;
@@ -43,12 +46,18 @@ interface IFullSendDonat extends ISendDonat {
   backer: number;
 }
 
+type sendDonatFieldsKeys = keyof ISendDonat;
+type requiredFields = keyof ISendDonatBase
+
 export type {
   IDonationShortInfo,
   IDonation,
   INewDonatSocketObj,
   socketNotificationTypes,
   ISocketNotification,
+  ISendDonatBase,
   ISendDonat,
   IFullSendDonat,
+  sendDonatFieldsKeys,
+  requiredFields,
 };
