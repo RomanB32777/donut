@@ -32,7 +32,7 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
             <span style={getFontColorStyles(name_color, name_font)}>
               MrBeast
             </span>
-            &nbsp; -&nbsp;
+            &nbsp;-&nbsp;
             <span style={getFontColorStyles(sum_color, sum_font)}>10 USD</span>
           </p>
         </div>

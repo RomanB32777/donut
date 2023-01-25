@@ -16,6 +16,7 @@ import {
 import rocketImg from "assets/landing/rocket.png";
 import listImg from "assets/landing/list.png";
 import moneyImg from "assets/landing/money.png";
+import { IFeature } from "./types";
 
 const images = {
   rocketImg,
@@ -23,7 +24,7 @@ const images = {
   listImg,
 };
 
-const features = [
+const features: IFeature[] = [
   {
     icon: <DashboardLandingIcon />,
     title: "In-stream widgets",
@@ -95,14 +96,15 @@ const cryptoSteps = [
 
 const help = [
   {
-    title: "Ask in Telegram chat",
+    title: "Ask in discord",
     icon: <ChatIcon />,
-    description: "You can talk to our support team in the Telegram chat.",
+    description:
+      "Create ticket on our discord server and talk to our support team",
   },
   {
     title: "Check help center",
     icon: <HelpIcon />,
-    description: "We’ve collected all the FAQ in Help center. Check it out!",
+    description: "We've collected all the FAQ in Help center. Check it out!",
   },
 ];
 

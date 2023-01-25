@@ -13,9 +13,7 @@ const asyncGetNotifications = async ({
 }: INotificationParams) => {
   const queryParams: Record<string, any> = { ...query };
 
-  const queryParamsKeys = Object.keys(queryParams).filter((key) =>
-    Boolean(queryParams[key])
-  );
+  const queryParamsKeys = Object.keys(queryParams)
 
   const queryParamsValues = queryParamsKeys.length
     ? "?" + queryParamsKeys.map((key) => `${key}=${queryParams[key]}`).join("&")

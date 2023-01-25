@@ -13,6 +13,7 @@ import Logo from "components/HeaderComponents/LogoComponent";
 import { checkWallet, scrollToPosition } from "utils";
 import { adminPath, storageWalletKey } from "consts";
 import { cryptoSteps, features, help, images, socialNetworks } from "./const";
+import { IFeature } from "./types";
 import "./styles.sass";
 
 const LandingBtn = ({
@@ -58,15 +59,22 @@ const LandingContainer = () => {
     }
   };
 
-  useEffect(() => {
-    localStorage.getItem(storageWalletKey) &&
-      checkWallet({ walletConf, dispatch });
-  }, [walletConf]);
-
   const blockchains = useMemo(
     () => walletConf.main_contract.blockchains,
     [walletConf]
   );
+
+  const mobileFeaturesSteps = features.reduce((acc, curr, index) => {
+    const step = Math.floor(index / 3);
+    return { ...acc, [step]: acc[step] ? [...acc[step], curr] : [curr] };
+  }, {} as Record<string, IFeature[]>);
+
+  console.log(mobileFeaturesSteps);
+
+  useEffect(() => {
+    localStorage.getItem(storageWalletKey) &&
+      checkWallet({ walletConf, dispatch });
+  }, [walletConf]);
 
   const { rocketImg, moneyImg, listImg } = images;
 
@@ -136,8 +144,9 @@ const LandingContainer = () => {
             <p className="subtitle">What's so special about us?</p>
             <h2 className="title">Our features</h2>
             <Row
-              gutter={isMobile ? [16, 16] : [32, 32]}
+              gutter={[32, 32]}
               justify="space-between"
+              className="features-list desktop"
             >
               {features.map(({ title, icon, description }, index) => (
                 <Col xs={24} md={12} key={index}>
@@ -151,6 +160,38 @@ const LandingContainer = () => {
                 </Col>
               ))}
             </Row>
+            <div className="features-list mobile">
+              <Carousel slidesToShow={1} draggable swipeToSlide>
+                {Object.keys(mobileFeaturesSteps).map((step) => {
+                  return (
+                    <Row
+                      gutter={[0, 10]}
+                      justify="space-between"
+                      key={`mobile-row-${step}`}
+                    >
+                      {mobileFeaturesSteps[step].map(
+                        ({ title, icon, description }, index) => (
+                          <Col
+                            xs={24}
+                            md={12}
+                            key={`mobile-${index}`}
+                            className="moblie-col"
+                          >
+                            <div className="card feature">
+                              <div className="title">
+                                <span className="icon">{icon}</span>
+                                {title}
+                              </div>
+                              <p className="description">{description}</p>
+                            </div>
+                          </Col>
+                        )
+                      )}
+                    </Row>
+                  );
+                })}
+              </Carousel>
+            </div>
             <div className="commission block">
               <Row justify="space-between" align={isMobile ? "top" : "middle"}>
                 <Col xs={{ span: 1, order: 1 }} md={{ span: 10, order: 0 }}>

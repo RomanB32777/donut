@@ -50,7 +50,16 @@ const AmountInput = ({
   }) => {
     formHandler({ field: "selectedBlockchain", value: selected });
     dispatch(setSelectedBlockchain(blockchainInfo.name));
-    await getUsdKoef(blockchainInfo.nativeCurrency.exchangeName, setUsdtKoef);
+    const newUsdtKoef = await getUsdKoef(
+      blockchainInfo.nativeCurrency.exchangeName,
+      setUsdtKoef
+    );
+
+    if (tabCount) {
+      const blockchainValue = tabCount / newUsdtKoef;
+      formHandler({ field: "amount", value: blockchainValue });
+      setInputValue(blockchainValue.toFixed(2));
+    }
   };
 
   const setAmountValue = (num: string) => {
@@ -77,9 +86,19 @@ const AmountInput = ({
     }
   };
 
-  const setTabContent = (key: string) => {
-    setTabCount(+key);
-    formHandler({ field: "amount", value: +key });
+  const setTabContent = async (key: string) => {
+    const blockchainInfo = walletConf.main_contract.blockchains.find(
+      (b) => b.nativeCurrency.symbol === selectedBlockchain
+    );
+
+    if (blockchainInfo) {
+      const numberFormat = +key;
+      const blockchainValue = numberFormat / usdtKoef;
+
+      setTabCount(numberFormat);
+      formHandler({ field: "amount", value: blockchainValue });
+      setInputValue(blockchainValue.toFixed(2));
+    }
   };
 
   const selectedBlockchainIconInfo = useMemo(() => {
@@ -89,14 +108,10 @@ const AmountInput = ({
     return info;
   }, [walletConf, selectedBlockchain]);
 
-  const countTabs = useMemo(
-    () =>
-      tabCountTypes.map((tab) => ({
-        key: String(tab),
-        label: `${tab} ${selectedBlockchain}`,
-      })),
-    [selectedBlockchain]
-  );
+  const countTabs = tabCountTypes.map((tab) => ({
+    key: String(tab),
+    label: `${tab} USD`,
+  }));
 
   useEffect(() => {
     if (blockchain) {

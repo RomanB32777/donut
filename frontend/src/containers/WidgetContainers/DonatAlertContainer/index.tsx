@@ -84,7 +84,7 @@ const DonatAlertContainer = () => {
     list.length && setLastNotif(list[0]);
   }, [list]);
 
-  // // for testing
+  // for testing
   // useEffect(() => {
   //   dispatch(getNotifications({ user: personInfo.id }));
   // }, [personInfo]);
@@ -105,7 +105,7 @@ const DonatAlertContainer = () => {
             tmp.play();
           }
           setTimeout(() => {
-            setLastNotif(null);
+            // setLastNotif(null);
           }, duration * 1000);
         }, maxDuration);
       }
@@ -133,9 +133,9 @@ const DonatAlertContainer = () => {
         />
         <div className="donat-messsage-container_title">
           <span style={getFontColorStyles(name_color, name_font)}>
-            {lastNotif.sender}&nbsp;
+            {lastNotif.sender}
           </span>
-          &nbsp; -&nbsp;
+          &nbsp;-&nbsp;
           <span style={getFontColorStyles(sum_color, sum_font)}>
             {sum_donation} {blockchain}
           </span>

@@ -131,6 +131,9 @@
                 top: 35%
                 transform: rotateZ(180deg)
 
+            &-list.mobile
+                display: none
+
             .feature
                 height: 100%
 
@@ -273,6 +276,41 @@
         .landing-padding
             padding: 0 75px
 
+    @media (max-width: 768px)
+        &-container
+            .features
+                &-list.desktop
+                    display: none
+
+                &-list.mobile
+                    display: block
+                    background: variables.$blue-transparent-color
+                    padding: 15px 5px 30px
+                    backdrop-filter: blur(10px)
+                    border-radius: variables.$border-radius
+
+                    .moblie-col
+                        padding: 0 10px
+
+                    .slick-dots
+                        bottom: -30px
+
+                        li
+                            width: 15px
+                            height: 15px
+
+                            button
+                                width: 100%
+                                height: 100%
+                                border-radius: 50%
+                                box-shadow: variables.$shadow
+                                border-color: variables.$grey-color
+                                background-color: variables.$grey-color
+
+                            &.slick-active
+                                button
+                                    background: variables.$main-color
+
     @media (max-width: 576px)
         .landing-padding
             padding: 0 30px
@@ -369,9 +407,8 @@
 
             .howWork
                 .gradient-red-bg
-                    top: 70%
+                    top: 62%
                     left: 40%
-                    // width: 120vw
 
                 .content
                     .steps
