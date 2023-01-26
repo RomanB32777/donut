@@ -158,14 +158,19 @@ const DonatContainer = () => {
           setIsOpenErrorModal(true);
           setLoadingPage(false);
         }
-      } else {
-        const blockchainData = await walletConf.getWalletData();
-        if (blockchainData) await walletConf.getBalance(setBalance);
-      }
+      } 
+      // else {
+      //   const blockchainData = await walletConf.getWalletData();
+      //   if (blockchainData) await walletConf.getBalance(setBalance);
+      // }
     };
 
     initPage();
   }, [walletConf]);
+
+  useEffect(() => {
+    walletConf.getBalance(setBalance);
+  }, [walletConf, blockchain]);
 
   useEffect(() => {
     personInfo.id && dispatch(getGoals(personInfo.id));

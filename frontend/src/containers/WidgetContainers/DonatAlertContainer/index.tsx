@@ -105,7 +105,7 @@ const DonatAlertContainer = () => {
             tmp.play();
           }
           setTimeout(() => {
-            // setLastNotif(null);
+            setLastNotif(null);
           }, duration * 1000);
         }, maxDuration);
       }
@@ -137,7 +137,7 @@ const DonatAlertContainer = () => {
           </span>
           &nbsp;-&nbsp;
           <span style={getFontColorStyles(sum_color, sum_font)}>
-            {sum_donation} {blockchain}
+            {sum_donation.toFixed(3)} {blockchain}
           </span>
         </div>
         <p

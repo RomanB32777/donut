@@ -360,7 +360,7 @@ class WidgetController {
         // );
         return res.status(200).json({
           name: filename,
-          link: isProduction ? filepath : `${req.protocol}://${req.headers.host}/${filepath}`,
+          link: isProduction ? `/${filepath}` : `${req.protocol}://${req.headers.host}/${filepath}`,
         });
       }
       return res.status(500).json({ message: 'error uploading' });

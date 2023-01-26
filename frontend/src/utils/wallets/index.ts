@@ -81,9 +81,10 @@ const checkWallet = async ({
 
       // ????
       return true;
-    } else if (navigate) {
+    } else {
       const newBlockchaind = await walletConf.changeBlockchain("evmos");
-      newBlockchaind ? dispatch(setSelectedBlockchain("evmos")) : navigate("/");
+      if (newBlockchaind) dispatch(setSelectedBlockchain("evmos"));
+      else navigate && navigate("/");
     }
   } else {
     if (navigate) logoutUser({ dispatch, navigate });
