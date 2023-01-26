@@ -26,7 +26,7 @@ const WalletBlock = ({
 }) => {
   const dispatch = useDispatch();
   const walletConf = useContext(WalletContext);
-  const { blockchain, user } = useAppSelector((store) => store);
+  const { blockchain, user, notifications } = useAppSelector((store) => store);
   const blockRef = useRef(null);
   const { isMobile } = useWindowDimensions();
 
@@ -36,6 +36,7 @@ const WalletBlock = ({
   const [isOpenSelect, setOpenSelect] = useState(false);
 
   const { username, avatar } = user;
+  const { list, shouldUpdateApp } = notifications;
 
   const copyAddress = () => copyStr(address, "Wallet address");
   const handlerPopup = () => setOpenSelect((prev) => !prev);
@@ -71,6 +72,10 @@ const WalletBlock = ({
     };
     getWalletData();
   }, [blockchain]);
+
+  useEffect(() => {
+    shouldUpdateApp && walletConf.getBalance(setBalance);
+  }, [walletConf, list, shouldUpdateApp]);
 
   const { address, nativeCurrency, icon, color, blockExplorerUrls } =
     walletData;

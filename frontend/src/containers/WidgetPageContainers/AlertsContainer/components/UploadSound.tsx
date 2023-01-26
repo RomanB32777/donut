@@ -8,8 +8,6 @@ const UploadSound = ({
   sendFile: (file: File) => Promise<void>;
 }) => {
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("dfdf");
-    
     e.stopPropagation();
     const target = e.currentTarget;
     const resulUploaded = new Promise((resolve, reject) => {

@@ -39,6 +39,7 @@ const DonationsContainer = () => {
   const { user, notifications } = useAppSelector((state) => state);
   const { isMobile, isLaptop } = useWindowDimensions();
 
+  const { id } = user;
   const { list, shouldUpdateApp } = notifications;
 
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
@@ -69,12 +70,13 @@ const DonationsContainer = () => {
       const { data } = await axiosClient.get(
         `/api/donation/page/data/${id}?roleplay=${roleplay}${queryFormString}&spam_filter=${spam_filter}`
       ); // &limit=${LIMIT_DONATS}&offset=${0}
+
       if (data && data.length) {
         const forTableData: ITableData[] = data.map(
           (donat: any, key: number) => ({
             key: donat.id || key,
             name: donat.username,
-            donationToken: donat.sum_donation,
+            donationToken: (+donat.sum_donation).toFixed(2),
             donationUSD: (+donat.sum_usd_donation).toFixed(2), // usdtKoef
             blockchain: donat.blockchain,
             date: donat.created_at || "-",
@@ -159,8 +161,8 @@ const DonationsContainer = () => {
   }, []);
 
   useEffect(() => {
-    user.id && shouldUpdateApp && getDonationsData();
-  }, [user, list, shouldUpdateApp]);
+    id && shouldUpdateApp && getDonationsData();
+  }, [id, list, shouldUpdateApp]);
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",
