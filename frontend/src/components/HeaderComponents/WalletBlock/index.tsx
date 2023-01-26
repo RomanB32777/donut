@@ -44,6 +44,7 @@ const WalletBlock = ({
   const blockchainHandler =
     (selectedBlockchain: blockchainsType) => async () => {
       setLoading(true);
+      handlerPopup();
       const newBlockchaind = await walletConf.changeBlockchain(
         selectedBlockchain
       );
@@ -82,18 +83,16 @@ const WalletBlock = ({
   const { symbol } = nativeCurrency;
 
   return (
-    <div
-      ref={blockRef}
-      className={clsx("wallet-wrapper", modificator)}
-      onClick={handlerPopup}
-    >
+    <div className={clsx("wallet-wrapper", modificator)}>
       {loading ? (
         <Loader size="small" />
       ) : (
         <div
+          ref={blockRef}
           className={clsx("wallet-block", {
             loaded: !loading,
           })}
+          onClick={handlerPopup}
         >
           <div className="wallet-icon">
             <img src={icon} alt="wallet-icon" style={{ background: color }} />

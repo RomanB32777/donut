@@ -1,11 +1,7 @@
 import { ethers, Contract, utils } from "ethers";
 import { blockchainsType } from "types";
 
-import {
-  addAuthWalletNotification,
-  addInstallWalletNotification,
-  addNotification,
-} from "..";
+import { addAuthWalletNotification, addInstallWalletNotification } from "..";
 import { storageWalletKey } from "consts";
 import { IPayObj, IWalletConf, methodNames, ProviderRpcError } from "appTypes";
 
