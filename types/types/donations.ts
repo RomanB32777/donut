@@ -32,10 +32,10 @@ interface ISocketNotification<T = IDonationShortInfo> {
 interface ISendDonatBase {
   username: string;
   amount: number;
+  message: string;
 }
 
 interface ISendDonat extends ISendDonatBase {
-  message: string;
   selectedBlockchain: blockchainsSymbols;
   selectedGoal: number | null;
   is_anonymous: boolean;

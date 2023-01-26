@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import clsx from "clsx";
 import { ISendDonat, requiredFields, sendDonatFieldsKeys } from "types";
 
 import { WalletContext } from "contexts/Wallet";
@@ -31,10 +32,9 @@ import { IFormHandler } from "./types";
 
 import SpaceImg from "assets/space.png";
 import "./styles.sass";
-import clsx from "clsx";
 
 const maxLengthDescription = 150;
-const requiredFormFields: requiredFields[] = ["amount", "username"];
+const requiredFormFields: requiredFields[] = ["amount", "username", "message"];
 
 const DonatContainer = () => {
   const dispatch = useDispatch();
@@ -158,7 +158,7 @@ const DonatContainer = () => {
           setIsOpenErrorModal(true);
           setLoadingPage(false);
         }
-      } 
+      }
       // else {
       //   const blockchainData = await walletConf.getWalletData();
       //   if (blockchainData) await walletConf.getBalance(setBalance);
@@ -270,13 +270,12 @@ const DonatContainer = () => {
                   <div className="item">
                     <FormInput
                       value={message}
-                      setValue={(message) => {
-                        setForm({
-                          ...form,
-                          message,
-                        });
-                      }}
-                      modificator="inputs-message"
+                      setValue={(message) =>
+                        formHandler({ field: "message", value: message })
+                      }
+                      modificator={clsx("nputs-messag", {
+                        isNotValid: notValidFields.includes("message"),
+                      })}
                       placeholder={`Message to ${personInfo.username}`}
                       maxLength={maxLengthDescription}
                       disabled={loadingPage}

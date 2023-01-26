@@ -55,7 +55,7 @@ CREATE TABLE alerts (
     sum_color VARCHAR(10) DEFAULT '#ffffff',
     sum_font VARCHAR(255) DEFAULT 'Roboto',
     duration NUMERIC DEFAULT 10,
-    sound VARCHAR(255) DEFAULT 'sound_1',
+    sound VARCHAR(255) DEFAULT '',
     voice BOOLEAN DEFAULT 'false',
     gender_voice VARCHAR(10) DEFAULT 'MALE',
     creator_id INTEGER,

@@ -5,7 +5,7 @@ import { existsSync, readdirSync } from 'fs';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
 import db from '../db.js';
-import { getRandomStr } from '../utils.js';
+import { getRandomStr, parseBool } from '../utils.js';
 import {
   assetsFolder,
   initAlertWidget,
@@ -18,6 +18,25 @@ import {
 
 const speechClient = new TextToSpeechClient();
 
+const setDefaultAlertSound = async ({
+  creator_id,
+  developHost,
+}: {
+  creator_id: number | string;
+  developHost: string;
+}) => {
+  const defaultFilesPath = `${assetsFolder}/${soundsFolderName}`;
+  const defaultSounds = readdirSync(defaultFilesPath);
+  const newSound = defaultSounds[0];
+  const updatedAlertWidget = await db.query(
+    `UPDATE alerts SET 
+              sound = $1
+              WHERE creator_id = $2 RETURNING *;`,
+    [isProduction ? `/${defaultFilesPath}/${newSound}` : `${developHost}/${defaultFilesPath}/${newSound}`, creator_id],
+  );
+  return updatedAlertWidget.rows[0];
+};
+
 class WidgetController {
   // alerts
   async editAlertsWidget(req: Request, res: Response, next: NextFunction) {
@@ -26,13 +45,17 @@ class WidgetController {
       const parseData = JSON.parse(alertData);
 
       if (isReset) {
-        const updatedDBWidget = await db.query(
+        await db.query(
           `UPDATE alerts SET ${Object.keys(initAlertWidget).map(
             (key) => `${key} = DEFAULT`,
           )} WHERE creator_id = $1 RETURNING *`,
           [userId],
         );
-        return res.status(200).json(updatedDBWidget.rows[0]);
+        const updatesWithDefaultSound = await setDefaultAlertSound({
+          creator_id: userId,
+          developHost: `${req.protocol}://${req.headers.host}`,
+        });
+        return res.status(200).json(updatesWithDefaultSound);
       }
 
       const dataKeys = Object.keys(parseData);
@@ -83,7 +106,7 @@ class WidgetController {
       const { creator_id, security_string } = req.params;
       const data = await db.query(
         `
-          SELECT * FROM alerts a
+          SELECT a.* FROM alerts a
           LEFT JOIN creators c
           ON c.user_id = a.creator_id
           WHERE a.creator_id = $1 AND c.security_string = $2
@@ -97,25 +120,15 @@ class WidgetController {
         const soundPath = isProduction ? sound.slice(1) : sound.split(appLink)[1];
         const bannerPath = isProduction ? banner.slice(1) : banner.split(appLink)[1];
 
-        if (!existsSync(soundPath)) {
-          const defaultFilesPath = `${assetsFolder}/${soundsFolderName}`;
-          const defaultSounds = readdirSync(defaultFilesPath);
-          const newSound = defaultSounds[0];
-          const updatedAlertWidget = await db.query(
-            `UPDATE alerts SET 
-              sound = $1
-              WHERE creator_id = $2 RETURNING *;`,
-            [
-              isProduction
-                ? `/${defaultFilesPath}/${newSound}`
-                : `${req.protocol}://${req.headers.host}/${defaultFilesPath}/${newSound}`,
-              creator_id,
-            ],
-          );
-          return res.status(200).json(updatedAlertWidget.rows[0]);
+        if (parseBool(soundPath) && !existsSync(soundPath)) {
+          const updatedAlertWidget = await setDefaultAlertSound({
+            creator_id,
+            developHost: `${req.protocol}://${req.headers.host}`,
+          });
+          return res.status(200).json(updatedAlertWidget);
         }
 
-        if (!existsSync(bannerPath)) {
+        if (parseBool(bannerPath) && !existsSync(bannerPath)) {
           const updatedAlertWidget = await db.query(
             `UPDATE alerts SET 
               banner = ''
