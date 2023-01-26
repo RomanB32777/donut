@@ -41,4 +41,17 @@ const delay = ({ ms, cb }: { ms: number; cb: (params?: any) => any }) =>
     }, ms);
   });
 
-export { scrollToPosition, logoutUser, isValidateFilledForm, delay };
+const formatNumber = (num: string | number, fraction: number = 2) => {
+  const inNumberType = +num;
+  return Number.isInteger(inNumberType)
+    ? inNumberType
+    : inNumberType.toFixed(fraction);
+};
+
+export {
+  scrollToPosition,
+  logoutUser,
+  isValidateFilledForm,
+  delay,
+  formatNumber,
+};

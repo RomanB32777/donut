@@ -12,7 +12,7 @@ import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
 
 import { setSelectedBlockchain } from "store/types/Wallet";
-import { copyStr, shortStr } from "utils";
+import { copyStr, formatNumber, shortStr } from "utils";
 import { initBlockchainData } from "consts";
 import { IBlockchain } from "appTypes";
 import "./styles.sass";
@@ -99,7 +99,7 @@ const WalletBlock = ({
             <img src={icon} alt="wallet-icon" style={{ background: color }} />
           </div>
           <p className="balance">
-            {balance.toFixed(1)} {symbol}
+            {formatNumber(balance, 1)} {symbol}
           </p>
           {address && (
             <div className="address">

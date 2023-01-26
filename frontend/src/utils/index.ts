@@ -39,6 +39,7 @@ import {
   scrollToPosition,
   logoutUser,
   isValidateFilledForm,
+  formatNumber,
   delay,
 } from "./appMethods";
 
@@ -91,5 +92,6 @@ export {
   scrollToPosition,
   logoutUser,
   isValidateFilledForm,
+  formatNumber,
   delay,
 };

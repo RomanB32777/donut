@@ -10,7 +10,7 @@ import WidgetItem from "../WidgetItem";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { ITableData, tableColums } from "./tableData";
-import { getTimePeriodQuery } from "utils";
+import { formatNumber, getTimePeriodQuery } from "utils";
 import { filterPeriodItems, widgetApiUrl } from "consts";
 
 const LIMIT_DONATS = 6;
@@ -37,6 +37,7 @@ const WidgetTopDonat = () => {
       if (status === 200) {
         const forTableData: ITableData[] = data.map((donat: any) => ({
           ...donat,
+          sum_donation: formatNumber(donat.sum_donation),
           key: donat.id,
         }));
         setTopDonations(forTableData);
@@ -50,8 +51,7 @@ const WidgetTopDonat = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    if (id && timePeriod && shouldUpdateApp)
-      getTopDonations(timePeriod);
+    if (id && timePeriod && shouldUpdateApp) getTopDonations(timePeriod);
   }, [id, activeFilterItem, list, shouldUpdateApp]);
 
   return (

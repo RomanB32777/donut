@@ -9,7 +9,7 @@ import WidgetLoader from "../WidgetLoader";
 
 import dayjsModule, { ManipulateType } from "modules/dayjsModule";
 import { useAppSelector } from "hooks/reduxHooks";
-import { getTimePeriodQuery, DateFormatter } from "utils";
+import { getTimePeriodQuery, DateFormatter, formatNumber } from "utils";
 import axiosClient from "modules/axiosClient";
 import {
   dateFormat,
@@ -73,7 +73,7 @@ const WidgetStat = () => {
           const date = DateFormatter(d.date_group, dateFormat[timePeriod]);
           return {
             ...acc,
-            [date]: +(+d.sum_donation).toFixed(2),
+            [date]: +formatNumber(d.sum_donation),
           };
         }, initGroupDates as { [key: string]: number });
 

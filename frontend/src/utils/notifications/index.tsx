@@ -6,6 +6,7 @@ import {
   INotificationMessage,
   INotificationWithoutType,
 } from "./types";
+import { formatNumber } from "utils/appMethods";
 
 const addNotification = ({ type, title, message }: INotification) => {
   Store.addNotification({
@@ -93,16 +94,12 @@ const getNotificationMessage: <T extends object = IDonationShortInfo>(
     switch (type) {
       case "donat_creator":
         const { sum_donation, blockchain } = data;
-        return `${user} sent you ${Number(sum_donation).toFixed(
-          2
-        )} ${blockchain}!`;
+        return `${user} sent you ${formatNumber(sum_donation)} ${blockchain}!`;
 
       case "donat_supporter":
         const { sum_donation: supporterSum, blockchain: supporterBlockchain } =
           data;
-        return `You sent ${Number(supporterSum).toFixed(
-          2
-        )} ${supporterBlockchain} to ${user}!`;
+        return `You sent ${formatNumber(supporterSum)} ${supporterBlockchain} to ${user}!`;
 
       case "add_badge_creator":
         return (

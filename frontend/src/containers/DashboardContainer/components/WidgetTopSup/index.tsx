@@ -7,7 +7,7 @@ import WidgetLoader from "../WidgetLoader";
 
 import axiosClient from "modules/axiosClient";
 import { useAppSelector } from "hooks/reduxHooks";
-import { getTimePeriodQuery } from "utils";
+import { formatNumber, getTimePeriodQuery } from "utils";
 import { filterPeriodItems, widgetApiUrl } from "consts";
 
 const LIMIT_SUPPORTERS = 6;
@@ -76,7 +76,7 @@ const WidgetTopSup = () => {
                     <div className="widget-item simple">
                       <div className="name">{donat.username}</div>
                       <div className="sum">
-                        {(+donat.sum_donation).toFixed(2)} USD
+                        {formatNumber(donat.sum_donation)} USD
                       </div>
                     </div>
                   </Col>

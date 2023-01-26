@@ -20,6 +20,7 @@ import useWindowDimensions from "hooks/useWindowDimensions";
 import axiosClient from "modules/axiosClient";
 import { setUpdateAppNotifications } from "store/types/Notifications";
 import { initTableDataItem, ITableData, tableColumns } from "./tableData";
+import { formatNumber } from "utils";
 import { filterPeriodItems } from "consts";
 
 import "./styles.sass";
@@ -76,8 +77,8 @@ const DonationsContainer = () => {
           (donat: any, key: number) => ({
             key: donat.id || key,
             name: donat.username,
-            donationToken: (+donat.sum_donation).toFixed(2),
-            donationUSD: (+donat.sum_usd_donation).toFixed(2), // usdtKoef
+            donationToken: formatNumber(donat.sum_donation),
+            donationUSD: formatNumber(donat.sum_usd_donation),
             blockchain: donat.blockchain,
             date: donat.created_at || "-",
             role: user.roleplay,
@@ -289,7 +290,7 @@ const DonationsContainer = () => {
           <div className="donations-results__title">
             <p>
               Found {tableData.length} result for the amount of&nbsp;
-              {allAmountUSD.toFixed(2)} USD
+              {formatNumber(allAmountUSD)} USD
             </p>
           </div>
         )}

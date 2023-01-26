@@ -79,8 +79,6 @@ const DonatStatContainer = () => {
   }, [name]);
 
   useEffect(() => {
-    console.log(lastNotif);
-
     statData && personInfo.id && getDonations();
   }, [personInfo, statData, lastNotif]);
 
@@ -89,8 +87,6 @@ const DonatStatContainer = () => {
   }, [id]);
 
   useEffect(() => {
-    console.log(list);
-
     list.length && setLastNotif(list[0].donation);
   }, [list]);
 

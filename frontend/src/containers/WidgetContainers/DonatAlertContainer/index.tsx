@@ -8,7 +8,7 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { tryToGetPersonInfo } from "store/types/PersonInfo";
 
 import axiosClient from "modules/axiosClient";
-import { getFontColorStyles, getFontsList, loadFonts } from "utils";
+import { formatNumber, getFontColorStyles, getFontsList, loadFonts } from "utils";
 import { initAlertData, baseURL } from "consts";
 import { IAlert } from "appTypes";
 
@@ -137,7 +137,7 @@ const DonatAlertContainer = () => {
           </span>
           &nbsp;-&nbsp;
           <span style={getFontColorStyles(sum_color, sum_font)}>
-            {sum_donation.toFixed(3)} {blockchain}
+            {formatNumber(sum_donation, 3)} {blockchain}
           </span>
         </div>
         <p

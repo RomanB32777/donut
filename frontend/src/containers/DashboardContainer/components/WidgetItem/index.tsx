@@ -1,7 +1,7 @@
 import { Col, Row } from "antd";
 import dayjsModule from "modules/dayjsModule";
 
-import { DateTimezoneFormatter } from "utils";
+import { DateTimezoneFormatter, formatNumber } from "utils";
 import "./styles.sass";
 
 const WidgetItem = ({ donat }: { donat: any }) => (
@@ -16,7 +16,7 @@ const WidgetItem = ({ donat }: { donat: any }) => (
                   {donat.username}
                 </div>
                 <div className="sum">
-                  {(Number(donat.sum_donation)).toFixed(2)}&nbsp; USD
+                  {formatNumber(donat.sum_donation, 2)}&nbsp; USD
                 </div>
               </div>
             </Col>

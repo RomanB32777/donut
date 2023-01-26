@@ -10,7 +10,7 @@ import { TabsComponent } from "components/TabsComponent";
 import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
 
 import { setSelectedBlockchain } from "store/types/Wallet";
-import { getUsdKoef } from "utils";
+import { formatNumber, getUsdKoef } from "utils";
 import { useAppSelector } from "hooks/reduxHooks";
 import { IBlockchain } from "appTypes";
 import { IFormHandler } from "../types";
@@ -58,7 +58,7 @@ const AmountInput = ({
     if (tabCount) {
       const blockchainValue = tabCount / newUsdtKoef;
       formHandler({ field: "amount", value: blockchainValue });
-      setInputValue(blockchainValue.toFixed(2));
+      setInputValue(String(formatNumber(blockchainValue)));
     }
   };
 
@@ -97,12 +97,12 @@ const AmountInput = ({
 
       setTabCount(numberFormat);
       formHandler({ field: "amount", value: blockchainValue });
-      setInputValue(blockchainValue.toFixed(2));
+      setInputValue(String(formatNumber(blockchainValue)));
     }
   };
 
   const convertedUsdSum = useMemo(
-    () => parseFloat(String(+amount * usdtKoef)).toFixed(1),
+    () => formatNumber(+amount * usdtKoef),
     [amount, usdtKoef]
   );
 

@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import { IReplaceObj } from "./types";
 import { addNotification } from "../notifications";
+import { formatNumber } from "utils/appMethods";
 
 export const getRandomStr = (length: number) => {
   let result = "";
@@ -56,7 +57,7 @@ export const renderStatItem = (
     },
     {
       re: /{sum}/gi,
-      to: `${(+objToRender.sum_donation).toFixed(2)} USD`,
+      to: `${formatNumber(objToRender.sum_donation)} USD`,
     },
     {
       re: /{message}/gi,
