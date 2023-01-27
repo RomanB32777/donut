@@ -3,7 +3,8 @@ import { Stream } from 'stream';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, readdirSync } from 'fs';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import { google } from '@google-cloud/text-to-speech/build/protos/protos.js';
+import googlePkg from '@google-cloud/text-to-speech/build/protos/protos.js';
+
 import db from '../db.js';
 import { getRandomStr, parseBool } from '../utils.js';
 import {
@@ -15,6 +16,9 @@ import {
   soundsFolderName,
   uploadsFolder,
 } from '../consts.js';
+import { RequestBody, RequestParams, ResponseBody } from '../types.js';
+
+type genderVoices = keyof typeof googlePkg.google.cloud.texttospeech.v1.SsmlVoiceGender;
 
 const speechClient = new TextToSpeechClient();
 
@@ -113,6 +117,11 @@ class WidgetController {
       `,
         [creator_id, security_string],
       );
+
+      // const y = await speechClient.listVoices();
+      // console.log(y[0].voices?.forEach((v) => v.languageCodes?.includes('en-US')));
+      // return res.status(200).json(y[0].voices);
+
       const alertInfo = data.rows[0];
       if (alertInfo) {
         const { sound, banner } = alertInfo;
@@ -326,12 +335,19 @@ class WidgetController {
     }
   }
 
-  async generateSound(req: Request, res: Response, next: NextFunction) {
+  async generateSound(
+    req: Request<RequestParams, ResponseBody, RequestBody, { text: string; gender_voice: genderVoices }>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { text, gender_voice } = req.query;
-      const request = {
-        input: { text },
-        voice: { languageCode: 'en-US', ssmlGender: gender_voice }, // MALE // FEMALE
+
+      const voiceName = gender_voice === 'FEMALE' ? 'en-US-Neural2-C' : 'en-US-Neural2-A';
+
+      const request: googlePkg.google.cloud.texttospeech.v1.ISynthesizeSpeechRequest = {
+        input: { text: text.replaceAll('*', '') },
+        voice: { languageCode: 'en-US', name: voiceName, ssmlGender: gender_voice }, // MALE | FEMALE
         audioConfig: { audioEncoding: 'MP3' },
       };
 
@@ -340,9 +356,7 @@ class WidgetController {
         'Transfer-Encoding': 'chunked',
       });
 
-      const [response] = await speechClient.synthesizeSpeech(
-        request as google.cloud.texttospeech.v1.ISynthesizeSpeechRequest,
-      );
+      const [response] = await speechClient.synthesizeSpeech(request);
       if (response.audioContent) {
         const bufferStream = new Stream.PassThrough();
         bufferStream.end(Buffer.from(response.audioContent));
@@ -365,12 +379,6 @@ class WidgetController {
 
         file?.mv(filepath, (err) => err && console.log(err));
 
-        // await db.query(
-        //   `UPDATE alerts
-        //     SET sound = $1
-        //     WHERE creator_id = $2;`,
-        //   [(isProduction ? '/' : `${req.protocol}://${req.headers.host}/`) + filepath, userId],
-        // );
         return res.status(200).json({
           name: filename,
           link: isProduction ? `/${filepath}` : `${req.protocol}://${req.headers.host}/${filepath}`,
