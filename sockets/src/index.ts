@@ -32,41 +32,44 @@ io.on('connection', (socket) => {
 
   socket.on('new_donat', async (data: INewDonatSocketObj) => {
     const { supporter, creator, donation_id } = data;
-    const rooms = getActiveRooms(io.sockets.adapter.rooms);
-    if (rooms.length) {
-      const userRoom = rooms.find(({ room }) => room === creator.username);
-      if (userRoom) {
-        const userSockets = userRoom.sockets;
-        const donation = await db.query(`SELECT * from donations WHERE id = $1;`, [donation_id]);
 
-        if (donation.rows[0]) {
-          const { id, sum_donation, blockchain, donation_message, is_anonymous } = donation.rows[0];
+    const donation = await db.query(`SELECT * from donations WHERE id = $1;`, [donation_id]);
 
-          const newTransaction = await db.query(`INSERT INTO notifications (donation) values ($1) RETURNING id;`, [id]);
-          if (newTransaction.rows[0]) {
-            const { id } = newTransaction.rows[0];
-            await db.query(
-              `INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`,
-              [creator.id, id, 'recipient'],
-            );
-            await db.query(
-              `INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`,
-              [supporter.id, id, 'sender'],
-            );
+    if (donation.rows[0]) {
+      const { id, sum_donation, blockchain, donation_message, is_anonymous } = donation.rows[0];
 
-            userSockets.forEach((socketID) => {
-              const sendObj: ISocketNotification = {
-                type: 'donat',
-                supporter: is_anonymous ? 'anonymous' : supporter.username,
-                additional: {
-                  sum_donation,
-                  blockchain,
-                  donation_message,
-                },
-              };
-              io.sockets.to(socketID).emit('new_notification', sendObj);
-            });
-          }
+      const newTransaction = await db.query(`INSERT INTO notifications (donation) values ($1) RETURNING id;`, [id]);
+      if (newTransaction.rows[0]) {
+        const { id } = newTransaction.rows[0];
+        await db.query(`INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`, [
+          creator.id,
+          id,
+          'recipient',
+        ]);
+        await db.query(`INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`, [
+          supporter.id,
+          id,
+          'sender',
+        ]);
+      }
+      const rooms = getActiveRooms(io.sockets.adapter.rooms);
+      if (rooms.length) {
+        const userRoom = rooms.find(({ room }) => room === creator.username);
+        if (userRoom) {
+          const userSockets = userRoom.sockets;
+
+          userSockets.forEach((socketID) => {
+            const sendObj: ISocketNotification = {
+              type: 'donat',
+              supporter: is_anonymous ? 'anonymous' : supporter.username,
+              additional: {
+                sum_donation,
+                blockchain,
+                donation_message,
+              },
+            };
+            io.sockets.to(socketID).emit('new_notification', sendObj);
+          });
         }
       }
     }
@@ -76,38 +79,37 @@ io.on('connection', (socket) => {
     const { supporter, creator, badge } = data;
     const { id: badgeID, name } = badge;
 
+    const newNotification = await db.query(`INSERT INTO notifications (badge) values ($1) RETURNING id;`, [badgeID]);
+
+    if (newNotification.rows[0]) {
+      const { id } = newNotification.rows[0];
+
+      await db.query(`INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`, [
+        creator.id,
+        id,
+        'sender',
+      ]);
+      await db.query(`INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`, [
+        supporter.id,
+        id,
+        'recipient',
+      ]);
+    }
+
     const rooms = getActiveRooms(io.sockets.adapter.rooms);
     if (rooms.length) {
       const userRoom = rooms.find(({ room }) => room === supporter.username);
       if (userRoom) {
         const userSockets = userRoom.sockets;
-        const newNotification = await db.query(`INSERT INTO notifications (badge) values ($1) RETURNING id;`, [
-          badgeID,
-        ]);
 
-        if (newNotification.rows[0]) {
-          const { id } = newNotification.rows[0];
-
-          await db.query(`INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`, [
-            creator.id,
-            id,
-            'sender',
-          ]);
-          await db.query(`INSERT INTO users_notifications (user_id, notification_id, roleplay) values ($1, $2, $3);`, [
-            supporter.id,
-            id,
-            'recipient',
-          ]);
-
-          userSockets.forEach((socketID) => {
-            const sendObj: ISocketNotification<string> = {
-              type: 'add_badge',
-              supporter: supporter.username,
-              additional: name,
-            };
-            io.sockets.to(socketID).emit('new_notification', sendObj);
-          });
-        }
+        userSockets.forEach((socketID) => {
+          const sendObj: ISocketNotification<string> = {
+            type: 'add_badge',
+            supporter: supporter.username,
+            additional: name,
+          };
+          io.sockets.to(socketID).emit('new_notification', sendObj);
+        });
       }
     }
   });

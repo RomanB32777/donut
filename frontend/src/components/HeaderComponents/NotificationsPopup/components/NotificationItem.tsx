@@ -5,6 +5,8 @@ import { INotification } from "types";
 
 import axiosClient from "modules/axiosClient";
 import { getNotificationMessage } from "utils";
+import { typeNotification } from "utils/notifications/types";
+import { useMemo } from "react";
 
 interface INotificationStatus {
   id: number;
@@ -18,6 +20,11 @@ const NotificationItem = ({
   notification: INotification;
   userID: number;
 }) => {
+  const { id, read, donation, badge, sender, recipient, created_at } =
+    notification;
+
+  console.log(notification);
+
   const updateNotification = async ({ id, read }: INotificationStatus) => {
     const { data, status } = await axiosClient.put(`/api/notification/status`, {
       id,
@@ -52,10 +59,20 @@ const NotificationItem = ({
       }
     };
 
-  const checkIsRecipient = (recipient: number) => recipient === userID;
+  const notificationType = useMemo((): typeNotification => {
+    const { donation, badge, sender, recipient } = notification;
+    if (donation) {
+      if (sender) return "donat_creator";
+      else if (recipient) return "donat_supporter";
+    }
 
-  const getNotificationUserRole = (recipient: number) =>
-    checkIsRecipient(recipient) ? "read_recipient" : "read_sender";
+    if (badge) {
+      if (sender) return "add_badge_creator";
+      else if (recipient) return "add_badge_supporter";
+    }
+
+    return "none";
+  }, [notification]);
 
   // const isNotificationBadgeStatus = n.badge && n.recipient === n.sender;
   // const badgeType =
@@ -75,47 +92,39 @@ const NotificationItem = ({
   //     : n.badge.transaction_hash);
 
   return (
-    <div>tt</div>
-    // <InView
-    //   onChange={handleChange({
-    //     id: n.id,
-    //     read: n[getNotificationUserRole(n.recipient)],
-    //   })}
-    //   key={n.id}
-    // >
-    //   {({ ref }) => (
-    //     <div className="item" ref={ref}>
-    //       <Badge dot={!n[getNotificationUserRole(n.recipient)]} className="dot">
-    //         {n.donation &&
-    //           getNotificationMessage({
-    //             type:
-    //               n.donation.creator_id === userID
-    //                 ? "donat_creator"
-    //                 : "donat_supporter",
-    //             user: n.donation.username,
-    //             data: {
-    //               sum_donation: n.donation.sum_donation,
-    //               blockchain: n.donation.blockchain,
-    //               donation_message: "",
-    //             },
-    //           })}
-    //         {/* {n.badge &&
-    //           getNotificationMessage({
-    //             type: badgeType,
-    //             user:
-    //               n.badge.creator_id === userID
-    //                 ? n.badge.supporter_username
-    //                 : n.badge.creator_username,
-    //             // n.badge.badge_name
-    //             data: badgeData,
-    //           })} */}
-    //         <p className="date">
-    //           {dayjsModule(n.created_at).startOf("minutes").fromNow()}
-    //         </p>
-    //       </Badge>
-    //     </div>
-    //   )}
-    // </InView>
+    <InView
+      onChange={handleChange({
+        id,
+        read,
+      })}
+      key={id}
+    >
+      {({ ref }) => (
+        <div className="item" ref={ref}>
+          <Badge dot={!read} className="dot">
+            {donation &&
+              getNotificationMessage({
+                type: notificationType,
+                user: sender || recipient || "",
+                data: {
+                  sum_donation: donation.sum_donation,
+                  blockchain: donation.blockchain,
+                  donation_message: donation.donation_message,
+                },
+              })}
+
+            {badge &&
+              getNotificationMessage({
+                type: notificationType,
+                user: sender || recipient || "",
+              })}
+            <p className="date">
+              {dayjsModule(created_at).startOf("minutes").fromNow()}
+            </p>
+          </Badge>
+        </div>
+      )}
+    </InView>
   );
 };
 

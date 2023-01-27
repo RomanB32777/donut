@@ -99,78 +99,39 @@ const getNotificationMessage: <T extends object = IDonationShortInfo>(
       case "donat_supporter":
         const { sum_donation: supporterSum, blockchain: supporterBlockchain } =
           data;
-        return `You sent ${formatNumber(supporterSum)} ${supporterBlockchain} to ${user}!`;
+        return `You sent ${formatNumber(
+          supporterSum
+        )} ${supporterBlockchain} to ${user}!`;
 
       case "add_badge_creator":
         return (
           <span>
-            You sent&nbsp;
-            {data ? (
-              <a
-                href={`${baseURL}/badges?id=${data}`}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: "#fff", textDecoration: "underline" }}
-              >
-                a badge
-              </a>
-            ) : (
-              "a badge"
-            )}
-            &nbsp; to {user}
-          </span>
-        );
-
-      case "add_badge_supporter":
-        return (
-          <span>
-            You received&nbsp;
-            {data ? (
-              <a
-                href={`${baseURL}/badges?id=${data}`}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: "#fff", textDecoration: "underline" }}
-              >
-                a badge
-              </a>
-            ) : (
-              "a badge"
-            )}
-            &nbsp; from {user};
-          </span>
-        );
-
-      case "failed_badge":
-        return (
-          <span>
-            Error occurred while creating your badge.
-            <a
-              href={`https://${
-                isProduction ? "" : "nile."
-              }tronscan.org/#/transaction/${data}`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: "#fff", textDecoration: "underline" }}
-            >
-              Click here
-            </a>
-            &nbsp; to check!
-          </span>
-        );
-
-      case "success_badge":
-        return (
-          <span>
+            You sent&nbsp; (
             <a
               href={`${baseURL}/badges?id=${data}`}
               target="_blank"
               rel="noreferrer"
               style={{ color: "#fff", textDecoration: "underline" }}
             >
-              New badge
+              a badge
             </a>
-            &nbsp; was created successfully!
+            ) &nbsp; to {user}
+          </span>
+        );
+
+      case "add_badge_supporter":
+        return (
+          <span>
+            You received&nbsp; (
+            <a
+              href={`${baseURL}/badges?id=${data}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#fff", textDecoration: "underline" }}
+            >
+              a badge
+            </a>
+            ) &nbsp; from {user};
           </span>
         );
 

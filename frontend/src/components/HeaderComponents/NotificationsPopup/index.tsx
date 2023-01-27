@@ -12,13 +12,13 @@ import { INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useOnClickOutside from "hooks/useClickOutside";
+import { NotificationItem } from "./components/NotificationItem";
 import { AlertIcon } from "icons";
 import Loader from "components/Loader";
 
 import axiosClient from "modules/axiosClient";
 import { getNotifications } from "store/types/Notifications";
 import "./styles.sass";
-import { NotificationItem } from "./components/NotificationItem";
 
 const LIMIT_NOTIF = 10;
 
@@ -150,7 +150,7 @@ const NotificationsPopup = () => {
   }, [userID, fetching, currentPage]);
 
   useEffect(() => {
-    dispatch(getNotifications({ user: userID }));
+    dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
   }, []);
 
   useLayoutEffect(() => {
@@ -187,7 +187,13 @@ const NotificationsPopup = () => {
                 }}
                 ref={contentRef}
               >
-                {notifications.map((n) => <NotificationItem notification={n} userID={userID} />)}
+                {notifications.map((n) => (
+                  <NotificationItem
+                    key={n.id}
+                    notification={n}
+                    userID={userID}
+                  />
+                ))}
                 {!Boolean(notifications.length) && !loading && (
                   <div
                     className="item"
@@ -200,7 +206,7 @@ const NotificationsPopup = () => {
                     </Badge>
                   </div>
                 )}
-                
+
                 {loading && (
                   <Row justify="center">
                     <Loader size="small" />

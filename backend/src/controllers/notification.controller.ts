@@ -1,9 +1,34 @@
 import { NextFunction, Request, Response } from 'express';
-import { INotification, INotificationQueries } from 'types';
+import { INotification, INotificationQueries, notificationRoles } from 'types';
 import db from '../db.js';
 import badWordsFilter from '../modules/badWords/index.js';
 import { getUsername, parseBool } from '../utils.js';
 
+const getOtherUsernameInAssigning = async ({
+  notificationID,
+  roleplay,
+}: {
+  notificationID: number;
+  roleplay: notificationRoles;
+}) => {
+  const userInfo = await db.query(
+    `
+      SELECT username
+      FROM notifications n
+
+      LEFT JOIN users_notifications un
+      ON un.notification_id = n.id
+
+      LEFT JOIN users u 
+      ON u.id = un.user_id
+
+      WHERE n.id = $1 AND un.roleplay = $2
+  `,
+    [notificationID, roleplay],
+  );
+  if (userInfo.rowCount) return userInfo.rows[0].username;
+  return null;
+};
 class NotificationController {
   async getUserNotifications(req: Request, res: Response, next: NextFunction) {
     try {
@@ -68,7 +93,17 @@ class NotificationController {
                 return notification;
               })
             : recipientNotifications.rows;
-          return notifications;
+
+          const notificationsWithBadgeInfo = await Promise.all(
+            notifications.map(async (n) => {
+              if (n.badge) {
+                const senderUsername = await getOtherUsernameInAssigning({ notificationID: n.id, roleplay: 'sender' });
+                if (senderUsername) return { ...n, sender: senderUsername };
+              }
+              return n;
+            }),
+          );
+          return notificationsWithBadgeInfo;
         }
         return [];
       };
@@ -107,7 +142,19 @@ class NotificationController {
         );
         if (senderNotifications.rowCount) {
           const notifications: INotification[] = senderNotifications.rows;
-          return notifications;
+          const notificationsWithBadgeInfo = await Promise.all(
+            notifications.map(async (n) => {
+              if (n.badge) {
+                const recipientUsername = await getOtherUsernameInAssigning({
+                  notificationID: n.id,
+                  roleplay: 'recipient',
+                });
+                if (recipientUsername) return { ...n, recipient: recipientUsername };
+              }
+              return n;
+            }),
+          );
+          return notificationsWithBadgeInfo;
         }
         return [];
       };
@@ -131,6 +178,7 @@ class NotificationController {
 
       const recipientNotifications = await getRecipientNotifications();
       const senderNotifications = await getSenderNotifications();
+
       const notifications = [...senderNotifications, ...recipientNotifications].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );

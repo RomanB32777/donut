@@ -331,7 +331,7 @@ class WidgetController {
       const { text, gender_voice } = req.query;
       const request = {
         input: { text },
-        voice: { languageCode: 'en-US', ssmlGender: gender_voice }, // MALE // FEMALE
+        voice: { languageCode: 'en-US', ssmlGender: gender_voice }, // MALE || FEMALE
         audioConfig: { audioEncoding: 'MP3' },
       };
 

@@ -13,7 +13,7 @@ const asyncGetNotifications = async ({
 }: INotificationParams) => {
   const queryParams: Record<string, any> = { ...query };
 
-  const queryParamsKeys = Object.keys(queryParams)
+  const queryParamsKeys = Object.keys(queryParams);
 
   const queryParamsValues = queryParamsKeys.length
     ? "?" + queryParamsKeys.map((key) => `${key}=${queryParams[key]}`).join("&")
@@ -28,19 +28,23 @@ const asyncGetNotifications = async ({
 };
 
 function* NotificationsWorker(action: IAnyAction<INotificationParams>): any {
-  yield put(setLoading(true));
-  const data = yield call(asyncGetNotifications, action.payload);
+  const { payload } = action;
+  const { shouldUpdateApp } = payload;
+
+  if (shouldUpdateApp) yield put(setLoading(true));
+
+  const data = yield call(asyncGetNotifications, payload);
   if (data) {
     // const notifications = yield select((state: any) => state.notifications);
     // if (data.notifications.length > notifications.length)
     yield put(
       setNotifications({
         list: data.notifications,
-        shouldUpdateApp: action.payload.shouldUpdateApp || false,
+        shouldUpdateApp: payload.shouldUpdateApp || false,
       })
     );
   }
-  yield put(setLoading(false));
+  if (shouldUpdateApp) yield put(setLoading(false));
 }
 
 export function* NotificationsWatcher() {
