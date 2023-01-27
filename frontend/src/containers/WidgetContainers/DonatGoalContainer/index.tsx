@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Progress } from "antd";
-import { goalDataKeys } from "types";
+import { goalDataKeys, INotification } from "types";
 
 import { useParams } from "react-router";
 
@@ -63,7 +63,16 @@ const DonatGoalContainer = () => {
 
   useEffect(() => {
     if (list.length && id) {
-      const { donation } = list[0];
+      const lastNotification = list.reduce(
+        (prev, current) =>
+          new Date(prev.created_at).getTime() >
+          new Date(current.created_at).getTime()
+            ? prev
+            : current,
+        {} as INotification
+      );
+
+      const { donation } = lastNotification;
 
       if (donation && donation.goal_id === id)
         getGoalData((data) => setGoalData((prev) => ({ ...prev, ...data })));

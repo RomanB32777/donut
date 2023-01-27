@@ -8,7 +8,12 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { tryToGetPersonInfo } from "store/types/PersonInfo";
 
 import axiosClient from "modules/axiosClient";
-import { formatNumber, getFontColorStyles, getFontsList, loadFonts } from "utils";
+import {
+  formatNumber,
+  getFontColorStyles,
+  getFontsList,
+  loadFonts,
+} from "utils";
 import { initAlertData, baseURL } from "consts";
 import { IAlert } from "appTypes";
 
@@ -81,7 +86,17 @@ const DonatAlertContainer = () => {
   };
 
   useEffect(() => {
-    list.length && setLastNotif(list[0]);
+    if (list.length) {
+      const lastNotification = list.reduce(
+        (prev, current) =>
+          new Date(prev.created_at).getTime() >
+          new Date(current.created_at).getTime()
+            ? prev
+            : current,
+        {} as INotification
+      );
+      setLastNotif(lastNotification);
+    }
   }, [list]);
 
   // for testing

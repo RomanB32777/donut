@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
+import { INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import axiosClient from "modules/axiosClient";
@@ -87,7 +87,17 @@ const DonatStatContainer = () => {
   }, [id]);
 
   useEffect(() => {
-    list.length && setLastNotif(list[0].donation);
+    if (list.length) {
+      const lastNotification = list.reduce(
+        (prev, current) =>
+          new Date(prev.created_at).getTime() >
+          new Date(current.created_at).getTime()
+            ? prev
+            : current,
+        {} as INotification
+      );
+      setLastNotif(lastNotification);
+    }
   }, [list]);
 
   const timePeriodName = useMemo(
