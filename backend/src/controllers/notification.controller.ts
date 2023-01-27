@@ -151,7 +151,7 @@ class NotificationController {
         `UPDATE users_notifications un 
          SET read = $1 
          FROM notifications n
-         WHERE un.notification_id = n.id AND un.user_id = $2 RETURNING *`,
+         WHERE un.notification_id = n.id AND n.id = $2 RETURNING *`,
         [read, id],
       );
 

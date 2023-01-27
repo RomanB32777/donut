@@ -13,7 +13,7 @@ const Header = ({
   headerModificator?: string;
   setCollapsedSidebar: (state: boolean) => any;
 }) => {
-  const { id, username } = useAppSelector(({ user }) => user);
+  const { username } = useAppSelector(({ user }) => user);
 
   return (
     <HeaderComponent
@@ -23,8 +23,8 @@ const Header = ({
       visibleGamburger
     >
       <>
-        {id && <NotificationsPopup user={id} />}
-        {username && <HeaderSelect title={username.slice(1)} />}
+        <NotificationsPopup />
+        <HeaderSelect title={username.slice(1)} />
       </>
     </HeaderComponent>
   );

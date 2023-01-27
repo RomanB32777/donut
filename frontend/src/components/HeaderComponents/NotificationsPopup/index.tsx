@@ -8,8 +8,7 @@ import {
 } from "react";
 import { Badge, Row } from "antd";
 import { useDispatch } from "react-redux";
-import { InView } from "react-intersection-observer";
-import dayjsModule from "modules/dayjsModule";
+import { INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useOnClickOutside from "hooks/useClickOutside";
@@ -18,78 +17,39 @@ import Loader from "components/Loader";
 
 import axiosClient from "modules/axiosClient";
 import { getNotifications } from "store/types/Notifications";
-import { getNotificationMessage } from "utils";
 import "./styles.sass";
+import { NotificationItem } from "./components/NotificationItem";
 
 const LIMIT_NOTIF = 10;
 
-interface INotificationStatus {
-  id: number;
-  read: boolean;
-}
-
-const NotificationsPopup = ({ user }: { user: number }) => {
+const NotificationsPopup = () => {
   const dispatch = useDispatch();
-  const { list } = useAppSelector(({ notifications }) => notifications);
+  const { notifications: notificationsApp, user } = useAppSelector(
+    (state) => state
+  );
 
   const contentRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
   const [fetching, setFetching] = useState(false);
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
     useState(false);
 
+  const { list } = notificationsApp;
+  const { id: userID } = user;
+
   const handlerNotificationPopup = () =>
     setNotificationPopupOpened((prev) => !prev);
-
-  const checkIsRecipient = (recipient: number) => recipient === user;
-
-  const getNotificationUserRole = (recipient: number) =>
-    checkIsRecipient(recipient) ? "read_recipient" : "read_sender";
 
   useOnClickOutside(
     isNotificationPopupOpened,
     blockRef,
     handlerNotificationPopup
   );
-
-  const updateNotification = async ({ id, read }: INotificationStatus) => {
-    const { data, status } = await axiosClient.put(`/api/notification/status`, {
-      id,
-      read,
-    });
-    if (status === 200) return data.updatedNotification;
-  };
-
-  const handleChange =
-    ({ id, read }: INotificationStatus) =>
-    async (status: boolean) => {
-      if (!status) return;
-      if (status && !read) {
-        const updatedNotification = await updateNotification({
-          id,
-          read: status,
-        });
-        if (updatedNotification) {
-          setNotifications((prev) =>
-            prev.map((n: any) => {
-              const readField = getNotificationUserRole(n.recipient);
-              if (n.id === id) {
-                return {
-                  ...n,
-                  [readField]: updatedNotification[readField],
-                };
-              }
-              return n;
-            })
-          );
-        }
-      }
-    };
 
   const handleScroll = useCallback(
     (e: Event) => {
@@ -103,7 +63,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
       )
         setFetching(true);
     },
-    [notifications, totalLength, isNotificationPopupOpened]
+    [notifications, totalLength] // isNotificationPopupOpened ???
   );
 
   const getCurrentNotifications = async ({
@@ -115,7 +75,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
   }) => {
     try {
       setLoading(true);
-      const url = `/api/notification/${user}?limit=${LIMIT_NOTIF}&offset=${
+      const url = `/api/notification/${userID}?limit=${LIMIT_NOTIF}&offset=${
         LIMIT_NOTIF * currentPage
       }`; // &sort=read&sortDirection=ASC
 
@@ -138,124 +98,59 @@ const NotificationsPopup = ({ user }: { user: number }) => {
     }
   };
 
-  const renderNotifList = (n: any) => {
-    const isNotificationBadgeStatus = n.badge && n.recipient === n.sender;
-    const badgeType =
-      n.badge &&
-      (isNotificationBadgeStatus
-        ? n.badge.transaction_status !== "pending" &&
-          `${n.badge.transaction_status}_badge`
-        : n.badge.creator_id === user
-        ? "add_badge_creator"
-        : "add_badge_supporter");
-
-    const badgeData =
-      n.badge &&
-      n.badge.transaction_status !== "pending" &&
-      (n.badge.transaction_status === "success"
-        ? n.badge.id
-        : n.badge.transaction_hash);
-
-    return (
-      <InView
-        onChange={handleChange({
-          id: n.id,
-          read: n[getNotificationUserRole(n.recipient)],
-        })}
-        key={n.id}
-      >
-        {({ ref }) => (
-          <div className="item" ref={ref}>
-            <Badge
-              dot={!n[getNotificationUserRole(n.recipient)]}
-              className="dot"
-            >
-              {n.donation &&
-                getNotificationMessage({
-                  type:
-                    n.donation.creator_id === user
-                      ? "donat_creator"
-                      : "donat_supporter",
-                  user: n.donation.username,
-                  data: {
-                    sum_donation: n.donation.sum_donation,
-                    blockchain: n.donation.blockchain,
-                    donation_message: "",
-                  },
-                })}
-              {n.badge &&
-                getNotificationMessage({
-                  type: badgeType,
-                  user:
-                    n.badge.creator_id === user
-                      ? n.badge.supporter_username
-                      : n.badge.creator_username,
-                  // n.badge.badge_name
-                  data: badgeData,
-                })}
-              <p className="date">
-                {dayjsModule(n.created_at).startOf("minutes").fromNow()}
-              </p>
-            </Badge>
-          </div>
-        )}
-      </InView>
-    );
-  };
-
   const unreadedNotificationsCount = useMemo(() => {
     const all = list.length;
 
-    const unreadedApp = list.filter(
-      (n: any) => !n[getNotificationUserRole(n.recipient)]
-    ).length;
+    // const unreadedApp = list.filter(
+    //   (n: any) => !n[getNotificationUserRole(n.recipient)]
+    // ).length;
 
-    const unreaded = notifications.filter(
-      (n: any) => !n[getNotificationUserRole(n.recipient)]
-    ).length;
+    // const unreaded = notifications.filter(
+    //   (n: any) => !n[getNotificationUserRole(n.recipient)]
+    // ).length;
 
-    const readed = notifications.filter(
-      (n: any) => n[getNotificationUserRole(n.recipient)]
-    ).length;
+    // const readed = notifications.filter(
+    //   (n: any) => n[getNotificationUserRole(n.recipient)]
+    // ).length;
 
-    const currentUnreaded = list.filter(
-      (na: any) =>
-        !na[getNotificationUserRole(na.recipient)] &&
-        notifications.some((n: any) => n.id === na.id)
-    );
+    // const currentUnreaded = list.filter(
+    //   (na: any) =>
+    //     !na[getNotificationUserRole(na.recipient)] &&
+    //     notifications.some((n: any) => n.id === na.id)
+    // );
 
-    if (unreadedApp === all && readed === 0) return unreadedApp;
+    // if (unreadedApp === all && readed === 0) return unreadedApp;
 
-    if (!loading) {
-      if (unreadedApp >= all - readed) return all - readed;
+    // if (!loading) {
+    //   if (unreadedApp >= all - readed) return all - readed;
 
-      if (currentUnreaded.length) return unreaded;
+    //   if (currentUnreaded.length) return unreaded;
 
-      if (unreadedApp > 0 && unreaded === 0 && notifications.length !== all)
-        return unreadedApp - unreaded;
-    }
+    //   if (unreadedApp > 0 && unreaded === 0 && notifications.length !== all)
+    //     return unreadedApp - unreaded;
+    // }
 
     return 0;
   }, [list, notifications, loading]);
 
   useEffect(() => {
     if (isNotificationPopupOpened) {
-      dispatch(getNotifications({ user, shouldUpdateApp: false }));
+      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
       setNotifications([]);
       setTotalLength(0);
       setCurrentPage(0);
       getCurrentNotifications({ currentPage: 0 });
     }
-  }, [isNotificationPopupOpened, user]);
+  }, [isNotificationPopupOpened, userID]);
 
   useEffect(() => {
     fetching &&
-      user &&
+      userID &&
       getCurrentNotifications({ updatePage: true, currentPage });
-  }, [user, fetching, currentPage]);
+  }, [userID, fetching, currentPage]);
 
   useEffect(() => {
-    dispatch(getNotifications({ user }));
+    dispatch(getNotifications({ user: userID }));
   }, []);
 
   useLayoutEffect(() => {
@@ -268,7 +163,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
 
   return (
     <div className="notifications" ref={blockRef}>
-      {/* <div
+      <div
         className="icon icon-notifications"
         onClick={handlerNotificationPopup}
       >
@@ -279,11 +174,11 @@ const NotificationsPopup = ({ user }: { user: number }) => {
         >
           <AlertIcon />
         </Badge>
-      </div> */}
+      </div>
 
       {isNotificationPopupOpened && (
-        <div className="popup fadeIn">
-          <div className="wrapper">
+        <div className="popup">
+          <div className="wrapper fadeIn">
             <div className="content">
               <div
                 className="list"
@@ -292,7 +187,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
                 }}
                 ref={contentRef}
               >
-                {notifications.map(renderNotifList)}
+                {notifications.map((n) => <NotificationItem notification={n} userID={userID} />)}
                 {!Boolean(notifications.length) && !loading && (
                   <div
                     className="item"
@@ -305,6 +200,7 @@ const NotificationsPopup = ({ user }: { user: number }) => {
                     </Badge>
                   </div>
                 )}
+                
                 {loading && (
                   <Row justify="center">
                     <Loader size="small" />
