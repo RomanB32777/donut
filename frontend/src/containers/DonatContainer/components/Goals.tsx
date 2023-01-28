@@ -53,7 +53,7 @@ const Goals = ({
               <p>Donation goals</p>
             </div>
             <p className="description">
-              Help adinross achieve his donation goals
+              Help {personInfo.username} achieve his donation goals
             </p>
           </div>
         </Col>
