@@ -4,7 +4,7 @@ import { clean } from '../modules/badWords/index.js';
 import db from '../db.js';
 import { getUsdKoef, getUsername, parseBool } from '../utils.js';
 import { exchangeNames } from '../consts.js';
-import { IFullFilterPeriodItems, fullPeriodItems } from '../types.js';
+import { IFullFilterPeriodItems, fullPeriodItems, RequestParams, ResponseBody, RequestBody } from '../types.js';
 
 const dateParams: IFilterPeriodItems = {
   today: '',
@@ -374,6 +374,23 @@ class DonationController {
       }
 
       return res.status(200).json([]);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUsdKoef(
+    req: Request<RequestParams, ResponseBody, RequestBody, { blockchain?: string }>,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { blockchain } = req.query;
+      const usdKoefs = await getUsdKoef(blockchain);
+      
+      if (usdKoefs) return res.status(200).json(usdKoefs);
+
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }

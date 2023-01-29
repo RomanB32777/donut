@@ -55,10 +55,8 @@ const NotificationsPopup = () => {
   );
 
   useEffect(() => {
-    if (isNotificationPopupOpened) {
-      console.log("init notif ");
+    isNotificationPopupOpened &&
       dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-    }
   }, [isNotificationPopupOpened]);
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 import { AnyAction, Dispatch } from "redux";
 import { NavigateFunction } from "react-router-dom";
-import axios from "axios";
 import { exchangeNameTypes } from "types";
 
+import axiosClient from "modules/axiosClient";
 import { setSelectedBlockchain } from "store/types/Wallet";
 import { tryToGetUser } from "store/types/User";
 import { setLoading } from "store/types/Loading";
@@ -44,12 +44,13 @@ const getUsdKoef = async (
   blockchain: exchangeNameTypes,
   setUsdtKoef?: (price: number) => void
 ) => {
-  const { data } = await axios.get(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${blockchain}&vs_currencies=usd`
+  const { data, status } = await axiosClient.get(
+    `/api/donation/exchange?blockchain=${blockchain}`
   );
-  if (data[blockchain]) {
-    setUsdtKoef && setUsdtKoef(+data[blockchain].usd);
-    return +data[blockchain].usd;
+  // `https://api.coingecko.com/api/v3/simple/price?ids=${blockchain}&vs_currencies=usd`
+  if (status === 200 && data) {
+    setUsdtKoef && setUsdtKoef(data);
+    return data;
   }
   return 0;
 };

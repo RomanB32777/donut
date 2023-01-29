@@ -26,8 +26,6 @@ const WidgetTopSup = () => {
 
   const getLatestDonations = async (activeFilterItem: string) => {
     try {
-      console.log("getLatestDonations");
-
       const timePeriod = getTimePeriodQuery(activeFilterItem);
       const { data } = await axiosClient.get(
         `${widgetApiUrl}/top-supporters/${id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`

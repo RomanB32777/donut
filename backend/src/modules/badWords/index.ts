@@ -7,7 +7,6 @@ const clean = (message: string) => {
   try {
     return badWordsFilter.clean(message);
   } catch (error) {
-    console.log(error);
     return message;
   }
 };

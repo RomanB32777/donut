@@ -101,7 +101,7 @@ class NotificationController {
               return n;
             }),
           );
-          return notificationsWithBadgeInfo;
+          return notificationsWithBadgeInfo.filter((n) => n.sender);
         }
         return [];
       };
@@ -152,7 +152,7 @@ class NotificationController {
               return n;
             }),
           );
-          return notificationsWithBadgeInfo;
+          return notificationsWithBadgeInfo.filter((n) => n.recipient);
         }
         return [];
       };
@@ -177,9 +177,9 @@ class NotificationController {
       const recipientNotifications = await getRecipientNotifications();
       const senderNotifications = await getSenderNotifications();
 
-      const notifications = [...senderNotifications, ...recipientNotifications]
-        .filter((n) => n.recipient || n.sender)
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      const notifications = [...senderNotifications, ...recipientNotifications].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
       return res.status(200).json({
         notifications,
         totalLength: notifications.length,

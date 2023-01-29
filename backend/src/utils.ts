@@ -66,17 +66,20 @@ const getApiUsdKoef = async (initExchanges: Record<string, number>) => {
   }
 };
 
-const getUsdKoef = async () => {
+const getUsdKoef = async (blockchain?: string) => {
   // : { [key in exchangeNameTypes]: number }
   try {
+    const exchangeName = blockchain
+      ? Object.keys(exchangeNames).find((name) => exchangeNames[name as blockchainsSymbols] === blockchain)
+      : null;
     let exchanges: Record<string, number> = await getDBUsdKoef('hour');
 
-    if (isNotEmptyObject(exchanges)) return exchanges;
+    if (isNotEmptyObject(exchanges)) return exchangeName ? exchanges[exchangeName] : exchanges;
     else {
       exchanges = await getApiUsdKoef(exchanges);
       if (!isNotEmptyObject(exchanges)) exchanges = await getDBUsdKoef();
     }
-    return exchanges;
+    return exchangeName ? exchanges[exchangeName] : exchanges;
   } catch (error) {
     console.log('getUsdKoef error');
   }

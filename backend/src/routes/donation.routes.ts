@@ -16,4 +16,7 @@ router.get('/widgets/stats/:user_id', donationController.getStatsDonations)
 // donations page
 router.get('/page/data/:user_id', donationController.getDonationsData)
 
+// exchanges
+router.get('/exchange', donationController.getUsdKoef)
+
 export default router;
