@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { ReactNotifications } from "react-notifications-component";
 import LayoutApp from "./containers/LayoutContainer";
-import { WebSocketProvider } from "./components/Websocket";
+import { WebSocketProvider } from "./contexts/Websocket";
 import { LOCALES } from "i18n/locales";
 import messages from "i18n/messages";
 
@@ -12,7 +12,6 @@ import "./commonStyles/main.sass";
 
 function App() {
   const locale = LOCALES.ENGLISH;
-  // test version
 
   return (
     <IntlProvider

@@ -13,7 +13,7 @@ const getOtherUsernameInAssigning = async ({
 }) => {
   const userInfo = await db.query(
     `
-      SELECT username
+      SELECT u.username
       FROM notifications n
 
       LEFT JOIN users_notifications un
@@ -69,7 +69,7 @@ class NotificationController {
               LEFT JOIN badges b
               ON b.id = n.badge
                 
-              WHERE un.user_id = $1 AND un.roleplay = 'recipient'
+              WHERE un.user_id = $1 AND un.roleplay = 'recipient' AND un.visible = true
 
               ORDER BY ${sort || 'created_at'} ${sortDirection || 'DESC'}
               ${limit ? `LIMIT ${limit}` : ''}
@@ -133,7 +133,7 @@ class NotificationController {
           LEFT JOIN badges b
           ON b.id = n.badge
             
-          WHERE un.user_id = $1 AND un.roleplay = 'sender'
+          WHERE un.user_id = $1 AND un.roleplay = 'sender' AND un.visible = true
 
           ORDER BY ${sort || 'created_at'} ${sortDirection || 'DESC'}
           ${limit ? `LIMIT ${limit}` : ''}
@@ -179,9 +179,9 @@ class NotificationController {
       const recipientNotifications = await getRecipientNotifications();
       const senderNotifications = await getSenderNotifications();
 
-      const notifications = [...senderNotifications, ...recipientNotifications].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      );
+      const notifications = [...senderNotifications, ...recipientNotifications]
+        .filter((n) => n.recipient || n.sender)
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       return res.status(200).json({
         notifications,
         totalLength: notifications.length,
@@ -193,17 +193,17 @@ class NotificationController {
 
   async updateStatusNotifications(req: Request, res: Response, next: NextFunction) {
     try {
-      const { read, id } = req.body;
+      const { read, id, userID } = req.body;
 
       const updatedNotification = await db.query(
         `UPDATE users_notifications un 
          SET read = $1 
          FROM notifications n
-         WHERE un.notification_id = n.id AND n.id = $2 RETURNING *`,
-        [read, id],
+         WHERE un.notification_id = n.id AND n.id = $2 AND un.user_id = $3 RETURNING *`,
+        [read, id, userID],
       );
 
-      if (updatedNotification.rows.length) return res.status(200).json(updatedNotification.rows[0]);
+      if (updatedNotification.rowCount) return res.status(200).json(updatedNotification.rows[0]);
 
       return res.status(200).json([]);
     } catch (error) {
@@ -213,9 +213,30 @@ class NotificationController {
 
   async deleteNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      const deletedNotification = await db.query(`DELETE FROM notifications WHERE id = $1 RETURNING *;`, [id]);
-      res.status(200).json(deletedNotification.rows[0]);
+      const { id, user } = req.params;
+      const deletedUserNotification = await db.query(
+        `UPDATE users_notifications 
+         SET visible = false
+         WHERE notification_id = $1 AND user_id = $2 RETURNING id;`,
+        [id, user],
+      );
+
+      if (deletedUserNotification.rowCount) {
+        await db.query(
+          `WITH subquery AS (
+            SELECT COUNT(*)
+            FROM users_notifications 
+            WHERE notification_id = $1 AND visible = true
+          )
+          DELETE FROM notifications
+          USING subquery
+          WHERE id = $1 AND (subquery.count = 0 OR subquery.count IS NULL)
+          RETURNING id;`,
+          [id],
+        );
+        return res.status(200).json(deletedUserNotification.rows[0]);
+      }
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }
@@ -223,8 +244,29 @@ class NotificationController {
 
   async deleteAllNotifications(req: Request, res: Response, next: NextFunction) {
     try {
-      await db.query(`DELETE FROM notifications *;`);
-      res.status(200).json({ status: 'ok' });
+      const { user } = req.params;
+      const notifications = await db.query(
+        `UPDATE users_notifications 
+          SET visible = false
+          WHERE user_id = $1 RETURNING notification_id;`,
+        [user],
+      );
+
+      if (notifications.rowCount) {
+        const notificationIDs = notifications.rows.map((r) => r.notification_id);
+        await db.query(
+          `WITH subquery AS (
+            SELECT COUNT(*)
+            FROM users_notifications 
+            WHERE visible = true
+          )
+          DELETE FROM notifications 
+          USING subquery
+          WHERE id in (${notificationIDs.join(', ')}) AND (subquery.count = 0 OR subquery.count IS NULL);`,
+        );
+        return res.status(200).json({ status: 'ok' });
+      }
+      return res.status(200).json([]);
     } catch (error) {
       next(error);
     }

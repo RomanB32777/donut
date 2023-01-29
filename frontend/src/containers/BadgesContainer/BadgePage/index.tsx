@@ -1,8 +1,8 @@
 import { Col, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
-import { IBadgeInfo, IMintBadgeSocketObj, IShortUserData } from "types";
+import { IBadgeInfo, ISocketEmitObj, IShortUserData } from "types";
 
-import { WebSocketContext } from "components/Websocket";
+import { WebSocketContext } from "contexts/Websocket";
 import PageTitle from "components/PageTitle";
 import BadgeDetails from "./components/BadgeDetails";
 import BadgeHolders from "./components/BadgeHolders";
@@ -22,18 +22,21 @@ const BadgePage = ({
   deleteBadge: (badge: IBadgeInfo) => Promise<void>;
 }) => {
   const socket = useContext(WebSocketContext);
-  const { id, username, wallet_address } = useAppSelector(({ user }) => user);
+  const {
+    id: userID,
+    username,
+    wallet_address,
+  } = useAppSelector(({ user }) => user);
 
   const [badgeInfo, setBadgeInfo] = useState<IBadgeInfo>(activeBadge);
   const [supporters, setSupporters] = useState<IShortUserData[]>([]);
   const [holders, setHolders] = useState<IShortUserData[]>([]);
   const [updateList, setUpdateList] = useState(false);
 
-  const { image, title, is_creator, token_id } = badgeInfo;
+  const { id, image, title, is_creator, token_id } = badgeInfo;
 
   const updateBadgeData = async () => {
     try {
-      const { id } = activeBadge;
       const { data, status } = await axiosClient.get(
         `/api/badge/${id}/${wallet_address}`
       );
@@ -46,7 +49,6 @@ const BadgePage = ({
 
   const getHolders = async () => {
     try {
-      const { id } = activeBadge;
       const { data, status } = await axiosClient.get(
         `/api/badge/holders/${id}`
       );
@@ -59,7 +61,7 @@ const BadgePage = ({
   const getSupporters = async () => {
     try {
       const { data, status } = await axiosClient.get(
-        `/api/donation/supporters/${id}`
+        `/api/donation/supporters/${userID}`
       );
       status === 200 && setSupporters(data);
     } catch (error) {
@@ -69,19 +71,16 @@ const BadgePage = ({
 
   const sendAssignedBadge = async (selectedUser: IShortUserData) => {
     if (socket) {
-      const sendData: IMintBadgeSocketObj = {
+      const sendData: ISocketEmitObj = {
         supporter: {
           username: selectedUser.username,
           id: selectedUser.id,
         },
         creator: {
-          id,
+          id: userID,
           username,
         },
-        badge: {
-          id,
-          name: title,
-        },
+        id,
       };
       socket.emit("new_badge", sendData);
     }

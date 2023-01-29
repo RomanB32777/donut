@@ -1,26 +1,15 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Badge, Row } from "antd";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Badge } from "antd";
 import { useDispatch } from "react-redux";
-import { INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useOnClickOutside from "hooks/useClickOutside";
 import { NotificationItem } from "./components/NotificationItem";
 import { AlertIcon } from "icons";
-import Loader from "components/Loader";
 
 import axiosClient from "modules/axiosClient";
-import { getNotifications } from "store/types/Notifications";
+import { getNotifications, setNotifications } from "store/types/Notifications";
 import "./styles.sass";
-
-const LIMIT_NOTIF = 10;
 
 const NotificationsPopup = () => {
   const dispatch = useDispatch();
@@ -31,11 +20,6 @@ const NotificationsPopup = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef(null);
 
-  const [loading, setLoading] = useState(false);
-  const [notifications, setNotifications] = useState<INotification[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalLength, setTotalLength] = useState(0);
-  const [fetching, setFetching] = useState(false);
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
     useState(false);
 
@@ -45,121 +29,42 @@ const NotificationsPopup = () => {
   const handlerNotificationPopup = () =>
     setNotificationPopupOpened((prev) => !prev);
 
+  const clearAll = async () => {
+    const { data, status } = await axiosClient.delete(
+      `/api/notification/${userID}`
+    );
+    if (status === 200 && data) {
+      dispatch(
+        setNotifications({
+          list: [],
+          shouldUpdateApp: false,
+        })
+      );
+    }
+  };
+
   useOnClickOutside(
     isNotificationPopupOpened,
     blockRef,
     handlerNotificationPopup
   );
 
-  const handleScroll = useCallback(
-    (e: Event) => {
-      const listHeight = (e.currentTarget as HTMLDivElement).clientHeight;
-      const listScrollTop = (e.currentTarget as HTMLDivElement).scrollTop;
-      const listScrollHeight = (e.currentTarget as HTMLDivElement).scrollHeight;
-
-      if (
-        listScrollHeight - (listScrollTop + listHeight) <= 25 &&
-        notifications.length < totalLength
-      )
-        setFetching(true);
-    },
-    [notifications, totalLength] // isNotificationPopupOpened ???
+  const unreadedNotificationsCount = useMemo(
+    () => list.filter(({ read }) => !read).length,
+    [list]
   );
-
-  const getCurrentNotifications = async ({
-    updatePage,
-    currentPage,
-  }: {
-    updatePage?: boolean;
-    currentPage: number;
-  }) => {
-    try {
-      setLoading(true);
-      const url = `/api/notification/${userID}?limit=${LIMIT_NOTIF}&offset=${
-        LIMIT_NOTIF * currentPage
-      }`; // &sort=read&sortDirection=ASC
-
-      const { data, status } = await axiosClient.get(url);
-
-      if (status === 200) {
-        updatePage && setCurrentPage((prev) => prev + 1);
-        setTotalLength(data.totalLength);
-        setNotifications((prev) =>
-          updatePage && currentPage
-            ? [...prev, ...data.notifications]
-            : data.notifications
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      setFetching(false);
-    }
-  };
-
-  const unreadedNotificationsCount = useMemo(() => {
-    const all = list.length;
-
-    // const unreadedApp = list.filter(
-    //   (n: any) => !n[getNotificationUserRole(n.recipient)]
-    // ).length;
-
-    // const unreaded = notifications.filter(
-    //   (n: any) => !n[getNotificationUserRole(n.recipient)]
-    // ).length;
-
-    // const readed = notifications.filter(
-    //   (n: any) => n[getNotificationUserRole(n.recipient)]
-    // ).length;
-
-    // const currentUnreaded = list.filter(
-    //   (na: any) =>
-    //     !na[getNotificationUserRole(na.recipient)] &&
-    //     notifications.some((n: any) => n.id === na.id)
-    // );
-
-    // if (unreadedApp === all && readed === 0) return unreadedApp;
-
-    // if (!loading) {
-    //   if (unreadedApp >= all - readed) return all - readed;
-
-    //   if (currentUnreaded.length) return unreaded;
-
-    //   if (unreadedApp > 0 && unreaded === 0 && notifications.length !== all)
-    //     return unreadedApp - unreaded;
-    // }
-
-    return 0;
-  }, [list, notifications, loading]);
 
   useEffect(() => {
     if (isNotificationPopupOpened) {
+      console.log("init notif ");
       dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-      setNotifications([]);
-      setTotalLength(0);
-      setCurrentPage(0);
-      getCurrentNotifications({ currentPage: 0 });
     }
-  }, [isNotificationPopupOpened, userID]);
+  }, [isNotificationPopupOpened]);
 
   useEffect(() => {
-    fetching &&
-      userID &&
-      getCurrentNotifications({ updatePage: true, currentPage });
-  }, [userID, fetching, currentPage]);
-
-  useEffect(() => {
-    dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-  }, []);
-
-  useLayoutEffect(() => {
-    const content = contentRef.current;
-    if (content) {
-      content.addEventListener("scroll", handleScroll);
-      return () => content.removeEventListener("scroll", handleScroll);
-    }
-  }, [handleScroll]);
+    userID &&
+      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
+  }, [userID]);
 
   return (
     <div className="notifications" ref={blockRef}>
@@ -167,11 +72,7 @@ const NotificationsPopup = () => {
         className="icon icon-notifications"
         onClick={handlerNotificationPopup}
       >
-        <Badge
-          count={
-            unreadedNotificationsCount > 0 ? unreadedNotificationsCount : 0
-          }
-        >
+        <Badge count={unreadedNotificationsCount}>
           <AlertIcon />
         </Badge>
       </div>
@@ -179,22 +80,30 @@ const NotificationsPopup = () => {
       {isNotificationPopupOpened && (
         <div className="popup">
           <div className="wrapper fadeIn">
+            {Boolean(list.length) && (
+              <div className="popup-header">
+                <p>Notifications</p>
+                <p className="all-read" onClick={clearAll}>
+                  Clear all
+                </p>
+              </div>
+            )}
             <div className="content">
               <div
                 className="list"
                 style={{
-                  overflowY: notifications.length >= 9 ? "scroll" : "auto",
+                  overflowY: list.length >= 9 ? "scroll" : "auto",
                 }}
                 ref={contentRef}
               >
-                {notifications.map((n) => (
+                {list.map((n) => (
                   <NotificationItem
                     key={n.id}
                     notification={n}
-                    userID={userID}
+                    handlerNotificationPopup={handlerNotificationPopup}
                   />
                 ))}
-                {!Boolean(notifications.length) && !loading && (
+                {!Boolean(list.length) && (
                   <div
                     className="item"
                     style={{
@@ -205,12 +114,6 @@ const NotificationsPopup = () => {
                       No notifications
                     </Badge>
                   </div>
-                )}
-
-                {loading && (
-                  <Row justify="center">
-                    <Loader size="small" />
-                  </Row>
                 )}
               </div>
             </div>

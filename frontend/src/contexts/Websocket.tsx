@@ -2,11 +2,15 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { useDispatch } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
 import { io, Socket } from "socket.io-client";
-import { ISocketNotification } from "types";
+import { IBadgeBase, ISocketNotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { getNotifications } from "store/types/Notifications";
-import { addNotification, getNotificationMessage } from "utils";
+import {
+  addNotification,
+  getBadgeNotificationMessage,
+  getDonatNotificationMessage,
+} from "utils";
 import { baseURL, isProduction, socketsBaseUrl } from "consts";
 
 const WebSocketContext = createContext<Socket | null>(null);
@@ -36,37 +40,34 @@ export const connectSocket = (
     console.log("disconnect");
   });
 
-  socket.on("new_notification", (data: ISocketNotification) => {
-    const { type } = data;
-    switch (type) {
-      case "donat":
-        addNotification({
-          type: "info",
-          title: "New donut",
-          message: getNotificationMessage({
-            type: "donat_creator",
-            user: data.supporter,
-            data: data.additional,
-          }),
-        });
-        break;
-
-      case "add_badge":
-        addNotification({
-          type: "info",
-          title: "New badge",
-          message: getNotificationMessage({
-            type: "add_badge_supporter",
-            user: data.supporter,
-          }),
-        });
-        break;
-
-      default:
-        break;
-    }
-    dispatch && dispatch(getNotifications({ user: username }));
+  socket.on("new_donat_notification", (data: ISocketNotification) => {
+    addNotification({
+      type: "info",
+      title: "New donut",
+      message: getDonatNotificationMessage({
+        type: "donat_creator",
+        user: data.supporter,
+        data: data.additional,
+      }),
+    });
+    dispatch(getNotifications({ user: username }));
   });
+
+  socket.on(
+    "new_badge_notification",
+    (data: ISocketNotification<IBadgeBase>) => {
+      addNotification({
+        type: "info",
+        title: "New badge",
+        message: getBadgeNotificationMessage({
+          type: "add_badge_supporter",
+          user: data.supporter,
+          data: data.additional,
+        }),
+      });
+      dispatch(getNotifications({ user: username }));
+    }
+  );
   return socket;
 };
 

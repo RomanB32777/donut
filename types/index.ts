@@ -33,7 +33,6 @@ import {
 import {
   IDonationShortInfo,
   IDonation,
-  INewDonatSocketObj,
   socketNotificationTypes,
   ISocketNotification,
   ISendDonatBase,
@@ -44,8 +43,8 @@ import {
 } from "./types/donations";
 import {
   badgeStatus,
+  IBadgeBase,
   IBadgeInfo,
-  IMintBadgeSocketObj,
   IQueryPriceParams,
 } from "./types/badge";
 import {
@@ -61,6 +60,7 @@ import {
 } from "./types/widgets";
 import {
   notificationRoles,
+  ISocketEmitObj,
   notificationKeys,
   INotification,
   INotificationQueries,
@@ -102,7 +102,6 @@ export type {
   // donat
   IDonationShortInfo,
   IDonation,
-  INewDonatSocketObj,
   socketNotificationTypes,
   ISocketNotification,
   ISendDonatBase,
@@ -113,8 +112,8 @@ export type {
 
   // badge
   badgeStatus,
+  IBadgeBase,
   IBadgeInfo,
-  IMintBadgeSocketObj,
   IQueryPriceParams,
 
   // widgets
@@ -130,6 +129,7 @@ export type {
 
   // notifications
   notificationRoles,
+  ISocketEmitObj,
   notificationKeys,
   INotification,
   INotificationQueries,

@@ -29,7 +29,7 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    socket.on("new_notification", () => {
+    socket.on("new_donat_notification", () => {
       dispatch(
         getNotifications({
           user: username,
@@ -53,8 +53,7 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
         socketUnlogin.disconnect();
       };
     }
-  }, [id, name]);
-  // useEffect(() => console.log(valueContext), [valueContext]);
+  }, [id, name, spam_filter]);
 
   return (
     <DonatWebSocketContext.Provider value={valueContext}>

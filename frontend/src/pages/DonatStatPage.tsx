@@ -1,5 +1,5 @@
 import DonatStatContainer from "containers/WidgetContainers/DonatStatContainer";
-import DonatWebSocketProvider from "components/DonatWebSocket";
+import DonatWebSocketProvider from "contexts/DonatWebSocket";
 
 const DonatStatPage = () => (
   <DonatWebSocketProvider>

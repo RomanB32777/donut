@@ -8,7 +8,12 @@ import { useAppSelector } from "hooks/reduxHooks";
 import { tryToGetPersonInfo } from "store/types/PersonInfo";
 
 import axiosClient from "modules/axiosClient";
-import { formatNumber, getFontColorStyles, getFontsList, loadFonts } from "utils";
+import {
+  formatNumber,
+  getFontColorStyles,
+  getFontsList,
+  loadFonts,
+} from "utils";
 import { initAlertData, baseURL } from "consts";
 import { IAlert } from "appTypes";
 

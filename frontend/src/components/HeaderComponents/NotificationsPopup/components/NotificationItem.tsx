@@ -1,63 +1,82 @@
+import { useMemo } from "react";
 import { Badge } from "antd";
+import { useDispatch } from "react-redux";
+import { CloseOutlined } from "@ant-design/icons";
 import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
 import { INotification } from "types";
 
 import axiosClient from "modules/axiosClient";
-import { getNotificationMessage } from "utils";
+import {
+  getBadgeNotificationMessage,
+  getDonatNotificationMessage,
+} from "utils";
+import { setNotifications } from "store/types/Notifications";
 import { typeNotification } from "utils/notifications/types";
-import { useMemo } from "react";
-
-interface INotificationStatus {
-  id: number;
-  read: boolean;
-}
+import { useAppSelector } from "hooks/reduxHooks";
 
 const NotificationItem = ({
   notification,
-  userID,
+  handlerNotificationPopup,
 }: {
   notification: INotification;
-  userID: number;
+  handlerNotificationPopup: () => void;
 }) => {
+  const dispatch = useDispatch();
+  const { notifications, user } = useAppSelector((state) => state);
+
+  const { list } = notifications;
+  const { id: userID } = user;
   const { id, read, donation, badge, sender, recipient, created_at } =
     notification;
 
-  console.log(notification);
+  const messageClick = () => handlerNotificationPopup();
 
-  const updateNotification = async ({ id, read }: INotificationStatus) => {
-    const { data, status } = await axiosClient.put(`/api/notification/status`, {
-      id,
-      read,
-    });
-    if (status === 200) return data.updatedNotification;
-  };
-
-  const handleChange =
-    ({ id, read }: INotificationStatus) =>
-    async (status: boolean) => {
-      if (!status) return;
-      if (status && !read) {
-        const updatedNotification = await updateNotification({
+  const handleChange = async (status: boolean) => {
+    if (!status) return;
+    if (status && !read) {
+      const { data, status: codeStatus } = await axiosClient.put(
+        "/api/notification/status",
+        {
           id,
           read: status,
+          userID,
+        }
+      );
+      if (codeStatus === 200 && data) {
+        const updatedList = list.map((n) => {
+          if (n.id === id) {
+            return {
+              ...n,
+              read: data.read,
+            };
+          }
+          return n;
         });
-        // if (updatedNotification) {
-        //   setNotifications((prev) =>
-        //     prev.map((n: any) => {
-        //       const readField = getNotificationUserRole(n.recipient);
-        //       if (n.id === id) {
-        //         return {
-        //           ...n,
-        //           [readField]: updatedNotification[readField],
-        //         };
-        //       }
-        //       return n;
-        //     })
-        //   );
-        // }
+        dispatch(
+          setNotifications({
+            list: updatedList,
+            shouldUpdateApp: false,
+          })
+        );
       }
-    };
+    }
+  };
+
+  const deleteItem = async () => {
+    const { data, status } = await axiosClient.delete(
+      `/api/notification/${id}/${userID}`
+    );
+    if (status === 200 && data) {
+      const updatedList = list.filter((n) => n.id !== id);
+      dispatch(
+        setNotifications({
+          list: updatedList,
+          shouldUpdateApp: false,
+        })
+      );
+    }
+  };
 
   const notificationType = useMemo((): typeNotification => {
     const { donation, badge, sender, recipient } = notification;
@@ -67,57 +86,44 @@ const NotificationItem = ({
     }
 
     if (badge) {
-      if (sender) return "add_badge_creator";
-      else if (recipient) return "add_badge_supporter";
+      if (sender)
+        return "add_badge_supporter"; // render for supporter (sender = creator)
+      else if (recipient) return "add_badge_creator"; // render for creator (recipient = supporter)
     }
 
     return "none";
   }, [notification]);
 
-  // const isNotificationBadgeStatus = n.badge && n.recipient === n.sender;
-  // const badgeType =
-  //   n.badge &&
-  //   (isNotificationBadgeStatus
-  //     ? n.badge.transaction_status !== "pending" &&
-  //       `${n.badge.transaction_status}_badge`
-  //     : n.badge.creator_id === userID
-  //     ? "add_badge_creator"
-  //     : "add_badge_supporter");
-
-  // const badgeData =
-  //   n.badge &&
-  //   n.badge.transaction_status !== "pending" &&
-  //   (n.badge.transaction_status === "success"
-  //     ? n.badge.id
-  //     : n.badge.transaction_hash);
-
   return (
-    <InView
-      onChange={handleChange({
-        id,
-        read,
-      })}
-      key={id}
-    >
+    <InView onChange={handleChange} key={id}>
       {({ ref }) => (
         <div className="item" ref={ref}>
           <Badge dot={!read} className="dot">
-            {donation &&
-              getNotificationMessage({
-                type: notificationType,
-                user: sender || recipient || "",
-                data: {
-                  sum_donation: donation.sum_donation,
-                  blockchain: donation.blockchain,
-                  donation_message: donation.donation_message,
-                },
-              })}
+            <div className="content">
+              <div className="message" onClick={messageClick}>
+                {donation &&
+                  getDonatNotificationMessage({
+                    type: notificationType,
+                    user: sender || recipient || "",
+                    data: {
+                      sum_donation: donation.sum_donation,
+                      blockchain: donation.blockchain,
+                      donation_message: donation.donation_message,
+                    },
+                  })}
 
-            {badge &&
-              getNotificationMessage({
-                type: notificationType,
-                user: sender || recipient || "",
-              })}
+                {badge &&
+                  getBadgeNotificationMessage({
+                    type: notificationType,
+                    user: sender || recipient || "",
+                    data: {
+                      id: badge.id,
+                      title: badge.title,
+                    },
+                  })}
+              </div>
+              <CloseOutlined onClick={deleteItem} />
+            </div>
             <p className="date">
               {dayjsModule(created_at).startOf("minutes").fromNow()}
             </p>

@@ -3,13 +3,13 @@ import { Socket } from "socket.io-client";
 import request from "axios";
 import {
   IFullSendDonat,
-  INewDonatSocketObj,
+  ISocketEmitObj,
   ISendDonat,
   IShortUserData,
   IUser,
 } from "types";
 
-import { connectSocket } from "components/Websocket";
+import { connectSocket } from "contexts/Websocket";
 import axiosClient from "modules/axiosClient";
 import { tryToGetUser } from "store/types/User";
 import { getNotifications } from "store/types/Notifications";
@@ -104,7 +104,7 @@ const sendDonation = async ({
     } as IFullSendDonat);
 
     if (status === 200 && data) {
-      const emitObj: INewDonatSocketObj = {
+      const emitObj: ISocketEmitObj = {
         supporter: {
           username: userInfo.username,
           id: userInfo.id,
@@ -113,7 +113,7 @@ const sendDonation = async ({
           username: personInfo.username,
           id: data.creator_id,
         },
-        donation_id: data.id,
+        id: data.id,
       };
 
       if (socket) socket.emit("new_donat", emitObj);

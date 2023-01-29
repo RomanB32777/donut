@@ -6,7 +6,7 @@ const notificationController = new NotificationController();
 
 router.get('/:user', notificationController.getUserNotifications)
 router.put('/status', notificationController.updateStatusNotifications)
-router.delete('/:id', notificationController.deleteNotification)
-router.delete('/', notificationController.deleteAllNotifications)
+router.delete('/:id/:user', notificationController.deleteNotification)
+router.delete('/:user', notificationController.deleteAllNotifications)
 
 export default router;

@@ -15,18 +15,12 @@ interface IDonation extends IDonationShortInfo {
   goal_id?: string;
 }
 
-interface INewDonatSocketObj {
-  supporter: IUserBase;
-  creator: IUserBase;
-  donation_id: number;
-}
-
 type socketNotificationTypes = "donat" | "add_badge";
 
 interface ISocketNotification<T = IDonationShortInfo> {
   type: socketNotificationTypes;
   supporter: string;
-  additional?: T;
+  additional: T;
 }
 
 interface ISendDonatBase {
@@ -52,7 +46,6 @@ type requiredFields = keyof ISendDonatBase
 export type {
   IDonationShortInfo,
   IDonation,
-  INewDonatSocketObj,
   socketNotificationTypes,
   ISocketNotification,
   ISendDonatBase,

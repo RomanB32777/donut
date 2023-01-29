@@ -3,9 +3,12 @@ import { blockchainsType } from "./wallet";
 
 type badgeStatus = "success" | "failed" | "pending";
 
-interface IBadgeInfo<ImageType = string> {
+interface IBadgeBase {
   id: number;
   title: string;
+}
+
+interface IBadgeInfo<ImageType = string> extends IBadgeBase {
   description: string;
   image: ImageType;
   blockchain: blockchainsType;
@@ -15,15 +18,6 @@ interface IBadgeInfo<ImageType = string> {
   is_creator?: boolean;
 }
 
-interface IMintBadgeSocketObj {
-  supporter: IUserBase;
-  creator: IUserBase;
-  badge: {
-    id?: number;
-    name: string;
-  };
-}
-
 interface IQueryPriceParams {
   address: string;
   token_id: string;
@@ -31,7 +25,7 @@ interface IQueryPriceParams {
 
 export type {
   badgeStatus,
+  IBadgeBase,
   IBadgeInfo,
-  IMintBadgeSocketObj,
   IQueryPriceParams,
 };

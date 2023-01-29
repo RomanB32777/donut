@@ -2,7 +2,11 @@ import {
   INotificationsAction,
   INotificationsState,
 } from "appTypes/notifications";
-import { SET_NOTIF, SET_UPDATE_FLAG } from "store/types/Notifications";
+import {
+  SET_NOTIF,
+  ADD_NOTIF,
+  SET_UPDATE_FLAG,
+} from "store/types/Notifications";
 
 const initialState: INotificationsState = {
   list: [],
@@ -15,6 +19,13 @@ const NotificationsReducer = (
 ) => {
   switch (action.type) {
     case SET_NOTIF:
+      const { list: initList, shouldUpdateApp: initFlag } = action.payload;
+      return {
+        list: initList,
+        shouldUpdateApp: initFlag,
+      };
+
+    case ADD_NOTIF:
       const { list, shouldUpdateApp } = action.payload;
       return {
         list: [...state.list, ...list],

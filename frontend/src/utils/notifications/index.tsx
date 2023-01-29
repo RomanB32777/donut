@@ -1,6 +1,7 @@
 import { Store } from "react-notifications-component";
-import { IDonationShortInfo } from "types";
-import { baseURL, isProduction } from "consts";
+import { Link } from "react-router-dom";
+import { IBadgeBase, IDonationShortInfo } from "types";
+import { adminPath } from "consts";
 import {
   INotification,
   INotificationMessage,
@@ -86,60 +87,77 @@ const addInstallWalletNotification = (
     });
 };
 
-const getNotificationMessage: <T extends object = IDonationShortInfo>(
-  arg: INotificationMessage
-) => React.ReactNode = (args) => {
+// interface INotificationDataBase {
+//   id: number;
+// }
+
+// const mapNotificationData = <T extends INotificationDataBase>(arg: T) => ({
+//   ...arg,
+// });
+
+// const { sum_donation, blockchain } = mapNotificationData({
+//   ...data,
+// });
+
+const getDonatNotificationMessage = (
+  args: INotificationMessage<IDonationShortInfo>
+): React.ReactNode => {
   const { type, user, data } = args;
-  if (data) {
-    switch (type) {
-      case "donat_creator":
-        const { sum_donation, blockchain } = data;
-        return `${user} sent you ${formatNumber(sum_donation)} ${blockchain}!`;
+  const { sum_donation, blockchain } = data;
+  switch (type) {
+    case "donat_creator":
+      return `${user} sent you ${formatNumber(sum_donation)} ${blockchain}!`;
 
-      case "donat_supporter":
-        const { sum_donation: supporterSum, blockchain: supporterBlockchain } =
-          data;
-        return `You sent ${formatNumber(
-          supporterSum
-        )} ${supporterBlockchain} to ${user}!`;
+    case "donat_supporter":
+      const { sum_donation: supporterSum, blockchain: supporterBlockchain } =
+        args.data;
+      return `You sent ${formatNumber(
+        supporterSum
+      )} ${supporterBlockchain} to ${user}!`;
 
-      case "add_badge_creator":
-        return (
-          <span>
-            You sent&nbsp; (
-            <a
-              href={`${baseURL}/badges?id=${data}`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: "#fff", textDecoration: "underline" }}
-            >
-              a badge
-            </a>
-            ) &nbsp; to {user}
-          </span>
-        );
-
-      case "add_badge_supporter":
-        return (
-          <span>
-            You received&nbsp; (
-            <a
-              href={`${baseURL}/badges?id=${data}`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: "#fff", textDecoration: "underline" }}
-            >
-              a badge
-            </a>
-            ) &nbsp; from {user};
-          </span>
-        );
-
-      default:
-        return `notification`;
-    }
+    default:
+      return `notification`;
   }
-  return "";
+};
+
+const getBadgeNotificationMessage = (
+  args: INotificationMessage<IBadgeBase>
+): React.ReactNode => {
+  const { type, user, data } = args;
+  const { id, title } = data;
+
+  switch (type) {
+    case "add_badge_creator":
+      return (
+        <span>
+          You sent&nbsp;
+          <Link
+            to={`/${adminPath}/badges?id=${id}`}
+            style={{ color: "#fff", textDecoration: "underline" }}
+          >
+            {title}
+          </Link>
+          &nbsp;to {user}
+        </span>
+      );
+
+    case "add_badge_supporter":
+      return (
+        <span>
+          You received&nbsp;
+          <Link
+            to={`/${adminPath}/badges?id=${id}`}
+            style={{ color: "#fff", textDecoration: "underline" }}
+          >
+            {title}
+          </Link>
+          &nbsp;from {user}
+        </span>
+      );
+
+    default:
+      return `notification`;
+  }
 };
 
 export {
@@ -150,5 +168,6 @@ export {
   addSuccessNotification,
   addNotFoundUserNotification,
   addInstallWalletNotification,
-  getNotificationMessage,
+  getDonatNotificationMessage,
+  getBadgeNotificationMessage,
 };

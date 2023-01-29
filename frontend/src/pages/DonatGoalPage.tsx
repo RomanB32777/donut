@@ -1,5 +1,5 @@
 import DonatGoalContainer from "containers/WidgetContainers/DonatGoalContainer";
-import DonatWebSocketProvider from "components/DonatWebSocket";
+import DonatWebSocketProvider from "contexts/DonatWebSocket";
 
 const DonatGoalPage = () => (
   <DonatWebSocketProvider>

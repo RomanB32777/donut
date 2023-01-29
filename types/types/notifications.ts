@@ -1,5 +1,6 @@
 import { IBadgeInfo } from "./badge";
 import { IDonation } from "./donations";
+import { IUserBase } from "./user";
 
 type notificationRoles = "sender" | "recipient";
 
@@ -12,6 +13,12 @@ interface INotification {
   read: boolean;
   donation?: IDonation;
   badge?: IBadgeInfo;
+}
+
+interface ISocketEmitObj {
+  supporter: IUserBase;
+  creator: IUserBase;
+  id: number;
 }
 
 type notificationKeys = keyof INotification;
@@ -27,6 +34,7 @@ interface INotificationQueries {
 
 export type {
   notificationRoles,
+  ISocketEmitObj,
   notificationKeys,
   INotification,
   INotificationQueries,

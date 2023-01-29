@@ -130,6 +130,7 @@ CREATE TABLE users_notifications (
     notification_id INTEGER,
     FOREIGN KEY (notification_id) REFERENCES notifications(id) ON DELETE CASCADE,
     read BOOLEAN DEFAULT 'false',
+    visible BOOLEAN DEFAULT 'true',
     roleplay NotificationRoles DEFAULT NULL,
     UNIQUE (user_id, notification_id)
 );

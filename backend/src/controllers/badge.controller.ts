@@ -194,7 +194,7 @@ class BadgeController implements IBadgeConfig {
         }
         return res.status(200).json({ ...badgeInfo, assigned: balance || 0 });
       }
-      return res.status(200).json({});
+      return res.status(204).json({});
     } catch (error) {
       next(error);
     }

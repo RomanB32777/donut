@@ -25,7 +25,7 @@ declare type typeNotification =
 interface INotificationMessage<T = IDonationShortInfo> {
   type: typeNotification;
   user: string;
-  data?: T;
+  data: T;
 }
 
 interface IGetNotificationMessage {

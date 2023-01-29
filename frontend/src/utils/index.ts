@@ -7,7 +7,8 @@ import {
   addSuccessNotification,
   addNotFoundUserNotification,
   addInstallWalletNotification,
-  getNotificationMessage,
+  getDonatNotificationMessage,
+  getBadgeNotificationMessage,
 } from "./notifications";
 
 import {
@@ -52,7 +53,8 @@ export {
   addSuccessNotification,
   addNotFoundUserNotification,
   addInstallWalletNotification,
-  getNotificationMessage,
+  getDonatNotificationMessage,
+  getBadgeNotificationMessage,
 
   // strings
   getRandomStr,

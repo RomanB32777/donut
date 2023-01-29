@@ -1,5 +1,5 @@
 import DonatAlertContainer from "containers/WidgetContainers/DonatAlertContainer";
-import DonatWebSocketProvider from "components/DonatWebSocket";
+import DonatWebSocketProvider from "contexts/DonatWebSocket";
 
 const DonatAlertPage = () => (
   <DonatWebSocketProvider>

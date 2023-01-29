@@ -17,12 +17,31 @@
             top: 56px
             z-index: 100
             width: 380px
-            display: flex
-            flex-direction: column
+            padding: 20px
             border-radius: variables.$border-radius
             background: variables.$black-transparent-color
-            padding: 20px
             backdrop-filter: blur(20px)
+
+        .popup-header
+            display: flex
+            justify-content: space-between
+            padding: 0 10px
+            margin-bottom: 10px
+            // margin-right: 10px
+
+            p
+                margin: 0
+                color: variables.$white-color
+                font-family: variables.$pt-font
+                font-size: 16px
+                line-height: 18px
+
+                &.all-read
+                    transition: .3s
+                    cursor: pointer
+
+                    &:hover
+                        color: variables.$main-color
 
         .content
             width: 100%
@@ -49,6 +68,19 @@
                     line-height: 24px
                     color: variables.$white-color
 
+                    .content
+                        display: flex
+                        justify-content: space-between
+
+                        svg
+                            width: 13px
+                            margin-top: 3px
+                            transition: .3s
+                            cursor: pointer
+
+                            &:hover
+                                color: variables.$main-color
+
                     .date
                         color: variables.$grey-color
                         font-weight: 400
@@ -68,13 +100,13 @@
     .notifications
         .popup
             .wrapper
-                right: -230px
+                right: -150px
 
-@media (max-width: 576px)
-    .notifications
-        .popup
-            .wrapper
-                right: -190px
+// @media (max-width: 576px)
+//     .notifications
+//         .popup
+//             .wrapper
+//                 right: -150px
 
 @media (max-width: 400px)
     .notifications

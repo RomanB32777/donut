@@ -1,4 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Col, Row, StepProps, Steps, StepsProps } from "antd";
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons";
 import { IBadgeInfo, IShortUserData } from "types";
@@ -11,8 +12,11 @@ import ModalComponent, {
 
 import { WalletContext } from "contexts/Wallet";
 import useWindowDimensions from "hooks/useWindowDimensions";
+import { getNotifications } from "store/types/Notifications";
 import axiosClient from "modules/axiosClient";
 import { addNotification, delay } from "utils";
+import { ProviderRpcError } from "appTypes";
+import { useAppSelector } from "hooks/reduxHooks";
 
 const initLoadingSteps: StepProps[] = [
   {
@@ -68,6 +72,8 @@ const BadgeAssignBlock = ({
   getSupporters: () => Promise<void>;
   sendAssignedBadge: (selectedUser: IShortUserData) => Promise<void>;
 }) => {
+  const dispatch = useDispatch();
+  const { id: userID } = useAppSelector(({ user }) => user);
   const walletConf = useContext(WalletContext);
   const { isTablet } = useWindowDimensions();
 
@@ -176,6 +182,7 @@ const BadgeAssignBlock = ({
                 cb: () => setLoadingCurrStep({ finishedStep: 2 }),
               });
               await sendAssignedBadge(selectedUserObj);
+              dispatch(getNotifications({ user: userID }));
               setIsOpenSuccessModal(true);
               setSelectedUser("");
             }
@@ -183,12 +190,17 @@ const BadgeAssignBlock = ({
         }
       }
     } catch (error) {
-      console.log(error);
-      const errorMessage = (error as Error).message;
-      errorMessage &&
+      const errorMessage = error as ProviderRpcError;
+
+      errorMessage.code !== "ACTION_REJECTED" &&
         addNotification({
           type: "danger",
-          title: errorMessage,
+          title: "Error",
+          message:
+            errorMessage.reason ||
+            (error as any)?.response?.data?.message ||
+            (error as Error).message ||
+            `An error occurred while sending data`,
         });
     } finally {
       setLoadingSteps(initLoadingSteps);

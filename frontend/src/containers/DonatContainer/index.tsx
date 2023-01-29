@@ -8,7 +8,7 @@ import { WalletContext } from "contexts/Wallet";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 
-import { WebSocketContext } from "components/Websocket";
+import { WebSocketContext } from "contexts/Websocket";
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import FormInput from "components/FormInput";
 import BaseButton from "components/BaseButton";
