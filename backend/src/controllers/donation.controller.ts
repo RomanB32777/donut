@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { IFilterPeriodItems, periodItemsTypes, IFullSendDonat } from 'types';
-import badWordsFilter from '../modules/badWords/index.js';
+import { clean } from '../modules/badWords/index.js';
 import db from '../db.js';
 import { getUsdKoef, getUsername, parseBool } from '../utils.js';
 import { exchangeNames } from '../consts.js';
@@ -149,7 +149,7 @@ class DonationController {
         const donations = parseBool(spam_filter)
           ? data.rows.map((d) => ({
               ...d,
-              donation_message: d.donation_message ? badWordsFilter.clean(d.donation_message) : '-',
+              donation_message: d.donation_message ? clean(d.donation_message) : '-',
             }))
           : data.rows;
         return res.status(200).json(donations);
@@ -195,7 +195,7 @@ class DonationController {
         const donations = parseBool(spam_filter)
           ? data.rows.map((d) => ({
               ...d,
-              donation_message: d.donation_message ? badWordsFilter.clean(d.donation_message) : '-',
+              donation_message: d.donation_message ? clean(d.donation_message) : '-',
             }))
           : data.rows;
         return res.status(200).json(donations);
@@ -325,7 +325,7 @@ class DonationController {
           const donations = parseBool(spam_filter)
             ? data.rows.map((d) => ({
                 ...d,
-                donation_message: d.donation_message ? badWordsFilter.clean(d.donation_message) : '-',
+                donation_message: d.donation_message ? clean(d.donation_message) : '-',
               }))
             : data.rows;
           return res.status(200).json(donations);

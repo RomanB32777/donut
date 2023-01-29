@@ -11,7 +11,7 @@ import {
   getBadgeNotificationMessage,
   getDonatNotificationMessage,
 } from "utils";
-import { setNotifications } from "store/types/Notifications";
+import { getNotifications } from "store/types/Notifications";
 import { typeNotification } from "utils/notifications/types";
 import { useAppSelector } from "hooks/reduxHooks";
 
@@ -23,10 +23,8 @@ const NotificationItem = ({
   handlerNotificationPopup: () => void;
 }) => {
   const dispatch = useDispatch();
-  const { notifications, user } = useAppSelector((state) => state);
+  const { id: userID } = useAppSelector(({ user }) => user);
 
-  const { list } = notifications;
-  const { id: userID } = user;
   const { id, read, donation, badge, sender, recipient, created_at } =
     notification;
 
@@ -43,23 +41,8 @@ const NotificationItem = ({
           userID,
         }
       );
-      if (codeStatus === 200 && data) {
-        const updatedList = list.map((n) => {
-          if (n.id === id) {
-            return {
-              ...n,
-              read: data.read,
-            };
-          }
-          return n;
-        });
-        dispatch(
-          setNotifications({
-            list: updatedList,
-            shouldUpdateApp: false,
-          })
-        );
-      }
+      if (codeStatus === 200 && data)
+        dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
     }
   };
 
@@ -67,15 +50,8 @@ const NotificationItem = ({
     const { data, status } = await axiosClient.delete(
       `/api/notification/${id}/${userID}`
     );
-    if (status === 200 && data) {
-      const updatedList = list.filter((n) => n.id !== id);
-      dispatch(
-        setNotifications({
-          list: updatedList,
-          shouldUpdateApp: false,
-        })
-      );
-    }
+    if (status === 200 && data)
+      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
   };
 
   const notificationType = useMemo((): typeNotification => {

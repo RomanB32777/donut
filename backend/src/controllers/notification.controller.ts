@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { INotification, INotificationQueries, notificationRoles } from 'types';
 import db from '../db.js';
-import badWordsFilter from '../modules/badWords/index.js';
+import { clean } from '../modules/badWords/index.js';
 import { getUsername, parseBool } from '../utils.js';
 
 const getOtherUsernameInAssigning = async ({
@@ -85,9 +85,7 @@ class NotificationController {
                     ...notification,
                     donation: {
                       ...donation,
-                      donation_message: donation.donation_message
-                        ? badWordsFilter.clean(donation.donation_message)
-                        : '-',
+                      donation_message: donation.donation_message ? clean(donation.donation_message) : '-',
                     },
                   };
                 return notification;
