@@ -161,9 +161,10 @@ const SettingsStatBlock = ({
             <SliderForm
               label="Content alignment:"
               marks={marksSlider as SliderMarks}
-              step={1}
+              modificator="aligment-slider"
               min={0}
               max={2}
+              step={1}
               setValue={(value) =>
                 setEditStatData({
                   ...editStatData,
@@ -171,8 +172,8 @@ const SettingsStatBlock = ({
                 })
               }
               defaultValue={valueSlider ? +valueSlider : 1}
-              maxWidth={250}
               tooltipVisible={false}
+              maxWidth={250}
               labelCol={10}
               gutter={[0, 18]}
             />

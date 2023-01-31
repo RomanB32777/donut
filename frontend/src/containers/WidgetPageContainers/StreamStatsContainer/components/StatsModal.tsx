@@ -132,7 +132,7 @@ const StatsModal = ({
       topModal
     >
       <div className="stats-modal">
-        <Row gutter={[0, 18]} className="stats-modal__form" justify="center">
+        <Row gutter={[0, 18]} className="form" justify="center">
           <Col span={24}>
             <div className="form-element">
               <FormInput
@@ -250,8 +250,8 @@ const StatsModal = ({
             </div>
           </Col>
         </Row>
-        <div className="stats-modal__btns">
-          <div className="stats-modal__btns_cancel">
+        <div className="btns">
+          <div className="btns_cancel">
             <BaseButton
               formatId="profile_form_cancel_button"
               padding="6px 35px"
@@ -259,7 +259,7 @@ const StatsModal = ({
               fontSize="18px"
             />
           </div>
-          <div className="stats-modal__btns_save">
+          <div className="btns_save">
             <BaseButton
               formatId="profile_form_save_widget_button"
               padding="6px 35px"

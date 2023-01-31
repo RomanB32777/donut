@@ -22,17 +22,22 @@
         textarea
             min-height: 220px
 
-    .ant-select-selection-item
+    .selected-blockchain
         display: flex
+        align-items: center
+        justify-content: space-between
+        width: 100%
+        background-color: variables.$black-transparent-color
+        border-radius: 10px
+        padding: 9px 24px
 
-        .selected-blockchain
-            display: flex
-            align-items: center
-            justify-content: space-between
-            width: 95%
+        .placeholder
+            margin: 0
+            font-family: variables.$pt-font
+            font-size: 20px
 
-            .placeholder
-                margin: 0
+        .form-blockchain
+            font-size: 18px
 
     .btn-bottom
         display: flex

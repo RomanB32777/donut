@@ -9,7 +9,7 @@ const SelectedBlockchain = ({
   blockchainInfo: IBlockchain;
   modificator?: string;
 }) => {
-  const { color, icon, nativeCurrency, name } = blockchainInfo;
+  const { color, icon, name, badgeName } = blockchainInfo;
   return (
     <div className={clsx("blockchain-info", modificator)}>
       <div
@@ -22,7 +22,7 @@ const SelectedBlockchain = ({
           <img src={icon} alt={`icon_${name}`} />
         </div>
       </div>
-      <p className="name">{nativeCurrency.symbol}</p>
+      <p className="name">{badgeName}</p>
     </div>
   );
 };

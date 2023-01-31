@@ -1,12 +1,14 @@
 import { Col, Row, Slider } from "antd";
 import { SliderBaseProps } from "antd/lib/slider"; // SliderMarks
+import clsx from "clsx";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISliderProps extends SliderBaseProps {
   label: string;
-  defaultValue?: number;
   value?: number;
+  defaultValue?: number;
+  modificator?: string;
   description?: string;
   sliderCol?: number;
   labelCol?: number;
@@ -17,25 +19,26 @@ interface ISliderProps extends SliderBaseProps {
 }
 
 const SliderForm = ({
-  label,
-  value,
-  defaultValue,
-  description,
   step,
   max,
   min,
   marks,
-  maxWidth,
-  tooltipVisible,
-  sliderCol,
-  labelCol,
+  label,
+  value,
   gutter,
+  maxWidth,
+  labelCol,
+  sliderCol,
+  modificator,
+  description,
+  defaultValue,
+  tooltipVisible,
   setValue,
 }: ISliderProps) => {
   const { isMobile } = useWindowDimensions();
 
   return (
-    <div className="slider">
+    <div className={clsx("slider", modificator)}>
       <Row
         style={{
           width: "100%",

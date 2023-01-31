@@ -1,7 +1,6 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useContext, useMemo, useState } from "react";
 import { Col, Row } from "antd";
-import { blockchainsType, IBadgeInfo } from "types";
+import { IBadgeInfo } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import BaseButton from "components/BaseButton";
@@ -9,13 +8,10 @@ import UploadImage from "components/UploadImage";
 import FormInput from "components/FormInput";
 import PageTitle from "components/PageTitle";
 import { LeftArrowIcon } from "icons";
-import SelectInput from "components/SelectInput";
 import { SuccessModalComponent } from "components/ModalComponent";
-import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
 import SelectedBlockchain from "../SelectedBlockchain";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { setSelectedBlockchain } from "store/types/Wallet";
 import { addNotification, isValidateFilledForm, sendFile } from "utils";
 
 import { initBadgeData } from "consts";
@@ -27,17 +23,14 @@ const CreateBadgeForm = ({
 }: {
   backBtn: (updateList?: boolean) => () => void;
 }) => {
-  const dispatch = useDispatch();
-  const { user, blockchain } = useAppSelector((state) => state);
+  const { user } = useAppSelector((state) => state);
 
   const walletConf = useContext(WalletContext);
 
   const [loading, setLoading] = useState(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
 
-  const [formBadge, setFormBadge] = useState<IBadge>({
-    ...initBadgeData,
-  });
+  const [formBadge, setFormBadge] = useState<IBadge>(initBadgeData);
 
   const { id, username } = user;
   const { image, title, description } = formBadge;
@@ -45,6 +38,7 @@ const CreateBadgeForm = ({
   const closeSuccessPopup = () => {
     setIsOpenSuccessModal(false);
     setFormBadge({ ...initBadgeData });
+
     const backMethod = backBtn(true);
     backMethod();
   };
@@ -101,27 +95,12 @@ const CreateBadgeForm = ({
     }
   };
 
-  const setBlockchain = async (selected: blockchainsType) => {
-    const newBlockchaind = await walletConf.changeBlockchain(selected);
-    if (newBlockchaind) {
-      dispatch(setSelectedBlockchain(selected));
-      setFormBadge({
-        ...formBadge,
-        blockchain: selected,
-      });
-    }
-  };
-
   const selectedBlockchainIconInfo = useMemo(() => {
     const info = walletConf.main_contract.blockchains.find(
-      (b) => b.name === blockchain
+      (b) => b.name === "polygon"
     );
     return info;
-  }, [walletConf, blockchain]);
-
-  useEffect(() => {
-    blockchain && setFormBadge((form) => ({ ...form, blockchain: blockchain }));
-  }, [blockchain]);
+  }, [walletConf]);
 
   return (
     <div className="create_badges fadeIn">
@@ -188,32 +167,15 @@ const CreateBadgeForm = ({
             </Col>
             <Col span={24}>
               <div className="form-element">
-                <SelectInput
-                  value={{
-                    value: blockchain,
-                    label: (
-                      <div className="selected-blockchain">
-                        <p className="placeholder">Blockhain</p>
-                        {selectedBlockchainIconInfo && (
-                          <SelectedBlockchain
-                            blockchainInfo={selectedBlockchainIconInfo}
-                          />
-                        )}
-                      </div>
-                    ),
-                  }}
-                  list={walletConf.main_contract.blockchains.map(
-                    ({ name, badgeName }) => ({
-                      key: name,
-                      value: badgeName,
-                    })
+                <div className="selected-blockchain">
+                  <p className="placeholder">Blockhain</p>
+                  {selectedBlockchainIconInfo && (
+                    <SelectedBlockchain
+                      blockchainInfo={selectedBlockchainIconInfo}
+                      modificator="form-blockchain"
+                    />
                   )}
-                  renderOption={BlockchainOption}
-                  placeholder="Choose blockchain"
-                  onChange={({ value }) => setBlockchain(value)}
-                  gutter={[0, 18]}
-                  labelInValue
-                />
+                </div>
               </div>
             </Col>
             <Col span={24}>

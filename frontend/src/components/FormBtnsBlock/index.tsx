@@ -12,7 +12,7 @@ const FormBtnsBlock = ({
   disabled: boolean;
 }) => {
   return (
-    <div className="btns">
+    <div className="form-btns">
       <BaseButton
         formatId="save_changes_button"
         padding="6px 25px"

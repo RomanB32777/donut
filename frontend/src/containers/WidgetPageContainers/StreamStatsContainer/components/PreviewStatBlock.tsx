@@ -50,7 +50,7 @@ const PreviewStatBlock = ({
     >
       <div className="preview-block">
         <span
-          className="preview-block_title"
+          className="title"
           style={{
             ...getFontColorStyles(title_color, title_font),
             background: bar_color,
@@ -59,14 +59,14 @@ const PreviewStatBlock = ({
           {timePeriodName} {typeStatData.toLowerCase()}
         </span>
         <div
-          className="preview-block_stat"
+          className="stat"
           style={{
             justifyContent: alignFlextItemsList[aligment],
           }}
         >
-          <div className="preview-block_stat__list">
+          <div className="list">
             <p
-              className="preview-block_stat__list-item"
+              className="item"
               style={{
                 ...getFontColorStyles(content_color, content_font),
                 textAlign: (alignItemsList[aligment] as AlignText) || "center",
@@ -79,7 +79,7 @@ const PreviewStatBlock = ({
               })}
             </p>
             <p
-              className="preview-block_stat__list-item"
+              className="item"
               style={{
                 ...getFontColorStyles(content_color, content_font),
                 textAlign: (alignItemsList[aligment] as AlignText) || "center",

@@ -179,15 +179,15 @@ const StatsItem = ({
       >
         <Row>
           <Col sm={11} xs={24}>
-            <div className="stats-item__mainInfo">
-              <p className="stats-item__mainInfo_title">{title}</p>
-              <p className="stats-item__mainInfo_description">
+            <div className="mainInfo">
+              <p className="title">{title}</p>
+              <p className="description">
                 {stat_description}
               </p>
             </div>
           </Col>
           <Col sm={11} xs={24}>
-            <div className="stats-item__parameters">
+            <div className="parameters">
               <p>Date period: {timePeriodName} </p>
               <p>Date type: {typeStatData}</p>
               <p>Template: {template}</p>
@@ -195,17 +195,17 @@ const StatsItem = ({
             </div>
           </Col>
         </Row>
-        <div className="stats-item__btns">
+        <div className="btns">
           {isTablet && (
-            <div className="stats-item__btns_item" onClick={clickCopyBtn}>
+            <div className="item" onClick={clickCopyBtn}>
               <CopyIcon />
             </div>
           )}
-          <div className="stats-item__btns_item" onClick={clickEditBtn}>
+          <div className="item" onClick={clickEditBtn}>
             <PencilIcon />
           </div>
           <div
-            className="stats-item__btns_item"
+            className="item"
             onClick={(e?: React.MouseEvent<HTMLDivElement>) =>
               e && e.stopPropagation()
             }
@@ -219,7 +219,7 @@ const StatsItem = ({
         </div>
       </div>
       {isActiveDetails && (
-        <div className="stats-item__details">
+        <div className="details">
           <WidgetMobileWrapper
             previewBlock={
               <PreviewStatBlock editStatData={editStatData}>
