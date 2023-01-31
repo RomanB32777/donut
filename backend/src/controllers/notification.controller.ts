@@ -96,12 +96,12 @@ class NotificationController {
             notifications.map(async (n) => {
               if (n.badge) {
                 const senderUsername = await getOtherUsernameInAssigning({ notificationID: n.id, roleplay: 'sender' });
-                if (senderUsername) return { ...n, sender: senderUsername };
+                return { ...n, sender: senderUsername || 'user' };
               }
               return n;
             }),
           );
-          return notificationsWithBadgeInfo.filter((n) => n.sender);
+          return notificationsWithBadgeInfo;
         }
         return [];
       };
@@ -147,12 +147,12 @@ class NotificationController {
                   notificationID: n.id,
                   roleplay: 'recipient',
                 });
-                if (recipientUsername) return { ...n, recipient: recipientUsername };
+                return { ...n, recipient: recipientUsername || 'user' };
               }
               return n;
             }),
           );
-          return notificationsWithBadgeInfo.filter((n) => n.recipient);
+          return notificationsWithBadgeInfo;
         }
         return [];
       };
