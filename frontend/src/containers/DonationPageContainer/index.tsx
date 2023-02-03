@@ -24,6 +24,7 @@ import {
   getDefaultImages,
   sendFile,
 } from "utils";
+import { RoutePaths } from "routes";
 import { initDonatPage, baseURL } from "consts";
 import { IDonatPageWithFiles } from "appTypes";
 import { IBannerModalInfo } from "./types";
@@ -193,7 +194,7 @@ const DonationPageContainer = () => {
   }, [id, donat_page]);
 
   const linkForSupport = useMemo(
-    () => baseURL + "/support/" + username,
+    () => `${baseURL}/${RoutePaths.support}/${username}`,
     [username]
   );
 

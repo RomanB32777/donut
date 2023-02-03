@@ -3,6 +3,7 @@ import { NavigateFunction } from "react-router-dom";
 
 import { setUser } from "store/types/User";
 import { setSelectedBlockchain } from "store/types/Wallet";
+import { RoutePaths } from "routes";
 import { initUser, storageWalletKey } from "consts";
 
 const scrollToPosition = (top = 0) => {
@@ -27,7 +28,7 @@ const logoutUser = ({
   dispatch(setUser(initUser));
   localStorage.removeItem(storageWalletKey);
   dispatch(setSelectedBlockchain(null));
-  navigate("/");
+  navigate(RoutePaths.main);
 };
 
 const isValidateFilledForm = (valuesArray: any[]) =>

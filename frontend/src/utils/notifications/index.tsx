@@ -1,13 +1,13 @@
 import { Store } from "react-notifications-component";
 import { Link } from "react-router-dom";
 import { IBadgeBase, IDonationShortInfo } from "types";
-import { adminPath } from "consts";
 import {
   INotification,
   INotificationMessage,
   INotificationWithoutType,
 } from "./types";
 import { formatNumber } from "utils/appMethods";
+import { RoutePaths } from "routes";
 
 const addNotification = ({ type, title, message }: INotification) => {
   Store.addNotification({
@@ -132,7 +132,7 @@ const getBadgeNotificationMessage = (
         <span>
           You sent&nbsp;
           <Link
-            to={`/${adminPath}/badges?id=${id}`}
+            to={`/${RoutePaths.admin}/${RoutePaths.badges}?id=${id}`}
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             {title}
@@ -146,7 +146,7 @@ const getBadgeNotificationMessage = (
         <span>
           You received&nbsp;
           <Link
-            to={`/${adminPath}/badges?id=${id}`}
+            to={`/${RoutePaths.admin}/${RoutePaths.badges}?id=${id}`}
             style={{ color: "#fff", textDecoration: "underline" }}
           >
             {title}

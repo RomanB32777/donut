@@ -52,7 +52,7 @@ interface IBlockchainData {
 enum ContractTypesEnum {
   main_contract = "main_contract",
   commission_contract = "commission_contract",
-  transfer_contract = "transfer_contract",
+  transfer_contract = "transfer_contract1",
 }
 
 type contractTypes = keyof typeof ContractTypesEnum;

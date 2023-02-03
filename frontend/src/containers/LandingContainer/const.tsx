@@ -10,6 +10,7 @@ import {
   LinkIcon,
   PencilLandingIcon,
   ShieldLandingIcon,
+  TelegramIcon,
   TwitterIcon,
 } from "icons";
 
@@ -113,10 +114,10 @@ const socialNetworks = [
     link: "https://discord.gg/PHEQCjnY",
     icon: <DiscordIcon />,
   },
-  // {
-  //   link: "",
-  //   icon: <TelegramIcon />,
-  // },
+  {
+    link: "https://t.me/cryptodonutz_xyz",
+    icon: <TelegramIcon />,
+  },
   {
     link: "https://twitter.com/CryptoDonutzzz",
     icon: <TwitterIcon />,

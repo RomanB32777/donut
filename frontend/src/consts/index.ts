@@ -43,8 +43,6 @@ const widgetApiUrl = "/api/donation/widgets";
 const ipfsFilename = "badge";
 const ipfsFileformat = "jpg";
 
-const adminPath = "admin";
-
 const notVisibleFontsCount = 1;
 
 export {
@@ -55,7 +53,6 @@ export {
   widgetApiUrl,
   ipfsFilename,
   ipfsFileformat,
-  adminPath,
   dummyImg,
   notVisibleFontsCount,
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, RowProps } from "antd";
 import clsx from "clsx";
 import { UploadIcon, TrashBinIcon } from "icons";
 import { addNotification } from "utils";
@@ -41,6 +41,7 @@ const UploadImage = ({
   inputCol,
   labelCol,
   gutter,
+  rowProps,
   bigSize,
   afterEl,
   isBanner,
@@ -55,6 +56,7 @@ const UploadImage = ({
   inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
+  rowProps?: RowProps;
   bigSize?: boolean;
   isBanner?: boolean;
   afterEl?: React.ReactNode;
@@ -105,6 +107,7 @@ const UploadImage = ({
           width: "100%",
         }}
         justify={afterEl ? "space-between" : "start"}
+        {...rowProps}
       >
         <Col md={labelCol || 12} xs={24}>
           <div className="text">

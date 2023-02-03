@@ -11,7 +11,8 @@ import BaseButton from "components/BaseButton";
 import Logo from "components/HeaderComponents/LogoComponent";
 
 import { checkWallet, scrollToPosition } from "utils";
-import { adminPath, storageWalletKey } from "consts";
+import { RoutePaths } from "routes";
+import { storageWalletKey } from "consts";
 import { cryptoSteps, features, help, images, socialNetworks } from "./const";
 import { IFeature } from "./types";
 import "./styles.sass";
@@ -42,14 +43,14 @@ const LandingContainer = () => {
     const isExist = await checkWallet({ walletConf, dispatch, navigate });
     if (isExist) {
       scrollToPosition();
-      navigate(`/${adminPath}/dashboard`);
+      navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
       return true;
     }
     return false;
   };
 
   const signUp = async () => {
-    if (id) navigate(`/${adminPath}/dashboard`);
+    if (id) navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
     else {
       const isRedirect = await redirectToDashboard();
       if (!isRedirect) {
@@ -80,7 +81,7 @@ const LandingContainer = () => {
     <div className="landing">
       <HeaderComponent
         visibleLogo
-        logoUrl={`/${adminPath}/dashboard`}
+        logoUrl={`/${RoutePaths.admin}/${RoutePaths.dashboard}`}
         modificator="landing-header landing-padding"
       >
         <BaseButton

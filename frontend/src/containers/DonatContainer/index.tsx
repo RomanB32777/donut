@@ -27,7 +27,8 @@ import { tryToGetPersonInfo } from "store/types/PersonInfo";
 import { getGoals } from "store/types/Goals";
 import { addNotification, checkWallet } from "utils";
 import { triggerContract } from "./utils";
-import { adminPath, dummyImg, initSendDonatData } from "consts";
+import { RoutePaths } from "routes";
+import { dummyImg, initSendDonatData } from "consts";
 import { IFormHandler } from "./types";
 
 import SpaceImg from "assets/space.png";
@@ -111,7 +112,7 @@ const DonatContainer = () => {
       ...initSendDonatData,
       username,
     });
-    navigate(`/${adminPath}/donations`);
+    navigate(`/${RoutePaths.admin}/${RoutePaths.donations}`);
   };
 
   const sendBtnHandler = async () => {
@@ -210,7 +211,7 @@ const DonatContainer = () => {
       }}
     >
       <HeaderComponent
-        logoUrl={id ? `/${adminPath}/donations` : "/"}
+        logoUrl={id ? `/${RoutePaths.admin}/${RoutePaths.donations}` : "/"}
         modificator="headerBlock"
         contentModificator="headerBlock-content"
         visibleLogo

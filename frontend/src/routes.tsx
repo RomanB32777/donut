@@ -22,37 +22,33 @@ import StreamStatsPage from "pages/StreamStatsPage";
 import DonationGoalsPage from "pages/DonationGoalsPage";
 import SettingsPage from "pages/SettingsPage";
 import RegistrationContainer from "containers/RegistrationContainer";
+import AdminContainer from "containers/AdminContainer";
 import Loader from "components/Loader";
 import DonatAlertPage from "pages/DonatAlertPage";
 import DonatGoalPage from "pages/DonatGoalPage";
 import DonatStatPage from "pages/DonatStatPage";
 import LandingPage from "pages/LandingPage";
-import HelpCenter from "pages/HelpCenter";
 import NoPage from "pages/NoPage";
 import { checkWallet } from "utils";
-import { adminPath } from "consts";
-import AdminContainer from "containers/AdminContainer";
 
-// type customRouteType = {
-//   name?: string;
-//   menu?: boolean;
-//   icon?: React.ReactNode;
-//   roleRequired?: string;
-//   protected?: boolean;
-//   menuOrder?: number;
-//   transparet?: boolean;
-//   hiddenLayoutElements?: boolean;
-//   noPaddingMainConteiner?: boolean;
-//   children?: routeTestType[];
-// };
-
-// type routeTestType = customRouteType | RouteObject;
-// // type routeWithChild = {
-// //   children?: routeTestType[];
-// // };
-// // type moreTest = routeTestType & routeWithChild;
-
-// const test: routeTestType[] = [];
+enum RoutePaths {
+  main = "/",
+  admin = "admin",
+  dashboard = "dashboard",
+  donat = "donat",
+  widgets = "widgets",
+  alerts = "alerts",
+  stats = "stats",
+  goals = "goals",
+  donations = "donations",
+  badges = "badges",
+  settings = "settings",
+  register = "register",
+  support = "support",
+  donatMessage = "donat-message",
+  donatGoal = "donat-goal",
+  donatStat = "donat-stat",
+}
 
 interface IRoute {
   path?: string;
@@ -94,23 +90,23 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
       roleRequired === roleplay ? (
         <Outlet />
       ) : (
-        <Navigate to={`/${adminPath}/donations`} />
+        <Navigate to={`/${RoutePaths.admin}/${RoutePaths.donations}`} />
       )
     ) : (
-      <Navigate to="/register" />
+      <Navigate to={`/${RoutePaths.register}`} />
     );
-  return id ? <Outlet /> : <Navigate to="/register" />;
+  return id ? <Outlet /> : <Navigate to={`/${RoutePaths.register}`} />;
 };
 
 export const routers: IRoute[] = [
   {
-    path: "/",
+    path: RoutePaths.main,
     element: <LandingPage />,
     hiddenLayoutElements: true,
     noPaddingMainConteiner: true,
   },
   {
-    path: adminPath,
+    path: RoutePaths.admin,
     element: (
       <AdminContainer>
         <ProtectedRoutes />
@@ -125,7 +121,7 @@ export const routers: IRoute[] = [
         protected: true,
         children: [
           {
-            path: "dashboard",
+            path: RoutePaths.dashboard,
             element: <MainPage />,
             name: "Dashboard",
             icon: <PieChartOutlined />,
@@ -133,7 +129,7 @@ export const routers: IRoute[] = [
             menuOrder: 1,
           },
           {
-            path: "donat",
+            path: RoutePaths.donat,
             element: <DonationPage />,
             name: "Donation page",
             icon: <DonationPageIcon />,
@@ -141,7 +137,7 @@ export const routers: IRoute[] = [
             menuOrder: 4,
           },
           {
-            path: "widgets",
+            path: RoutePaths.widgets,
             element: <WidgetsPage />,
             name: "Widgets",
             icon: <AppstoreOutlined />,
@@ -149,19 +145,19 @@ export const routers: IRoute[] = [
             menuOrder: 6,
             children: [
               {
-                path: "alerts",
+                path: RoutePaths.alerts,
                 name: "Alerts",
                 element: <AlertsPage />,
                 menu: true,
               },
               {
-                path: "stats",
+                path: RoutePaths.stats,
                 name: "In-stream stats",
                 element: <StreamStatsPage />,
                 menu: true,
               },
               {
-                path: "goals",
+                path: RoutePaths.goals,
                 name: "Donation goals",
                 element: <DonationGoalsPage />,
                 menu: true,
@@ -171,7 +167,7 @@ export const routers: IRoute[] = [
         ],
       },
       {
-        path: "donations",
+        path: RoutePaths.donations,
         element: <DonationsPage />,
         name: "Donations",
         icon: <PeopleIcon />,
@@ -179,7 +175,7 @@ export const routers: IRoute[] = [
         menuOrder: 2,
       },
       {
-        path: "badges",
+        path: RoutePaths.badges,
         element: <BadgesPage />,
         name: "Badges",
         icon: <ShieldMenuIcon />,
@@ -187,7 +183,7 @@ export const routers: IRoute[] = [
         menuOrder: 3,
       },
       {
-        path: "settings",
+        path: RoutePaths.settings,
         element: <SettingsPage />,
         name: "Settings",
         icon: <SettingOutlined />,
@@ -197,51 +193,51 @@ export const routers: IRoute[] = [
     ],
   },
   {
-    path: "register",
+    path: RoutePaths.register,
     name: "Registration",
     element: <RegistrationContainer />,
   },
   {
-    path: "support/:name",
+    path: `${RoutePaths.support}/:name`,
     name: "Donat page",
     element: <DonatPage />,
     hiddenLayoutElements: true,
     noPaddingMainConteiner: true,
   },
   {
-    path: "donat-message/:name/:security_string",
+    path: `${RoutePaths.donatMessage}/:name/:security_string`,
     name: "Donat alert page",
     element: <DonatAlertPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
   {
-    path: "donat-goal/:name/:id",
+    path: `${RoutePaths.donatGoal}/:name/:id`,
     name: "Donat goal page",
     element: <DonatGoalPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
   {
-    path: "donat-stat/:name/:id",
+    path: `${RoutePaths.donatStat}/:name/:id`,
     name: "Donat stat page",
     element: <DonatStatPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
-  {
-    path: "help",
-    name: "Help center",
-    element: <ProtectedRoutes />,
-    children: [
-      {
-        path: "center?/:theme",
-        element: <HelpCenter />,
-        hiddenLayoutElements: true,
-        noPaddingMainConteiner: true,
-      },
-    ],
-  },
+  // {
+  //   path: RoutePaths.help,
+  //   name: "Help center",
+  //   element: <ProtectedRoutes />,
+  //   children: [
+  //     {
+  //       path: `${RoutePaths.center}?/:theme`,
+  //       element: <HelpCenter />,
+  //       hiddenLayoutElements: true,
+  //       noPaddingMainConteiner: true,
+  //     },
+  //   ],
+  // },
   {
     path: "*",
     element: <NoPage />,
@@ -278,7 +274,7 @@ const initRoutersObj = (
   return routerPages;
 };
 
-const routerPaths = initRoutersObj(routers, {});
+const routersInfo = initRoutersObj(routers, {});
 
 const Pages = () => {
   const pages = useRoutes(routers);
@@ -286,4 +282,4 @@ const Pages = () => {
 };
 
 export type { IRoute, userRoles };
-export { routerPaths, Pages };
+export { RoutePaths, routersInfo, Pages };

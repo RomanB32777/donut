@@ -14,7 +14,7 @@ import Loader from "components/Loader";
 import axiosClient from "modules/axiosClient";
 import { tryToGetUser } from "store/types/User";
 import { addNotification, checkWallet } from "utils";
-import { adminPath } from "consts";
+import { RoutePaths } from "routes";
 import registerImg from "assets/registerImg.png";
 import "./styles.sass";
 
@@ -52,7 +52,7 @@ const RegistrationContainer = () => {
 
           if (status === 200) {
             dispatch(tryToGetUser(address));
-            navigate(`/${adminPath}/dashboard`);
+            navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
           }
         } else
           addNotification({
@@ -79,7 +79,9 @@ const RegistrationContainer = () => {
       setLoading(false);
     };
 
-    id ? navigate(`/${adminPath}/dashboard`) : checkBlockchain();
+    id
+      ? navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`)
+      : checkBlockchain();
   }, [id, walletConf]);
 
   if (loading)

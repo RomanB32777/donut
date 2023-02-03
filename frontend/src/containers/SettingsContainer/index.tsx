@@ -191,7 +191,8 @@ const SettingsContainer = () => {
                       })
                     }
                     labelCol={8}
-                    inputCol={16}
+                    inputCol={15}
+                    rowProps={{ justify: "space-between" }}
                   />
                 </Col>
                 <Col span={7}>
@@ -219,8 +220,9 @@ const SettingsContainer = () => {
                       setFormSettings({ ...formSettings, username: value })
                     }
                     labelCol={8}
-                    inputCol={16}
+                    inputCol={15}
                     gutter={[0, 16]}
+                    rowProps={{ justify: "space-between" }}
                   />
                 </Col>
                 <Col span={7}>
@@ -254,8 +256,9 @@ const SettingsContainer = () => {
                     }
                     addonsModificator="wallet-addon"
                     labelCol={8}
-                    inputCol={16}
+                    inputCol={15}
                     gutter={[0, 16]}
+                    rowProps={{ justify: "space-between" }}
                   />
                 </Col>
                 <Col span={7}>
@@ -281,7 +284,7 @@ const SettingsContainer = () => {
                     setFormSettings({ ...formSettings, spam_filter: flag })
                   }
                   labelModificator="switch-label"
-                  labelCol={5}
+                  labelCol={6}
                   switchCol={2}
                   gutter={[0, 16]}
                 />

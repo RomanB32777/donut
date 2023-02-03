@@ -19,8 +19,9 @@ import {
   getGasPriceForMethod,
 } from "./methods";
 import { checkIsExistUser } from "../asyncMethods";
-import { IWalletConf, IWalletMethods } from "appTypes";
 import { logoutUser } from "utils";
+import { RoutePaths } from "routes";
+import { IWalletConf, IWalletMethods } from "appTypes";
 
 const walletMethods: IWalletMethods = {
   isInstall,
@@ -78,14 +79,14 @@ const checkWallet = async ({
         dispatch(tryToGetUser(address));
         return true;
         // not registered user - to registration page
-      } else if (navigate) navigate("/register");
+      } else if (navigate) navigate(`/${RoutePaths.register}`);
 
       // ????
       return true;
     } else {
       const newBlockchaind = await walletConf.changeBlockchain("evmos");
       if (newBlockchaind) dispatch(setSelectedBlockchain("evmos"));
-      else navigate && navigate("/");
+      else navigate && navigate(RoutePaths.main);
     }
   } else {
     if (navigate) logoutUser({ dispatch, navigate });

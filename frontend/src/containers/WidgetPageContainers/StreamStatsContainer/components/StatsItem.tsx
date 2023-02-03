@@ -25,6 +25,7 @@ import {
   loadFonts,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
+import { RoutePaths } from "routes";
 import { baseURL } from "consts";
 import { IWidgetStatData } from "appTypes";
 
@@ -146,7 +147,7 @@ const StatsItem = ({
   };
 
   const linkForCopy = useMemo(
-    () => `${baseURL}/donat-stat/${user.username}/${id}`,
+    () => `${baseURL}/${RoutePaths.donatStat}/${user.username}/${id}`,
     [user, id]
   );
 

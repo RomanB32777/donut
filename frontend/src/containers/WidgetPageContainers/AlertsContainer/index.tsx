@@ -22,6 +22,7 @@ import {
   sendFile,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
+import { RoutePaths } from "routes";
 import { initAlertData, baseURL } from "consts";
 import { IAlert } from "appTypes";
 import "./styles.sass";
@@ -169,7 +170,8 @@ const AlertsContainer = () => {
   }, []);
 
   const linkForStream = useMemo(
-    () => `${baseURL}/donat-message/${username}/${security_string}`,
+    () =>
+      `${baseURL}/${RoutePaths.donatMessage}/${username}/${security_string}`,
     [username, security_string]
   );
 

@@ -4,7 +4,7 @@ import { FloatButton, Layout } from "antd";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
-import { Pages, routerPaths, routers } from "routes";
+import { Pages, routersInfo, routers } from "routes";
 import "./styles.sass";
 
 const { Content } = Layout;
@@ -45,13 +45,13 @@ const LayoutApp = () => {
 
   const titleApp: string | undefined = useMemo(() => {
     const pathElements = pathname.split("/");
-    const allRoutesPath = Object.keys(routerPaths);
+    const allRoutesPath = Object.keys(routersInfo);
 
     const currentPage = pathElements.reverse().find((el) => {
       return allRoutesPath.includes(el);
     });
 
-    if (currentPage) return routerPaths[currentPage].name;
+    if (currentPage) return routersInfo[currentPage].name;
     return "";
   }, [pathname]);
 

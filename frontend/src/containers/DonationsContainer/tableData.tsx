@@ -2,6 +2,7 @@ import type { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
 import { userRoles } from "types";
 import { DateFormatter, DateTimezoneFormatter } from "utils";
+import { RoutePaths } from "routes";
 
 interface ITableData {
   name: string;
@@ -31,7 +32,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     align: "center",
     render: (name, { role }) => {
       if (role === "backers")
-        return <Link to={`/support/${name}`}>{name}</Link>;
+        return <Link to={`/${RoutePaths.support}/${name}`}>{name}</Link>;
       return name;
     },
   },

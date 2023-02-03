@@ -1,4 +1,4 @@
-import { Col, Row, Switch, SwitchProps } from "antd";
+import { Col, Row, RowProps, Switch, SwitchProps } from "antd";
 import clsx from "clsx";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
@@ -11,6 +11,7 @@ interface ISliderProps extends SwitchProps {
   labelCol?: number;
   maxWidth?: number;
   gutter?: number | [number, number];
+  rowProps?: RowProps;
   labelModificator?: string;
   isVisibleStatus?: boolean;
   setValue: (value: boolean) => void;
@@ -24,6 +25,7 @@ const SwitchForm = ({
   switchCol,
   labelCol,
   gutter,
+  rowProps,
   labelModificator,
   isVisibleStatus,
   setValue,
@@ -37,8 +39,8 @@ const SwitchForm = ({
           width: "100%",
         }}
         align="middle"
-        // justify={justify || "start"}
         gutter={gutter || 0}
+        {...rowProps}
       >
         {label && (
           <Col

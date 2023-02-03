@@ -6,13 +6,12 @@ import Sidebar from "components/Sidebar";
 import PageTitle from "components/PageTitle";
 import AdminHeader from "components/AdminComponents/AdminHeader";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import { adminPath } from "consts";
+import { RoutePaths } from "routes";
 import { themes } from "./const";
 import { IHelpContent } from "./types";
 import "./styles.sass";
 import { getRandomStr } from "utils";
 
-const navigateUrl = `/${adminPath}/dashboard`;
 const sidebarWidth = 350;
 
 const HelpCenterContainer = () => {
@@ -20,6 +19,7 @@ const HelpCenterContainer = () => {
   const { isTablet } = useWindowDimensions();
 
   const [collapsed, setCollapsed] = useState(true);
+  const navigateUrl = `/${RoutePaths.admin}/${RoutePaths.dashboard}`;
 
   const renderContent = ({
     content,

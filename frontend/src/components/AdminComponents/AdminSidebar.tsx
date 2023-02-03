@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import Sidebar from "components/Sidebar";
 import useWindowDimensions from "hooks/useWindowDimensions";
@@ -67,10 +67,15 @@ const AdminSidebar = ({
       setCollapsed={setCollapsed}
       width={{ mobile: 325, desktop: 250 }}
       bottomEl={
-        <Link to="/help/center" className="sidebar-btmEl">
+        <a
+          href="https://crypto-donutz.gitbook.io/"
+          target="_blank"
+          rel="noreferrer"
+          className="sidebar-btmEl"
+        >
           <QuestionCircleOutlined />
           <span className="btmEl-link">Help center</span>
-        </Link>
+        </a>
       }
     >
       {isMobile && (

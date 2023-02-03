@@ -23,8 +23,9 @@ import {
   loadFonts,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
-import { IWidgetGoalData } from "appTypes";
+import { RoutePaths } from "routes";
 import { baseURL } from "consts";
+import { IWidgetGoalData } from "appTypes";
 
 const GoalItem = ({
   fonts,
@@ -144,7 +145,7 @@ const GoalItem = ({
   };
 
   const linkForCopy = useMemo(
-    () => `${baseURL}/donat-goal/${user.username}/${id}`,
+    () => `${baseURL}/${RoutePaths.donatGoal}/${user.username}/${id}`,
     [user, id]
   );
 
