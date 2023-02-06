@@ -8,6 +8,7 @@ export interface INotification {
   type: NOTIFICATION_TYPE;
   title: string;
   message?: NotificationTitleMessage;
+  id?: string;
 }
 
 export interface INotificationWithoutType {

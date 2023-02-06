@@ -162,8 +162,12 @@ const DonationsContainer = () => {
   }, []);
 
   useEffect(() => {
-    id && shouldUpdateApp && getDonationsData();
-  }, [id, list, shouldUpdateApp]);
+    id && getDonationsData();
+  }, [id]);
+
+  useEffect(() => {
+    list.length && shouldUpdateApp && getDonationsData();
+  }, [list, shouldUpdateApp]);
 
   const isCreator = useMemo(
     () => user.roleplay && user.roleplay === "creators",

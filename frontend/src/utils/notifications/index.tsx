@@ -9,10 +9,11 @@ import {
 import { formatNumber } from "utils/appMethods";
 import { RoutePaths } from "routes";
 
-const addNotification = ({ type, title, message }: INotification) => {
+const addNotification = ({ type, title, message, id }: INotification) => {
   Store.addNotification({
     title,
     message: message || "",
+    id,
     type,
     insert: "top",
     container: "top-right",
@@ -37,6 +38,7 @@ const addAuthWalletNotification = () =>
     title: "Authorization",
     message: `You need to log in to your wallet`,
     type: "warning",
+    id: "authorization",
   });
 
 const addErrorNotification = ({ message, title }: INotificationWithoutType) =>

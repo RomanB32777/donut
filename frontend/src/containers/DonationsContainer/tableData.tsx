@@ -66,8 +66,7 @@ export const tableColumns: ColumnsType<ITableData> = [
     dataIndex: "date",
     key: "date",
     width: "25%",
-    render: (text) =>
-      Date.parse(text) ? DateFormatter(DateTimezoneFormatter(text)) : "-",
+    render: (date) => DateFormatter(date),
     sorter: (a, b) =>
       Date.parse(a.date) &&
       Date.parse(b.date) &&

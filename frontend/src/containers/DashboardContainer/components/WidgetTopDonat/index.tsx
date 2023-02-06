@@ -51,8 +51,13 @@ const WidgetTopDonat = () => {
 
   useEffect(() => {
     const timePeriod = getTimePeriodQuery(activeFilterItem);
-    if (id && timePeriod && shouldUpdateApp) getTopDonations(timePeriod);
-  }, [id, activeFilterItem, list, shouldUpdateApp]);
+    id && getTopDonations(timePeriod);
+  }, [id, activeFilterItem]);
+
+  useEffect(() => {
+    const timePeriod = getTimePeriodQuery(activeFilterItem);
+    list.length && shouldUpdateApp && getTopDonations(timePeriod);
+  }, [list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-topDonat">
