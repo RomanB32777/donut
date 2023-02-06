@@ -1,5 +1,5 @@
 import { IDonatPageWithFiles, IFileInfo, IUserWithFiles } from "appTypes";
-import { IUser } from "types";
+import { IShortUserData, IUser } from "types";
 
 const initFileInfo: IFileInfo = {
   preview: "",
@@ -46,4 +46,11 @@ const initUserWithFiles: IUserWithFiles = {
   donat_page: initDonatPage,
 };
 
-export { initFileInfo, initUser, initDonatPage, initUserWithFiles };
+const shortUserInfo: IShortUserData = {
+  id: 0,
+  username: "",
+  wallet_address: "",
+  roleplay: "backers",
+};
+
+export { initFileInfo, initUser, initDonatPage, initUserWithFiles, shortUserInfo };

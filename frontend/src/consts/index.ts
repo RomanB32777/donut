@@ -24,6 +24,7 @@ import {
   initFileInfo,
   initUser,
   initUserWithFiles,
+  shortUserInfo,
   initDonatPage,
 } from "./user";
 
@@ -89,4 +90,5 @@ export {
   initUser,
   initDonatPage,
   initUserWithFiles,
+  shortUserInfo,
 };

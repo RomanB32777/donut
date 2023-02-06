@@ -313,7 +313,7 @@ const DonatContainer = () => {
         </div>
         <LoadingModalComponent
           open={!notValidFields.length && loadingPage}
-          message="Please don’t close this window untill donation confirmation"
+          message="Please don't close this window untill donation confirmation"
           centered
         />
         <SuccessModalComponent

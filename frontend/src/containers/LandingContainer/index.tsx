@@ -127,7 +127,7 @@ const LandingContainer = () => {
                   to set up.
                 </p>
                 <BaseButton
-                  title="Create account"
+                  title={id ? "Launch app" : "Create account"}
                   onClick={signUp}
                   modificator="landing-btn"
                   isMain
