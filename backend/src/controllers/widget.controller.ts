@@ -118,10 +118,6 @@ class WidgetController {
         [creator_id, security_string],
       );
 
-      // const y = await speechClient.listVoices();
-      // console.log(y[0].voices?.forEach((v) => v.languageCodes?.includes('en-US')));
-      // return res.status(200).json(y[0].voices);
-
       const alertInfo = data.rows[0];
       if (alertInfo) {
         const { sound, banner } = alertInfo;

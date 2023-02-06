@@ -112,7 +112,6 @@ class UserController {
           ON c.user_id = u.id
          WHERE u.roleplay = 'creators' AND u.username = $1`,
         [username],
-        // c.background_link, c.welcome_text, c.btn_text, c.main_color, c.background_color, c.security_string,
       );
       if (creator.rowCount) return res.status(200).json(creator.rows[0]);
       else return res.status(500).json('User with this username not found!');

@@ -33,7 +33,6 @@ const dateTrancCurrentParams: IFullFilterPeriodItems = {
 const getTimePeriod = (period: periodItemsTypes) => `
     d.created_at >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} 
   `;
-// to_timestamp(created_at,'YYYY/MM/DD${period !== 'today' ? ' T HH24:MI:SS' : ''} ')
 
 const getTimeCurrentPeriod = ({
   period,
@@ -53,7 +52,6 @@ const getTimeCurrentPeriod = ({
   return `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(d.created_at::text, 'YYYY/MM/DD T HH24:MI:SS'))
     = date_trunc('${dateTrancCurrentParams[period]}', current_date${period === 'yesterday' ? ' - 1' : ''})`;
 };
-// date_trunc('${}', to_timestamp(created_at, 'YYYY/MM/DD T HH24:MI:SS')) AS date_group
 
 const getSumInUsd = (usdKoefs: any) =>
   `CASE d.blockchain ${Object.keys(exchangeNames)

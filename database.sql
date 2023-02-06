@@ -29,7 +29,6 @@ CREATE TABLE badges(
     blockchain VARCHAR(255) DEFAULT '',
     image VARCHAR DEFAULT '',
     description VARCHAR DEFAULT '',
-    -- quantity INTEGER DEFAULT 1,
     token_id INTEGER,
     creator_id INTEGER,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
