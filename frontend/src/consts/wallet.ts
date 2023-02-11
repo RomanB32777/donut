@@ -22,16 +22,16 @@ const storageWalletKey = "main_blockchain";
 
 const initBlockchainData: IBlockchain = {
   address: "",
-  name: "evmos",
+  name: "polygon",
   icon: "",
   chainId: "",
   chainName: "",
   badgeName: "",
   color: "",
   nativeCurrency: {
-    symbol: "ETHs",
+    symbol: "MATIC",
     name: "",
-    exchangeName: "evmos",
+    exchangeName: "matic-network",
   },
 };
 
@@ -206,8 +206,8 @@ const walletInfo: IWalletState = {
   transfer_contract: {
     abi: JSON.parse(transferAbi),
     blockchains: [],
-    bytecode: ''
-  }
+    bytecode: "",
+  },
 };
 
 export {

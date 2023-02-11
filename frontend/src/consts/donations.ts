@@ -4,14 +4,14 @@ const initSendDonatData: ISendDonat = {
   message: "",
   username: "",
   amount: 0,
-  selectedBlockchain: "ETHs",
+  selectedBlockchain: "MATIC",
   selectedGoal: 0,
   is_anonymous: false,
 };
 
 const initDonationData: IDonation = {
   id: 0,
-  blockchain: "evmos",
+  blockchain: "polygon",
   backer_id: 0,
   creator_id: 0,
   sum_donation: 0,
