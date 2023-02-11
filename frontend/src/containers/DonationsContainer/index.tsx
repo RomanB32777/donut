@@ -149,7 +149,7 @@ const DonationsContainer = () => {
     const data = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
     });
-    FileSaver.saveAs(data, "donations" + ".xlsx");
+    FileSaver.saveAs(data, "donations.xlsx");
   };
 
   const allAmountUSD = useMemo(

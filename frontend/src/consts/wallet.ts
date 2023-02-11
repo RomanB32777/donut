@@ -1,7 +1,5 @@
 import { IBlockchain, IWalletState } from "appTypes";
 import metamaskIcon from "assets/metamask.png";
-import evmosIcon from "assets/blockchains/evmos.png";
-import klaytnIcon from "assets/blockchains/klaytn.png";
 import ethIcon from "assets/blockchains/eth.png";
 import maticIcon from "assets/blockchains/matic.png";
 // import usdcIcon from "assets/blockchains/usdc.png";
@@ -38,40 +36,6 @@ const initBlockchainData: IBlockchain = {
 const walletInfo: IWalletState = {
   main_contract: {
     blockchains: [
-      {
-        address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
-        name: "klay",
-        icon: klaytnIcon,
-        chainId: "0x3e9", // 1001
-        chainName: "Klaytn Testnet Baobab",
-        badgeName: "Klaytn",
-        color: "#fff",
-        nativeCurrency: {
-          name: "KLAY",
-          symbol: "KLAY",
-          decimals: 18,
-          exchangeName: "klay-token",
-        },
-        rpcUrls: ["https://api.baobab.klaytn.net:8651"],
-        blockExplorerUrls: ["https://www.klaytn.com/"],
-      },
-      {
-        address: "0xeb9bab732b7C24428CC21DDB5Aed8F43209bDB37",
-        name: "evmos",
-        icon: evmosIcon,
-        chainId: "0x2328", // 9000
-        chainName: "Evmos Testnet",
-        badgeName: "tEVMOS",
-        color: "#009393",
-        nativeCurrency: {
-          name: "test-Evmos",
-          symbol: "ETHs",
-          decimals: 18,
-          exchangeName: "evmos",
-        },
-        rpcUrls: ["https://eth.bd.evmos.dev:8545"],
-        blockExplorerUrls: ["https://evm.evmos.dev"],
-      },
       {
         address: "0x8c408C8df8A61Da4DA487c3d1a3e7F4a169837A6",
         name: "eth",
@@ -110,32 +74,39 @@ const walletInfo: IWalletState = {
         address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
         name: "bnb",
         icon: bnbIcon,
-        chainId: "0x61", // 97
-        chainName: "BSC", // Binance Smart Chain Testnet
+        chainId: "0x38", // 56
+        chainName: "Binance Smart Chain Mainnet", // Binance Smart Chain Testnet
         badgeName: "BNB",
         color: "rgba(240, 185, 11, 0.8)",
         nativeCurrency: {
           name: "Binance Chain Native Token",
-          symbol: "tBNB",
+          symbol: "BNB",
           decimals: 18,
           exchangeName: "binancecoin",
         },
         rpcUrls: [
-          "https://data-seed-prebsc-1-s1.binance.org:8545",
-          "https://data-seed-prebsc-2-s1.binance.org:8545",
-          "https://data-seed-prebsc-1-s2.binance.org:8545",
-          "https://data-seed-prebsc-2-s2.binance.org:8545",
-          "https://data-seed-prebsc-1-s3.binance.org:8545",
-          "https://data-seed-prebsc-2-s3.binance.org:8545",
+          "https://bsc-dataseed1.binance.org",
+          "https://bsc-dataseed2.binance.org",
+          "https://bsc-dataseed3.binance.org",
+          "https://bsc-dataseed4.binance.org",
+          "https://bsc-dataseed1.defibit.io",
+          "https://bsc-dataseed2.defibit.io",
+          "https://bsc-dataseed3.defibit.io",
+          "https://bsc-dataseed4.defibit.io",
+          "https://bsc-dataseed1.ninicoin.io",
+          "https://bsc-dataseed2.ninicoin.io",
+          "https://bsc-dataseed3.ninicoin.io",
+          "https://bsc-dataseed4.ninicoin.io",
+          "wss://bsc-ws-node.nariox.org",
         ],
-        blockExplorerUrls: ["https://testnet.bscscan.com"],
+        blockExplorerUrls: ["https://bscscan.com"],
       },
       {
-        address: "0x353Cc5cF5d1bB7319E814A17c718601ce8D59de8",
+        address: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
         name: "avax",
         icon: avaxIcon,
-        chainId: "0xa869", // 43113
-        chainName: "Avalanche Fuji Testnet",
+        chainId: "0xa86a", // 43114
+        chainName: "Avalanche C-Chain",
         badgeName: "AVAX",
         color: "rgba(232, 65, 66, 0.8)",
         nativeCurrency: {
@@ -144,8 +115,8 @@ const walletInfo: IWalletState = {
           decimals: 18,
           exchangeName: "avalanche-2",
         },
-        rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
-        blockExplorerUrls: ["https://testnet.snowtrace.io"],
+        rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+        blockExplorerUrls: ["https://snowtrace.io"],
       },
       // {
       //   address: "",
@@ -165,11 +136,11 @@ const walletInfo: IWalletState = {
       //   blockExplorerUrls: [],
       // },
       {
-        address: "0x4acB5714116aF02a844e8f346EE4CF40B10ED42f",
+        address: "0x8c408C8df8A61Da4DA487c3d1a3e7F4a169837A6",
         name: "polygon",
         icon: maticIcon,
-        chainId: "0x13881", // 80001
-        chainName: "Polygon Testnet Mumbai",
+        chainId: "0x89", // 137
+        chainName: "Polygon Mainnet",
         badgeName: "Polygon",
         color: "rgba(130, 71, 229, 0.8)",
         nativeCurrency: {
@@ -179,11 +150,15 @@ const walletInfo: IWalletState = {
           exchangeName: "matic-network",
         },
         rpcUrls: [
-          "https://matic-mumbai.chainstacklabs.com",
-          "https://rpc-mumbai.maticvigil.com",
-          "https://matic-testnet-archive-rpc.bwarelabs.com",
+          "https://polygon-rpc.com/",
+          "https://rpc-mainnet.matic.network",
+          "https://matic-mainnet.chainstacklabs.com",
+          "https://rpc-mainnet.maticvigil.com",
+          "https://rpc-mainnet.matic.quiknode.pro",
+          "https://matic-mainnet-full-rpc.bwarelabs.com",
+          "https://polygon-bor.publicnode.com",
         ],
-        blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+        blockExplorerUrls: ["https://polygonscan.com"],
       },
     ],
     icon: metamaskIcon,
