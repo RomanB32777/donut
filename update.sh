@@ -17,7 +17,7 @@ do
    cp -r ./$types_dir ./$i
 done
 
-docker-compose up -d --build
+docker compose up -d --build
 
 for i in ${modulesWithTypes[@]}
 do

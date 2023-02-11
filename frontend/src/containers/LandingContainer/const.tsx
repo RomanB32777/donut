@@ -101,11 +101,13 @@ const help = [
     icon: <ChatIcon />,
     description:
       "Create ticket on our discord server and talk to our support team",
+    link: "https://discord.gg/PHEQCjnY",
   },
   {
     title: "Check help center",
     icon: <HelpIcon />,
     description: "We've collected all the FAQ in Help center. Check it out!",
+    link: "https://crypto-donutz.gitbook.io/product-docs/",
   },
 ];
 

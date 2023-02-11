@@ -200,10 +200,10 @@ const LandingContainer = () => {
                 </Col>
                 <Col xs={{ span: 23, order: 0 }} md={{ span: 12, order: 1 }}>
                   <div className="content">
-                    <h2 className="title">3% commission</h2>
+                    <h2 className="title">0% commission</h2>
                     <div className="description">
-                      We charge only 3% commission rate on donation received.
-                      Lowest commission on the market.
+                      Right now the service is completely free to use for
+                      everyone
                     </div>
                   </div>
                 </Col>
@@ -279,20 +279,22 @@ const LandingContainer = () => {
           <div className="help block">
             <h2 className="title">Need help?</h2>
             <div className="list">
-              {help.map(({ title, icon, description }, index) => (
-                <div className="card" key={index}>
-                  <Row align="middle">
-                    <Col span={6}>
-                      <div className="image">{icon}</div>
-                    </Col>
-                    <Col span={18}>
-                      <div className="text">
-                        <p className="title">{title}</p>
-                        <p className="description">{description}</p>
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
+              {help.map(({ title, icon, description, link }, index) => (
+                <a key={index} href={link} target="_blank" rel="noreferrer">
+                  <div className="card" key={index}>
+                    <Row align="middle">
+                      <Col span={6}>
+                        <div className="image">{icon}</div>
+                      </Col>
+                      <Col span={18}>
+                        <div className="text">
+                          <p className="title">{title}</p>
+                          <p className="description">{description}</p>
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
