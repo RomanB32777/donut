@@ -10,7 +10,11 @@ cd $project_dir
 branch=$(git rev-parse --abbrev-ref HEAD)
 echo $branch
 
+git stash
+
 git pull origin $branch
+
+git stash pop
 
 for i in ${modulesWithTypes[@]}
 do
