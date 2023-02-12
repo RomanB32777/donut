@@ -385,7 +385,7 @@ class DonationController {
     try {
       const { blockchain } = req.query;
       const usdKoefs = await getUsdKoef(blockchain);
-      
+
       if (usdKoefs) return res.status(200).json(usdKoefs);
 
       return res.status(204).json({});

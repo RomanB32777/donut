@@ -17,7 +17,7 @@ type exchangeNameTypes =
   | "usd-coin" // usdc
   | "matic-network"; // matic
 
-type blockchainsSymbols = "AGOR" | "BNB" | "AVAX" | "MATIC";
+type blockchainsSymbols = "ETH" | "BNB" | "AVAX" | "MATIC";
 
 type BlockchainNameToExchangeName = {
   [key in blockchainsSymbols]: exchangeNameTypes;

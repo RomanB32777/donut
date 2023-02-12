@@ -14,7 +14,7 @@ const soundsFolderName: fileUploadTypes = 'sound';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const exchangeNames: BlockchainNameToExchangeName = {
-  AGOR: 'ethereum',
+  ETH: 'ethereum',
   BNB: 'binancecoin',
   AVAX: 'avalanche-2',
   MATIC: 'matic-network',

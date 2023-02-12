@@ -40,18 +40,18 @@ const walletInfo: IWalletState = {
         address: "0x8c408C8df8A61Da4DA487c3d1a3e7F4a169837A6",
         name: "eth",
         icon: ethIcon,
-        chainId: "0x66eed", // 421613
-        chainName: "Arbitrum Goerli Rollup Testnet",
+        chainId: "0xa4b1", // 42161
+        chainName: "Arbitrum One",
         badgeName: "ETH",
         color: "rgba(242, 244, 247, 0.8)",
         nativeCurrency: {
-          name: "Arbitrum Goerli Ether",
-          symbol: "AGOR",
+          name: "Ether",
+          symbol: "ETH",
           decimals: 18,
           exchangeName: "ethereum",
         },
-        rpcUrls: ["https://goerli-rollup.arbitrum.io/rpc/"],
-        blockExplorerUrls: ["https://goerli-rollup-explorer.arbitrum.io"],
+        rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+        blockExplorerUrls: ["https://arbiscan.io/"],
       },
       // {
       //   address: "",
