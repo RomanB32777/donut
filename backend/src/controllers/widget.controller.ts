@@ -125,7 +125,7 @@ class WidgetController {
         const soundPath = isProduction ? sound.slice(1) : sound.split(appLink)[1];
         const bannerPath = isProduction ? banner.slice(1) : banner.split(appLink)[1];
 
-        if (parseBool(soundPath) && !existsSync(soundPath)) {
+        if (!parseBool(soundPath) || !existsSync(soundPath)) {
           const updatedAlertWidget = await setDefaultAlertSound({
             creator_id,
             developHost: `${req.protocol}://${req.headers.host}`,
@@ -133,7 +133,7 @@ class WidgetController {
           return res.status(200).json(updatedAlertWidget);
         }
 
-        if (parseBool(bannerPath) && !existsSync(bannerPath)) {
+        if (!parseBool(bannerPath) || !existsSync(bannerPath)) {
           const updatedAlertWidget = await db.query(
             `UPDATE alerts SET 
               banner = ''

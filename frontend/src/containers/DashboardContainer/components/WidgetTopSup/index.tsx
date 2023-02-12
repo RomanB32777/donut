@@ -32,8 +32,6 @@ const WidgetTopSup = () => {
   const { list, shouldUpdateApp } = notifications;
 
   const getLatestDonations = async (activeFilterItem: string) => {
-    console.log(activeFilterItem);
-
     try {
       const timePeriod = getTimePeriodQuery(activeFilterItem);
       const { data } = await axiosClient.get(
