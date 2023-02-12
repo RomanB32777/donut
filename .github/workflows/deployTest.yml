@@ -1,0 +1,22 @@
+name: Deploy test
+
+on:
+  push:
+    branches: [main, donut4]
+    paths-ignore:
+      - '.github/workflows/*'
+  workflow_dispatch:
+
+jobs:
+  deploy_and_build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Run update script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_TEST_HOST }}
+          username: root
+          password: ${{ secrets.SSH_TEST_PASS }}
+          script: bash ~/donut4/update.sh 
+          script_stop: true

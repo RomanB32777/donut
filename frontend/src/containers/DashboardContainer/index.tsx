@@ -8,17 +8,15 @@ import WidgetTopSup from "./components/WidgetTopSup";
 import WidgetTopDonat from "./components/WidgetTopDonat";
 import WidgetLatestDonat from "./components/WidgetLatestDonat";
 
-// import { useAppSelector } from "hooks/reduxHooks";
 import { setUpdateAppNotifications } from "store/types/Notifications";
 import "./styles.sass";
 
 const DashboardContainer = () => {
   const dispatch = useDispatch();
-  // const notifications = useAppSelector(({ notifications }) => notifications);
 
   useEffect(() => {
     dispatch(setUpdateAppNotifications(true));
-  }, []); // [notifications] // ???
+  }, []);
 
   return (
     <div className="dashboard-container fadeIn">

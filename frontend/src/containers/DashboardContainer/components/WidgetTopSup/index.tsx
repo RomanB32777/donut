@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+// import { useQuery } from "react-query";
 import { Col, Empty, Row } from "antd";
 import { stringFormatTypes } from "types";
 
@@ -14,17 +15,25 @@ const LIMIT_SUPPORTERS = 6;
 
 const WidgetTopSup = () => {
   const { user, notifications } = useAppSelector((state) => state);
-
   const [loading, setLoading] = useState<boolean>(true);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
   const [topSupporters, setTopSupporters] = useState<any[]>([]);
 
+  // const { isLoading, data, error } = useQuery(
+  //   ["widgetTopSup", activeFilterItem],
+  //   () => getLatestDonations(activeFilterItem)
+  // );
+
+  // console.log(isLoading, data, error);
+
   const { id } = user;
   const { list, shouldUpdateApp } = notifications;
 
   const getLatestDonations = async (activeFilterItem: string) => {
+    console.log(activeFilterItem);
+
     try {
       const timePeriod = getTimePeriodQuery(activeFilterItem);
       const { data } = await axiosClient.get(
