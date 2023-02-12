@@ -79,10 +79,7 @@ const checkWallet = async ({
         dispatch(tryToGetUser(address));
         return true;
         // not registered user - to registration page
-      } else if (navigate) navigate(`/${RoutePaths.register}`);
-
-      // ????
-      return true;
+      } else if (navigate) return navigate(`/${RoutePaths.register}`);
     } else {
       const newBlockchaind = await walletConf.changeBlockchain("polygon");
       if (newBlockchaind) dispatch(setSelectedBlockchain("polygon"));

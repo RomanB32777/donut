@@ -2,9 +2,9 @@ name: Deploy prod
 
 on:
   push:
-    branches: [main, production]
+    branches: [production]
     paths-ignore:
-      - '.github/workflows/*'
+      - ".github/workflows/*"
   workflow_dispatch:
 
 jobs:
@@ -18,6 +18,5 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: root
           password: ${{ secrets.SSH_PASS }}
-          script: bash ~/donut/update.sh 
+          script: bash ~/donut/update.sh
           script_stop: true
- 
