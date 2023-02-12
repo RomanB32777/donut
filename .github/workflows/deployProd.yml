@@ -2,7 +2,7 @@ name: Deploy prod
 
 on:
   push:
-    branches: [main]
+    branches: [main, production]
     paths-ignore:
       - '.github/workflows/*'
   workflow_dispatch:
