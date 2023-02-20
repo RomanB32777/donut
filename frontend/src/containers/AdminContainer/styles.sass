@@ -25,23 +25,36 @@
 
     &-btmEl
         display: flex
-        align-items: center
+        flex-direction: column
         margin: 4px
         padding: 0 24px
         width: fit-content
-        color: variables.$grey-color
 
         @media (min-width: 768px) and (max-width: 992px)
             padding: 0 48px
 
-        &:hover
-            color: variables.$white-color
+    &-link
+        display: flex
+        align-items: center
+        margin-bottom: 10px
+
+        &:last-child
+            margin-bottom: 0
 
         svg
             width: 24px
             height: 24px
 
-        .btmEl-link
+        svg, .link-text
+            transition: .3s
+            color: variables.$grey-color
+
+        .link-text
+            font-weight: 400
             font-family: variables.$inter-font
             font-size: 14px
-            margin-left: 10px
+            margin-left: 5px
+
+        &:hover
+            svg, .link-text
+                color: variables.$white-color
