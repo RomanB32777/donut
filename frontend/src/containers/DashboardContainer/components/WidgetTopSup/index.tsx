@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import { useQuery } from "react-query";
 import { Col, Empty, Row } from "antd";
 import { stringFormatTypes } from "types";
 
@@ -20,13 +19,6 @@ const WidgetTopSup = () => {
     filterPeriodItems["7days"]
   );
   const [topSupporters, setTopSupporters] = useState<any[]>([]);
-
-  // const { isLoading, data, error } = useQuery(
-  //   ["widgetTopSup", activeFilterItem],
-  //   () => getLatestDonations(activeFilterItem)
-  // );
-
-  // console.log(isLoading, data, error);
 
   const { id } = user;
   const { list, shouldUpdateApp } = notifications;
