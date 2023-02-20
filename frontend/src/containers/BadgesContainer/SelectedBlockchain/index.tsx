@@ -1,3 +1,4 @@
+import { memo } from "react";
 import clsx from "clsx";
 import { IBlockchain } from "appTypes";
 import "./styles.sass";
@@ -27,4 +28,4 @@ const SelectedBlockchain = ({
   );
 };
 
-export default SelectedBlockchain;
+export default memo(SelectedBlockchain);

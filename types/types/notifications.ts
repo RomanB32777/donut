@@ -4,15 +4,27 @@ import { IUserBase } from "./user";
 
 type notificationRoles = "sender" | "recipient";
 
-interface INotification {
+interface INotificationBase {
   id: number;
+  read: boolean;
+}
+
+interface INotification extends INotificationBase {
   created_at: string;
   sender?: string; // sender username
   recipient?: string; // recipient username
   roleplay: notificationRoles;
-  read: boolean;
   donation?: IDonation;
   badge?: IBadgeInfo;
+}
+
+interface INotificationChangeStatus extends INotificationBase {
+  userID: number;
+}
+
+interface INotificationDelete {
+  id: number;
+  userID: number;
 }
 
 interface ISocketEmitObj {
@@ -36,6 +48,9 @@ export type {
   notificationRoles,
   ISocketEmitObj,
   notificationKeys,
+  INotificationBase,
+  INotificationChangeStatus,
+  INotificationDelete,
   INotification,
   INotificationQueries,
 };

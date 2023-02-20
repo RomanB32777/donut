@@ -2,53 +2,57 @@ import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, rmSync } from 'fs';
 import { DatabaseError } from 'pg';
-import { IShortUserData } from 'types';
+import { IShortUserData, IEditUserInfo, IUser, ISendingDataWithFile, donatAssetTypes } from 'types';
+
 import db from '../db.js';
-import { getRandomStr } from '../utils.js';
+import { getRandomStr, parseBool } from '../utils.js';
 import { uploadsFolder, isProduction, initDonatPage } from '../consts.js';
-import { RequestParams, ResponseBody, RequestQuery, RequestBodyUser } from '../types.js';
+import { RequestParams, ResponseBody, RequestQuery, HttpCode } from '../types.js';
 
 class UserController {
   async checkUserExist(req: Request, res: Response, next: NextFunction) {
     try {
       const { field } = req.params; // field - address/username
       const user = await db.query('SELECT * FROM users WHERE wallet_address = $1 OR username = $1', [field]);
-      if (!user.rowCount) return res.status(200).json({ notExist: true });
+      if (!user.rowCount) return res.status(HttpCode.OK).json(false);
 
-      return res.status(200).json(user.rows[0]);
+      return res.status(HttpCode.CREATED).json(true);
     } catch (error) {
       next(error);
     }
   }
 
-  async createUser(req: Request, res: Response, next: NextFunction) {
+  async createUser(
+    req: Request<RequestParams, ResponseBody, IShortUserData, RequestQuery>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const { username, wallet_address, roleplay } = req.body as IShortUserData;
-      const newUser = await db.query(
+      const { username, wallet_address, roleplay } = req.body;
+
+      const newUser = await db.query<IUser>(
         `INSERT INTO users (wallet_address, username, roleplay) values ($1, $2, $3) RETURNING *;`,
-        [wallet_address, (username.includes('@') ? username : '@' + username).toLowerCase(), roleplay],
+        [wallet_address, (username.includes('@') ? username : `@${username}`).toLowerCase(), roleplay],
       );
       const newUserInfo = newUser.rows[0];
 
       if (newUserInfo) {
-        const userId = newUserInfo.id;
+        const { id } = newUserInfo;
 
         if (roleplay === 'creators') {
-          const security_string = getRandomStr(10);
           const alertID = getRandomStr(6);
-          await db.query(`INSERT INTO creators (user_id, security_string) values ($1, $2) RETURNING *`, [
-            userId,
-            security_string,
-          ]);
-          await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, userId]);
+          await db.query(`INSERT INTO creators (user_id) values ($1) RETURNING *`, [id]);
+          await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, id]);
         }
-        return res.status(200).json(newUserInfo);
+        return res.status(HttpCode.OK).json(newUserInfo);
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       const dbError = error as DatabaseError;
       if (dbError.code == '23505')
-        return res.status(500).json({ message: 'Unfortunately, this username is already busy. Enter another one' });
+        return res
+          .status(HttpCode.BAD_REQUEST)
+          .json({ message: 'Unfortunately, this username is already busy. Enter another one' });
 
       next(error);
     }
@@ -57,13 +61,15 @@ class UserController {
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const deletedUser = await db.query(`DELETE FROM users WHERE id = $1 RETURNING username;`, [id]);
+      const deletedUser = await db.query<IUser>(`DELETE FROM users WHERE id = $1 RETURNING *;`, [id]);
       if (deletedUser.rows[0]) {
         const { username } = deletedUser.rows[0];
         const uploadsFilesPath = `${uploadsFolder}/${username}`;
         existsSync(uploadsFilesPath) && rmSync(uploadsFilesPath, { recursive: true });
       }
-      res.status(200).json({ deletedUser: deletedUser.rows[0] });
+
+      if (deletedUser.rowCount) return res.status(HttpCode.OK).json(deletedUser.rows[0]);
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -83,8 +89,8 @@ class UserController {
       `,
         [address],
       );
-      if (user.rowCount) return res.status(200).json(user.rows[0]);
-      return res.status(200).json({});
+      if (user.rowCount) return res.status(HttpCode.OK).json(user.rows[0]);
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -94,7 +100,8 @@ class UserController {
     try {
       const { id } = req.params;
       const user = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
-      res.status(200).json({ user: user.rows[0] });
+      if (user.rowCount) return res.status(HttpCode.OK).json(user.rows[0]);
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -113,21 +120,22 @@ class UserController {
          WHERE u.roleplay = 'creators' AND u.username = $1`,
         [username],
       );
-      if (creator.rowCount) return res.status(200).json(creator.rows[0]);
-      else return res.status(500).json('User with this username not found!');
+      if (creator.rowCount) return res.status(HttpCode.OK).json(creator.rows[0]);
+      return res.status(HttpCode.NOT_FOUND).json('User with this username not found!');
     } catch (error) {
       next(error);
     }
   }
 
   async editUser(
-    req: Request<RequestParams, ResponseBody, RequestBodyUser, RequestQuery>,
+    req: Request<RequestParams, ResponseBody, IEditUserInfo, RequestQuery>,
     res: Response,
     next: NextFunction,
   ) {
     try {
       const { donat_page, spam_filter, id, isReset } = req.body;
-      const user = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
+
+      const user = await db.query<IUser>(`SELECT * FROM users WHERE id = $1`, [id]);
 
       if (user.rowCount) {
         const { id, roleplay } = user.rows[0];
@@ -139,7 +147,7 @@ class UserController {
             )} WHERE user_id = $1 RETURNING *`,
             [id],
           );
-          return res.status(200).json(editedUser.rows[0]);
+          return res.status(HttpCode.OK).json(editedUser.rows[0]);
         }
 
         if (roleplay === 'creators' && donat_page) {
@@ -151,17 +159,18 @@ class UserController {
               )} WHERE user_id = ${id} RETURNING *`,
               [...values],
             );
-            return res.status(200).json(editedUser.rows[0]);
+            return res.status(HttpCode.OK).json(editedUser.rows[0]);
           }
         }
 
-        if (typeof spam_filter !== 'undefined')
-          await db.query(`UPDATE creators SET spam_filter = $1 WHERE user_id = ${id} RETURNING *`, [spam_filter]);
+        if (parseBool(spam_filter))
+          await db.query(`UPDATE creators SET spam_filter = $1 WHERE user_id = $2 RETURNING *`, [spam_filter, id]);
 
         const bodyKeyFields = Object.keys(req.body).filter(
-          (field: string) => field !== 'id' && field !== 'spam_filter',
-        );
-        const changedFields = bodyKeyFields.map((field) => req.body[field as keyof RequestBodyUser]);
+          (field) => field !== 'id' && field !== 'spam_filter',
+        ) as Array<keyof IEditUserInfo>;
+
+        const changedFields = bodyKeyFields.map((field) => req.body[field]);
 
         if (changedFields.length) {
           const editedUser = await db.query(
@@ -170,10 +179,11 @@ class UserController {
               .join(', ')} WHERE id = ${id} RETURNING *`,
             [...changedFields],
           );
-          return res.status(200).json(editedUser.rows[0]);
+          return res.status(HttpCode.OK).json(editedUser.rows[0]);
         }
+        return res.sendStatus(HttpCode.NO_CONTENT);
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -194,18 +204,22 @@ class UserController {
 
         file.mv(filepath, (err) => err && console.log(err));
 
-        res.status(200).json({ message: 'success' });
+        return res.sendStatus(HttpCode.NO_CONTENT);
       }
-      res.status(204).json({});
+      return res.sendStatus(HttpCode.BAD_REQUEST);
     } catch (error) {
       next(error);
     }
   }
 
-  async editCreatorImage(req: Request, res: Response, next: NextFunction) {
+  async editCreatorImage(
+    req: Request<{ type: donatAssetTypes }, ResponseBody, ISendingDataWithFile, RequestQuery>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { type } = req.params;
-      const { username, userId, filelink } = req.body;
+      const { username, userID, filelink } = req.body;
       let uploadedFileLink = '';
 
       if (req.files) {
@@ -221,9 +235,9 @@ class UserController {
         `UPDATE creators
           SET ${type}_banner = $1 
           WHERE user_id = $2;`,
-        [uploadedFileLink, userId],
+        [uploadedFileLink, userID],
       );
-      return res.status(200).json({ message: 'success' });
+      return res.sendStatus(HttpCode.NO_CONTENT);
     } catch (error) {
       next(error);
     }

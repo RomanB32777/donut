@@ -1,16 +1,19 @@
+import { FC, memo } from "react";
 import "./styles.sass";
 
 declare type typeSizeLoader = "big" | "middle" | "small";
 
-const Loader = ({ size }: { size: typeSizeLoader }) => {
-  return (
-    <div className={`loader loader-${size}`}>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  );
-};
+interface ILoader {
+  size: typeSizeLoader;
+}
 
-export default Loader;
+const Loader: FC<ILoader> = ({ size }) => (
+  <div className={`loader loader-${size}`}>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+);
+
+export default memo(Loader);

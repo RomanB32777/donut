@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useEffect, useMemo, memo, FC } from "react";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
 import { goalDataKeys, IGoalData } from "types";
@@ -14,34 +13,29 @@ import FormBtnsBlock from "components/FormBtnsBlock";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import axiosClient from "modules/axiosClient";
-import { getGoals } from "store/types/Goals";
 import {
-  addNotification,
-  addSuccessNotification,
-  copyStr,
-  loadFonts,
-} from "utils";
+  useDeleteGoalMutation,
+  useEditGoalMutation,
+} from "store/services/GoalsService";
+import { copyStr, loadFonts } from "utils";
 import { ISelectItem } from "components/SelectInput";
 import { RoutePaths } from "routes";
 import { baseURL } from "consts";
 import { IWidgetGoalData } from "appTypes";
 
-const GoalItem = ({
-  fonts,
-  goalData,
-  openEditModal,
-}: {
+interface IGoalItem {
   fonts: ISelectItem[];
   goalData: IGoalData;
   openEditModal?: (data: IWidgetGoalData) => void;
-}) => {
-  const dispatch = useDispatch();
-  const user = useAppSelector(({ user }) => user);
+}
+
+const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
+  const { id: userID, username } = useAppSelector(({ user }) => user);
   const { isLaptop, isTablet } = useWindowDimensions();
+  const [editGoal, { isLoading: isEditLoading }] = useEditGoalMutation();
+  const [deleteGoal, { isLoading: isDeleteLoading }] = useDeleteGoalMutation();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [editGoalData, setEditGoalData] = useState<IWidgetGoalData>({
     ...goalData,
     title_font: {
@@ -60,13 +54,13 @@ const GoalItem = ({
   const handleActiveDetails = () =>
     !is_archive && setisActiveDetails(!isActiveDetails);
 
-  const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
+  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     openEditModal && openEditModal(editGoalData);
   };
 
-  const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
+  const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     copyStr(linkForCopy);
   };
 
@@ -91,34 +85,23 @@ const GoalItem = ({
     }
   };
 
-  // useCallback(}, [dispatch, editGoalData, goalData, user]  ???
   const editWidgetData = (isReset?: boolean) => async () => {
     try {
-      setLoading(true);
       const { id } = goalData;
       const { title_font, progress_font } = editGoalData;
-      await axiosClient.put("/api/widget/goals-widget/", {
+
+      await editGoal({
         goalData: {
           ...editGoalData,
           title_font: title_font.name,
           progress_font: progress_font.name,
+          creator_id: userID,
         },
-        creator_id: user.id,
         isReset,
         id,
       });
-      dispatch(getGoals(user.id));
-      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while saving data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -126,27 +109,16 @@ const GoalItem = ({
 
   const deleteGoalWidget = async () => {
     try {
-      setLoading(true);
       const { id } = goalData;
-      await axiosClient.delete("/api/widget/goals-widget/" + id);
-      dispatch(getGoals(user.id));
-      addSuccessNotification({ message: "Widget deleted successfully" });
+      await deleteGoal(id);
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while deleting data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
   const linkForCopy = useMemo(
-    () => `${baseURL}/${RoutePaths.donatGoal}/${user.username}/${id}`,
-    [user, id]
+    () => `${baseURL}/${RoutePaths.donatGoal}/${username}/${id}`,
+    [username, id]
   );
 
   const renderLinkForCopy = useMemo(
@@ -154,8 +126,13 @@ const GoalItem = ({
     [linkForCopy, id]
   );
 
+  const isLoading = useMemo(
+    () => isEditLoading || isDeleteLoading,
+    [isEditLoading, isDeleteLoading]
+  );
+
   useEffect(() => {
-    fonts && fonts.length && initGoalItem();
+    fonts.length && initGoalItem();
   }, [fonts, goalData]);
 
   return (
@@ -208,7 +185,11 @@ const GoalItem = ({
                 <Col span={13}>
                   {!is_archive && (
                     <div className="link">
-                      <LinkCopy link={linkForCopy} title={renderLinkForCopy} isSimple />
+                      <LinkCopy
+                        link={linkForCopy}
+                        title={renderLinkForCopy}
+                        isSimple
+                      />
                     </div>
                   )}
                 </Col>
@@ -253,7 +234,7 @@ const GoalItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </PreviewGoalBlock>
             }
@@ -266,7 +247,7 @@ const GoalItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </SettingsGoalBlock>
             }
@@ -277,4 +258,4 @@ const GoalItem = ({
   );
 };
 
-export default GoalItem;
+export default memo(GoalItem);

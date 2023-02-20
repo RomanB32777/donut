@@ -1,5 +1,5 @@
+import { memo, useContext, useMemo } from "react";
 import { Col, Row } from "antd";
-import { useContext, useEffect, useMemo, useState } from "react";
 import { IBadgeInfo } from "types";
 
 import { WalletContext } from "contexts/Wallet";
@@ -8,14 +8,12 @@ import Loader from "components/Loader";
 
 const BadgeDetails = ({
   badgeInfo,
-  updateBadgeData,
+  isLoading,
 }: {
   badgeInfo: IBadgeInfo;
-  updateBadgeData: () => Promise<void>;
+  isLoading: boolean;
 }) => {
   const walletConf = useContext(WalletContext);
-
-  const [loading, setLoading] = useState(false);
 
   const { title, description, is_creator, assigned, blockchain } = badgeInfo;
 
@@ -25,17 +23,7 @@ const BadgeDetails = ({
     [walletConf, blockchain]
   );
 
-  useEffect(() => {
-    const loadDetails = async () => {
-      setLoading(true);
-      await updateBadgeData();
-      setLoading(false);
-    };
-
-    loadDetails();
-  }, []);
-
-  if (loading) return <Loader size="big" />;
+  if (isLoading) return <Loader size="big" />;
 
   return (
     <div className="details">
@@ -93,4 +81,4 @@ const BadgeDetails = ({
   );
 };
 
-export default BadgeDetails;
+export default memo(BadgeDetails);

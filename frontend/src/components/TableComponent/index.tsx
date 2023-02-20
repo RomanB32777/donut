@@ -11,20 +11,18 @@ const TableComponent = <T extends object>({
   columns,
   pagination,
   loading,
-}: React.PropsWithChildren<ITableData<T>>): React.ReactElement => {
-  return (
-    <Table
-      className="app-table"
-      columns={columns}
-      dataSource={dataSource}
-      pagination={pagination}
-      loading={{
-        spinning: loading as boolean,
-        indicator: <Loader size="small" />,
-        className: "table-loader"
-      }}
-    />
-  );
-};
+}: React.PropsWithChildren<ITableData<T>>): React.ReactElement => (
+  <Table
+    className="app-table"
+    columns={columns}
+    dataSource={dataSource}
+    pagination={pagination}
+    loading={{
+      spinning: loading as boolean,
+      indicator: <Loader size="small" />,
+      className: "table-loader",
+    }}
+  />
+);
 
 export default TableComponent;

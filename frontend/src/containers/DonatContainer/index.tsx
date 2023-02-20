@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import { ISendDonat, requiredFields, sendDonatFieldsKeys } from "types";
@@ -8,7 +7,6 @@ import { WalletContext } from "contexts/Wallet";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 
-import { WebSocketContext } from "contexts/Websocket";
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import FormInput from "components/FormInput";
 import BaseButton from "components/BaseButton";
@@ -20,15 +18,15 @@ import {
   LoadingModalComponent,
   SuccessModalComponent,
 } from "components/ModalComponent";
-import { HeaderComponent } from "components/HeaderComponents/HeaderComponent";
+import HeaderComponent from "components/HeaderComponents/HeaderComponent";
 import SwitchForm from "components/SwitchForm";
 
-import { tryToGetPersonInfo } from "store/types/PersonInfo";
-import { getGoals } from "store/types/Goals";
-import { addNotification, checkWallet } from "utils";
-import { triggerContract } from "./utils";
+import { useWallet } from "hooks/walletHooks";
+import { useGetCreatorInfoQuery } from "store/services/UserService";
+import { addNotFoundUserNotification, addNotification } from "utils";
+import { usePayment } from "./utils";
 import { RoutePaths } from "routes";
-import { dummyImg, initSendDonatData } from "consts";
+import { dummyImg, initSendDonatData, initUser } from "consts";
 import { IFormHandler } from "./types";
 
 import SpaceImg from "assets/space.png";
@@ -38,29 +36,24 @@ const maxLengthDescription = 150;
 const requiredFormFields: requiredFields[] = ["amount", "username", "message"];
 
 const DonatContainer = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { name } = useParams();
-  const { user, personInfo, blockchain } = useAppSelector((state) => state);
+  const { checkWallet } = useWallet();
+  const { data: personInfo, isError } = useGetCreatorInfoQuery(name as string, {
+    skip: !name,
+  });
+
+  const user = useAppSelector(({ user }) => user);
+  const blockchain = useAppSelector(({ blockchain }) => blockchain);
+
   const { isMobile } = useWindowDimensions();
 
   const walletConf = useContext(WalletContext);
-  const socket = useContext(WebSocketContext);
-  const { donat_page, avatar } = personInfo;
-  const {
-    background_banner,
-    header_banner,
-    background_color,
-    main_color,
-    welcome_text,
-    btn_text,
-  } = donat_page;
 
   const [usdtKoef, setUsdtKoef] = useState(0);
   const [balance, setBalance] = useState(0);
   const [form, setForm] = useState<ISendDonat>(initSendDonatData);
   const [loadingPage, setLoadingPage] = useState(false);
-  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
   const [isOpenErrorModal, setIsOpenErrorModal] = useState(false);
   const [notValidFields, setNotValidFields] = useState<sendDonatFieldsKeys[]>(
     []
@@ -69,80 +62,69 @@ const DonatContainer = () => {
   const { id, username: usernameState } = user;
   const { username, message, amount, selectedBlockchain, is_anonymous } = form;
 
-  const checkValidate = () => {
+  const { triggerContract, isLoading, isSuccess } = usePayment({
+    form,
+    supporterInfo: user,
+    creatorInfo: personInfo || initUser,
+    usdtKoef,
+    balance,
+  });
+
+  const formHandler = useCallback(({ field, value }: IFormHandler) => {
+    setNotValidFields((prev) => prev.filter((f) => f !== field));
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }, []);
+
+  const usernameHandler = useCallback(
+    (value: string) => {
+      if (!username) {
+        setForm((prev) => ({
+          ...prev,
+          username: "@" + value,
+        }));
+      } else if (value.length < username.length && value.length === 2) {
+        setForm((prev) => ({
+          ...prev,
+          username: "",
+        }));
+      } else {
+        formHandler({ field: "username", value });
+        setNotValidFields((prev) => prev.filter((f) => f !== "username"));
+        setForm((prev) => ({
+          ...prev,
+          username: value,
+        }));
+      }
+    },
+    [username, formHandler]
+  );
+
+  const closeSuccessPopup = () =>
+    navigate(`/${RoutePaths.admin}/${RoutePaths.donations}`);
+
+  const sendBtnHandler = useCallback(async () => {
     const keys = Object.keys(form) as sendDonatFieldsKeys[];
-    return keys.filter((key) => {
+    const notValidFields = keys.filter((key) => {
       if (requiredFormFields.includes(key as any)) return !Boolean(form[key]);
       return false;
     });
-  };
 
-  const formHandler = ({ field, value }: IFormHandler) => {
-    setNotValidFields((prev) => prev.filter((f) => f !== field));
-    setForm({
-      ...form,
-      [field]: value,
-    });
-  };
-
-  const usernameHandler = (value: string) => {
-    if (username.length === 0) {
-      setForm({
-        ...form,
-        username: "@" + value,
-      });
-    } else if (value.length < username.length && value.length === 2) {
-      setForm({
-        ...form,
-        username: "",
-      });
-    } else {
-      formHandler({ field: "username", value });
-      setNotValidFields((prev) => prev.filter((f) => f !== "username"));
-      setForm({
-        ...form,
-        username: value,
-      });
-    }
-  };
-
-  const closeSuccessPopup = () => {
-    setIsOpenSuccessModal(false);
-    setForm({
-      ...initSendDonatData,
-      username,
-    });
-    navigate(`/${RoutePaths.admin}/${RoutePaths.donations}`);
-  };
-
-  const sendBtnHandler = async () => {
-    const notValidFields = checkValidate();
     if (notValidFields.length) {
       setNotValidFields(notValidFields);
       addNotification({
         type: "warning",
         title: "Not all fields are filled",
       });
-    } else {
-      await triggerContract({
-        form,
-        user,
-        socket,
-        usdtKoef,
-        balance,
-        personInfo,
-        walletConf,
-        userID: id,
-        dispatch,
-        setLoading: setLoadingPage,
-        setIsOpenSuccessModal,
-      });
-    }
-  };
+    } else if (personInfo) await triggerContract();
+  }, [form, personInfo]);
 
-  useEffect(() => {
-    name && dispatch(tryToGetPersonInfo(name));
-  }, [name]);
+  const isNotValidAmountField = useMemo(
+    () => notValidFields.includes("amount"),
+    [notValidFields]
+  );
 
   useEffect(() => {
     id && setForm((prev) => ({ ...prev, username: usernameState }));
@@ -150,20 +132,16 @@ const DonatContainer = () => {
 
   useEffect(() => {
     const initPage = async () => {
-      const res = await checkWallet({ walletConf, dispatch });
+      const res = await checkWallet();
       if (!res) {
         if (walletConf.isInstall()) {
           const isUnlockedWallet = await walletConf.requestAccounts();
-          if (isUnlockedWallet) await checkWallet({ walletConf, dispatch });
+          if (isUnlockedWallet) await checkWallet();
         } else {
           setIsOpenErrorModal(true);
           setLoadingPage(false);
         }
       }
-      // else {
-      //   const blockchainData = await walletConf.getWalletData();
-      //   if (blockchainData) await walletConf.getBalance(setBalance);
-      // }
     };
 
     initPage();
@@ -173,11 +151,20 @@ const DonatContainer = () => {
     walletConf.getBalance(setBalance);
   }, [walletConf, blockchain]);
 
-  useEffect(() => {
-    personInfo.id && dispatch(getGoals(personInfo.id));
-  }, [personInfo]);
+  if (!personInfo) {
+    isError && addNotFoundUserNotification();
+    return null;
+  }
 
-  if (!personInfo.id) return null;
+  const { donat_page, avatar } = personInfo;
+  const {
+    background_banner,
+    header_banner,
+    background_color,
+    main_color,
+    welcome_text,
+    btn_text,
+  } = donat_page;
 
   if (isOpenErrorModal)
     return (
@@ -244,7 +231,9 @@ const DonatContainer = () => {
                     <FormInput
                       value={username}
                       setValue={usernameHandler}
-                      disabled={Boolean(usernameState) || loadingPage}
+                      disabled={
+                        Boolean(usernameState) || loadingPage || isLoading
+                      }
                       modificator={clsx("inputs-name", {
                         isNotValid: notValidFields.includes("username"),
                       })}
@@ -263,6 +252,7 @@ const DonatContainer = () => {
                             labelCol={18}
                             switchCol={6}
                             gutter={[0, 18]}
+                            tooltipTitle="Turn on to be anonymous"
                           />
                         </div>
                       }
@@ -279,7 +269,7 @@ const DonatContainer = () => {
                       })}
                       placeholder={`Message to ${personInfo.username}`}
                       maxLength={maxLengthDescription}
-                      disabled={loadingPage}
+                      disabled={loadingPage || isLoading}
                       isVisibleLength
                       isTextarea
                     />
@@ -288,13 +278,13 @@ const DonatContainer = () => {
                     form={form}
                     color={main_color}
                     usdtKoef={usdtKoef}
+                    isNotValid={isNotValidAmountField}
                     formHandler={formHandler}
-                    isNotValid={notValidFields.includes("amount")}
                     setUsdtKoef={setUsdtKoef}
                   />
                 </div>
 
-                <Goals form={form} setForm={setForm} />
+                <Goals personInfo={personInfo} form={form} setForm={setForm} />
 
                 <div className="bottom">
                   <BaseButton
@@ -303,7 +293,7 @@ const DonatContainer = () => {
                     padding="10px 25px"
                     fontSize="21px"
                     color={main_color}
-                    disabled={loadingPage}
+                    disabled={loadingPage || isLoading}
                     isMain
                   />
                 </div>
@@ -312,12 +302,12 @@ const DonatContainer = () => {
           </div>
         </div>
         <LoadingModalComponent
-          open={!notValidFields.length && loadingPage}
+          open={!notValidFields.length && (loadingPage || isLoading)}
           message="Please don't close this window untill donation confirmation"
           centered
         />
         <SuccessModalComponent
-          open={isOpenSuccessModal}
+          open={isSuccess}
           onClose={closeSuccessPopup}
           message={`You've successfully sent ${amount} ${selectedBlockchain} to ${name}`}
           description="Check your donation history in «Donations» section"

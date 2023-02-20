@@ -1,19 +1,23 @@
-import { blockchainPayload, IBlockchainAction } from "appTypes";
-import { SET_MAIN_WALLET } from "store/types/Wallet";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { storageWalletKey } from "consts";
+import { blockchainPayload } from "appTypes";
 
-const initialState: blockchainPayload = null;
+export const walletSlice = createSlice({
+  name: "wallet",
+  initialState: null as blockchainPayload,
+  reducers: {
+    setWallet(
+      state,
+      { payload: blockchainName }: PayloadAction<blockchainPayload>
+    ) {
+      blockchainName
+        ? localStorage.setItem(storageWalletKey, blockchainName)
+        : localStorage.removeItem(storageWalletKey);
 
-const WalletReducer = (
-  state: blockchainPayload = initialState,
-  action: IBlockchainAction
-) => {
-  switch (action.type) {
-    case SET_MAIN_WALLET:
-      return action.payload;
-
-    default:
+      state = blockchainName;
       return state;
-  }
-};
+    },
+  },
+});
 
-export default WalletReducer;
+export default walletSlice.reducer;

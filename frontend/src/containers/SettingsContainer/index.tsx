@@ -1,12 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { userDataKeys } from "types";
+import { IUser, userDataKeys } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import axiosClient from "modules/axiosClient";
 import { WalletContext } from "contexts/Wallet";
 import PageTitle from "components/PageTitle";
 import FormInput from "components/FormInput";
@@ -14,15 +11,14 @@ import BaseButton from "components/BaseButton";
 import ConfirmPopup from "components/ConfirmPopup";
 import UploadImage from "components/UploadImage";
 import SwitchForm from "components/SwitchForm";
-import { tryToGetUser } from "store/types/User";
+
 import {
-  addNotification,
-  addSuccessNotification,
-  copyStr,
-  logoutUser,
-  sendFile,
-  shortStr,
-} from "utils";
+  useDeleteUserMutation,
+  useEditUserAvatarMutation,
+  useEditUserMutation,
+} from "store/services/UserService";
+import { useLogoutUser } from "hooks/userHooks";
+import { copyStr, shortStr } from "utils";
 import { initUserWithFiles } from "consts";
 import { IUserWithFiles } from "appTypes";
 import "./styles.sass";
@@ -37,17 +33,25 @@ const excludedСhangesFields: userDataKeys[] = [
 const filesFields: userDataKeys[] = ["avatar"];
 
 const SettingsContainer = () => {
+  const [editUser, { isLoading: isEditUserLoading }] = useEditUserMutation();
+  const [editAvatar, { isLoading: isEditAvatarLoading }] =
+    useEditUserAvatarMutation();
+  const [deleteUser] = useDeleteUserMutation();
+  const logout = useLogoutUser();
+
   const user = useAppSelector(({ user }) => user);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const walletConf = useContext(WalletContext);
 
   const [formSettings, setFormSettings] =
     useState<IUserWithFiles>(initUserWithFiles);
 
-  const [loading, setSettingsLoading] = useState<boolean>(false);
-
   const { username, wallet_address, avatar, spam_filter } = formSettings;
+
+  const isLoading = useMemo(
+    () => isEditUserLoading || isEditAvatarLoading,
+    [isEditUserLoading, isEditAvatarLoading]
+  );
 
   const changeUserData = async (
     changedFields: {
@@ -55,83 +59,62 @@ const SettingsContainer = () => {
       value: any;
     }[]
   ) => {
-    if (!loading && changedFields.length) {
-      try {
-        setSettingsLoading(true);
+    if (!isLoading && changedFields.length) {
+      const fileField = changedFields.find((f) => filesFields.includes(f.key));
 
-        const fileField = changedFields.find((f) =>
-          filesFields.includes(f.key)
-        );
-
-        if (fileField) {
-          await sendFile({
-            file: fileField.value,
-            username: user.username,
-            url: "/api/user/edit-image/",
-            isEdit: true,
-          });
-        }
-
-        await axiosClient.put("/api/user/edit/", {
-          ...changedFields
-            .filter((f) => !filesFields.includes(f.key))
-            .reduce(
-              (acc, { key, value }) => ({
-                ...acc,
-                [key]: value,
-              }),
-              {}
-            ),
-          id: user.id,
+      if (fileField) {
+        await editAvatar({
+          file: fileField.value,
+          username: user.username,
         });
-        dispatch(tryToGetUser(user.wallet_address));
-        addSuccessNotification({ message: "Data saved successfully" });
-      } catch (error) {
-        addNotification({
-          type: "danger",
-          title: "Error",
-          message:
-            (error as any)?.response?.data?.message ||
-            `An error occurred while saving data`,
-        });
-      } finally {
-        setSettingsLoading(false);
       }
-    } else
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message: "An error occurred while saving data",
-      });
+
+      const changedFieldsWithoutFiles = changedFields.filter(
+        (f) => !filesFields.includes(f.key)
+      );
+
+      if (changedFieldsWithoutFiles.length) {
+        const changedUserInfo = {
+          ...changedFieldsWithoutFiles.reduce(
+            (acc, { key, value }) => ({
+              ...acc,
+              [key]: value,
+            }),
+            {} as IUser
+          ),
+        };
+        await editUser({ ...changedUserInfo, id: user.id });
+      }
+    }
   };
 
   const usernameBtnClick = async () =>
     await changeUserData([{ key: "username", value: username }]);
 
   const saveSettings = async () => {
-    await changeUserData(
-      changedElements.map((field) => {
-        const key = field as userDataKeys;
-        if (key === "avatar")
-          return {
-            key,
-            value: formSettings[key].file,
-          };
-
+    const changedFields = changedElements.map((field) => {
+      const key = field as userDataKeys;
+      if (key === "avatar")
         return {
           key,
-          value: formSettings[key],
+          value: formSettings[key].file,
         };
-      })
-    );
+
+      return {
+        key,
+        value: formSettings[key],
+      };
+    });
+
+    await changeUserData(changedFields);
   };
 
   const avatarBtnClick = async () =>
     await changeUserData([{ key: "avatar", value: avatar.file }]);
 
   const deleteProfile = async () => {
-    await axiosClient.delete(`/api/user/${user.id}`);
-    logoutUser({ dispatch, navigate });
+    await deleteUser(user.id);
+    logout();
   };
 
   const shortWalletToken = useMemo(
@@ -299,7 +282,7 @@ const SettingsContainer = () => {
                 fontSize="18px"
                 modificator="save-btn"
                 onClick={saveSettings}
-                disabled={loading || !username || !changedElements.length}
+                disabled={isLoading || !username || !changedElements.length}
                 isMain
               />
               <ConfirmPopup confirm={deleteProfile}>
@@ -307,7 +290,7 @@ const SettingsContainer = () => {
                   title="Delete account"
                   padding="6px 30px"
                   fontSize="18px"
-                  disabled={loading}
+                  disabled={isLoading}
                   isBlack
                 />
               </ConfirmPopup>

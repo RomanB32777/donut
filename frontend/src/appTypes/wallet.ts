@@ -52,7 +52,7 @@ interface IBlockchainData {
 enum ContractTypesEnum {
   main_contract = "main_contract",
   commission_contract = "commission_contract",
-  transfer_contract = "transfer_contract1",
+  transfer_contract = "transfer_contract",
 }
 
 type contractTypes = keyof typeof ContractTypesEnum;
@@ -77,11 +77,6 @@ type IWalletState = {
 };
 
 type blockchainPayload = blockchainsType | null;
-
-interface IBlockchainAction {
-  type: string;
-  payload: blockchainPayload;
-}
 
 interface IWalletMethods {
   isInstall: () => boolean;
@@ -129,7 +124,6 @@ export type {
   IBlockchain,
   IWalletState,
   blockchainPayload,
-  IBlockchainAction,
   IBlockchainData,
   IWalletMethods,
   methodNames,

@@ -1,5 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useMemo, useEffect, memo, FC } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import { IStatData } from "types";
@@ -14,11 +13,11 @@ import FormBtnsBlock from "components/FormBtnsBlock";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { useAppSelector } from "hooks/reduxHooks";
-import { getStats } from "store/types/Stats";
-import axiosClient from "modules/axiosClient";
 import {
-  addNotification,
-  addSuccessNotification,
+  useDeleteStatMutation,
+  useEditStatMutation,
+} from "store/services/StatsService";
+import {
   copyStr,
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
@@ -29,21 +28,19 @@ import { RoutePaths } from "routes";
 import { baseURL } from "consts";
 import { IWidgetStatData } from "appTypes";
 
-const StatsItem = ({
-  fonts,
-  statData,
-  openEditModal,
-}: {
+interface IStatsItem {
   fonts: ISelectItem[];
   statData: IStatData;
   openEditModal?: (data: IWidgetStatData) => void;
-}) => {
-  const dispatch = useDispatch();
-  const user = useAppSelector(({ user }) => user);
+}
+
+const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
+  const { username } = useAppSelector(({ user }) => user);
   const { isTablet } = useWindowDimensions();
+  const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
+  const [deleteStat, { isLoading: isDeleteLoading }] = useDeleteStatMutation();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [editStatData, setEditStatData] = useState<IWidgetStatData>({
     ...statData,
     title_font: {
@@ -61,13 +58,13 @@ const StatsItem = ({
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
 
-  const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
+  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     openEditModal && openEditModal(editStatData);
   };
 
-  const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
+  const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     copyStr(linkForCopy);
   };
 
@@ -90,7 +87,6 @@ const StatsItem = ({
 
   const editWidgetData = (isReset?: boolean) => async () => {
     try {
-      setLoading(true);
       const { id } = statData;
       const { title_font, content_font } = editStatData;
 
@@ -98,9 +94,9 @@ const StatsItem = ({
         const dataKey = key as keyof IWidgetStatData;
         if (dataKey === "custom_period") return obj;
         return { ...obj, [dataKey]: editStatData[dataKey] };
-      }, {});
+      }, {} as IWidgetStatData);
 
-      await axiosClient.put("/api/widget/stats-widget/", {
+      await editStat({
         statData: {
           ...forSentStatData,
           title_font: title_font.name,
@@ -109,18 +105,8 @@ const StatsItem = ({
         isReset,
         id,
       });
-      dispatch(getStats(user.id));
-      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while saving data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -128,27 +114,16 @@ const StatsItem = ({
 
   const deleteStatWidget = async () => {
     try {
-      setLoading(true);
       const { id } = statData;
-      await axiosClient.delete("/api/widget/stats-widget/" + id);
-      dispatch(getStats(user.id));
-      addSuccessNotification({ message: "Widget deleted successfully" });
+      await deleteStat(id);
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while deleting data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
   const linkForCopy = useMemo(
-    () => `${baseURL}/${RoutePaths.donatStat}/${user.username}/${id}`,
-    [user, id]
+    () => `${baseURL}/${RoutePaths.donatStat}/${username}/${id}`,
+    [username, id]
   );
 
   const renderLinkForCopy = useMemo(
@@ -164,6 +139,11 @@ const StatsItem = ({
   const typeStatData = useMemo(
     () => getStatsDataTypeQuery(data_type),
     [data_type]
+  );
+
+  const isLoading = useMemo(
+    () => isEditLoading || isDeleteLoading,
+    [isEditLoading, isDeleteLoading]
   );
 
   useEffect(() => {
@@ -182,9 +162,7 @@ const StatsItem = ({
           <Col sm={11} xs={24}>
             <div className="mainInfo">
               <p className="title">{title}</p>
-              <p className="description">
-                {stat_description}
-              </p>
+              <p className="description">{stat_description}</p>
             </div>
           </Col>
           <Col sm={11} xs={24}>
@@ -192,7 +170,13 @@ const StatsItem = ({
               <p>Date period: {timePeriodName} </p>
               <p>Date type: {typeStatData}</p>
               <p>Template: {template}</p>
-              {!isTablet && <LinkCopy link={linkForCopy} title={renderLinkForCopy} isSimple />}
+              {!isTablet && (
+                <LinkCopy
+                  link={linkForCopy}
+                  title={renderLinkForCopy}
+                  isSimple
+                />
+              )}
             </div>
           </Col>
         </Row>
@@ -227,7 +211,7 @@ const StatsItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </PreviewStatBlock>
             }
@@ -240,7 +224,7 @@ const StatsItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </SettingsStatBlock>
             }
@@ -251,4 +235,4 @@ const StatsItem = ({
   );
 };
 
-export default StatsItem;
+export default memo(StatsItem);

@@ -14,7 +14,7 @@ router.get('/widgets/top-supporters/:user_id', donationController.getTopSupporte
 router.get('/widgets/stats/:user_id', donationController.getStatsDonations)
 
 // donations page
-router.get('/page/data/:user_id', donationController.getDonationsData)
+router.get('/page/:user_id', donationController.getDonationsData)
 
 // exchanges
 router.get('/exchange', donationController.getUsdKoef)

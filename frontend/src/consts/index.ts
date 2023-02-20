@@ -38,11 +38,7 @@ const baseURL =
 
 const socketsBaseUrl = `http://${window.location.hostname}:4005`;
 
-// const url = "/images/";
-const widgetApiUrl = "/api/donation/widgets";
-
-const ipfsFilename = "badge";
-const ipfsFileformat = "jpg";
+// const widgetApiUrl = "/api/donation/widgets";
 
 const notVisibleFontsCount = 1;
 
@@ -51,9 +47,6 @@ export {
   isProduction,
   baseURL,
   socketsBaseUrl,
-  widgetApiUrl,
-  ipfsFilename,
-  ipfsFileformat,
   dummyImg,
   notVisibleFontsCount,
 

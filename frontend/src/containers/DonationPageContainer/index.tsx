@@ -1,10 +1,8 @@
 import { Col, Row, QRCode } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import clsx from "clsx";
-import { bannerTypes, defaultAssetsFolders, IDonatPage } from "types";
+import { bannerTypes, donatAssetTypes, IDonatPage, IEditUserInfo } from "types";
 
-import axiosClient from "modules/axiosClient";
 import BaseButton from "components/BaseButton";
 import PageTitle from "components/PageTitle";
 import ColorPicker from "components/ColorPicker";
@@ -17,29 +15,33 @@ import { SmallToggleListArrowIcon } from "icons";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import { tryToGetUser } from "store/types/User";
 import {
-  addNotification,
-  addSuccessNotification,
-  getDefaultImages,
-  sendFile,
-} from "utils";
+  useEditCreatorImageMutation,
+  useEditUserMutation,
+} from "store/services/UserService";
+import { useLazyGetDefaultImagesQuery } from "store/services/FilesService";
 import { RoutePaths } from "routes";
 import { initDonatPage, baseURL } from "consts";
 import { IDonatPageWithFiles } from "appTypes";
 import { IBannerModalInfo } from "./types";
 import "./styles.sass";
 
+const excludedСhangesFields: bannerTypes[] = [
+  "background_banner",
+  "header_banner",
+];
+
 const DonationPageContainer = () => {
-  const dispatch = useDispatch();
-  const { id, wallet_address, username, donat_page } = useAppSelector(
-    ({ user }) => user
-  );
+  const [editUser, { isLoading: isEditUserLoading }] = useEditUserMutation();
+  const [editCretorImage, { isLoading: isUserImageLoading }] =
+    useEditCreatorImageMutation();
+  const [getDefaultImages] = useLazyGetDefaultImagesQuery();
+
+  const user = useAppSelector(({ user }) => user);
   const [donationInfoData, setDonationInfoData] =
     useState<IDonatPageWithFiles>(initDonatPage);
 
   const [isOpenQR, setIsOpenQR] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [bannerModalInfo, setBannerModalInfo] = useState<IBannerModalInfo>({
     images: [],
     folder: "background",
@@ -47,13 +49,16 @@ const DonationPageContainer = () => {
   });
   const { isMobile } = useWindowDimensions();
 
-  const openBannersPopup = async (folder: defaultAssetsFolders) => {
-    const images = await getDefaultImages(folder);
-    setBannerModalInfo({
-      images,
-      folder,
-      isOpen: true,
-    });
+  const { id, username, donat_page } = user;
+
+  const openBannersPopup = async (folder: donatAssetTypes) => {
+    const { data: images } = await getDefaultImages(folder);
+    images &&
+      setBannerModalInfo({
+        images,
+        folder,
+        isOpen: true,
+      });
   };
 
   const closeBannersPopup = () =>
@@ -87,76 +92,51 @@ const DonationPageContainer = () => {
     }
   };
 
+  const uploadImage = async (fileType: donatAssetTypes) => {
+    const { file, preview } = donationInfoData[`${fileType}_banner`];
+    if (file || preview !== donat_page[`${fileType}_banner`]) {
+      await editCretorImage({
+        file,
+        filelink: preview,
+        username,
+        userID: id,
+        fileType,
+      });
+    }
+  };
+
   const sendData = (isReset?: boolean) => async () => {
     try {
-      setLoading(true);
-      const { header_banner, background_banner } = donationInfoData;
+      const changedField = Object.keys(donationInfoData).filter((field) => {
+        const key = field as keyof IDonatPageWithFiles;
+        return (
+          !excludedСhangesFields.includes(key as any) &&
+          donationInfoData[key] !== donat_page[key]
+        );
+      });
 
-      const excludedСhangesFields: bannerTypes[] = [
-        "background_banner",
-        "header_banner",
-      ];
+      if (!isReset) {
+        await uploadImage("header");
+        await uploadImage("background");
+      }
 
-      await axiosClient.put("/api/user/edit/", {
-        donat_page: Object.keys(donationInfoData)
-          .filter(
-            (field) => !excludedСhangesFields.includes(field as any) /// ???
-          )
-          .reduce(
+      if (changedField.length || isReset) {
+        const changedUserInfo: IEditUserInfo = {
+          ...user,
+          donat_page: changedField.reduce(
             (obj, field) => ({
               ...obj,
               [field]: donationInfoData[field as keyof IDonatPage],
             }),
-            {}
+            {} as IDonatPage
           ),
-        id: id,
-        isReset,
-      });
+          isReset,
+        };
 
-      if (!isReset) {
-        let fileType: defaultAssetsFolders = "header";
-        if (
-          header_banner.file ||
-          header_banner.preview !== donat_page.header_banner
-        ) {
-          const { file, preview } = header_banner;
-          await sendFile({
-            file,
-            filelink: preview,
-            username,
-            userId: id,
-            url: `/api/user/edit-creator-image/${fileType}`,
-          });
-        }
-        if (
-          background_banner.file ||
-          background_banner.preview !== donat_page.background_banner
-        ) {
-          const { file, preview } = background_banner;
-
-          fileType = "background";
-          await sendFile({
-            file,
-            filelink: preview,
-            username,
-            userId: id,
-            url: `/api/user/edit-creator-image/${fileType}`,
-          });
-        }
+        await editUser(changedUserInfo);
       }
-
-      dispatch(tryToGetUser(wallet_address));
-      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while saving data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -171,7 +151,6 @@ const DonationPageContainer = () => {
         btn_text,
         main_color,
         background_color,
-        security_string,
       } = donat_page;
 
       setDonationInfoData((prevInfo) => ({
@@ -188,7 +167,6 @@ const DonationPageContainer = () => {
         btn_text,
         main_color,
         background_color,
-        security_string,
       }));
     }
   }, [id, donat_page]);
@@ -392,7 +370,7 @@ const DonationPageContainer = () => {
         <FormBtnsBlock
           saveMethod={sendData()}
           resetMethod={resetData}
-          disabled={loading}
+          disabled={isEditUserLoading || isUserImageLoading}
         />
       </div>
       <ModalComponent

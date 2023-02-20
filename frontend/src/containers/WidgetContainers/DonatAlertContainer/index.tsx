@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { tryToGetPersonInfo } from "store/types/PersonInfo";
-
-import axiosClient from "modules/axiosClient";
+import { useGetAlertWidgetDataQuery } from "store/services/AlertsService";
 import {
   formatNumber,
   getFontColorStyles,
@@ -24,28 +21,20 @@ const alertSound = new Audio();
 const maxDuration = 5000;
 
 const DonatAlertContainer = () => {
-  const dispatch = useDispatch();
-  const { notifications, personInfo } = useAppSelector((state) => state);
-  const { name, security_string } = useParams();
+  const { list } = useAppSelector(({ notifications }) => notifications);
+  const { name, id } = useParams();
+
+  const { data: alertData, error } = useGetAlertWidgetDataQuery(
+    {
+      username: name as string,
+      id: id as string,
+    },
+    { skip: !id || !name }
+  );
 
   const [lastNotif, setLastNotif] = useState<INotification | null>(null);
 
-  const [alertWidgetData, setAlertWidgetData] = useState<IAlert>({
-    ...initAlertData,
-  });
-
-  const { list } = notifications;
-  const { id } = personInfo;
-
-  const {
-    banner,
-    message_color,
-    message_font,
-    name_color,
-    name_font,
-    sum_color,
-    sum_font,
-  } = alertWidgetData;
+  const [alertWidgetData, setAlertWidgetData] = useState<IAlert>(initAlertData);
 
   const playSound = (soundLink: string) => {
     if (alertSound) {
@@ -55,44 +44,9 @@ const DonatAlertContainer = () => {
     }
   };
 
-  const getAlertsWidgetData = async () => {
-    const { data } = await axiosClient.get(
-      `/api/widget/get-alerts-widget/${id}/${security_string}`
-    );
-
-    const fonts = await getFontsList();
-
-    const { name_font, message_font, sum_font } = data;
-
-    const loadedFonts = await loadFonts({
-      fonts,
-      fields: { name_font, message_font, sum_font },
-    });
-
-    const userData: IAlert = {
-      ...data,
-      ...loadedFonts,
-      banner: {
-        preview: data.banner,
-        file: alertWidgetData.banner.file,
-      },
-      duration: Number(data.duration),
-    };
-
-    setAlertWidgetData({
-      ...alertWidgetData,
-      ...userData,
-    });
-  };
-
   useEffect(() => {
     list.length && setLastNotif(list[0]);
   }, [list]);
-
-  // for testing
-  // useEffect(() => {
-  //   dispatch(getNotifications({ user: personInfo.id }));
-  // }, [personInfo]);
 
   useEffect(() => {
     const { voice, sound, gender_voice } = alertWidgetData;
@@ -100,12 +54,12 @@ const DonatAlertContainer = () => {
     if (donation) {
       const { donation_message } = donation;
       if (sound && maxDuration) {
-        playSound(sound);
+        playSound(sound.link);
         setTimeout(() => {
           const { duration } = alertWidgetData;
           if (voice) {
             const tmp = new Audio(
-              `${baseURL}/api/widget/sound/generate?text=${donation_message}&gender_voice=${gender_voice}`
+              `${baseURL}/api/widget/sound?text=${donation_message}&gender_voice=${gender_voice}`
             );
             tmp.play();
           }
@@ -118,12 +72,52 @@ const DonatAlertContainer = () => {
   }, [lastNotif, alertWidgetData]);
 
   useEffect(() => {
-    id && getAlertsWidgetData();
-  }, [id]);
+    const initAlertData = async () => {
+      if (!alertData) return;
 
-  useEffect(() => {
-    name && dispatch(tryToGetPersonInfo(name));
-  }, [name]);
+      const fonts = await getFontsList();
+
+      const { name_font, message_font, sum_font, banner, sound, duration } =
+        alertData;
+
+      const loadedFonts = await loadFonts({
+        fonts,
+        fields: { name_font, message_font, sum_font },
+      });
+
+      setAlertWidgetData((alertWidgetData) => ({
+        ...alertWidgetData,
+        ...(alertData as any),
+        ...loadedFonts,
+        banner: {
+          ...alertWidgetData.banner,
+          preview: banner,
+        },
+        sound: {
+          ...alertWidgetData.sound,
+          link: sound,
+        },
+        duration: Number(duration),
+      }));
+    };
+
+    initAlertData();
+  }, [alertData]);
+
+  if (error) {
+    console.log(error);
+    return null;
+  }
+
+  const {
+    banner,
+    message_color,
+    message_font,
+    name_color,
+    name_font,
+    sum_color,
+    sum_font,
+  } = alertWidgetData;
 
   if (lastNotif && lastNotif.donation) {
     const { sum_donation, blockchain, donation_message } = lastNotif.donation;

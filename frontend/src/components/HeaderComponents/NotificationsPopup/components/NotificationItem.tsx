@@ -1,19 +1,20 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Badge } from "antd";
-import { useDispatch } from "react-redux";
 import { CloseOutlined } from "@ant-design/icons";
 import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
 import { INotification } from "types";
 
-import axiosClient from "modules/axiosClient";
+import { useAppSelector } from "hooks/reduxHooks";
+import {
+  useDeleteNotificationMutation,
+  useSetStatusNotificationMutation,
+} from "store/services/NotificationsService";
 import {
   getBadgeNotificationMessage,
   getDonatNotificationMessage,
 } from "utils";
-import { getNotifications } from "store/types/Notifications";
 import { typeNotification } from "utils/notifications/types";
-import { useAppSelector } from "hooks/reduxHooks";
 
 const NotificationItem = ({
   notification,
@@ -22,8 +23,11 @@ const NotificationItem = ({
   notification: INotification;
   handlerNotificationPopup: () => void;
 }) => {
-  const dispatch = useDispatch();
   const { id: userID } = useAppSelector(({ user }) => user);
+
+  const [setStatusNotification] = useSetStatusNotificationMutation();
+
+  const [deleteNotification] = useDeleteNotificationMutation();
 
   const { id, read, donation, badge, sender, recipient, created_at } =
     notification;
@@ -33,26 +37,15 @@ const NotificationItem = ({
   const handleChange = async (status: boolean) => {
     if (!status) return;
     if (status && !read) {
-      const { data, status: codeStatus } = await axiosClient.put(
-        "/api/notification/status",
-        {
-          id,
-          read: status,
-          userID,
-        }
-      );
-      if (codeStatus === 200 && data)
-        dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
+      await setStatusNotification({
+        id,
+        read: status,
+        userID,
+      });
     }
   };
 
-  const deleteItem = async () => {
-    const { data, status } = await axiosClient.delete(
-      `/api/notification/${id}/${userID}`
-    );
-    if (status === 200 && data)
-      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-  };
+  const deleteItem = async () => await deleteNotification({ id, userID });
 
   const notificationType = useMemo((): typeNotification => {
     const { donation, badge, sender, recipient } = notification;
@@ -110,4 +103,4 @@ const NotificationItem = ({
   );
 };
 
-export { NotificationItem };
+export default memo(NotificationItem);

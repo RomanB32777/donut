@@ -2,8 +2,10 @@ import {
   IAlertData,
   ICurrentPeriodItemsTypes,
   IGoalData,
+  ISoundInfo,
   IStatData,
 } from "types";
+import { IDonationWidgetInfo } from "./donations";
 import { IFileInfo } from "./files";
 
 type AlignText = "left" | "center" | "right";
@@ -14,35 +16,28 @@ interface IFont {
 }
 
 // goals
-interface IGoalAction {
-  type: string;
-  payload: IGoalData[];
-}
-
 interface IWidgetGoalData extends IGoalData<IFont> {}
 
 // stats
-interface IStatAction {
-  type: string;
-  payload: IStatData[];
-}
-
 type keyPeriodItems = keyof ICurrentPeriodItemsTypes;
 
 interface IWidgetStatData extends IStatData<IFont> {
-  custom_period?: string;
+  custom_period?: any;
 }
 
 // alert
-interface IAlert extends IAlertData<IFont, IFileInfo> {}
+interface IAlert extends IAlertData<IFont, IFileInfo, ISoundInfo> {}
+
+interface IDonationWidgetItem {
+  donat: IDonationWidgetInfo;
+}
 
 export type {
   AlignText,
   IFont,
   keyPeriodItems,
-  IGoalAction,
   IWidgetGoalData,
-  IStatAction,
   IWidgetStatData,
   IAlert,
+  IDonationWidgetItem,
 };

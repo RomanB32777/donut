@@ -1,43 +1,44 @@
-import {
-  INotificationsAction,
-  INotificationsState,
-} from "appTypes/notifications";
-import {
-  SET_NOTIF,
-  ADD_NOTIF,
-  SET_UPDATE_FLAG,
-} from "store/types/Notifications";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { INotification } from "types";
+import notificationsApi from "store/services/NotificationsService";
+import { INotificationsState } from "appTypes/notifications";
 
 const initialState: INotificationsState = {
   list: [],
   shouldUpdateApp: true,
 };
 
-const NotificationsReducer = (
-  state = initialState,
-  action: INotificationsAction
-) => {
-  switch (action.type) {
-    case SET_NOTIF:
-      const { list: initList, shouldUpdateApp: initFlag } = action.payload;
-      return {
-        list: initList,
-        shouldUpdateApp: initFlag,
-      };
+export const notificationsSlice = createSlice({
+  name: "notifications",
+  initialState: initialState,
+  reducers: {
+    setNotifications(state, { payload }: PayloadAction<INotificationsState>) {
+      const { list, shouldUpdateApp } = payload;
+      state.list = list;
+      state.shouldUpdateApp = shouldUpdateApp;
+    },
 
-    case ADD_NOTIF:
-      const { list, shouldUpdateApp } = action.payload;
-      return {
-        list: [...state.list, ...list],
-        shouldUpdateApp,
-      };
+    addNotifications(state, { payload }: PayloadAction<INotificationsState>) {
+      const { list, shouldUpdateApp } = payload;
+      state.list = list.concat(state.list);
+      state.shouldUpdateApp = shouldUpdateApp;
+    },
 
-    case SET_UPDATE_FLAG:
-      return { ...state, shouldUpdateApp: action.payload.shouldUpdateApp };
+    setUpdatedFlag(
+      state,
+      { payload: shouldUpdateApp }: PayloadAction<boolean>
+    ) {
+      state.shouldUpdateApp = shouldUpdateApp;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      notificationsApi.endpoints.getNotifications.matchFulfilled,
+      (state, { payload }: PayloadAction<INotification[]>) => {
+        state.list = payload;
+      }
+    );
+  },
+});
 
-    default:
-      return state;
-  }
-};
-
-export default NotificationsReducer;
+export default notificationsSlice.reducer;

@@ -5,16 +5,18 @@ import "./styles.sass";
 const { RangePicker } = DatePicker;
 
 const DatesPicker = ({
-  setValue,
+  defaultValue,
   toFormat,
-}:
-{
-  setValue: (startDate: string, endDate: string) => void;
+  setValue,
+}: {
+  defaultValue?: any;
   toFormat?: string;
+  setValue: (startDate: string, endDate: string) => void;
 }) => {
   return (
     <div className="datesPicker">
       <RangePicker
+        defaultValue={defaultValue}
         format={toFormat || "DD/MM/YYYY"}
         bordered={false}
         onChange={(val) =>

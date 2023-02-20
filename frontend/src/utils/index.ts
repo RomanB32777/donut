@@ -27,18 +27,16 @@ import {
   renderStatItem,
 } from "./stringMethods";
 
-import { sendFile, getDefaultImages, getSounds } from "./filesMethods";
+import { setFormDataValues } from "./filesMethods";
 import {
   DateTimezoneFormatter,
   DateFormatter,
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
 } from "./dateMethods";
-import { checkIsExistUser } from "./asyncMethods";
-import { getUsdKoef, checkWallet, walletMethods } from "./wallets";
+import { walletMethods } from "./wallets";
 import {
   scrollToPosition,
-  logoutUser,
   isValidateFilledForm,
   formatNumber,
   delay,
@@ -64,9 +62,7 @@ export {
   renderStatItem,
 
   // files
-  sendFile,
-  getDefaultImages,
-  getSounds,
+  setFormDataValues,
 
   // dates
   DateTimezoneFormatter,
@@ -76,12 +72,7 @@ export {
   getStatsDataTypeQuery,
 
   // wallets
-  getUsdKoef,
-  checkWallet,
   walletMethods,
-
-  // async
-  checkIsExistUser,
 
   // fonts
   getFontsList,
@@ -92,7 +83,6 @@ export {
 
   // app
   scrollToPosition,
-  logoutUser,
   isValidateFilledForm,
   formatNumber,
   delay,

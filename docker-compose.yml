@@ -9,6 +9,7 @@ services:
       - ./database.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     expose:
       - 5432
+    restart: unless-stopped
     networks:
      - web
     environment:
@@ -33,12 +34,12 @@ services:
       - GOOGLE_APPLICATION_CREDENTIALS=serviceaccount.json
     depends_on:
       - db
+    restart: unless-stopped
     networks:
      - web
     volumes:
-      - ./backend/uploads:/backend/uploads/
-      - ./backend/assets:/backend/assets/
-      - ./backend/src/modules/badWords:/backend/src/modules/badWords
+      - ./backend/uploads:/app/uploads/
+      - ./backend/assets:/app/assets/
 
   sockets:
     build: ./sockets
@@ -53,6 +54,7 @@ services:
       - DB_NAME=donut
     depends_on:
       - db
+    restart: unless-stopped
     networks:
      - web
 
@@ -63,6 +65,7 @@ services:
       - sockets
     ports:
       - "8000:8000"
+    restart: unless-stopped
     networks:
      - web
 
@@ -79,6 +82,7 @@ services:
     depends_on:
       - backend
       - sockets
+    restart: unless-stopped
     networks:
       - web
     ports:

@@ -1,38 +1,53 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import {
+  FC,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import clsx from "clsx";
 import { blockchainsSymbols, ISendDonat } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import FormInput from "components/FormInput";
 import SelectComponent from "components/SelectComponent";
-import { TabsComponent } from "components/TabsComponent";
-import { BlockchainOption } from "components/SelectInput/options/BlockchainOption";
+import TabsComponent from "components/TabsComponent";
+import BlockchainOption from "components/SelectInput/options/BlockchainOption";
 
-import { setSelectedBlockchain } from "store/types/Wallet";
-import { formatNumber, getUsdKoef } from "utils";
-import { useAppSelector } from "hooks/reduxHooks";
+import { useActions, useAppSelector } from "hooks/reduxHooks";
+import { useLazyGetUsdKoefQuery } from "store/services/DonationsService";
+import { formatNumber } from "utils";
 import { IBlockchain } from "appTypes";
 import { IFormHandler } from "../types";
 
 const tabCountTypes = [5, 10, 30];
 
-const AmountInput = ({
-  form,
-  color,
-  usdtKoef,
-  isNotValid,
-  formHandler,
-  setUsdtKoef,
-}: {
+const countTabs = tabCountTypes.map((tab) => ({
+  key: String(tab),
+  label: `${tab} USD`,
+}));
+
+interface IAmountInput {
   color: string;
   form: ISendDonat;
   usdtKoef: number;
   isNotValid: boolean;
   formHandler: ({ field, value }: IFormHandler) => void;
   setUsdtKoef: (num: number) => void;
+}
+
+const AmountInput: FC<IAmountInput> = ({
+  form,
+  color,
+  usdtKoef,
+  isNotValid,
+  formHandler,
+  setUsdtKoef,
 }) => {
-  const dispatch = useDispatch();
+  const { setWallet } = useActions();
+  const [getUsdKoef] = useLazyGetUsdKoefQuery();
   const blockchain = useAppSelector(({ blockchain }) => blockchain);
   const walletConf = useContext(WalletContext);
 
@@ -49,16 +64,19 @@ const AmountInput = ({
     blockchainInfo: IBlockchain;
   }) => {
     formHandler({ field: "selectedBlockchain", value: selected });
-    dispatch(setSelectedBlockchain(blockchainInfo.name));
-    const newUsdtKoef = await getUsdKoef(
-      blockchainInfo.nativeCurrency.exchangeName,
-      setUsdtKoef
+    setWallet(blockchainInfo.name);
+    const { data: newUsdtKoef } = await getUsdKoef(
+      blockchainInfo.nativeCurrency.exchangeName
     );
 
-    if (tabCount) {
-      const blockchainValue = tabCount / newUsdtKoef;
-      formHandler({ field: "amount", value: blockchainValue });
-      setInputValue(String(formatNumber(blockchainValue)));
+    if (newUsdtKoef) {
+      setUsdtKoef(newUsdtKoef);
+
+      if (tabCount) {
+        const blockchainValue = tabCount / newUsdtKoef;
+        formHandler({ field: "amount", value: blockchainValue });
+        setInputValue(String(formatNumber(blockchainValue)));
+      }
     }
   };
 
@@ -86,20 +104,23 @@ const AmountInput = ({
     }
   };
 
-  const setTabContent = async (key: string) => {
-    const blockchainInfo = walletConf.main_contract.blockchains.find(
-      (b) => b.nativeCurrency.symbol === selectedBlockchain
-    );
+  const setTabContent = useCallback(
+    async (key: string) => {
+      const blockchainInfo = walletConf.main_contract.blockchains.find(
+        (b) => b.nativeCurrency.symbol === selectedBlockchain
+      );
 
-    if (blockchainInfo) {
-      const numberFormat = +key;
-      const blockchainValue = numberFormat / usdtKoef;
+      if (blockchainInfo) {
+        const numberFormat = +key;
+        const blockchainValue = numberFormat / usdtKoef;
 
-      setTabCount(numberFormat);
-      formHandler({ field: "amount", value: blockchainValue });
-      setInputValue(String(formatNumber(blockchainValue)));
-    }
-  };
+        setTabCount(numberFormat);
+        formHandler({ field: "amount", value: blockchainValue });
+        setInputValue(String(formatNumber(blockchainValue)));
+      }
+    },
+    [walletConf, usdtKoef, selectedBlockchain, formHandler]
+  );
 
   const convertedUsdSum = useMemo(
     () => formatNumber(+amount * usdtKoef),
@@ -112,11 +133,6 @@ const AmountInput = ({
     );
     return info;
   }, [walletConf, selectedBlockchain]);
-
-  const countTabs = tabCountTypes.map((tab) => ({
-    key: String(tab),
-    label: `${tab} USD`,
-  }));
 
   useEffect(() => {
     if (blockchain) {
@@ -201,4 +217,4 @@ const AmountInput = ({
   );
 };
 
-export default AmountInput;
+export default memo(AmountInput);

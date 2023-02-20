@@ -17,7 +17,6 @@ interface IDonatPageWithoutBanners {
   btn_text: string;
   main_color: string;
   background_color: string;
-  security_string: string;
 }
 
 interface IEditUserData extends IUserBase, IDonatPageWithoutBanners {}
@@ -39,7 +38,11 @@ interface IUser<T = string> extends IShortUserData {
   spam_filter: boolean;
 }
 
-type userDataKeys = keyof IUser
+interface IEditUserInfo extends IUser {
+  isReset?: boolean;
+}
+
+type userDataKeys = keyof IUser;
 
 export type {
   userRoles,
@@ -50,5 +53,6 @@ export type {
   IShortUserData,
   IDonatPage,
   IUser,
+  IEditUserInfo,
   userDataKeys,
 };

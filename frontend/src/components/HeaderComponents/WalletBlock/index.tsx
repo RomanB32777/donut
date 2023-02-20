@@ -1,32 +1,35 @@
-import { CheckOutlined } from "@ant-design/icons";
+import { FC, memo, useContext, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { useContext, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { CheckOutlined } from "@ant-design/icons";
 import { blockchainsType } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import Loader from "components/Loader";
 import { CopyIcon, ShareIcon, SmallToggleListArrowIcon } from "icons";
-import { useAppSelector } from "hooks/reduxHooks";
+import { useActions, useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
 
-import { setSelectedBlockchain } from "store/types/Wallet";
 import { copyStr, formatNumber, shortStr } from "utils";
 import { initBlockchainData } from "consts";
 import { IBlockchain } from "appTypes";
 import "./styles.sass";
 
-const WalletBlock = ({
-  modificator,
-  popupModificator,
-}: {
+interface IWalletBlock {
   modificator?: string;
   popupModificator?: string;
-}) => {
-  const dispatch = useDispatch();
+}
+
+const WalletBlock: FC<IWalletBlock> = ({ modificator, popupModificator }) => {
   const walletConf = useContext(WalletContext);
-  const { blockchain, user, notifications } = useAppSelector((store) => store);
+  const { setWallet } = useActions();
+
+  const { username, avatar } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
+  const blockchain = useAppSelector(({ blockchain }) => blockchain);
+
   const blockRef = useRef(null);
   const { isMobile } = useWindowDimensions();
 
@@ -34,9 +37,6 @@ const WalletBlock = ({
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isOpenSelect, setOpenSelect] = useState(false);
-
-  const { username, avatar } = user;
-  const { list, shouldUpdateApp } = notifications;
 
   const copyAddress = () => copyStr(address, "Wallet address");
   const handlerPopup = () => setOpenSelect((prev) => !prev);
@@ -48,7 +48,7 @@ const WalletBlock = ({
       const newBlockchaind = await walletConf.changeBlockchain(
         selectedBlockchain
       );
-      newBlockchaind && dispatch(setSelectedBlockchain(selectedBlockchain));
+      newBlockchaind && setWallet(selectedBlockchain);
       setLoading(false);
     };
 
@@ -72,7 +72,7 @@ const WalletBlock = ({
       setLoading(false);
     };
     getWalletData();
-  }, [blockchain]);
+  }, [walletConf, blockchain]);
 
   useEffect(() => {
     shouldUpdateApp && walletConf.getBalance(setBalance);
@@ -180,4 +180,4 @@ const WalletBlock = ({
   );
 };
 
-export default WalletBlock;
+export default memo(WalletBlock);

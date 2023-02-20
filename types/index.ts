@@ -8,6 +8,7 @@ import {
 } from "./types/dates";
 import {
   ISoundInfo,
+  ISendingDataWithFile,
   alertAssetTypes,
   donatAssetTypes,
   fileUploadTypes,
@@ -22,6 +23,7 @@ import {
   IShortUserData,
   IDonatPage,
   IUser,
+  IEditUserInfo,
   userDataKeys,
 } from "./types/user";
 import {
@@ -38,6 +40,7 @@ import {
   ISendDonatBase,
   ISendDonat,
   IFullSendDonat,
+  IDonationsQueryData,
   sendDonatFieldsKeys,
   requiredFields,
 } from "./types/donations";
@@ -45,23 +48,36 @@ import {
   badgeStatus,
   IBadgeBase,
   IBadgeInfo,
+  IBadgeCreatingInfo,
+  IBagdeAssignInfo,
   IQueryPriceParams,
+  IBadgeQueryData,
 } from "./types/badge";
 import {
+  IWidgetQueryData,
+  IGoalDataBase,
   IGoalWidgetData,
   IGoalData,
+  IEditGoalData,
   goalDataKeys,
   IAlertData,
+  IEditAlertData,
   typeAligmnet,
   statsDataTypes,
   IStatsDataType,
+  IStatDataBase,
   IStatWidgetData,
   IStatData,
+  IEditStatData,
+  statsDataKeys,
 } from "./types/widgets";
 import {
   notificationRoles,
   ISocketEmitObj,
   notificationKeys,
+  INotificationBase,
+  INotificationChangeStatus,
+  INotificationDelete,
   INotification,
   INotificationQueries,
 } from "./types/notifications";
@@ -77,6 +93,7 @@ export type {
 
   // files
   ISoundInfo,
+  ISendingDataWithFile,
   alertAssetTypes,
   donatAssetTypes,
   fileUploadTypes,
@@ -91,6 +108,7 @@ export type {
   IShortUserData,
   IDonatPage,
   IUser,
+  IEditUserInfo,
   userDataKeys,
 
   // wallet
@@ -107,6 +125,7 @@ export type {
   ISendDonatBase,
   ISendDonat,
   IFullSendDonat,
+  IDonationsQueryData,
   sendDonatFieldsKeys,
   requiredFields,
 
@@ -114,23 +133,36 @@ export type {
   badgeStatus,
   IBadgeBase,
   IBadgeInfo,
+  IBadgeCreatingInfo,
+  IBagdeAssignInfo,
   IQueryPriceParams,
+  IBadgeQueryData,
 
   // widgets
+  IWidgetQueryData,
+  IGoalDataBase,
   IGoalWidgetData,
   IGoalData,
+  IEditGoalData,
   goalDataKeys,
   IAlertData,
+  IEditAlertData,
   typeAligmnet,
   statsDataTypes,
   IStatsDataType,
+  IStatDataBase,
   IStatWidgetData,
   IStatData,
+  IEditStatData,
+  statsDataKeys,
 
   // notifications
   notificationRoles,
   ISocketEmitObj,
   notificationKeys,
+  INotificationBase,
+  INotificationChangeStatus,
+  INotificationDelete,
   INotification,
   INotificationQueries,
 };

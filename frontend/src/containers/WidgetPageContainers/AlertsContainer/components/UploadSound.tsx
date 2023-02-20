@@ -1,12 +1,13 @@
+import { FC } from "react";
 import { addNotification } from "utils";
 
 const maxDuration = 5;
 
-const UploadSound = ({
-  sendFile,
-}: {
+interface IUploadSound {
   sendFile: (file: File) => Promise<void>;
-}) => {
+}
+
+const UploadSound: FC<IUploadSound> = ({ sendFile }) => {
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     const target = e.currentTarget;

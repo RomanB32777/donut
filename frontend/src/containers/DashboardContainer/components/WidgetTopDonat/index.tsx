@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createSelector } from "@reduxjs/toolkit";
 import { Empty } from "antd";
 import { stringFormatTypes } from "types";
-import axiosClient from "modules/axiosClient";
 
 import SelectComponent from "components/SelectComponent";
 import TableComponent from "components/TableComponent";
@@ -9,54 +9,67 @@ import useWindowDimensions from "hooks/useWindowDimensions";
 import WidgetItem from "../WidgetItem";
 
 import { useAppSelector } from "hooks/reduxHooks";
+import { useGetWidgetDonationsQuery } from "store/services/DonationsService";
 import { ITableData, tableColums } from "./tableData";
 import { formatNumber, getTimePeriodQuery } from "utils";
-import { filterPeriodItems, widgetApiUrl } from "consts";
+import { filterPeriodItems } from "consts";
 
 const LIMIT_DONATS = 6;
 
 const WidgetTopDonat = () => {
   const { isTablet } = useWindowDimensions();
-  const { user, notifications } = useAppSelector((state) => state);
+  const { id, spam_filter } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
 
-  const { id, spam_filter } = user;
-  const { list, shouldUpdateApp } = notifications;
-
-  const [topDonations, setTopDonations] = useState<ITableData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
 
-  const getTopDonations = async (timePeriod: string) => {
-    try {
-      setLoading(true);
-      const { data, status } = await axiosClient.get(
-        `${widgetApiUrl}/top-donations/${id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&spam_filter=${spam_filter}`
-      );
-      if (status === 200) {
-        const forTableData: ITableData[] = data.map((donat: any) => ({
-          ...donat,
-          sum_donation: formatNumber(donat.sum_donation),
-          key: donat.id,
-        }));
-        setTopDonations(forTableData);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const timePeriod = useMemo(
+    () => getTimePeriodQuery(activeFilterItem),
+    [activeFilterItem]
+  );
+
+  const selectDonationsData = useMemo(
+    () =>
+      createSelector(
+        (res: any) => res.data,
+        (data) => {
+          const forTableData: ITableData[] = data?.map((donat: any) => ({
+            ...donat,
+            sum_donation: formatNumber(donat.sum_donation),
+            key: donat.id,
+          }));
+
+          return forTableData ?? [];
+        }
+      ),
+    []
+  );
+
+  const { topDonations, isLoading, refetch } = useGetWidgetDonationsQuery(
+    {
+      userID: id,
+      data_type: "latest-donations",
+      query: {
+        limit: LIMIT_DONATS,
+        timePeriod,
+        spam_filter,
+      },
+    },
+    {
+      skip: !id,
+      selectFromResult: (result) => ({
+        ...result,
+        topDonations: selectDonationsData(result),
+      }),
     }
-  };
+  );
 
   useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    id && getTopDonations(timePeriod);
-  }, [id, activeFilterItem]);
-
-  useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    list.length && shouldUpdateApp && getTopDonations(timePeriod);
+    list.length && shouldUpdateApp && refetch();
   }, [list, shouldUpdateApp]);
 
   return (
@@ -79,7 +92,7 @@ const WidgetTopDonat = () => {
           <TableComponent
             dataSource={topDonations}
             columns={tableColums}
-            loading={loading}
+            loading={isLoading}
             pagination={false}
           />
         )}

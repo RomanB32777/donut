@@ -14,6 +14,7 @@ const alignFlextItemsList: { [key in typeAligmnet]: string } = {
 };
 
 const initAlertData: IAlert = {
+  id: "",
   banner: {
     preview: "",
     file: null,
@@ -34,9 +35,13 @@ const initAlertData: IAlert = {
     link: "",
   },
   duration: 15,
-  sound: "",
+  sound: {
+    name: "",
+    link: "",
+  },
   voice: false,
   gender_voice: "MAN",
+  creator_id: 0,
 };
 
 const initWidgetGoalData: IWidgetGoalData = {
@@ -45,7 +50,7 @@ const initWidgetGoalData: IWidgetGoalData = {
   title: "",
   amount_raised: 0,
   is_archive: false,
-  creator_id: "",
+  creator_id: 0,
   title_color: "",
   title_font: {
     name: "",
@@ -79,6 +84,7 @@ const initWidgetStatData: IWidgetStatData = {
     link: "",
   },
   aligment: "Left",
+  creator_id: 0,
 };
 
 export {

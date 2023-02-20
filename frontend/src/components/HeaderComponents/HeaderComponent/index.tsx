@@ -20,7 +20,7 @@ interface IHeaderComponent {
   onClick?: () => void;
 }
 
-export const HeaderComponent = ({
+const HeaderComponent = ({
   hidden,
   visibleLogo,
   visibleGamburger,
@@ -73,3 +73,5 @@ export const HeaderComponent = ({
     </Header>
   );
 };
+
+export default HeaderComponent;

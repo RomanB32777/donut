@@ -1,6 +1,5 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Col, Row } from "antd";
-import { IBadgeInfo } from "types";
 
 import { WalletContext } from "contexts/Wallet";
 import BaseButton from "components/BaseButton";
@@ -12,7 +11,8 @@ import { SuccessModalComponent } from "components/ModalComponent";
 import SelectedBlockchain from "../SelectedBlockchain";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { addNotification, isValidateFilledForm, sendFile } from "utils";
+import { useCreateBadgeMutation } from "store/services/BadgesService";
+import { addNotification, isValidateFilledForm } from "utils";
 
 import { initBadgeData } from "consts";
 import { IBadge } from "appTypes";
@@ -23,16 +23,14 @@ const CreateBadgeForm = ({
 }: {
   backBtn: (updateList?: boolean) => () => void;
 }) => {
-  const { user } = useAppSelector((state) => state);
-
+  const { id, username } = useAppSelector(({ user }) => user);
   const walletConf = useContext(WalletContext);
+  const [createBadge, { isLoading, isSuccess }] = useCreateBadgeMutation();
 
-  const [loading, setLoading] = useState(false);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
 
   const [formBadge, setFormBadge] = useState<IBadge>(initBadgeData);
 
-  const { id, username } = user;
   const { image, title, description } = formBadge;
 
   const closeSuccessPopup = () => {
@@ -43,7 +41,7 @@ const CreateBadgeForm = ({
     backMethod();
   };
 
-  const createBadge = async () => {
+  const createHandler = async () => {
     const { image, title, description, blockchain } = formBadge;
     const isValidate = isValidateFilledForm(
       Object.values({
@@ -55,38 +53,16 @@ const CreateBadgeForm = ({
     );
 
     if (isValidate) {
-      try {
-        setLoading(true);
-        const sendingData = JSON.stringify({
+      await createBadge({
+        file: image.file,
+        data: {
           title,
           description,
           blockchain,
           creator_id: id,
-        } as IBadgeInfo);
-
-        if (image.file) {
-          const newBadge = await sendFile({
-            file: image.file,
-            username,
-            data: {
-              key: "badgeData",
-              body: sendingData,
-            },
-            url: "/api/badge/",
-            isEdit: false,
-          });
-          if (newBadge) setIsOpenSuccessModal(true);
-        }
-      } catch (error) {
-        const errorMessage = (error as Error).message;
-        errorMessage &&
-          addNotification({
-            type: "danger",
-            title: errorMessage,
-          });
-      } finally {
-        setLoading(false);
-      }
+        },
+        username,
+      });
     } else {
       addNotification({
         type: "danger",
@@ -101,6 +77,10 @@ const CreateBadgeForm = ({
     );
     return info;
   }, [walletConf]);
+
+  useEffect(() => {
+    if (isSuccess) setIsOpenSuccessModal(true);
+  }, [isSuccess]);
 
   return (
     <div className="create_badges fadeIn">
@@ -185,16 +165,16 @@ const CreateBadgeForm = ({
                   padding="6px 35px"
                   onClick={backBtn()}
                   fontSize="18px"
-                  disabled={loading}
+                  disabled={isLoading}
                   isBlack
                 />
                 <BaseButton
                   formatId="create_badge_form_button"
                   padding="6px 25px"
-                  onClick={createBadge}
+                  onClick={createHandler}
                   fontSize="18px"
                   modificator="create-btn"
-                  disabled={loading}
+                  disabled={isLoading}
                   isMain
                 />
               </div>

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { IBadgeInfo } from "types";
 import ConfirmPopup from "components/ConfirmPopup";
 import { TrashBinIcon } from "icons";
@@ -10,12 +11,12 @@ const ContentCard = ({
 }: {
   data: IBadgeInfo;
   onClick: (badge: IBadgeInfo) => void;
-  deleteBadge: (badge: IBadgeInfo) => void;
+  deleteBadge: (badgeID: number) => void;
 }) => {
-  const { image, title, description, is_creator, token_id } = data;
+  const { id, image, title, description, is_creator, token_id } = data;
 
   const openBadgePape = () => onClick(data);
-  const deleteBadgePape = () => deleteBadge(data);
+  const deleteBadgePape = () => deleteBadge(id);
 
   return (
     <div className="badge" onClick={openBadgePape}>
@@ -49,4 +50,4 @@ const ContentCard = ({
   );
 };
 
-export default ContentCard;
+export default memo(ContentCard);

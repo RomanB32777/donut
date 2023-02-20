@@ -36,6 +36,10 @@ app.use('/api/donation/', donationRouter);
 app.use('/api/widget/', widgetRouter);
 app.use('/api/notification/', notificationRouter);
 
+app.get('*', (req, res) => {
+  res.status(404).json({ message: `Not found ${req.originalUrl}` });
+});
+
 const start = async () => {
   try {
     const port = process.env.PORT || 4000;

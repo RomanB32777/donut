@@ -1,9 +1,14 @@
+import { FC, memo } from "react";
 import { Col } from "antd";
 import { getFontColorStyles } from "utils";
 import { dummyImg } from "consts";
 import { IAlert } from "appTypes";
 
-const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
+interface IPreviewAlertsBlock {
+  formData: IAlert;
+}
+
+const PreviewAlertsBlock: FC<IPreviewAlertsBlock> = ({ formData }) => {
   const {
     banner,
     message_color,
@@ -46,4 +51,4 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
   );
 };
 
-export default PreviewAlertsBlock;
+export default memo(PreviewAlertsBlock);

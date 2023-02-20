@@ -10,7 +10,7 @@ interface ITableData {
   blockchain: string;
 }
 
-export const tableColums: ColumnsType<ITableData> = [
+const tableColums: ColumnsType<ITableData> = [
   {
     title: "Name",
     dataIndex: "username",
@@ -38,3 +38,4 @@ export const tableColums: ColumnsType<ITableData> = [
 ];
 
 export type { ITableData };
+export { tableColums };

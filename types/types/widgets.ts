@@ -1,5 +1,15 @@
 import { allPeriodItemsTypes } from "./dates";
 
+interface IWidgetQueryData {
+  username: string;
+  id: string;
+}
+
+interface IGoalDataBase {
+  title: string;
+  amount_goal: number;
+  creator_id: number;
+}
 
 interface IGoalWidgetData<FontType = string> {
   title_color: string;
@@ -9,18 +19,30 @@ interface IGoalWidgetData<FontType = string> {
   background_color: string;
 }
 
-interface IGoalData<FontType = string> extends IGoalWidgetData<FontType> {
+interface IGoalData<FontType = string>
+  extends IGoalDataBase,
+    IGoalWidgetData<FontType> {
   id: string;
-  title: string;
-  amount_goal: number;
   amount_raised: number;
   is_archive: boolean;
-  creator_id: string;
 }
 
-type goalDataKeys = keyof IGoalData
+interface IEditGoalData {
+  id: string;
+  goalData?: IGoalDataBase | IGoalWidgetData;
+  creator_id?: number;
+  isReset?: boolean;
+  donat?: number;
+}
 
-interface IAlertData<FontType = string, BannerType = string>  {
+type goalDataKeys = keyof IGoalData;
+
+interface IAlertData<
+  FontType = string,
+  BannerType = string,
+  SoundType = string
+> {
+  id: string;
   banner: BannerType;
   message_color: string;
   message_font: FontType;
@@ -29,9 +51,19 @@ interface IAlertData<FontType = string, BannerType = string>  {
   sum_color: string;
   sum_font: FontType;
   duration: number;
-  sound: string;
+  sound: SoundType;
   voice: boolean;
   gender_voice: string;
+  creator_id: number;
+}
+
+interface IEditAlertData {
+  id: string;
+  alertData: string; // JSON stringify IAlertData object
+  username: string;
+  creator_id: number;
+  isReset?: boolean;
+  filelink?: string;
 }
 
 // stats-data
@@ -43,6 +75,15 @@ type IStatsDataType = {
   [key in statsDataTypes]: string;
 };
 
+interface IStatDataBase {
+  title: string;
+  stat_description: string;
+  template: string | string[];
+  data_type: statsDataTypes;
+  time_period: allPeriodItemsTypes;
+  creator_id: number;
+}
+
 interface IStatWidgetData<FontType = string> {
   title_color: string;
   title_font: FontType;
@@ -52,23 +93,41 @@ interface IStatWidgetData<FontType = string> {
   aligment: typeAligmnet;
 }
 
-interface IStatData<FontType = string> extends IStatWidgetData<FontType> {
+interface IStatData<FontType = string>
+  extends IStatDataBase,
+    IStatWidgetData<FontType> {
   id: string;
-  title: string;
-  stat_description: string;
-  template: string | string[];
-  data_type: statsDataTypes;
-  time_period: allPeriodItemsTypes;
 }
 
+interface IEditStatData {
+  id: string;
+  statData: IStatDataBase | IStatWidgetData;
+  isReset?: boolean;
+}
+
+type statsDataKeys = keyof IStatData;
+
 export type {
+  IWidgetQueryData,
+
+  // goals
+  IGoalDataBase,
   IGoalWidgetData,
   IGoalData,
+  IEditGoalData,
   goalDataKeys,
+
+  // alerts
   IAlertData,
+  IEditAlertData,
+
+  // stats
   typeAligmnet,
   statsDataTypes,
   IStatsDataType,
+  IStatDataBase,
   IStatWidgetData,
   IStatData,
+  IEditStatData,
+  statsDataKeys,
 };

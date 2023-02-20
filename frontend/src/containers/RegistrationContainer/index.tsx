@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { FormattedMessage } from "react-intl";
-import { useDispatch } from "react-redux";
 import request from "axios";
 import { IShortUserData } from "types";
 
@@ -11,26 +10,24 @@ import BaseButton from "components/BaseButton";
 import FormInput from "components/FormInput";
 import Loader from "components/Loader";
 
-import axiosClient from "modules/axiosClient";
-import { tryToGetUser } from "store/types/User";
-import { addNotification, checkWallet } from "utils";
+import { useWallet } from "hooks/walletHooks";
+import { useRegisterUserMutation } from "store/services/UserService";
+import { addNotification } from "utils";
 import { RoutePaths } from "routes";
 import registerImg from "assets/registerImg.png";
 import "./styles.sass";
 
 const RegistrationContainer = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const walletConf = useContext(WalletContext);
-
   const { id } = useAppSelector(({ user }) => user);
 
+  const navigate = useNavigate();
+  const { checkWallet, loading } = useWallet();
+  const [registerUser] = useRegisterUserMutation();
+
   const [username, setUsername] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [usernameError, setUsernameError] = useState<string | null>(null);
 
   const inputHnadler = (value: string) => {
-    setUsernameError(null);
     if (username.length === 0) setUsername("@" + value);
     else if (value.length < username.length && value.length === 2)
       setUsername("");
@@ -44,16 +41,14 @@ const RegistrationContainer = () => {
       if (blockchainData) {
         const { address } = blockchainData;
         if (address) {
-          const { status } = await axiosClient.post("/api/user/", {
+          const newUser = await registerUser({
             username,
             roleplay: "creators",
             wallet_address: address,
-          } as IShortUserData);
+          } as IShortUserData).unwrap();
 
-          if (status === 200) {
-            dispatch(tryToGetUser(address));
+          if (newUser.id)
             navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
-          }
         } else
           addNotification({
             type: "danger",
@@ -62,27 +57,17 @@ const RegistrationContainer = () => {
           });
       }
     } catch (error) {
-      if (request.isAxiosError(error)) {
-        const { response } = error;
-        if (response) {
-          const { data } = response;
-          setUsernameError((data as any).message);
-        }
-      }
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    const checkBlockchain = async () => {
-      setLoading(true);
-      await checkWallet({ walletConf, dispatch, navigate });
-      setLoading(false);
-    };
+    const checkBlockchain = async () => await checkWallet(true);
 
     id
       ? navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`)
       : checkBlockchain();
-  }, [id, walletConf]);
+  }, [id]);
 
   if (loading)
     return (
@@ -107,7 +92,6 @@ const RegistrationContainer = () => {
         <div className="register-input">
           <FormInput value={username} setValue={inputHnadler} />
         </div>
-        {usernameError && <div className="error">{usernameError}</div>}
 
         <div className="btn-wrapper">
           <BaseButton

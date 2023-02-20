@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { SliderMarks } from "antd/lib/slider";
 import { typeAligmnet } from "types";
@@ -20,16 +20,18 @@ const marksSlider: { [key: number]: typeAligmnet } = {
   2: "Right",
 };
 
-const SettingsStatBlock = ({
-  fonts,
-  children,
-  editStatData,
-  setEditStatData,
-}: {
+interface ISettingsStatBlock {
   fonts: ISelectItem[];
   children?: React.ReactNode;
   editStatData: IWidgetStatData;
   setEditStatData: (editStatData: IWidgetStatData) => void;
+}
+
+const SettingsStatBlock: FC<ISettingsStatBlock> = ({
+  fonts,
+  children,
+  editStatData,
+  setEditStatData,
 }) => {
   const [fontList, setFontList] = useState<ISelectItem[]>(
     fonts.slice(0, notVisibleFontsCount)

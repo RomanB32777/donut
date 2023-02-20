@@ -1,17 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
-import { IFilterPeriodItems, periodItemsTypes, IFullSendDonat } from 'types';
+import { IFilterPeriodItems, periodItemsTypes, IFullSendDonat, IDonationsQueryData, allPeriodItemsTypes } from 'types';
 import { clean } from '../modules/badWords/index.js';
 import db from '../db.js';
 import { getUsdKoef, getUsername, parseBool } from '../utils.js';
 import { exchangeNames } from '../consts.js';
-import { IFullFilterPeriodItems, fullPeriodItems, RequestParams, ResponseBody, RequestBody } from '../types.js';
-
-const dateParams: IFilterPeriodItems = {
-  today: '',
-  '7days': '1 week',
-  '30days': '1 month',
-  year: '1 year',
-};
+import {
+  IFullFilterPeriodItems,
+  RequestParams,
+  ResponseBody,
+  RequestBody,
+  RequestQuery,
+  HttpCode,
+  RequestUserIDParam,
+} from '../types.js';
 
 const dateTrancSelectParams: IFilterPeriodItems = {
   today: 'hour',
@@ -21,36 +22,37 @@ const dateTrancSelectParams: IFilterPeriodItems = {
 };
 
 const dateTrancCurrentParams: IFullFilterPeriodItems = {
-  yesterday: 'day',
-  today: 'day',
-  '7days': 'week',
-  '30days': 'month',
-  year: 'year',
+  yesterday: '1 day',
+  today: '',
+  '7days': '1 week',
+  '30days': '1 month',
+  year: '1 year',
+  custom: '',
   all: 'all',
-  custom: 'custom',
 };
 
-const getTimePeriod = (period: periodItemsTypes) => `
-    d.created_at >= ${period !== 'today' ? `now() - interval '${dateParams[period]}'` : 'current_date'} 
-  `;
-
-const getTimeCurrentPeriod = ({
-  period,
-  startDate = '',
-  endDate = '',
+const getTimePeriod = ({
+  timePeriod,
+  startDate,
+  endDate,
 }: {
-  period: fullPeriodItems;
-  startDate: string;
-  endDate: string;
+  timePeriod?: allPeriodItemsTypes;
+  startDate?: string;
+  endDate?: string;
 }) => {
-  if (period === 'all') return 'true';
-  if (period === 'custom' && startDate && endDate) {
-    return `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
-        BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
-        AND to_timestamp('${endDate}', 'DD/MM/YYYY')`;
+  if (timePeriod) {
+    if (timePeriod === 'all') return 'true';
+    if (startDate && endDate)
+      return `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
+          BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
+          AND to_timestamp('${endDate}', 'DD/MM/YYYY')`;
+
+    return `d.created_at >= ${
+      timePeriod !== 'today' ? `now() - interval '${dateTrancCurrentParams[timePeriod]}'` : 'current_date'
+    } `;
   }
-  return `date_trunc('${dateTrancCurrentParams[period]}', to_timestamp(d.created_at::text, 'YYYY/MM/DD T HH24:MI:SS'))
-    = date_trunc('${dateTrancCurrentParams[period]}', current_date${period === 'yesterday' ? ' - 1' : ''})`;
+
+  return 'true';
 };
 
 const getSumInUsd = (usdKoefs: any) =>
@@ -61,10 +63,13 @@ const getSumInUsd = (usdKoefs: any) =>
         END`;
 
 class DonationController {
-  async createDonation(req: Request, res: Response, next: NextFunction) {
+  async createDonation(
+    req: Request<RequestParams, ResponseBody, IFullSendDonat, RequestQuery>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const { creator, backer, message, selectedBlockchain, amount, selectedGoal, is_anonymous } =
-        req.body as IFullSendDonat;
+      const { creator, backer, message, selectedBlockchain, amount, selectedGoal, is_anonymous } = req.body;
       if (creator && backer) {
         const donation = await db.query(
           `INSERT INTO donations (backer_id, sum_donation, donation_message, blockchain, goal_id, is_anonymous, creator_id) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -79,10 +84,10 @@ class DonationController {
           ],
         );
 
-        if (donation.rows[0]) return res.status(200).json(donation.rows[0]);
-        return res.status(204).json({});
+        if (donation.rows[0]) return res.status(HttpCode.CREATED).json(donation.rows[0]);
+        return res.sendStatus(HttpCode.NOT_FOUND);
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.BAD_REQUEST);
     } catch (error) {
       next(error);
     }
@@ -106,16 +111,20 @@ class DonationController {
         `,
         [user_id],
       );
-      res.status(200).json(supporters.rows);
+      return res.status(HttpCode.OK).json(supporters.rows);
     } catch (error) {
       next(error);
     }
   }
 
-  async getLatestDonations(req: Request, res: Response, next: NextFunction) {
+  async getLatestDonations(
+    req: Request<RequestUserIDParam, ResponseBody, RequestBody, IDonationsQueryData>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { user_id } = req.params;
-      const { limit, timePeriod, isStatPage, startDate, endDate, spam_filter } = req.query;
+      const { limit, timePeriod, startDate, endDate, spam_filter } = req.query;
 
       const usdKoefs = await getUsdKoef();
 
@@ -130,15 +139,7 @@ class DonationController {
           LEFT JOIN users u
           ON d.backer_id = u.id 
           WHERE d.creator_id = $1 
-          AND ${
-            isStatPage
-              ? getTimeCurrentPeriod({
-                  period: timePeriod as fullPeriodItems,
-                  startDate: startDate as string,
-                  endDate: endDate as string,
-                })
-              : getTimePeriod(timePeriod as periodItemsTypes)
-          }
+          AND ${getTimePeriod({ timePeriod, startDate, endDate })}
           ORDER BY d.created_at DESC
           ${limit ? `LIMIT ${limit}` : ''}`,
         [user_id],
@@ -150,18 +151,22 @@ class DonationController {
               donation_message: d.donation_message ? clean(d.donation_message) : '-',
             }))
           : data.rows;
-        return res.status(200).json(donations);
+        return res.status(HttpCode.OK).json(donations);
       }
-      return res.status(200).json([]);
+      return res.status(HttpCode.OK).json([]);
     } catch (error) {
       next(error);
     }
   }
 
-  async getTopDonations(req: Request, res: Response, next: NextFunction) {
+  async getTopDonations(
+    req: Request<RequestUserIDParam, ResponseBody, RequestBody, IDonationsQueryData>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { user_id } = req.params;
-      const { limit, timePeriod, startDate, endDate, isStatPage, spam_filter } = req.query;
+      const { limit, timePeriod, startDate, endDate, spam_filter } = req.query;
 
       const data = await db.query(
         `
@@ -175,15 +180,7 @@ class DonationController {
           LEFT JOIN users u
           ON d.backer_id = u.id 
           WHERE d.creator_id = $1
-          AND ${
-            isStatPage
-              ? getTimeCurrentPeriod({
-                  period: timePeriod as fullPeriodItems,
-                  startDate: startDate as string,
-                  endDate: endDate as string,
-                })
-              : getTimePeriod(timePeriod as periodItemsTypes)
-          }
+          AND ${getTimePeriod({ timePeriod, startDate, endDate })}
           ORDER BY sum_donation DESC
           ${limit ? `LIMIT ${limit}` : ''}`,
         [user_id],
@@ -196,18 +193,22 @@ class DonationController {
               donation_message: d.donation_message ? clean(d.donation_message) : '-',
             }))
           : data.rows;
-        return res.status(200).json(donations);
+        return res.status(HttpCode.OK).json(donations);
       }
-      return res.status(200).json([]);
+      return res.status(HttpCode.OK).json([]);
     } catch (error) {
       next(error);
     }
   }
 
-  async getTopSupporters(req: Request, res: Response, next: NextFunction) {
+  async getTopSupporters(
+    req: Request<RequestUserIDParam, ResponseBody, RequestBody, IDonationsQueryData>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { user_id } = req.params;
-      const { limit, timePeriod, isStatPage, startDate, endDate } = req.query;
+      const { limit, timePeriod, startDate, endDate } = req.query;
 
       const usdKoefs = await getUsdKoef();
 
@@ -217,15 +218,7 @@ class DonationController {
           ON d.backer_id = u.id
         `;
 
-      const whereBlock = `d.creator_id = $1 AND ${
-        isStatPage
-          ? getTimeCurrentPeriod({
-              period: timePeriod as fullPeriodItems,
-              startDate: startDate as string,
-              endDate: endDate as string,
-            })
-          : getTimePeriod(timePeriod as periodItemsTypes)
-      }`;
+      const whereBlock = `d.creator_id = $1 AND ${getTimePeriod({ timePeriod, startDate, endDate })}`;
 
       const data = await db.query(
         `
@@ -248,15 +241,17 @@ class DonationController {
           WHERE result.sum_donation > 0`,
         [user_id],
       );
-
-      if (data.rowCount) return res.status(200).json(data.rows);
-      return res.status(200).json([]);
+      return res.status(HttpCode.OK).json(data.rows);
     } catch (error) {
       next(error);
     }
   }
 
-  async getStatsDonations(req: Request, res: Response, next: NextFunction) {
+  async getStatsDonations(
+    req: Request<RequestUserIDParam, ResponseBody, RequestBody, IDonationsQueryData>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { user_id } = req.params;
       const { timePeriod } = req.query;
@@ -268,25 +263,28 @@ class DonationController {
             SELECT date_trunc('${dateTrancSelectParams[timePeriod as periodItemsTypes]}', created_at) AS date_group,
               COALESCE(SUM(sum_donation * ${getSumInUsd(usdKoefs)}), 0)::numeric AS sum_donation 
             FROM donations d
-            WHERE d.creator_id = $1 AND ${getTimePeriod(timePeriod as periodItemsTypes)}
+            WHERE d.creator_id = $1 AND ${getTimePeriod({ timePeriod })}
             GROUP BY date_group
             ORDER BY date_group ASC`,
         [user_id],
       );
-      if (data.rowCount) return res.status(200).json(data.rows);
-      else return res.status(200).json([]);
+      return res.status(HttpCode.OK).json(data.rows);
     } catch (error) {
       next(error);
     }
   }
 
-  async getDonationsData(req: Request, res: Response, next: NextFunction) {
+  async getDonationsData(
+    req: Request<RequestUserIDParam, ResponseBody, RequestBody, IDonationsQueryData>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const { user_id } = req.params;
       const { roleplay, timePeriod, limit, offset, startDate, endDate, groupByName, searchStr, spam_filter } =
         req.query;
 
-      const isGroup = groupByName === 'true';
+      const isGroup = parseBool(groupByName);
       const isCreator = roleplay === 'creators';
 
       const usdKoefs = await getUsdKoef();
@@ -305,13 +303,7 @@ class DonationController {
               LEFT JOIN users u
               ON  ${isCreator ? 'd.backer_id' : 'd.creator_id'} = u.id 
               WHERE ${isCreator ? 'd.creator_id' : 'd.backer_id'} = $1 AND
-              ${
-                startDate && endDate
-                  ? `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
-                  BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
-                  AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
-                  : `${getTimePeriod(timePeriod as periodItemsTypes)}`
-              }
+              ${getTimePeriod({ timePeriod, startDate, endDate })}
               ORDER BY d.created_at DESC
               LIMIT ${limit || 'ALL'}
               OFFSET ${offset || 0}
@@ -326,7 +318,7 @@ class DonationController {
                 donation_message: d.donation_message ? clean(d.donation_message) : '-',
               }))
             : data.rows;
-          return res.status(200).json(donations);
+          return res.status(HttpCode.OK).json(donations);
         }
       } else if (isGroup) {
         const joinBlock = `
@@ -336,13 +328,7 @@ class DonationController {
           `;
 
         const whereBlock = `${isCreator ? 'd.creator_id' : 'd.backer_id'} = $1 AND
-          ${
-            startDate && endDate
-              ? `to_timestamp(d.created_at::text,'YYYY/MM/DD') 
-              BETWEEN to_timestamp('${startDate}', 'DD/MM/YYYY')
-              AND to_timestamp('${endDate}', 'DD/MM/YYYY')`
-              : `${getTimePeriod(timePeriod as periodItemsTypes)}`
-          }`;
+          ${getTimePeriod({ timePeriod, startDate, endDate })}`;
 
         const data = await db.query(
           `
@@ -368,10 +354,9 @@ class DonationController {
             }`,
           [user_id],
         );
-        return res.status(200).json(data.rows);
+        return res.status(HttpCode.OK).json(data.rows);
       }
-
-      return res.status(200).json([]);
+      return res.status(HttpCode.OK).json([]);
     } catch (error) {
       next(error);
     }
@@ -385,10 +370,9 @@ class DonationController {
     try {
       const { blockchain } = req.query;
       const usdKoefs = await getUsdKoef(blockchain);
-      
-      if (usdKoefs) return res.status(200).json(usdKoefs);
 
-      return res.status(204).json({});
+      if (usdKoefs) return res.status(HttpCode.OK).json(usdKoefs);
+      return res.status(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }

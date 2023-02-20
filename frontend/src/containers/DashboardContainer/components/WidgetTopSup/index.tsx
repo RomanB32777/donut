@@ -1,61 +1,57 @@
-import { useEffect, useState } from "react";
-// import { useQuery } from "react-query";
+import { useEffect, useMemo, useState } from "react";
 import { Col, Empty, Row } from "antd";
 import { stringFormatTypes } from "types";
 
 import SelectComponent from "components/SelectComponent";
 import WidgetLoader from "../WidgetLoader";
 
-import axiosClient from "modules/axiosClient";
 import { useAppSelector } from "hooks/reduxHooks";
+import { useGetWidgetDonationsQuery } from "store/services/DonationsService";
 import { formatNumber, getTimePeriodQuery } from "utils";
-import { filterPeriodItems, widgetApiUrl } from "consts";
+import { filterPeriodItems } from "consts";
 
 const LIMIT_SUPPORTERS = 6;
 
 const WidgetTopSup = () => {
-  const { user, notifications } = useAppSelector((state) => state);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { id } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
+
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
-  const [topSupporters, setTopSupporters] = useState<any[]>([]);
 
-  // const { isLoading, data, error } = useQuery(
-  //   ["widgetTopSup", activeFilterItem],
-  //   () => getLatestDonations(activeFilterItem)
-  // );
+  const timePeriod = useMemo(
+    () => getTimePeriodQuery(activeFilterItem),
+    [activeFilterItem]
+  );
 
-  // console.log(isLoading, data, error);
-
-  const { id } = user;
-  const { list, shouldUpdateApp } = notifications;
-
-  const getLatestDonations = async (activeFilterItem: string) => {
-    try {
-      const timePeriod = getTimePeriodQuery(activeFilterItem);
-      const { data } = await axiosClient.get(
-        `${widgetApiUrl}/top-supporters/${id}?limit=${LIMIT_SUPPORTERS}&timePeriod=${timePeriod}`
-      );
-      data && setTopSupporters(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const {
+    data: topSupporters,
+    isLoading,
+    refetch,
+  } = useGetWidgetDonationsQuery(
+    {
+      userID: id,
+      data_type: "top-supporters",
+      query: {
+        limit: LIMIT_SUPPORTERS,
+        timePeriod,
+      },
+    },
+    {
+      skip: !id,
     }
-  };
+  );
 
   useEffect(() => {
-    id && getLatestDonations(activeFilterItem);
-  }, [id, activeFilterItem]);
-
-  useEffect(() => {
-    list.length && shouldUpdateApp && getLatestDonations(activeFilterItem);
+    list.length && shouldUpdateApp && refetch();
   }, [list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-topSup">
-      {loading ? (
+      {isLoading ? (
         <WidgetLoader />
       ) : (
         <>
@@ -73,7 +69,7 @@ const WidgetTopSup = () => {
             </div>
           </div>
 
-          {Boolean(topSupporters.length) ? (
+          {topSupporters && Boolean(topSupporters.length) ? (
             <div className="items">
               <Row gutter={[16, 16]}>
                 {topSupporters.map((donat: any) => (

@@ -1,7 +1,7 @@
 import type { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
 import { userRoles } from "types";
-import { DateFormatter, DateTimezoneFormatter } from "utils";
+import { DateFormatter } from "utils";
 import { RoutePaths } from "routes";
 
 interface ITableData {
@@ -14,7 +14,7 @@ interface ITableData {
   role?: userRoles;
 }
 
-export const initTableDataItem: ITableData = {
+const initTableDataItem: ITableData = {
   name: "",
   donationToken: 0,
   donationUSD: 0,
@@ -23,7 +23,7 @@ export const initTableDataItem: ITableData = {
   blockchain: "",
 };
 
-export const tableColumns: ColumnsType<ITableData> = [
+const tableColumns: ColumnsType<ITableData> = [
   {
     title: "Username",
     dataIndex: "name",
@@ -74,4 +74,5 @@ export const tableColumns: ColumnsType<ITableData> = [
   },
 ];
 
+export { initTableDataItem, tableColumns };
 export type { ITableData };

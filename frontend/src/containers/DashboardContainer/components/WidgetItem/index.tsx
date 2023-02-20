@@ -1,10 +1,12 @@
+import { FC, memo } from "react";
 import { Col, Row } from "antd";
 import dayjsModule from "modules/dayjsModule";
 
 import { formatNumber } from "utils";
+import { IDonationWidgetItem } from "appTypes";
 import "./styles.sass";
 
-const WidgetItem = ({ donat }: { donat: any }) => (
+const WidgetItem: FC<IDonationWidgetItem> = ({ donat }) => (
   <div className="widget-item">
     <Row gutter={[32, 0]}>
       <Col span={24}>
@@ -31,4 +33,4 @@ const WidgetItem = ({ donat }: { donat: any }) => (
   </div>
 );
 
-export default WidgetItem;
+export default memo(WidgetItem);

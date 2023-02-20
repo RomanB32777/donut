@@ -1,4 +1,5 @@
-import { IUserBase } from "./user";
+import { allPeriodItemsTypes } from "./dates";
+import { userRoles } from "./user";
 import { blockchainsSymbols, blockchainsType } from "./wallet";
 
 interface IDonationShortInfo {
@@ -31,7 +32,7 @@ interface ISendDonatBase {
 
 interface ISendDonat extends ISendDonatBase {
   selectedBlockchain: blockchainsSymbols;
-  selectedGoal: number | null;
+  selectedGoal: string | null;
   is_anonymous: boolean;
 }
 
@@ -40,8 +41,20 @@ interface IFullSendDonat extends ISendDonat {
   backer: number;
 }
 
+interface IDonationsQueryData {
+  limit?: number;
+  offset?: number;
+  timePeriod?: allPeriodItemsTypes;
+  roleplay?: userRoles;
+  spam_filter?: boolean;
+  endDate?: string;
+  startDate?: string;
+  searchStr?: string;
+  groupByName?: boolean;
+}
+
 type sendDonatFieldsKeys = keyof ISendDonat;
-type requiredFields = keyof ISendDonatBase
+type requiredFields = keyof ISendDonatBase;
 
 export type {
   IDonationShortInfo,
@@ -51,6 +64,7 @@ export type {
   ISendDonatBase,
   ISendDonat,
   IFullSendDonat,
+  IDonationsQueryData,
   sendDonatFieldsKeys,
   requiredFields,
 };

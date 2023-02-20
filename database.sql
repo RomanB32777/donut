@@ -17,7 +17,6 @@ CREATE TABLE creators(
     btn_text VARCHAR(255) DEFAULT 'Donate',
     main_color VARCHAR(255) DEFAULT '#E94560',
     background_color VARCHAR(255) DEFAULT '#1A1A2E',
-    security_string VARCHAR(100) DEFAULT '',
     spam_filter BOOLEAN DEFAULT 'false',
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -31,7 +30,7 @@ CREATE TABLE badges(
     description VARCHAR DEFAULT '',
     token_id INTEGER,
     creator_id INTEGER,
-    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT Now()
 );
 

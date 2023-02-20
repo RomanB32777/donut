@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { Navigate, useRoutes, Outlet, useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { Navigate, useRoutes, Outlet } from "react-router";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "icons";
 import {
   PieChartOutlined,
@@ -9,8 +8,6 @@ import {
 } from "@ant-design/icons";
 import { userRoles } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
-import { WalletContext } from "contexts/Wallet";
 import MainPage from "pages/MainPage";
 import BadgesPage from "pages/BadgesPage";
 import DonatPage from "pages/DonatPage";
@@ -29,7 +26,9 @@ import DonatGoalPage from "pages/DonatGoalPage";
 import DonatStatPage from "pages/DonatStatPage";
 import LandingPage from "pages/LandingPage";
 import NoPage from "pages/NoPage";
-import { checkWallet } from "utils";
+
+import { useAppSelector } from "hooks/reduxHooks";
+import { useWallet } from "hooks/walletHooks";
 
 enum RoutePaths {
   main = "/",
@@ -72,15 +71,13 @@ type ProtectedRouteType = {
 };
 
 const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const walletConf = useContext(WalletContext);
+  const { checkWallet } = useWallet();
   const { user, loading } = useAppSelector((state) => state);
   const { id, roleplay } = user;
 
   useEffect(() => {
-    checkWallet({ walletConf, dispatch, navigate });
-  }, [id, walletConf]);
+    checkWallet(true);
+  }, [id]);
 
   if (!id && loading) return <Loader size="big" />;
 
@@ -205,7 +202,7 @@ export const routers: IRoute[] = [
     noPaddingMainConteiner: true,
   },
   {
-    path: `${RoutePaths.donatMessage}/:name/:security_string`,
+    path: `${RoutePaths.donatMessage}/:name/:id`,
     name: "Donat alert page",
     element: <DonatAlertPage />,
     hiddenLayoutElements: true,

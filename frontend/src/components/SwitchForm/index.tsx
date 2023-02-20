@@ -1,6 +1,7 @@
-import { Col, Row, RowProps, Switch, SwitchProps } from "antd";
+import { Col, Row, RowProps, Switch, SwitchProps, Tooltip } from "antd";
 import clsx from "clsx";
 import useWindowDimensions from "hooks/useWindowDimensions";
+import { useMemo } from "react";
 import "./styles.sass";
 
 interface ISliderProps extends SwitchProps {
@@ -14,6 +15,7 @@ interface ISliderProps extends SwitchProps {
   rowProps?: RowProps;
   labelModificator?: string;
   isVisibleStatus?: boolean;
+  tooltipTitle?: string;
   setValue: (value: boolean) => void;
 }
 
@@ -28,9 +30,17 @@ const SwitchForm = ({
   rowProps,
   labelModificator,
   isVisibleStatus,
+  tooltipTitle,
   setValue,
 }: ISliderProps) => {
   const { isMobile } = useWindowDimensions();
+
+  const tooltipTrigger = useMemo(() => {
+    if (!tooltipTitle) return "none";
+    if (isMobile && tooltipTitle) return "click";
+
+    return "none";
+  }, [isMobile, tooltipTitle]);
 
   return (
     <div className="switch">
@@ -59,7 +69,9 @@ const SwitchForm = ({
         <Col md={switchCol || (label ? 12 : 24)} xs={24}>
           <div className="switch-wrapper">
             {isVisibleStatus && <span>Disabled</span>}
-            <Switch checked={checked} onChange={setValue} />
+            <Tooltip title={tooltipTitle} trigger={tooltipTrigger}>
+              <Switch checked={checked} onChange={setValue} />
+            </Tooltip>
             {isVisibleStatus && <span>Abled</span>}
           </div>
         </Col>

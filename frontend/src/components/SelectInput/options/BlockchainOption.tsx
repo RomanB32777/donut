@@ -28,4 +28,4 @@ const BlockchainOption = ({ value, key }: ISelectItem) => {
   return null;
 };
 
-export { BlockchainOption };
+export default BlockchainOption;

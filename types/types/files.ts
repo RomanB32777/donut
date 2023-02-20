@@ -4,6 +4,14 @@ interface ISoundInfo {
   isUploaded?: boolean;
 }
 
+interface ISendingDataWithFile<DataType = object> {
+  data?: DataType;
+  username?: string;
+  filelink?: string;
+  userID?: number;
+  isReset?: boolean;
+}
+
 // enum userUploadsEnum {
 //   avatars,
 // }
@@ -17,6 +25,7 @@ type fileUploadTypes = defaultAssetsFolders | "avatars";
 
 export type {
   ISoundInfo,
+  ISendingDataWithFile,
   alertAssetTypes,
   donatAssetTypes,
   fileUploadTypes,

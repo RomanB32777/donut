@@ -32,10 +32,10 @@ const initDonatPage: IDonatPage = {
   btn_text: '',
   main_color: '',
   background_color: '',
-  security_string: '',
 };
 
 const initAlertWidget: IAlertData = {
+  id: '',
   banner: '',
   message_color: '',
   message_font: '',
@@ -47,6 +47,7 @@ const initAlertWidget: IAlertData = {
   sound: '',
   voice: false,
   gender_voice: '',
+  creator_id: 0
 };
 
 const initGoalWidget: IGoalWidgetData = {

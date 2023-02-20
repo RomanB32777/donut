@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 import { Col } from "antd";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import {
@@ -10,12 +10,14 @@ import {
 import { alignFlextItemsList, alignItemsList } from "consts";
 import { AlignText, IWidgetStatData } from "appTypes";
 
-const PreviewStatBlock = ({
-  children,
-  editStatData,
-}: {
+interface IPreviewStatBlock {
   children?: React.ReactNode;
   editStatData: IWidgetStatData;
+}
+
+const PreviewStatBlock: FC<IPreviewStatBlock> = ({
+  children,
+  editStatData,
 }) => {
   const { isLaptop } = useWindowDimensions();
   const {
@@ -56,7 +58,7 @@ const PreviewStatBlock = ({
             background: bar_color,
           }}
         >
-          {timePeriodName} {typeStatData.toLowerCase()}
+          {typeStatData.toLowerCase()} {timePeriodName} 
         </span>
         <div
           className="stat"

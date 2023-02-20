@@ -1,15 +1,15 @@
+import { FC, memo } from "react";
 import clsx from "clsx";
 import { useNavigate } from "react-router";
 import { scrollToPosition } from "utils";
 import "./styles.sass";
 
-const Logo = ({
-  navigateUrl = "/",
-  modificator,
-}: {
+interface ILogo {
   navigateUrl?: string;
   modificator?: string;
-}) => {
+}
+
+const Logo: FC<ILogo> = ({ navigateUrl = "/", modificator }) => {
   const navigate = useNavigate();
 
   const redirect = () => {
@@ -24,4 +24,4 @@ const Logo = ({
   );
 };
 
-export default Logo;
+export default memo(Logo);

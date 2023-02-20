@@ -5,7 +5,7 @@ const initSendDonatData: ISendDonat = {
   username: "",
   amount: 0,
   selectedBlockchain: "MATIC",
-  selectedGoal: 0,
+  selectedGoal: null,
   is_anonymous: false,
 };
 

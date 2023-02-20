@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import AdminSidebar from "components/AdminComponents/AdminSidebar";
 import AdminHeader from "components/AdminComponents/AdminHeader";
 
@@ -7,6 +7,10 @@ import { useAppSelector } from "hooks/reduxHooks";
 
 import { IRoute, routers } from "routes";
 import "./styles.sass";
+
+interface IAdminContainer {
+  children?: React.ReactNode;
+}
 
 const addToMenu = (
   route: IRoute,
@@ -26,7 +30,7 @@ const addToMenu = (
   route.roleRequired ? route.roleRequired === roleplay && add() : add();
 };
 
-const AdminContainer = ({ children }: { children?: React.ReactNode }) => {
+const AdminContainer: FC<IAdminContainer> = ({ children }) => {
   const { id, roleplay } = useAppSelector(({ user }) => user);
   const { isTablet } = useWindowDimensions();
   const [collapsed, setCollapsed] = useState(true);

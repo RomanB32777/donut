@@ -48,11 +48,12 @@ const addErrorNotification = ({ message, title }: INotificationWithoutType) =>
     type: "danger",
   });
 
-const addSuccessNotification = ({ message, title }: INotificationWithoutType) =>
+const addSuccessNotification = ({ message, title, id }: INotificationWithoutType) =>
   addNotification({
     title: title || "Success",
     message,
     type: "success",
+    id: id || "success"
   });
 
 const addNotFoundUserNotification = (

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Col, Row } from "antd";
-import { useDispatch } from "react-redux";
 
 import PageTitle from "components/PageTitle";
 import WidgetStat from "./components/WidgetStat";
@@ -8,14 +7,14 @@ import WidgetTopSup from "./components/WidgetTopSup";
 import WidgetTopDonat from "./components/WidgetTopDonat";
 import WidgetLatestDonat from "./components/WidgetLatestDonat";
 
-import { setUpdateAppNotifications } from "store/types/Notifications";
+import { useActions } from "hooks/reduxHooks";
 import "./styles.sass";
 
 const DashboardContainer = () => {
-  const dispatch = useDispatch();
+  const { setUpdatedFlag } = useActions();
 
   useEffect(() => {
-    dispatch(setUpdateAppNotifications(true));
+    setUpdatedFlag(true);
   }, []);
 
   return (

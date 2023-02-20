@@ -8,24 +8,42 @@ interface IBadgeBase {
   title: string;
 }
 
-interface IBadgeInfo<ImageType = string> extends IBadgeBase {
+interface IBadgeCreatingInfo {
+  title: string;
   description: string;
-  image: ImageType;
   blockchain: blockchainsType;
   creator_id: number;
+}
+
+interface IBadgeInfo<ImageType = string> extends IBadgeBase, IBadgeCreatingInfo {
+  image: ImageType;
   token_id?: number;
   assigned?: number;
   is_creator?: boolean;
 }
 
+interface IBagdeAssignInfo {
+  badgeID: number;
+  supporter_wallet_address: string;
+  token_id?: number;
+}
+
 interface IQueryPriceParams {
-  address: string;
-  token_id: string;
+  wallet_address: string;
+  token_id?: number;
+}
+
+interface IBadgeQueryData {
+  id: number;
+  wallet_address: string;
 }
 
 export type {
   badgeStatus,
   IBadgeBase,
+  IBadgeCreatingInfo,
   IBadgeInfo,
+  IBagdeAssignInfo,
   IQueryPriceParams,
+  IBadgeQueryData,
 };

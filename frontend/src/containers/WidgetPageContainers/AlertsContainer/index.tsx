@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { fileUploadTypes, ISoundInfo } from "types";
+import { fileUploadTypes } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
@@ -10,175 +10,124 @@ import PreviewAlertsBlock from "./components/PreviewAlertsBlock";
 import WidgetMobileWrapper from "components/WidgetMobileWrapper";
 import FormBtnsBlock from "components/FormBtnsBlock";
 import Loader from "components/Loader";
+import NoPageContainer from "containers/NoPageContainer";
 
-import axiosClient from "modules/axiosClient";
 import {
-  addErrorNotification,
-  addNotification,
-  addSuccessNotification,
-  getFontsList,
-  getSounds,
-  loadFonts,
-  sendFile,
-} from "utils";
-import { ISelectItem } from "components/SelectInput";
+  useEditAlertsWidgetMutation,
+  useGetAlertWidgetDataQuery,
+} from "store/services/AlertsService";
+import { getFontsList, loadFonts } from "utils";
 import { RoutePaths } from "routes";
 import { initAlertData, baseURL } from "consts";
+import { ISelectItem } from "components/SelectInput";
 import { IAlert } from "appTypes";
 import "./styles.sass";
 
+const soundsFolderName: fileUploadTypes = "sound";
+
 const AlertsContainer = () => {
-  const { id, username, donat_page } = useAppSelector(({ user }) => user);
+  const { id, username } = useAppSelector(({ user }) => user);
   const { isLaptop } = useWindowDimensions();
-  const [loading, setLoading] = useState(true);
+
   const [formData, setFormData] = useState<IAlert>({ ...initAlertData });
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
-  const [soundsList, setSoundsList] = useState<ISoundInfo[]>([]);
 
-  const { security_string } = donat_page;
-
-  // data: IAlertData
-  const setAlertData = async (data: any) => {
-    const soundsFolderName: fileUploadTypes = "sound";
-    const { name_font, message_font, sum_font, sound } = data;
-
-    const loadedFonts = await loadFonts({
-      fonts,
-      fields: { name_font, message_font, sum_font },
-    });
-
-    const userData: IAlert = {
-      ...data,
-      ...loadedFonts,
-      banner: {
-        ...formData.banner,
-        preview: data.banner || "",
-      },
-      sound: sound.split(`${soundsFolderName}/`)[1],
-    };
-
-    setFormData({
-      ...formData,
-      ...userData,
-    });
-  };
-
-  const getAlertsWidgetData = async () => {
-    if (id && fonts) {
-      setLoading(true);
-      const { data, status } = await axiosClient.get(
-        `/api/widget/get-alerts-widget/${id}/${security_string}`
-      );
-      if (status === 200) await setAlertData(data);
-      setLoading(false);
+  const {
+    data: alertData,
+    isLoading: isGetLoading,
+    isError: isGetError,
+  } = useGetAlertWidgetDataQuery(
+    {
+      username: username,
+      id: "",
+    },
+    {
+      skip: !username,
     }
-  };
+  );
 
-  const checkSuccessSending = ({
-    data,
-    status,
-  }: {
-    data: any;
-    status: number;
-  }) => {
-    if (status === 200) {
-      addSuccessNotification({ message: "Data saved successfully" });
-      setAlertData(data);
-    } else addErrorNotification({ message: "saving error" });
-  };
+  const [editAlert, { isLoading: isEditLoading }] =
+    useEditAlertsWidgetMutation();
+
+  const { id: widgetID } = formData;
 
   const sendData = (isReset?: boolean) => async () => {
-    try {
-      setLoading(true);
-      const {
-        banner,
-        message_font,
-        name_font,
-        sum_font,
-        sound,
-        ...fieldValues
-      } = formData;
+    const { banner, message_font, name_font, sum_font, sound } = formData;
 
-      const soundInfo = soundsList.find((s) => s.name === sound);
-
-      const sendingData = JSON.stringify({
+    await editAlert({
+      data: {
+        ...formData,
         message_font: message_font.name,
         name_font: name_font.name,
         sum_font: sum_font.name,
-        sound: soundInfo?.link || "",
-        ...fieldValues,
-      });
-
-      if (!(banner.file || banner.preview) || isReset) {
-        const { data, status } = await axiosClient.put(
-          "/api/widget/edit-alerts-widget/",
-          {
-            alertData: sendingData,
-            username,
-            userId: id,
-            isReset,
-          }
-        );
-        checkSuccessSending({ data, status });
-      } else if (banner.file || banner.preview) {
-        const res = await sendFile({
-          file: banner.file,
-          filelink: banner.preview,
-          username,
-          userId: id,
-          data: {
-            key: "alertData",
-            body: sendingData,
-          },
-          url: "/api/widget/edit-alerts-widget/",
-        });
-        res && checkSuccessSending({ data: res.data, status: res.status });
-      }
-    } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while saving data`,
-      });
-    } finally {
-      setLoading(false);
-    }
+        sound: sound.link,
+        banner: banner.preview,
+      },
+      file: banner.file,
+      filelink: banner.preview,
+      username,
+      userID: id,
+      isReset,
+    });
+    // .unwrap()
   };
 
   const resetData = sendData(true);
 
+  const linkForStream = useMemo(
+    () => `${baseURL}/${RoutePaths.donatMessage}/${username}/${widgetID}`,
+    [username, widgetID]
+  );
+
+  const renderLinkForStream = useMemo(
+    () => linkForStream.replace(widgetID, "⁕⁕⁕⁕⁕"),
+    [linkForStream, widgetID]
+  );
+
+  const isLoading = useMemo(
+    () => isGetLoading || isEditLoading,
+    [isGetLoading, isEditLoading]
+  );
+
   useEffect(() => {
-    const initSounds = async () => {
-      const sounds = await getSounds(username);
-      sounds.length && setSoundsList(sounds);
+    const setAlertData = async () => {
+      if (alertData) {
+        const { name_font, message_font, sum_font, banner, sound } = alertData;
+
+        const loadedFonts = await loadFonts({
+          fonts,
+          fields: { name_font, message_font, sum_font },
+        });
+
+        setFormData((prev) => ({
+          ...prev,
+          ...alertData,
+          ...loadedFonts,
+          banner: {
+            ...prev.banner,
+            preview: banner || "",
+          },
+          sound: {
+            name: sound.split(`${soundsFolderName}/`)[1],
+            link: sound,
+          },
+        }));
+      }
     };
 
-    if (id) {
-      initSounds();
-      fonts.length && getAlertsWidgetData();
-    }
-  }, [id, fonts]);
+    setAlertData();
+  }, [alertData, fonts]);
 
   useEffect(() => {
     const initFonts = async () => {
       const fonts = await getFontsList();
       setFonts(fonts);
     };
+
     initFonts();
   }, []);
 
-  const linkForStream = useMemo(
-    () =>
-      `${baseURL}/${RoutePaths.donatMessage}/${username}/${security_string}`,
-    [username, security_string]
-  );
-
-  const renderLinkForStream = useMemo(
-    () => linkForStream.replace(security_string, "⁕⁕⁕⁕⁕"),
-    [linkForStream, security_string]
-  );
+  if (isGetError) return <NoPageContainer />;
 
   return (
     <div className="alerts-container fadeIn">
@@ -196,7 +145,7 @@ const AlertsContainer = () => {
       </div>
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />
-        {loading ? (
+        {isLoading ? (
           <div className="init-loader">
             <Loader size="big" />
           </div>
@@ -210,9 +159,7 @@ const AlertsContainer = () => {
                 key="settings"
                 fonts={fonts}
                 formData={formData}
-                soundsList={soundsList}
                 setFormData={setFormData}
-                setSoundsList={setSoundsList}
               />
             }
           />
@@ -220,7 +167,7 @@ const AlertsContainer = () => {
         <FormBtnsBlock
           saveMethod={sendData()}
           resetMethod={resetData}
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
       {/* <ChromePicker color={color} onChangeComplete={handleChange} disableAlpha /> */}

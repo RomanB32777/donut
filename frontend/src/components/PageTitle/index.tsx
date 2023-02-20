@@ -1,18 +1,21 @@
+import { FC, memo } from "react";
 import clsx from "clsx";
 import { FormattedMessage } from "react-intl";
 
 import "./styles.sass";
 
-const PageTitle = ({
-  formatId,
-  title = "",
-  notMarginBottom,
-  modificator,
-}: {
+interface IPageTitle {
   formatId?: string;
   title?: string;
   notMarginBottom?: boolean;
   modificator?: string;
+}
+
+const PageTitle: FC<IPageTitle> = ({
+  formatId,
+  title = "",
+  notMarginBottom,
+  modificator,
 }) => {
   return (
     <div
@@ -26,4 +29,4 @@ const PageTitle = ({
   );
 };
 
-export default PageTitle;
+export default memo(PageTitle);

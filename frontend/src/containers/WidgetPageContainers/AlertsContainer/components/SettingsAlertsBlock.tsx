@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Col, Row } from "antd";
-import { ISoundInfo } from "types";
 
 import ModalComponent from "components/ModalComponent";
 import ColorPicker from "components/ColorPicker";
 import UploadImage, { UploadAfterEl } from "components/UploadImage";
 import SelectInput, { ISelectItem } from "components/SelectInput";
-import { TabsComponent } from "components/TabsComponent";
+import TabsComponent from "components/TabsComponent";
 import SliderForm from "components/SliderForm";
 import SwitchForm from "components/SwitchForm";
 import SelectComponent from "components/SelectComponent";
@@ -17,23 +16,34 @@ import {
 import UploadSound from "./UploadSound";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { getDefaultImages, sendFile } from "utils";
+import {
+  useGetSoundsQuery,
+  useLazyGetDefaultImagesQuery,
+} from "store/services/FilesService";
+import { useUploadSoundMutation } from "store/services/AlertsService";
 import { dummyImg, notVisibleFontsCount } from "consts";
 import { IAlert, IDefaultImagesModal } from "appTypes";
 
 const alertSound = new Audio();
 
+const voiceTabs = [
+  {
+    key: "MALE",
+    label: "Male",
+  },
+  {
+    key: "FEMALE",
+    label: "Female",
+  },
+];
+
 const SettingsAlertsBlock = ({
   formData,
   fonts,
-  soundsList,
-  setSoundsList,
   setFormData,
 }: {
   formData: IAlert;
   fonts: ISelectItem[];
-  soundsList: ISoundInfo[];
-  setSoundsList: (sounds: ISoundInfo[]) => void;
   setFormData: (formData: IAlert) => void;
 }) => {
   const {
@@ -56,16 +66,19 @@ const SettingsAlertsBlock = ({
     isOpen: false,
     images: [],
   });
-
-  const [fontList, setFontList] = useState<ISelectItem[]>(
-    fonts.slice(0, notVisibleFontsCount)
-  );
+  const [fontList, setFontList] = useState<ISelectItem[]>([]);
 
   const { isOpen, images } = modalInfo;
 
+  const [getDefaultImages] = useLazyGetDefaultImagesQuery();
+  const [uploadSound] = useUploadSoundMutation();
+  const { data: soundsList, refetch: getSounds } = useGetSoundsQuery(username, {
+    skip: !username,
+  });
+
   const openDefaultImages = async () => {
-    const images = await getDefaultImages("alert");
-    images.length &&
+    const { data: images } = await getDefaultImages("alert");
+    images &&
       setModalInfo({
         isOpen: true,
         images,
@@ -85,10 +98,7 @@ const SettingsAlertsBlock = ({
     closeModal();
   };
 
-  const onOpenFontSelect = (isOpen: boolean) =>
-    isOpen
-      ? setFontList(fonts)
-      : setFontList(fonts.slice(0, notVisibleFontsCount));
+  const onOpenFontSelect = (isOpen: boolean) => isOpen && setFontList(fonts);
 
   const playSound = (soundLink: string) => {
     if (alertSound) {
@@ -99,34 +109,47 @@ const SettingsAlertsBlock = ({
   };
 
   const uploadUserSound = async (file: File) => {
-    const res = await sendFile({
-      file,
-      username,
-      userId: id,
-      url: "/api/widget/sound/",
-      isEdit: false,
-    });
-
-    if (res) {
-      const { data } = res;
-      playSound(data.link);
-      setSoundsList([data, ...soundsList]);
-      setFormData({
-        ...formData,
-        sound: data.name,
-      });
+    try {
+      const uploadedSound = await uploadSound({
+        file,
+        username,
+        userID: id,
+      }).unwrap();
+      if (uploadedSound) {
+        const { link } = uploadedSound;
+        playSound(link);
+        getSounds();
+        setFormData({
+          ...formData,
+          sound: uploadedSound,
+        });
+      }
+    } catch (error) {
+      console.error("rejected", error);
     }
   };
 
   const selectSound = (selected: string) => {
-    const soundInfo = soundsList.find((s) => s.name === selected);
-    soundInfo && playSound(soundInfo.link);
+    const soundInfo = soundsList?.find((s) => s.name === selected);
 
-    setFormData({
-      ...formData,
-      sound: selected,
-    });
+    if (soundInfo) {
+      playSound(soundInfo.link);
+
+      setFormData({
+        ...formData,
+        sound: soundInfo,
+      });
+    }
   };
+
+  const voiseTabsHandler = useCallback(
+    (gender_voice: string) => setFormData({ ...formData, gender_voice }),
+    [formData, setFormData]
+  );
+
+  useEffect(() => {
+    fonts.length && setFontList(fonts.slice(0, notVisibleFontsCount));
+  }, [fonts]);
 
   return (
     <Col xl={13} md={24}>
@@ -287,38 +310,37 @@ const SettingsAlertsBlock = ({
             />
           </div>
         </Col>
-        <Col span={24}>
-          <div className="form-element">
-            <Row
-              gutter={[0, 18]}
-              align="middle"
-            >
-              <Col md={8} xs={24}>
-                <span className="form-element__label">Alert sound:</span>
-              </Col>
-              <Col md={14} xs={24}>
-                <SelectComponent
-                  title={sound}
-                  list={soundsList.map((s) => s.name)}
-                  selectItem={(selected) => {
-                    selectSound(selected);
-                  }}
-                  modificator="select-sound"
-                  listModificator="list-sound"
-                  listItemModificator="listItem-sound"
-                  headerList={
-                    <div className="select-header">Donation sounds</div>
-                  }
-                  footerList={
-                    <div className="select-footer">
-                      <UploadSound sendFile={uploadUserSound} />
-                    </div>
-                  }
-                />
-              </Col>
-            </Row>
-          </div>
-        </Col>
+        {soundsList && (
+          <Col span={24}>
+            <div className="form-element">
+              <Row gutter={[0, 18]} align="middle">
+                <Col md={8} xs={24}>
+                  <span className="form-element__label">Alert sound:</span>
+                </Col>
+                <Col md={14} xs={24}>
+                  <SelectComponent
+                    title={sound.name}
+                    list={soundsList.map((s) => s.name)}
+                    selectItem={(selected) => {
+                      selectSound(selected);
+                    }}
+                    modificator="select-sound"
+                    listModificator="list-sound"
+                    listItemModificator="listItem-sound"
+                    headerList={
+                      <div className="select-header">Donation sounds</div>
+                    }
+                    footerList={
+                      <div className="select-footer">
+                        <UploadSound sendFile={uploadUserSound} />
+                      </div>
+                    }
+                  />
+                </Col>
+              </Row>
+            </div>
+          </Col>
+        )}
         <Col span={24}>
           <div className="form-element">
             <SliderForm
@@ -349,20 +371,9 @@ const SettingsAlertsBlock = ({
               afterComponent={
                 voice ? (
                   <TabsComponent
-                    setTabContent={(gender_voice) =>
-                      setFormData({ ...formData, gender_voice })
-                    }
+                    setTabContent={voiseTabsHandler}
                     activeKey={gender_voice}
-                    tabs={[
-                      {
-                        key: "MALE",
-                        label: "Male",
-                      },
-                      {
-                        key: "FEMALE",
-                        label: "Female",
-                      },
-                    ]}
+                    tabs={voiceTabs}
                   />
                 ) : null
               }

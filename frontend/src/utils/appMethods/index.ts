@@ -1,11 +1,3 @@
-import { AnyAction, Dispatch } from "redux";
-import { NavigateFunction } from "react-router-dom";
-
-import { setUser } from "store/types/User";
-import { setSelectedBlockchain } from "store/types/Wallet";
-import { RoutePaths } from "routes";
-import { initUser, storageWalletKey } from "consts";
-
 const scrollToPosition = (top = 0) => {
   try {
     window.scroll({
@@ -16,19 +8,6 @@ const scrollToPosition = (top = 0) => {
   } catch (_) {
     window.scrollTo(0, top);
   }
-};
-
-const logoutUser = ({
-  dispatch,
-  navigate,
-}: {
-  dispatch: Dispatch<AnyAction>;
-  navigate: NavigateFunction;
-}) => {
-  dispatch(setUser(initUser));
-  localStorage.removeItem(storageWalletKey);
-  dispatch(setSelectedBlockchain(null));
-  navigate(RoutePaths.main);
 };
 
 const isValidateFilledForm = (valuesArray: any[]) =>
@@ -49,10 +28,4 @@ const formatNumber = (num: string | number, fraction: number = 2) => {
     : inNumberType.toFixed(fraction);
 };
 
-export {
-  scrollToPosition,
-  logoutUser,
-  isValidateFilledForm,
-  delay,
-  formatNumber,
-};
+export { scrollToPosition, isValidateFilledForm, delay, formatNumber };

@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { Contract, Wallet, BigNumber } from 'ethers';
 import { Network, Alchemy } from 'alchemy-sdk';
-import { IBadgeInfo, IQueryPriceParams, IUser } from 'types';
+import { IBadgeCreatingInfo, IBagdeAssignInfo, IQueryPriceParams, IUser } from 'types';
 import db from '../db.js';
 import { isProduction, nftAbi, uploadsFolder } from '../consts.js';
-import { RequestBody, RequestParams, ResponseBody } from '../types.js';
+import { HttpCode, RequestBody, RequestBodyWithFile, RequestParams, RequestQuery, ResponseBody } from '../types.js';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { getRandomStr, parseBool } from '../utils.js';
 
@@ -66,23 +66,21 @@ class BadgeController implements IBadgeConfig {
   }
 
   async createBadge(
-    req: Request, // <RequestParams, ResponseBody, IBadgeInfo, RequestQuery>
+    req: Request<RequestParams, ResponseBody, RequestBodyWithFile<IBadgeCreatingInfo>, RequestQuery>,
     res: Response,
     next: NextFunction,
   ) {
     try {
       this.setWalletConfig();
-      const { badgeData, username } = req.body;
+      const { username, filelink, userID, isReset, data, ...badgeData } = req.body;
 
-      if (req.files) {
-        const parseData: IBadgeInfo = JSON.parse(badgeData);
-
+      if (req.files && badgeData) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
         const filename = getRandomStr(32) + file.name.slice(file.name.lastIndexOf('.'));
         const filepath = `${uploadsFolder}/${username}/badges/${filename}`;
 
-        const dataKeys = Object.keys(parseData);
-        const dataValues = Object.values(parseData);
+        const dataKeys = Object.keys(badgeData);
+        const dataValues = Object.values(badgeData);
 
         file.mv(filepath, (err) => {
           err && console.log(err);
@@ -97,10 +95,10 @@ class BadgeController implements IBadgeConfig {
           )}, '${imagePath}') RETURNING *`,
           [...dataValues],
         );
-        if (newBadge.rowCount) return res.status(200).json(newBadge.rows[0]);
-        return res.status(204).json({});
+        if (newBadge.rowCount) return res.status(HttpCode.CREATED).json(newBadge.rows[0]);
+        return res.sendStatus(HttpCode.NOT_FOUND);
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.BAD_REQUEST);
     } catch (error) {
       next(error);
     }
@@ -142,10 +140,10 @@ class BadgeController implements IBadgeConfig {
           ORDER BY created_at DESC`,
           [id],
         );
-        if (badges.rowCount) return res.status(200).json(badges.rows);
-        return res.status(200).json([]);
+        if (badges.rowCount) return res.status(HttpCode.OK).json(badges.rows);
+        return res.status(HttpCode.OK).json([]);
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -192,9 +190,9 @@ class BadgeController implements IBadgeConfig {
             balance = countInfo ? Number(countInfo.count) : 0;
           }
         }
-        return res.status(200).json({ ...badgeInfo, assigned: balance || 0 });
+        return res.status(HttpCode.OK).json({ ...badgeInfo, assigned: balance || 0 });
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -204,17 +202,24 @@ class BadgeController implements IBadgeConfig {
     try {
       const { id } = req.params;
       const deletedBadge = await db.query(`DELETE FROM badges WHERE id = $1 RETURNING *;`, [id]);
-      res.status(200).json(deletedBadge.rows[0]);
+      if (deletedBadge.rowCount) return res.status(HttpCode.OK).json(deletedBadge.rows[0]);
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
   }
 
-  async assignBadge(req: Request, res: Response, next: NextFunction) {
+  async assignBadge(
+    req: Request<RequestParams, ResponseBody, IBagdeAssignInfo, RequestQuery>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const { id, supporter, token_id } = req.body;
+      const { badgeID, supporter_wallet_address, token_id } = req.body;
 
-      const supporterInfo = await db.query('SELECT id FROM users WHERE wallet_address = $1', [supporter]);
+      const supporterInfo = await db.query('SELECT id FROM users WHERE wallet_address = $1', [
+        supporter_wallet_address,
+      ]);
 
       if (supporterInfo.rowCount) {
         const { id: userID } = supporterInfo.rows[0];
@@ -231,22 +236,22 @@ class BadgeController implements IBadgeConfig {
           tokenID = badgeCount.toNumber() + 1;
         }
 
-        const tx = await contract.mint(supporter, tokenID, 1, []);
+        const tx = await contract.mint(supporter_wallet_address, tokenID, 1, []);
         const mintInfo = await tx.wait();
 
         if (mintInfo?.status === 1) {
           if (!parseBool(token_id))
-            await db.query('UPDATE badges SET token_id = $1 WHERE id = $2 RETURNING *', [tokenID, id]);
+            await db.query('UPDATE badges SET token_id = $1 WHERE id = $2 RETURNING *', [tokenID, badgeID]);
 
           await db.query(
             `INSERT INTO users_assigned_badges (user_id, badge_id) 
               values ($1, $2) RETURNING *;`,
-            [userID, id],
+            [userID, badgeID],
           );
-          return res.status(200).json({ status: 'success', hash: mintInfo.transactionHash });
+          return res.status(HttpCode.CREATED).json(mintInfo.transactionHash);
         }
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -264,8 +269,8 @@ class BadgeController implements IBadgeConfig {
             WHERE u.id IS NOT NULL AND ub.badge_id = $1`,
         [id],
       );
-      if (holders.rowCount) return res.status(200).json(holders.rows);
-      return res.status(200).json([]);
+      if (holders.rowCount) return res.status(HttpCode.OK).json(holders.rows);
+      return res.status(HttpCode.OK).json([]);
     } catch (error) {
       next(error);
     }
@@ -278,7 +283,7 @@ class BadgeController implements IBadgeConfig {
   ) {
     try {
       this.setWalletConfig();
-      const { address, token_id } = req.query;
+      const { wallet_address, token_id } = req.query;
 
       const alchemy = new Alchemy(this.settings);
       const provider = await alchemy.config.getProvider();
@@ -293,14 +298,14 @@ class BadgeController implements IBadgeConfig {
         tokenID = badgeCount.toNumber() + 1;
       }
 
-      const mintGasCount = await contract.estimateGas.mint(address, tokenID, 1, []); // Number(quantity)
+      const mintGasCount = await contract.estimateGas.mint(wallet_address, tokenID, 1, []); // Number(quantity)
 
       if (gasPrice && mintGasCount) {
         const price = (gasPrice.toNumber() * mintGasCount.toNumber()) / 1e18;
-        return res.status(200).json({ price });
+        return res.status(HttpCode.OK).json(price);
       }
 
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }

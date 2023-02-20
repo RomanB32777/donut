@@ -1,19 +1,19 @@
-import { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { FC, memo, useCallback, useMemo } from "react";
 import { Col, Row } from "antd";
 import { allPeriodItemsTypes, statsDataTypes } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
-import useWindowDimensions from "hooks/useWindowDimensions";
 import BaseButton from "components/BaseButton";
 import FormInput from "components/FormInput";
 import DatesPicker from "components/DatesPicker";
 import ModalComponent from "components/ModalComponent";
 import SelectInput, { ISelectItem } from "components/SelectInput";
 
-import axiosClient from "modules/axiosClient";
-import { getStats } from "store/types/Stats";
-import { addNotification, addSuccessNotification } from "utils";
+import { useAppSelector } from "hooks/reduxHooks";
+import useWindowDimensions from "hooks/useWindowDimensions";
+import {
+  useCreateStatMutation,
+  useEditStatMutation,
+} from "store/services/StatsService";
 import {
   initWidgetStatData,
   filterCurrentPeriodItems,
@@ -28,24 +28,33 @@ const templateList: ISelectItem[] = templates.map((tName) => ({
   key: tName,
 }));
 
-const StatsModal = ({
+interface IStatsModal {
+  formData: IWidgetStatData;
+  isOpenModal: boolean;
+  setFormData: React.Dispatch<React.SetStateAction<IWidgetStatData>>;
+  setIsOpenModal: (status: boolean) => void;
+}
+
+const StatsModal: FC<IStatsModal> = ({
   formData,
   isOpenModal,
   setFormData,
   setIsOpenModal,
-}: {
-  formData: IWidgetStatData;
-  isOpenModal: boolean;
-  setFormData: (formData: IWidgetStatData) => void;
-  setIsOpenModal: (status: boolean) => void;
 }) => {
-  const dispatch = useDispatch();
-  const { user } = useAppSelector((state) => state);
-  const [loading, setLoading] = useState(false);
+  const { id: userID } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
 
-  const { title, stat_description, template, data_type, time_period } =
-    formData;
+  const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
+  const [createStat, { isLoading: isCreateLoading }] = useCreateStatMutation();
+
+  const {
+    title,
+    stat_description,
+    template,
+    data_type,
+    time_period,
+    custom_period,
+  } = formData;
 
   const currTemplateList = useMemo(
     () =>
@@ -63,16 +72,13 @@ const StatsModal = ({
     [data_type, template]
   );
 
-  const closeEditModal = () => {
-    setFormData({
-      ...initWidgetStatData,
-    });
+  const closeEditModal = useCallback(() => {
+    setFormData(initWidgetStatData);
     setIsOpenModal(false);
-  };
+  }, [setFormData, setIsOpenModal]);
 
   const sendData = async () => {
     try {
-      setLoading(true);
       const {
         id,
         title,
@@ -84,42 +90,31 @@ const StatsModal = ({
       } = formData;
 
       const timePeriod = time_period === "custom" ? custom_period : time_period;
-
       id
-        ? await axiosClient.put("/api/widget/stats-widget/", {
+        ? await editStat({
             statData: {
               title,
               stat_description,
               template: (template as string[]).join(" "),
               data_type,
-              time_period: timePeriod,
+              time_period: timePeriod as any,
+              creator_id: userID,
             },
             id,
           })
-        : await axiosClient.post("/api/widget/stats-widget/", {
+        : await createStat({
             title,
             stat_description,
             template: (template as string[]).join(" "),
             data_type,
-            time_period: timePeriod,
-            creator_id: user.id,
+            time_period: timePeriod as any,
+            creator_id: userID,
           });
-      dispatch(getStats(user.id));
+
       setIsOpenModal(false);
-      setFormData({
-        ...initWidgetStatData,
-      });
-      addSuccessNotification({ message: "Data created successfully" });
+      setFormData(initWidgetStatData);
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while creating data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -211,6 +206,9 @@ const StatsModal = ({
                   <Row>
                     <Col offset={isMobile ? 0 : 7}>
                       <DatesPicker
+                        defaultValue={
+                          Array.isArray(custom_period) ? custom_period : []
+                        }
                         setValue={(startDate, endDate) =>
                           setFormData({
                             ...formData,
@@ -264,7 +262,7 @@ const StatsModal = ({
               formatId="profile_form_save_widget_button"
               padding="6px 35px"
               onClick={sendData}
-              disabled={loading}
+              disabled={isEditLoading || isCreateLoading}
               fontSize="18px"
               isMain
             />
@@ -275,4 +273,4 @@ const StatsModal = ({
   );
 };
 
-export default StatsModal;
+export default memo(StatsModal);

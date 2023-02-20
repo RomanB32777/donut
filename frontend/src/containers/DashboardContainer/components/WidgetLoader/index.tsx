@@ -1,4 +1,5 @@
 import Loader from "components/Loader";
+import { memo } from "react";
 import "./styles.sass";
 
 const WidgetLoader = () => (
@@ -7,4 +8,4 @@ const WidgetLoader = () => (
   </div>
 );
 
-export default WidgetLoader;
+export default memo(WidgetLoader);

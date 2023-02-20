@@ -56,11 +56,11 @@ const loadFont = async ({ name, link }: IFont) => {
   }
 };
 
-const loadFonts = async ({
+const loadFonts = async <T extends Record<string, string>>({
   fields,
   fonts,
 }: {
-  fields: Record<string, string>;
+  fields: T;
   fonts: ISelectItem[];
 }) => {
   const result = await Promise.all(
@@ -74,12 +74,10 @@ const loadFonts = async ({
     })
   );
 
-  if (result.length)
-    return result.reduce(
-      (acc, { key, fontInfo }) => ({ ...acc, [key]: fontInfo }),
-      {}
-    );
-  return fields;
+  return result.reduce(
+    (acc, { key, fontInfo }) => ({ ...acc, [key]: fontInfo }),
+    {} as Record<keyof T, IFont>
+  );
 };
 
 const getFontColorStyles = (color: string, font: IFont) => ({

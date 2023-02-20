@@ -3,6 +3,7 @@ import { INotification, INotificationQueries, notificationRoles } from 'types';
 import db from '../db.js';
 import { clean } from '../modules/badWords/index.js';
 import { getUsername, parseBool } from '../utils.js';
+import { HttpCode } from '../types.js';
 
 const getOtherUsernameInAssigning = async ({
   notificationID,
@@ -160,17 +161,11 @@ class NotificationController {
       if (parseBool(roleplay)) {
         if (roleplay === 'recipient') {
           const recipientNotifications = await getRecipientNotifications();
-          return res.status(200).json({
-            notifications: recipientNotifications,
-            totalLength: recipientNotifications.length,
-          });
+          return res.status(HttpCode.OK).json(recipientNotifications);
         }
         if (roleplay === 'sender') {
           const senderNotifications = await getSenderNotifications();
-          return res.status(200).json({
-            notifications: senderNotifications,
-            totalLength: senderNotifications.length,
-          });
+          return res.status(HttpCode.OK).json(senderNotifications);
         }
       }
 
@@ -180,10 +175,7 @@ class NotificationController {
       const notifications = [...senderNotifications, ...recipientNotifications].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
-      return res.status(200).json({
-        notifications,
-        totalLength: notifications.length,
-      });
+      return res.status(HttpCode.OK).json(notifications);
     } catch (error) {
       next(error);
     }
@@ -201,9 +193,8 @@ class NotificationController {
         [read, id, userID],
       );
 
-      if (updatedNotification.rowCount) return res.status(200).json(updatedNotification.rows[0]);
-
-      return res.status(200).json([]);
+      if (updatedNotification.rowCount) return res.status(HttpCode.OK).json(updatedNotification.rows[0]);
+      return res.status(HttpCode.OK).json([]);
     } catch (error) {
       next(error);
     }
@@ -232,9 +223,9 @@ class NotificationController {
           RETURNING id;`,
           [id],
         );
-        return res.status(200).json(deletedUserNotification.rows[0]);
+        return res.status(HttpCode.OK).json(deletedUserNotification.rows[0]);
       }
-      return res.status(204).json({});
+      return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
       next(error);
     }
@@ -262,9 +253,9 @@ class NotificationController {
           USING subquery
           WHERE id in (${notificationIDs.join(', ')}) AND (subquery.count = 0 OR subquery.count IS NULL);`,
         );
-        return res.status(200).json({ status: 'ok' });
+        return res.status(HttpCode.OK).json({ status: 'ok' });
       }
-      return res.status(200).json([]);
+      return res.status(HttpCode.OK).json([]);
     } catch (error) {
       next(error);
     }

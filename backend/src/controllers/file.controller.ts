@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { readdirSync, existsSync } from 'fs';
 import { ISoundInfo } from 'types';
 import { assetsFolder, isProduction, soundsFolderName, uploadsFolder } from '../consts.js';
+import { HttpCode } from '../types.js';
 
 class FileController {
   async getDefaultImages(req: Request, res: Response, next: NextFunction) {
@@ -12,7 +13,7 @@ class FileController {
         const filePath = `${assetsFolder}/${type}/${i}`;
         return isProduction ? `/${filePath}` : `${req.protocol}://${req.headers.host}/${filePath}`;
       });
-      res.status(200).json(pathImages);
+      res.status(HttpCode.OK).json(pathImages);
     } catch (error) {
       next(error);
     }
@@ -44,7 +45,7 @@ class FileController {
           }))
         : [];
 
-      res.status(200).json([...pathUploadedSounds, ...pathDefaultSounds]);
+      res.status(HttpCode.OK).json([...pathUploadedSounds, ...pathDefaultSounds]);
     } catch (error) {
       next(error);
     }

@@ -1,18 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "antd";
-import { useDispatch } from "react-redux";
 
-import { useAppSelector } from "hooks/reduxHooks";
+import { useActions, useAppSelector } from "hooks/reduxHooks";
 import useOnClickOutside from "hooks/useClickOutside";
-import { NotificationItem } from "./components/NotificationItem";
+import NotificationItem from "./components/NotificationItem";
 import { AlertIcon } from "icons";
 
-import axiosClient from "modules/axiosClient";
-import { getNotifications, setNotifications } from "store/types/Notifications";
+import {
+  useGetNotificationsQuery,
+  useDeleteAllMutation,
+} from "store/services/NotificationsService";
 import "./styles.sass";
 
 const NotificationsPopup = () => {
-  const dispatch = useDispatch();
+  const { setNotifications } = useActions();
+
   const { notifications: notificationsApp, user } = useAppSelector(
     (state) => state
   );
@@ -26,22 +28,21 @@ const NotificationsPopup = () => {
   const { list } = notificationsApp;
   const { id: userID } = user;
 
-  const handlerNotificationPopup = () =>
-    setNotificationPopupOpened((prev) => !prev);
+  const { refetch } = useGetNotificationsQuery(
+    {
+      user: userID,
+      shouldUpdateApp: false,
+    },
+    { skip: !userID }
+  );
+  const [deleteAll, { isSuccess }] = useDeleteAllMutation();
 
-  const clearAll = async () => {
-    const { data, status } = await axiosClient.delete(
-      `/api/notification/${userID}`
-    );
-    if (status === 200 && data) {
-      dispatch(
-        setNotifications({
-          list: [],
-          shouldUpdateApp: false,
-        })
-      );
-    }
-  };
+  const handlerNotificationPopup = useCallback(
+    () => setNotificationPopupOpened((prev) => !prev),
+    []
+  );
+
+  const clearAll = async () => await deleteAll(userID);
 
   useOnClickOutside(
     isNotificationPopupOpened,
@@ -55,14 +56,16 @@ const NotificationsPopup = () => {
   );
 
   useEffect(() => {
-    isNotificationPopupOpened &&
-      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
+    isNotificationPopupOpened && refetch();
   }, [isNotificationPopupOpened]);
 
   useEffect(() => {
-    userID &&
-      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-  }, [userID]);
+    isSuccess &&
+      setNotifications({
+        list: [],
+        shouldUpdateApp: false,
+      });
+  }, [isSuccess]);
 
   return (
     <div className="notifications" ref={blockRef}>
@@ -122,4 +125,4 @@ const NotificationsPopup = () => {
   );
 };
 
-export default NotificationsPopup;
+export default memo(NotificationsPopup);

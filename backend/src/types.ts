@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { IUser, periodItemsTypes } from 'types';
+import { allPeriodItemsTypes, ISendingDataWithFile } from 'types';
 
 enum HttpCode {
   OK = 200,
+  CREATED = 201,
   NO_CONTENT = 204,
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
@@ -22,28 +23,25 @@ interface RequestBody {}
 
 interface RequestQuery {}
 
-interface RequestBodyUser extends IUser {
-  isReset?: boolean;
+interface RequestUserIDParam {
+  user_id: number;
 }
 
-type additionalPeriodItems = 'yesterday' | 'all' | 'custom';
-
-type fullPeriodItems = periodItemsTypes & additionalPeriodItems;
+type RequestBodyWithFile<T = Record<string, string>> = T & ISendingDataWithFile<T>;
 
 type IFullFilterPeriodItems<T = string> = {
-  [key in fullPeriodItems]: T;
+  [key in allPeriodItemsTypes]: T;
 };
 
+export { HttpCode };
+
 export type {
-  HttpCode,
   AppError,
   RequestParams,
   ResponseBody,
   RequestBody,
   RequestQuery,
-  
-  RequestBodyUser,
-
-  fullPeriodItems,
+  RequestUserIDParam,
+  RequestBodyWithFile,
   IFullFilterPeriodItems,
 };

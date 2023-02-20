@@ -5,14 +5,13 @@ interface INotificationsState {
   shouldUpdateApp: boolean;
 }
 
-interface INotificationsAction {
-  type: string;
-  payload: INotificationsState;
-}
-
 interface INotificationParams extends INotificationQueries {
   user: number | string;
   shouldUpdateApp?: boolean;
 }
 
-export type { INotificationsState, INotificationsAction, INotificationParams };
+interface IVisibleNotification {
+  isVisibleNotification?: boolean;
+}
+
+export type { INotificationsState, INotificationParams, IVisibleNotification };

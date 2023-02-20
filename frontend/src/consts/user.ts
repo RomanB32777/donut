@@ -21,7 +21,6 @@ const initUser: IUser = {
     btn_text: "",
     main_color: "",
     background_color: "",
-    security_string: "",
   },
 };
 
@@ -32,7 +31,6 @@ const initDonatPage: IDonatPageWithFiles = {
   btn_text: "",
   main_color: "",
   background_color: "",
-  security_string: "",
 };
 
 const initUserWithFiles: IUserWithFiles = {

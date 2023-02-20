@@ -14,6 +14,7 @@ export interface INotification {
 export interface INotificationWithoutType {
   title?: string;
   message: NotificationTitleMessage;
+  id?: string;
 }
 
 declare type typeNotification =

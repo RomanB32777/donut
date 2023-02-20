@@ -10,8 +10,8 @@ router.delete('/:id', userController.deleteUser)
 router.get('/id/:id', userController.getUserByID)
 router.get('/creators/:username', userController.getCreatorByName)
 router.get('/:address', userController.getUser)
-router.put('/edit', userController.editUser)
 router.put('/edit-image', userController.editUserImage)
 router.put('/edit-creator-image/:type', userController.editCreatorImage)
+router.put('/', userController.editUser)
 
 export default router;

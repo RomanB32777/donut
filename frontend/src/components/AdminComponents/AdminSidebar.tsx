@@ -1,10 +1,18 @@
+import { FC, useMemo } from "react";
 import { useLocation } from "react-router-dom";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import Sidebar from "components/Sidebar";
+
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { IRoute } from "routes";
-import { useMemo } from "react";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+
+interface IAdminSidebar {
+  menuItems: IRoute[];
+  collapsed: boolean;
+  setCollapsed: (state: boolean) => any;
+}
 
 interface IGetItemParams {
   label: any;
@@ -13,14 +21,10 @@ interface IGetItemParams {
   children?: any;
 }
 
-const AdminSidebar = ({
+const AdminSidebar: FC<IAdminSidebar> = ({
   menuItems,
   collapsed,
   setCollapsed,
-}: {
-  menuItems: IRoute[];
-  collapsed: boolean;
-  setCollapsed: (state: boolean) => any;
 }) => {
   const { pathname } = useLocation();
   const { isMobile } = useWindowDimensions();
@@ -39,9 +43,9 @@ const AdminSidebar = ({
       : pathElements[0];
   }, [pathname]);
 
-  return (
-    <Sidebar
-      items={menuItems.map(({ name, icon, menu, path, children }) => {
+  const menuSidebarItems = useMemo(
+    () =>
+      menuItems.map(({ name, icon, menu, path, children }) => {
         return menu
           ? getItem({
               label: name,
@@ -60,7 +64,13 @@ const AdminSidebar = ({
                 : null,
             })
           : null;
-      })}
+      }),
+    [menuItems]
+  );
+
+  return (
+    <Sidebar
+      items={menuSidebarItems}
       activeItem={activeRoute}
       defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
       collapsed={collapsed}

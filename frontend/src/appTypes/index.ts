@@ -1,5 +1,4 @@
-import { periodItemsTypes } from "types";
-import { IFileInfo } from "./files";
+import { IFileInfo, IDataWithFile } from "./files";
 import {
   ProviderRpcError,
   IWalletInitData,
@@ -8,29 +7,28 @@ import {
   IBlockchain,
   IWalletState,
   blockchainPayload,
-  IBlockchainAction,
   IWalletMethods,
   IBlockchainData,
   methodNames,
   IWalletConf,
   currencyBlockchainsType,
 } from "./wallet";
-import { IUserAction, IDonatPageWithFiles, IUserWithFiles } from "./user";
+import { IDonatPageWithFiles, IUserWithFiles } from "./user";
 import { IBadge } from "./badges";
 import {
   INotificationsState,
-  INotificationsAction,
   INotificationParams,
+  IVisibleNotification,
 } from "./notifications";
+import { IDonationWidgetInfo } from "./donations";
 import {
   AlignText,
   IFont,
   keyPeriodItems,
-  IGoalAction,
   IWidgetGoalData,
-  IStatAction,
   IWidgetStatData,
   IAlert,
+  IDonationWidgetItem,
 } from "./widgets";
 import {
   GetObjDifferentKeys,
@@ -39,19 +37,9 @@ import {
   DeepMergeTwoTypes,
 } from "./generics";
 
-interface ILoadingAction {
-  type: string;
-  payload: boolean;
-}
-
 interface IAnyAction<P = any> {
   type: string;
   payload: P;
-}
-
-interface IFiltersForm {
-  time_period: periodItemsTypes;
-  custom_time_period: string[]; // startDate, endDate
 }
 
 interface IFiltersDates {
@@ -71,11 +59,12 @@ interface IStringObj {
 }
 
 export type {
-  // app
+  // files
   IFileInfo,
+  IDataWithFile,
+
+  // app
   IAnyAction,
-  ILoadingAction,
-  IFiltersForm,
   IFiltersDates,
   IDefaultImagesModal,
   typesTabContent,
@@ -83,7 +72,6 @@ export type {
   IStringObj,
 
   // user
-  IUserAction,
   IDonatPageWithFiles,
   IUserWithFiles,
 
@@ -95,7 +83,6 @@ export type {
   IBlockchain,
   IWalletState,
   blockchainPayload,
-  IBlockchainAction,
   IBlockchainData,
   IWalletMethods,
   methodNames,
@@ -104,18 +91,20 @@ export type {
 
   // notifications
   INotificationsState,
-  INotificationsAction,
   INotificationParams,
+  IVisibleNotification,
+
+  // donations
+  IDonationWidgetInfo,
 
   // widgets
   AlignText,
   IFont,
   keyPeriodItems,
-  IGoalAction,
   IWidgetGoalData,
-  IStatAction,
   IWidgetStatData,
   IAlert,
+  IDonationWidgetItem,
 
   // generics
   GetObjDifferentKeys,

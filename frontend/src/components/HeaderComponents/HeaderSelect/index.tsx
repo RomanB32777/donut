@@ -1,7 +1,5 @@
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import clsx from "clsx";
-import { useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
 
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
@@ -9,29 +7,28 @@ import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
-import { logoutUser } from "utils";
+import { useLogoutUser } from "hooks/userHooks";
 import "./styles.sass";
 
 const HeaderSelect = ({
   title,
   isNotVisibleAvatarInMobile,
 }: {
-  title: string;
+  title?: string;
   isNotVisibleAvatarInMobile?: boolean;
 }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { id, avatar } = useAppSelector(({ user }) => user);
+  const { id, avatar, username } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
   const blockRef = useRef(null);
+  const logout = useLogoutUser();
 
   const [isOpenSelect, setIsOpenSelect] = useState(false);
 
   const handlerSelect = () => setIsOpenSelect((prev) => !prev);
 
-  const logout = () => {
+  const logoutHandler = () => {
     setIsOpenSelect && setIsOpenSelect(false);
-    logoutUser({ dispatch, navigate });
+    logout();
   };
 
   useOnClickOutside(isOpenSelect, blockRef, handlerSelect);
@@ -55,7 +52,7 @@ const HeaderSelect = ({
             {avatar && <img src={avatar} alt="avatar" />}
           </div>
         )}
-        <span className="title">{title}</span>
+        <span className="title">{username.slice(1) || title}</span>
         <div
           className={clsx("icon", {
             rotated: isOpenSelect,
@@ -66,7 +63,7 @@ const HeaderSelect = ({
         {Boolean(isOpenSelect) && (
           <div className="popup fadeIn">
             <div className="item">
-              <div className="content" onClick={logout}>
+              <div className="content" onClick={logoutHandler}>
                 <div className="img icon">
                   <LogoutIcon />
                 </div>

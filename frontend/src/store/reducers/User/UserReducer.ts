@@ -1,15 +1,29 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initUser } from "consts";
-import { IUserAction } from "appTypes";
-import { SET_USER } from "store/types/User";
+import userApi from "store/services/UserService";
+import { IUser } from "types";
 
-const UserReducer = (state = initUser, action: IUserAction) => {
-  switch (action.type) {
-    case SET_USER:
-      return { ...state, ...action.payload };
-
-    default:
+export const userSlice = createSlice({
+  name: "user",
+  initialState: initUser,
+  reducers: {
+    setUser(state, { payload }: PayloadAction<IUser>) {
+      state = payload;
       return state;
-  }
-};
+    },
+    logoutUser() {
+      return initUser;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      userApi.endpoints.getUser.matchFulfilled,
+      (state, { payload }: PayloadAction<IUser>) => {
+        state = payload;
+        return state;
+      }
+    );
+  },
+});
 
-export default UserReducer;
+export default userSlice.reducer;

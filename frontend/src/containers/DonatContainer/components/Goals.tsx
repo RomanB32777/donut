@@ -1,37 +1,46 @@
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import clsx from "clsx";
-import { ISendDonat } from "types";
+import { ISendDonat, IUser } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
+import Loader from "components/Loader";
 import { StarIcon } from "icons";
+import { useGetGoalsQuery } from "store/services/GoalsService";
 
 const Goals = ({
+  personInfo,
   form,
   setForm,
 }: {
+  personInfo: IUser;
   form: ISendDonat;
   setForm: (value: React.SetStateAction<ISendDonat>) => void;
 }) => {
-  const { goals, personInfo } = useAppSelector((state) => state);
+  const { donat_page, id } = personInfo;
+
+  const { data: goals, isLoading } = useGetGoalsQuery(id, { skip: !id });
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
 
-  const { donat_page } = personInfo;
   const { main_color } = donat_page;
 
-  const onChangeRadio = (e: RadioChangeEvent) => {
-    setForm((form) => ({
-      ...form,
-      selectedGoal: e.target.value,
-    }));
-  };
+  const onChangeRadio = useCallback(
+    (e: RadioChangeEvent) => {
+      setForm((form) => ({
+        ...form,
+        selectedGoal: e.target.value,
+      }));
+    },
+    [setForm]
+  );
 
   const goalsActive = useMemo(
-    () => goals.filter((goal) => !goal.is_archive),
+    () => (goals ? goals.filter((goal) => !goal.is_archive) : []),
     [goals]
   );
 
   const { selectedGoal } = form;
+
+  if (isLoading) return <Loader size="small" />;
 
   if (!goalsActive.length) return null;
 
@@ -62,21 +71,20 @@ const Goals = ({
             <div className="list">
               <Radio.Group
                 onChange={onChangeRadio}
-                value={String(selectedGoal)}
+                value={String(selectedGoal || "0")}
               >
                 <Space direction="vertical">
                   <Radio className="radio-select" value="0">
                     Don't participate
                   </Radio>
-                  {goalsActive &&
-                    goalsActive.map(
-                      ({ id, title, amount_raised, amount_goal }) => (
-                        <Radio className="radio-select" key={id} value={id}>
-                          {title} ({amount_raised}/{amount_goal}
-                          &nbsp;USD)
-                        </Radio>
-                      )
-                    )}
+                  {goalsActive.map(
+                    ({ id, title, amount_raised, amount_goal }) => (
+                      <Radio className="radio-select" key={id} value={id}>
+                        {title} ({amount_raised}/{amount_goal}
+                        &nbsp;USD)
+                      </Radio>
+                    )
+                  )}
                 </Space>
               </Radio.Group>
             </div>
@@ -87,4 +95,4 @@ const Goals = ({
   );
 };
 
-export default Goals;
+export default memo(Goals);

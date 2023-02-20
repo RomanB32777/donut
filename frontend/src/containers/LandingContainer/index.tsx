@@ -1,55 +1,59 @@
-import { useContext, useEffect, useMemo } from "react";
+import { FC, memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Carousel, Col, Row } from "antd";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { WalletContext } from "contexts/Wallet";
-import { HeaderComponent } from "components/HeaderComponents/HeaderComponent";
+import HeaderComponent from "components/HeaderComponents/HeaderComponent";
 import BaseButton from "components/BaseButton";
 import Logo from "components/HeaderComponents/LogoComponent";
 
-import { checkWallet, scrollToPosition } from "utils";
+import { useWallet } from "hooks/walletHooks";
+import { scrollToPosition } from "utils";
 import { RoutePaths } from "routes";
 import { storageWalletKey } from "consts";
 import { cryptoSteps, features, help, images, socialNetworks } from "./const";
 import { IFeature } from "./types";
 import "./styles.sass";
 
-const LandingBtn = ({
-  id,
-  signUp,
-}: {
+interface ILandingBtn {
   id: number;
   signUp: () => Promise<void>;
-}) => (
+}
+
+const mobileFeaturesSteps = features.reduce((acc, curr, index) => {
+  const step = Math.floor(index / 3);
+  return { ...acc, [step]: acc[step] ? [...acc[step], curr] : [curr] };
+}, {} as Record<string, IFeature[]>);
+
+const LandingBtn: FC<ILandingBtn> = memo(({ id, signUp }) => (
   <BaseButton
     formatId={id ? "mainpage_main_button_logged" : "mainpage_main_button"}
     onClick={signUp}
     modificator="landing-btn center-btn"
     isMain
   />
-);
+));
 
 const LandingContainer = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { checkWallet } = useWallet();
   const { isMobile } = useWindowDimensions();
   const { id } = useAppSelector(({ user }) => user);
   const walletConf = useContext(WalletContext);
 
-  const redirectToDashboard = async () => {
-    const isExist = await checkWallet({ walletConf, dispatch, navigate });
-    if (isExist) {
-      scrollToPosition();
-      navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
-      return true;
-    }
-    return false;
-  };
+  const signUp = useCallback(async () => {
+    const redirectToDashboard = async () => {
+      const isExist = await checkWallet(true);
+      if (isExist) {
+        scrollToPosition();
+        navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
+        return true;
+      }
+      return false;
+    };
 
-  const signUp = async () => {
     if (id) navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
     else {
       const isRedirect = await redirectToDashboard();
@@ -58,22 +62,16 @@ const LandingContainer = () => {
         if (isUnlockedWallet) await redirectToDashboard();
       }
     }
-  };
+  }, [id, walletConf]);
 
   const blockchains = useMemo(
     () => walletConf.main_contract.blockchains,
     [walletConf]
   );
 
-  const mobileFeaturesSteps = features.reduce((acc, curr, index) => {
-    const step = Math.floor(index / 3);
-    return { ...acc, [step]: acc[step] ? [...acc[step], curr] : [curr] };
-  }, {} as Record<string, IFeature[]>);
-
   useEffect(() => {
-    localStorage.getItem(storageWalletKey) &&
-      checkWallet({ walletConf, dispatch });
-  }, [walletConf]);
+    localStorage.getItem(storageWalletKey) && checkWallet();
+  }, []);
 
   const { rocketImg, moneyImg, listImg } = images;
 
