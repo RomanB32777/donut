@@ -1,21 +1,25 @@
 import { Middleware, MiddlewareAPI } from "redux";
 import { FetchArgs, fetchBaseQuery, retry } from "@reduxjs/toolkit/dist/query";
 import { isRejectedWithValue } from "@reduxjs/toolkit";
-import { addErrorNotification, addSuccessNotification } from "utils";
-import { baseURL } from "consts";
+import {
+  addErrorNotification,
+  addSuccessNotification,
+  setAuthToken,
+} from "utils";
+import { baseURL, storageToken } from "consts";
 
-const getQueryArgs = (args: string | FetchArgs) => {
+const getQueryArgs = ({
+  args,
+  isQuery,
+}: {
+  args: string | FetchArgs;
+  isQuery: boolean;
+}) => {
+  if (isQuery) return args;
+
   const fetchArgs = args as FetchArgs;
-  const isGetMethod = !fetchArgs.method;
-  const isExistParams = Boolean(fetchArgs.params);
-
-  if (typeof args === "string" || isGetMethod) return args;
-
-  if (isExistParams) {
-    const { params, ...queryArgs } = args;
-    return queryArgs;
-  }
-  return args;
+  const { params, ...queryArgs } = fetchArgs;
+  return queryArgs;
 };
 
 const rtkQueryErrorLogger: Middleware =
@@ -28,12 +32,18 @@ const rtkQueryErrorLogger: Middleware =
     return next(action);
   };
 
-const serviceStatusHandler = ({ apiURL }: { apiURL: string }) =>
+const baseQuery = ({ apiURL }: { apiURL: string }) =>
   retry(
     async (args: string | FetchArgs, api, extraOptions) => {
-      const queryArgs = getQueryArgs(args);
+      const queryArgs = getQueryArgs({ args, isQuery: api.type === "query" });
+
       const result = await fetchBaseQuery({
         baseUrl: `${baseURL}/${apiURL}`,
+        prepareHeaders: (headers) => {
+          const token = localStorage.getItem(storageToken);
+          if (token) headers.set("Authorization", token);
+          return headers;
+        },
       })(queryArgs, api, extraOptions);
 
       const isVisibleNotificationArg = (args as FetchArgs).params
@@ -83,7 +93,13 @@ const serviceStatusHandler = ({ apiURL }: { apiURL: string }) =>
         }
       }
 
-      if (result.error?.status) retry.fail(result.error);
+      const errorStatus = result.error?.status;
+
+      if (errorStatus) {
+        if (errorStatus === 401) await setAuthToken();
+        else retry.fail(result.error);
+      }
+
       return result;
     },
     {
@@ -91,4 +107,4 @@ const serviceStatusHandler = ({ apiURL }: { apiURL: string }) =>
     }
   );
 
-export { getQueryArgs, rtkQueryErrorLogger, serviceStatusHandler };
+export { getQueryArgs, rtkQueryErrorLogger, baseQuery };

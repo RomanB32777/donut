@@ -7,6 +7,7 @@ import BaseButton from "components/BaseButton";
 import PageTitle from "components/PageTitle";
 import StatsModal from "./components/StatsModal";
 import StatsItem from "./components/StatsItem";
+import Loader from "components/Loader";
 
 import { useGetStatsQuery } from "store/services/StatsService";
 import { getFontsList } from "utils";
@@ -24,7 +25,7 @@ const StreamStatsContainer = () => {
     ...initWidgetStatData,
   });
 
-  const { data: stats } = useGetStatsQuery(id, { skip: !id });
+  const { data: stats, isLoading } = useGetStatsQuery(id, { skip: !id });
 
   const openCreateModal = useCallback(() => setIsOpenModal(true), []);
 
@@ -58,6 +59,8 @@ const StreamStatsContainer = () => {
 
     initFonts();
   }, []);
+
+  if (isLoading) return <Loader size="small" />;
 
   return (
     <div className="streamStatsPage-container stats fadeIn">

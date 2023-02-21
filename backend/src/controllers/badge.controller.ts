@@ -3,7 +3,7 @@ import { Contract, Wallet, BigNumber } from 'ethers';
 import { Network, Alchemy } from 'alchemy-sdk';
 import { IBadgeCreatingInfo, IBagdeAssignInfo, IQueryPriceParams, IUser } from 'types';
 import db from '../db.js';
-import { isProduction, nftAbi, uploadsFolder } from '../consts.js';
+import { isProduction, nftAbi, uploadsFolder, uploadsFolderTypes } from '../consts.js';
 import { HttpCode, RequestBody, RequestBodyWithFile, RequestParams, RequestQuery, ResponseBody } from '../types.js';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { getRandomStr, parseBool } from '../utils.js';
@@ -77,7 +77,7 @@ class BadgeController implements IBadgeConfig {
       if (req.files && badgeData) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
         const filename = getRandomStr(32) + file.name.slice(file.name.lastIndexOf('.'));
-        const filepath = `${uploadsFolder}/${username}/badges/${filename}`;
+        const filepath = `${uploadsFolder}/${username}/${uploadsFolderTypes.badges}/${filename}`;
 
         const dataKeys = Object.keys(badgeData);
         const dataValues = Object.values(badgeData);

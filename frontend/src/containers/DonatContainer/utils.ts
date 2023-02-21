@@ -148,16 +148,15 @@ const usePayment = ({
             const currentBlockchain = await walletConf.getCurrentBlockchain();
 
             if (currentBlockchain) {
-              // const res =
-              //   await walletConf.transfer_contract_methods.paymentMethod({
-              //     contract: currentBlockchain.address,
-              //     addressTo: wallet_address,
-              //     sum: String(amount),
-              //     signer,
-              //   });
+              const res =
+                await walletConf.transfer_contract_methods.paymentMethod({
+                  contract: currentBlockchain.address,
+                  addressTo: wallet_address,
+                  sum: String(amount),
+                  signer,
+                });
 
-              // if (res)
-              await sendDonation();
+              if (res) await sendDonation();
             }
           } else {
             addNotification({

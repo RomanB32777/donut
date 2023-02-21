@@ -5,7 +5,7 @@ interface ProviderRpcError extends Error {
   message: string;
   code: string | number;
   data?: unknown;
-  reason?: string
+  reason?: string;
 }
 
 interface IWalletInitData {
@@ -80,7 +80,9 @@ type blockchainPayload = blockchainsType | null;
 
 interface IWalletMethods {
   isInstall: () => boolean;
-  requestAccounts: () => Promise<boolean>
+  // signer?: ethers.providers.JsonRpcSigner
+  checkAuthToken: () => Promise<string | null>;
+  requestAccounts: () => Promise<boolean>;
   getWalletData: () => Promise<IBlockchainData | null>;
   getCurrentBlockchain: () => Promise<IBlockchain | null>;
   changeBlockchain: (blockchainName: blockchainsType) => Promise<any>;

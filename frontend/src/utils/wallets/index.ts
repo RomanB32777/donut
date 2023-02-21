@@ -1,7 +1,9 @@
 import {
   isInstall,
+  checkAuthToken,
   getWalletData,
   requestAccounts,
+  setAuthToken,
   getCurrentBlockchain,
   changeBlockchain,
   paymentMethod,
@@ -14,6 +16,7 @@ import { IWalletMethods } from "appTypes";
 
 const walletMethods: IWalletMethods = {
   isInstall,
+  checkAuthToken,
   requestAccounts,
   getWalletData,
   getCurrentBlockchain,
@@ -30,4 +33,4 @@ const walletMethods: IWalletMethods = {
   },
 };
 
-export { walletMethods };
+export { walletMethods, setAuthToken };

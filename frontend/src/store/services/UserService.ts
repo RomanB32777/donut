@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { donatAssetTypes, IEditUserInfo, IShortUserData, IUser } from "types";
 import { setFormDataValues } from "utils";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 import { IDataWithFile } from "appTypes";
 
 interface IEditCreatorImage extends IDataWithFile {
@@ -10,7 +10,7 @@ interface IEditCreatorImage extends IDataWithFile {
 
 const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/user",
   }),
   tagTypes: ["user"],

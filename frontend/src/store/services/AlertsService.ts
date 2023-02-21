@@ -1,12 +1,12 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { IAlertData, ISoundInfo, IWidgetQueryData } from "types";
 import { setFormDataValues } from "utils";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 import { IDataWithFile } from "appTypes";
 
 const alertsApi = createApi({
   reducerPath: "alertsApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/widget/alerts-widget",
   }),
   tagTypes: ["alerts"],

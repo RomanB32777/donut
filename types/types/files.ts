@@ -21,7 +21,7 @@ type donatAssetTypes = "background" | "header";
 
 type defaultAssetsFolders = donatAssetTypes | alertAssetTypes;
 
-type fileUploadTypes = defaultAssetsFolders | "avatars";
+type fileUploadTypes = defaultAssetsFolders | "avatar" | "badges";
 
 export type {
   ISoundInfo,

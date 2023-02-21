@@ -7,7 +7,7 @@ import {
   IShortUserData,
   statsDataTypes,
 } from "types";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 
 interface IDonationsGetParams {
   userID: number;
@@ -17,7 +17,7 @@ interface IDonationsGetParams {
 
 const donationsApi = createApi({
   reducerPath: "donationsApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/donation",
   }),
   tagTypes: ["donations"],

@@ -76,7 +76,7 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
   const { id, roleplay } = user;
 
   useEffect(() => {
-    checkWallet(true);
+    !id && checkWallet(true);
   }, [id]);
 
   if (!id && loading) return <Loader size="big" />;

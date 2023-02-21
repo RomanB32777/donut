@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { readdirSync, existsSync } from 'fs';
 import { ISoundInfo } from 'types';
-import { assetsFolder, isProduction, soundsFolderName, uploadsFolder } from '../consts.js';
+import { assetsFolder, isProduction, uploadsFolderTypes, uploadsFolder } from '../consts.js';
 import { HttpCode } from '../types.js';
 
 class FileController {
@@ -22,8 +22,8 @@ class FileController {
   async getSounds(req: Request, res: Response, next: NextFunction) {
     try {
       const { username } = req.params;
-      const defaultFilesPath = `${assetsFolder}/${soundsFolderName}`;
-      const uploadsFilesPath = `${uploadsFolder}/${username}/${soundsFolderName}`;
+      const defaultFilesPath = `${assetsFolder}/${uploadsFolderTypes.sound}`;
+      const uploadsFilesPath = `${uploadsFolder}/${username}/${uploadsFolderTypes.sound}`;
 
       const defaultSounds = readdirSync(defaultFilesPath);
       const uploadedSounds = existsSync(uploadsFilesPath) && readdirSync(uploadsFilesPath);

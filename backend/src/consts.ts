@@ -9,7 +9,15 @@ import {
 
 const assetsFolder = 'assets';
 const uploadsFolder = 'uploads';
-const soundsFolderName: fileUploadTypes = 'sound';
+
+const uploadsFolderTypes: Record<fileUploadTypes, fileUploadTypes> = {
+  background: 'background',
+  header: 'header',
+  alert: 'alert',
+  sound: 'sound',
+  avatar: 'avatar',
+  badges: "badges",
+};
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -47,7 +55,7 @@ const initAlertWidget: IAlertData = {
   sound: '',
   voice: false,
   gender_voice: '',
-  creator_id: 0
+  creator_id: 0,
 };
 
 const initGoalWidget: IGoalWidgetData = {
@@ -71,7 +79,7 @@ export {
   // app
   assetsFolder,
   uploadsFolder,
-  soundsFolderName,
+  uploadsFolderTypes,
   isProduction,
 
   // wallet

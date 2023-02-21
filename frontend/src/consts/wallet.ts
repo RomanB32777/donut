@@ -19,6 +19,7 @@ const commissionAbi =
   '[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amountSent","type":"uint256"},{"indexed":false,"internalType":"address","name":"sender","type":"address"}],"name":"commissionMade","type":"event"},{"inputs":[],"name":"payForBadgeCreation","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"withdrawPendingBalance","outputs":[],"stateMutability":"payable","type":"function"},{"stateMutability":"payable","type":"receive"}]';
 
 const storageWalletKey = "main_blockchain";
+const storageToken = "auth_token";
 
 const initBlockchainData: IBlockchain = {
   address: "",
@@ -73,7 +74,7 @@ const walletInfo: IWalletState = {
         blockExplorerUrls: ["https://evm.evmos.dev"],
       },
       {
-        address: "0x8c408C8df8A61Da4DA487c3d1a3e7F4a169837A6",
+        address: "0xE15B011f681632AFcC7F4a732D4b356da0fAC86A",
         name: "eth",
         icon: ethIcon,
         chainId: "0x66eed", // 421613
@@ -212,6 +213,7 @@ const walletInfo: IWalletState = {
 
 export {
   storageWalletKey,
+  storageToken,
   initBlockchainData,
   walletInfo,
   mainAbi,

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { RoutePaths } from "routes";
-import { storageWalletKey } from "consts";
+import { storageToken, storageWalletKey } from "consts";
 import { useActions } from "hooks/reduxHooks";
 
 const useLogoutUser = () => {
@@ -9,9 +9,10 @@ const useLogoutUser = () => {
 
   const logout = () => {
     localStorage.removeItem(storageWalletKey);
+    localStorage.removeItem(storageToken);
     logoutUser();
     setWallet(null);
-    navigate(RoutePaths.main);
+    return navigate(RoutePaths.main);
   };
 
   return logout;

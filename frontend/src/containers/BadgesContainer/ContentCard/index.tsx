@@ -21,12 +21,7 @@ const ContentCard = ({
   return (
     <div className="badge" onClick={openBadgePape}>
       <div className="link">
-        <div
-          className="image"
-          style={{
-            height: image ? 220 : 256,
-          }}
-        >
+        <div className="image">
           <img src={image} alt={title} />
         </div>
         <div className="info">

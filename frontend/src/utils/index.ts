@@ -34,7 +34,7 @@ import {
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
 } from "./dateMethods";
-import { walletMethods } from "./wallets";
+import { walletMethods, setAuthToken } from "./wallets";
 import {
   scrollToPosition,
   isValidateFilledForm,
@@ -73,6 +73,7 @@ export {
 
   // wallets
   walletMethods,
+  setAuthToken,
 
   // fonts
   getFontsList,

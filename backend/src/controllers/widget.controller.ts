@@ -22,8 +22,8 @@ import {
   initGoalWidget,
   initStatWidget,
   isProduction,
-  soundsFolderName,
   uploadsFolder,
+  uploadsFolderTypes,
 } from '../consts.js';
 import { HttpCode, RequestBody, RequestBodyWithFile, RequestParams, RequestQuery, ResponseBody } from '../types.js';
 
@@ -32,7 +32,7 @@ type genderVoices = keyof typeof googlePkg.google.cloud.texttospeech.v1.SsmlVoic
 const speechClient = new TextToSpeechClient();
 
 const setDefaultAlertSound = async ({ id, developHost }: { id: string; developHost: string }) => {
-  const defaultFilesPath = `${assetsFolder}/${soundsFolderName}`;
+  const defaultFilesPath = `${assetsFolder}/${uploadsFolderTypes.sound}`;
   const defaultSounds = readdirSync(defaultFilesPath);
   const newSound = defaultSounds[0];
   const updatedAlertWidget = await db.query(
@@ -86,7 +86,7 @@ class WidgetController {
       if (req.files) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
         const filename = getRandomStr(32) + file.name.slice(file.name.lastIndexOf('.'));
-        const filepath = `${uploadsFolder}/${username}/alert/${filename}`;
+        const filepath = `${uploadsFolder}/${username}/${uploadsFolderTypes.alert}/${filename}`;
 
         const updatedBannerWidget = await db.query<IAlertData>(
           `UPDATE alerts SET 
@@ -437,7 +437,7 @@ class WidgetController {
       if (req.files) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
         const filename = file.name;
-        const filepath = `${uploadsFolder}/${username}/sound/${filename}`;
+        const filepath = `${uploadsFolder}/${username}/${uploadsFolderTypes.sound}/${filename}`;
 
         file?.mv(filepath, (err) => err && console.log(err));
 

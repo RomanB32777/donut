@@ -1,10 +1,10 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { defaultAssetsFolders, ISoundInfo } from "types";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 
 const filesApi = createApi({
   reducerPath: "filesApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/file",
   }),
   endpoints: (build) => ({

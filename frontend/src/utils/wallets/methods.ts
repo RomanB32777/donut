@@ -1,18 +1,57 @@
 import { ethers, Contract, utils } from "ethers";
+import Web3Token from "web3-token";
 import { blockchainsType } from "types";
 
 import { addAuthWalletNotification, addInstallWalletNotification } from "..";
-import { storageWalletKey } from "consts";
+import { storageToken, storageWalletKey } from "consts";
 import { IPayObj, IWalletConf, methodNames, ProviderRpcError } from "appTypes";
 
 export function isInstall() {
-  return (window as any).hasOwnProperty("ethereum");
+  return (
+    (window as any).hasOwnProperty("ethereum") &&
+    (window as any).ethereum?.isMetaMask
+  );
 }
 
 export async function requestAccounts() {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
   const adresses = await provider.send("eth_requestAccounts", []);
   return Boolean(adresses?.length);
+}
+
+export async function setAuthToken(signer?: ethers.providers.JsonRpcSigner) {
+  localStorage.removeItem(storageToken);
+  let signerObj = signer;
+
+  if (!signerObj) {
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    signerObj = provider.getSigner(0);
+  }
+
+  // generating a token with 1 day of expiration time
+  const token = await Web3Token.sign(
+    async (msg: any) => signerObj && (await signerObj.signMessage(msg)),
+    "1d"
+  );
+  localStorage.setItem(storageToken, token);
+  return token;
+}
+
+export async function checkAuthToken(this: IWalletConf) {
+  let token = localStorage.getItem(storageToken);
+
+  if (!token) {
+    const wallet = await this.getWalletData();
+    if (wallet) {
+      const { signer } = wallet;
+
+      // generating a token with 1 day of expiration time
+      token = await setAuthToken(signer);
+    }
+  }
+  return token;
 }
 
 export async function getWalletData(this: IWalletConf) {
@@ -28,12 +67,12 @@ export async function getWalletData(this: IWalletConf) {
       return null;
     }
 
-    if (localStorage.getItem(storageWalletKey)) {
+    if (localStorage.getItem(storageWalletKey))
       await provider.send("eth_requestAccounts", []);
-    }
 
     const signer = provider.getSigner(0);
     const address = await signer.getAddress();
+
     return {
       signer,
       address,

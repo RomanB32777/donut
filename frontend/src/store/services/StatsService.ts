@@ -5,11 +5,11 @@ import {
   IStatDataBase,
   IWidgetQueryData,
 } from "types";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 
 const statsApi = createApi({
   reducerPath: "statsApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/widget/stats-widget",
   }),
   tagTypes: ["stats"],

@@ -35,10 +35,12 @@ const useWallet = () => {
           const { data: isExistUser } = await checkIsExistUser(address);
 
           if (isExistUser) {
-            getUser(address);
+            await walletConf.checkAuthToken();
+            await getUser(address);
             return true;
             // not registered user - to registration page
-          } else if (isRedirect) return navigate(`/${RoutePaths.register}`);
+          }
+          return false;
         } else {
           const newBlockchaind = await walletConf.changeBlockchain("polygon");
           if (newBlockchaind) setWallet("polygon");

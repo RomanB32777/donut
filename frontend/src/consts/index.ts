@@ -12,6 +12,7 @@ import {
 } from "./widgets";
 import {
   storageWalletKey,
+  storageToken,
   initBlockchainData,
   walletInfo,
   mainAbi,
@@ -57,6 +58,7 @@ export {
 
   // wallet
   storageWalletKey,
+  storageToken,
   initBlockchainData,
   walletInfo,
   mainAbi,

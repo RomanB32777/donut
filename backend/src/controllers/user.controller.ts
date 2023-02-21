@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import { existsSync, rmSync } from 'fs';
 import { DatabaseError } from 'pg';
-import { IShortUserData, IEditUserInfo, IUser, ISendingDataWithFile, donatAssetTypes } from 'types';
+import { IShortUserData, IEditUserInfo, IUser, ISendingDataWithFile, donatAssetTypes, fileUploadTypes } from 'types';
 
 import db from '../db.js';
 import { getRandomStr, parseBool } from '../utils.js';
-import { uploadsFolder, isProduction, initDonatPage } from '../consts.js';
+import { uploadsFolder, isProduction, initDonatPage, uploadsFolderTypes } from '../consts.js';
 import { RequestParams, ResponseBody, RequestQuery, HttpCode } from '../types.js';
 
 class UserController {
@@ -16,7 +16,7 @@ class UserController {
       const user = await db.query('SELECT * FROM users WHERE wallet_address = $1 OR username = $1', [field]);
       if (!user.rowCount) return res.status(HttpCode.OK).json(false);
 
-      return res.status(HttpCode.CREATED).json(true);
+      return res.status(HttpCode.OK).json(true);
     } catch (error) {
       next(error);
     }
@@ -44,7 +44,7 @@ class UserController {
           await db.query(`INSERT INTO creators (user_id) values ($1) RETURNING *`, [id]);
           await db.query(`INSERT INTO alerts (id, creator_id) values ($1, $2) RETURNING *`, [alertID, id]);
         }
-        return res.status(HttpCode.OK).json(newUserInfo);
+        return res.status(HttpCode.CREATED).json(newUserInfo);
       }
       return res.sendStatus(HttpCode.NOT_FOUND);
     } catch (error) {
@@ -65,7 +65,21 @@ class UserController {
       if (deletedUser.rows[0]) {
         const { username } = deletedUser.rows[0];
         const uploadsFilesPath = `${uploadsFolder}/${username}`;
-        existsSync(uploadsFilesPath) && rmSync(uploadsFilesPath, { recursive: true });
+        if (existsSync(uploadsFilesPath)) {
+          // firstly check is exist bages folder
+          if (!existsSync(`${uploadsFilesPath}/${uploadsFolderTypes.badges}`)) {
+            rmSync(uploadsFilesPath, { recursive: true });
+          } else {
+            const uploadFolderNames = Object.keys(uploadsFolderTypes);
+            uploadFolderNames.forEach((folderName) => {
+              const typeFolder = folderName as fileUploadTypes;
+              if (typeFolder !== 'badges') {
+                const pathname = `${uploadsFilesPath}/${typeFolder}`;
+                existsSync(pathname) && rmSync(pathname, { recursive: true });
+              }
+            });
+          }
+        }
       }
 
       if (deletedUser.rowCount) return res.status(HttpCode.OK).json(deletedUser.rows[0]);
@@ -195,7 +209,7 @@ class UserController {
       if (req.files) {
         const file: fileUpload.UploadedFile = req.files.file as UploadedFile;
         const filename = getRandomStr(32) + file.name.slice(file.name.lastIndexOf('.'));
-        const filepath = `${uploadsFolder}/${username}/avatar/${filename}`;
+        const filepath = `${uploadsFolder}/${username}/${uploadsFolderTypes.avatar}/${filename}`;
 
         db.query(`UPDATE users SET avatar = $1 WHERE username = $2;`, [
           (isProduction ? '/' : `${req.protocol}://${req.headers.host}/`) + filepath,

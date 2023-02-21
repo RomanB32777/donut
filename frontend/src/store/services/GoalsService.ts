@@ -5,14 +5,14 @@ import {
   IGoalDataBase,
   IWidgetQueryData,
 } from "types";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 import { IVisibleNotification } from "appTypes";
 
 interface IGoalEditData extends IEditGoalData, IVisibleNotification {}
 
 const goalsApi = createApi({
   reducerPath: "goalsApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/widget/goals-widget",
   }),
   tagTypes: ["goals"],

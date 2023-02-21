@@ -8,12 +8,12 @@ import {
   IShortUserData,
 } from "types";
 import { setFormDataValues } from "utils";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 import { IDataWithFile } from "appTypes";
 
 const badgesApi = createApi({
   reducerPath: "badgesApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/badge",
   }),
   tagTypes: ["badges", "holders"],

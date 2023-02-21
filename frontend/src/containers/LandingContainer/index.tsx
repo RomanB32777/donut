@@ -59,7 +59,7 @@ const LandingContainer = () => {
       const isRedirect = await redirectToDashboard();
       if (!isRedirect) {
         const isUnlockedWallet = await walletConf.requestAccounts();
-        if (isUnlockedWallet) await redirectToDashboard();
+        if (isUnlockedWallet) navigate(`/${RoutePaths.register}`);
       }
     }
   }, [id, walletConf]);

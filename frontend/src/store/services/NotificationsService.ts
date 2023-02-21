@@ -4,12 +4,12 @@ import {
   INotificationChangeStatus,
   INotificationDelete,
 } from "types";
-import { serviceStatusHandler } from "./utils";
+import { baseQuery } from "./utils";
 import { INotificationParams } from "appTypes";
 
 const notificationsApi = createApi({
   reducerPath: "notificationApi",
-  baseQuery: serviceStatusHandler({
+  baseQuery: baseQuery({
     apiURL: "api/notification",
   }),
   refetchOnFocus: true,
