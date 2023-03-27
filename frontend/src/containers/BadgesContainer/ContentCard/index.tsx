@@ -4,18 +4,24 @@ import ConfirmPopup from "components/ConfirmPopup";
 import { TrashBinIcon } from "icons";
 import "./styles.sass";
 
+interface IBadgeCard
+  extends Pick<
+    IBadgeInfo,
+    "id" | "title" | "image" | "description" | "tokenId" | "isCreator"
+  > {}
+
 const ContentCard = ({
   data,
   onClick,
   deleteBadge,
 }: {
-  data: IBadgeInfo;
-  onClick: (badge: IBadgeInfo) => void;
-  deleteBadge: (badgeID: number) => void;
+  data: IBadgeCard;
+  onClick: (badgeId: string) => void;
+  deleteBadge: (badgeId: string) => void;
 }) => {
-  const { id, image, title, description, is_creator, token_id } = data;
+  const { id, image, title, description, isCreator, tokenId } = data;
 
-  const openBadgePape = () => onClick(data);
+  const openBadgePape = () => onClick(id);
   const deleteBadgePape = () => deleteBadge(id);
 
   return (
@@ -29,7 +35,7 @@ const ContentCard = ({
           <span className="subtitle">{description}</span>
         </div>
       </div>
-      {is_creator && !token_id && (
+      {isCreator && !tokenId && (
         <div
           className="delete-icon"
           onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}

@@ -5,7 +5,6 @@ import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
 import { INotification } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
 import {
   useDeleteNotificationMutation,
   useSetStatusNotificationMutation,
@@ -17,51 +16,58 @@ import {
 import { typeNotification } from "utils/notifications/types";
 
 const NotificationItem = ({
+  username,
   notification,
   handlerNotificationPopup,
 }: {
+  username: string;
   notification: INotification;
   handlerNotificationPopup: () => void;
 }) => {
-  const { id: userID } = useAppSelector(({ user }) => user);
-
   const [setStatusNotification] = useSetStatusNotificationMutation();
-
   const [deleteNotification] = useDeleteNotificationMutation();
 
-  const { id, read, donation, badge, sender, recipient, created_at } =
-    notification;
+  const { id, users, donation, badge, createdAt } = notification;
+
+  const userNotification = users.find(({ user }) => user.username === username);
 
   const messageClick = () => handlerNotificationPopup();
 
   const handleChange = async (status: boolean) => {
-    if (!status) return;
-    if (status && !read) {
-      await setStatusNotification({
-        id,
-        read: status,
-        userID,
-      });
+    if (userNotification) {
+      const { read } = userNotification;
+      if (!status) return;
+      if (status && !read) {
+        await setStatusNotification(id);
+      }
     }
   };
 
-  const deleteItem = async () => await deleteNotification({ id, userID });
+  const deleteItem = async () => await deleteNotification(id);
 
   const notificationType = useMemo((): typeNotification => {
-    const { donation, badge, sender, recipient } = notification;
-    if (donation) {
-      if (sender) return "donat_creator";
-      else if (recipient) return "donat_supporter";
-    }
+    if (userNotification) {
+      const { roleplay } = userNotification;
+      const { donation, badge } = notification;
+      const isRecipient = roleplay === "recipient";
+      if (donation) {
+        if (isRecipient) return "donat_creator";
+        else return "donat_supporter";
+      }
 
-    if (badge) {
-      if (sender)
-        return "add_badge_supporter"; // render for supporter (sender = creator)
-      else if (recipient) return "add_badge_creator"; // render for creator (recipient = supporter)
+      if (badge) {
+        if (isRecipient) {
+          return "add_badge_supporter";
+        } else return "add_badge_creator";
+      }
     }
 
     return "none";
-  }, [notification]);
+  }, [notification, userNotification]);
+
+  if (!userNotification) return null;
+
+  const { read, user } = userNotification;
 
   return (
     <InView onChange={handleChange} key={id}>
@@ -73,18 +79,18 @@ const NotificationItem = ({
                 {donation &&
                   getDonatNotificationMessage({
                     type: notificationType,
-                    user: sender || recipient || "",
+                    user: user.username,
                     data: {
-                      sum_donation: donation.sum_donation,
+                      sum: donation.sum,
                       blockchain: donation.blockchain,
-                      donation_message: donation.donation_message,
+                      message: donation.message,
                     },
                   })}
 
                 {badge &&
                   getBadgeNotificationMessage({
                     type: notificationType,
-                    user: sender || recipient || "",
+                    user: user.username,
                     data: {
                       id: badge.id,
                       title: badge.title,
@@ -94,7 +100,7 @@ const NotificationItem = ({
               <CloseOutlined onClick={deleteItem} />
             </div>
             <p className="date">
-              {dayjsModule(created_at).startOf("minutes").fromNow()}
+              {dayjsModule(createdAt).startOf("minutes").fromNow()}
             </p>
           </Badge>
         </div>

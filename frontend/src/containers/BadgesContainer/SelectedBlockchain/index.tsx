@@ -1,16 +1,16 @@
 import { memo } from "react";
 import clsx from "clsx";
-import { IBlockchain } from "appTypes";
+import { FullBlockchainInfo } from "utils/wallets/wagmi";
 import "./styles.sass";
 
 const SelectedBlockchain = ({
   blockchainInfo,
   modificator,
 }: {
-  blockchainInfo: IBlockchain;
+  blockchainInfo: FullBlockchainInfo;
   modificator?: string;
 }) => {
-  const { color, icon, name, badgeName } = blockchainInfo;
+  const { color, icon, name } = blockchainInfo;
   return (
     <div className={clsx("blockchain-info", modificator)}>
       <div
@@ -23,7 +23,7 @@ const SelectedBlockchain = ({
           <img src={icon} alt={`icon_${name}`} />
         </div>
       </div>
-      <p className="name">{badgeName}</p>
+      <p className="name">{name}</p>
     </div>
   );
 };

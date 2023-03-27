@@ -1,7 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { Col, Row } from "antd";
 
-import { WalletContext } from "contexts/Wallet";
 import BaseButton from "components/BaseButton";
 import UploadImage from "components/UploadImage";
 import FormInput from "components/FormInput";
@@ -13,6 +13,7 @@ import SelectedBlockchain from "../SelectedBlockchain";
 import { useAppSelector } from "hooks/reduxHooks";
 import { useCreateBadgeMutation } from "store/services/BadgesService";
 import { addNotification, isValidateFilledForm } from "utils";
+import { fullChainsInfo } from "utils/wallets/wagmi";
 
 import { initBadgeData } from "consts";
 import { IBadge } from "appTypes";
@@ -23,8 +24,7 @@ const CreateBadgeForm = ({
 }: {
   backBtn: (updateList?: boolean) => () => void;
 }) => {
-  const { id, username } = useAppSelector(({ user }) => user);
-  const walletConf = useContext(WalletContext);
+  const { id } = useAppSelector(({ user }) => user);
   const [createBadge, { isLoading, isSuccess }] = useCreateBadgeMutation();
 
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
@@ -43,6 +43,9 @@ const CreateBadgeForm = ({
 
   const createHandler = async () => {
     const { image, title, description, blockchain } = formBadge;
+    const blockchainName =
+      fullChainsInfo["matic"] ?? fullChainsInfo["maticmum"];
+
     const isValidate = isValidateFilledForm(
       Object.values({
         image: image.file,
@@ -54,14 +57,11 @@ const CreateBadgeForm = ({
 
     if (isValidate) {
       await createBadge({
-        file: image.file,
-        data: {
-          title,
-          description,
-          blockchain,
-          creator_id: id,
-        },
-        username,
+        badges: image.file,
+        title,
+        description,
+        blockchain: blockchainName.name,
+        creator: id,
       });
     } else {
       addNotification({
@@ -70,13 +70,6 @@ const CreateBadgeForm = ({
       });
     }
   };
-
-  const selectedBlockchainIconInfo = useMemo(() => {
-    const info = walletConf.main_contract.blockchains.find(
-      (b) => b.name === "polygon"
-    );
-    return info;
-  }, [walletConf]);
 
   useEffect(() => {
     if (isSuccess) setIsOpenSuccessModal(true);
@@ -94,7 +87,7 @@ const CreateBadgeForm = ({
         <Col xl={10} md={12}>
           <div className="upload-block">
             <UploadImage
-              label="Upload Image"
+              label={<FormattedMessage id="upload_label_image" />}
               formats={["PNG", "JPG", "JPEG", "GIF"]}
               maxFileSize={5}
               filePreview={image.preview}
@@ -116,9 +109,11 @@ const CreateBadgeForm = ({
         <Col xl={13} md={24}>
           <Row gutter={[0, 18]} className="form">
             <Col span={24}>
-              <p className="title">Badge information</p>
+              <p className="title">
+                <FormattedMessage id="badges_create_information_title" />
+              </p>
               <p className="description">
-                Please fill in the required information
+                <FormattedMessage id="badges_create_information_description" />
               </p>
             </Col>
             <Col span={24}>
@@ -128,7 +123,7 @@ const CreateBadgeForm = ({
                   setValue={(value) =>
                     setFormBadge({ ...formBadge, title: value })
                   }
-                  placeholder="Badge name"
+                  placeholder="badges_create_information_input_name"
                 />
               </div>
             </Col>
@@ -139,7 +134,7 @@ const CreateBadgeForm = ({
                   setValue={(value) =>
                     setFormBadge({ ...formBadge, description: value })
                   }
-                  placeholder="Badge description"
+                  placeholder="badges_create_information_input_description"
                   modificator="description-area"
                   isTextarea
                 />
@@ -148,20 +143,23 @@ const CreateBadgeForm = ({
             <Col span={24}>
               <div className="form-element">
                 <div className="selected-blockchain">
-                  <p className="placeholder">Blockhain</p>
-                  {selectedBlockchainIconInfo && (
-                    <SelectedBlockchain
-                      blockchainInfo={selectedBlockchainIconInfo}
-                      modificator="form-blockchain"
-                    />
-                  )}
+                  <p className="placeholder">
+                    <FormattedMessage id="badges_create_information_blockhain" />
+                  </p>
+                  {/* process.env.NODE_ENV === "production" */}
+                  <SelectedBlockchain
+                    blockchainInfo={
+                      fullChainsInfo["matic"] ?? fullChainsInfo["maticmum"]
+                    }
+                    modificator="form-blockchain"
+                  />
                 </div>
               </div>
             </Col>
             <Col span={24}>
               <div className="btn-bottom">
                 <BaseButton
-                  title="Cancel"
+                  formatId="form_cancel_button"
                   padding="6px 35px"
                   onClick={backBtn()}
                   fontSize="18px"
@@ -185,8 +183,8 @@ const CreateBadgeForm = ({
       <SuccessModalComponent
         open={isOpenSuccessModal}
         onClose={closeSuccessPopup}
-        message="Congratulations! You've created new badge!"
-        description="Click on it and assign to your supporters"
+        message={<FormattedMessage id="badges_success_modal_title" />}
+        description={<FormattedMessage id="badges_success_modal_description" />}
       />
     </div>
   );

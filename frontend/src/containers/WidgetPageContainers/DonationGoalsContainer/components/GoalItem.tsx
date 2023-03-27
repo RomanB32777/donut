@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, memo, FC } from "react";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
+import { FormattedMessage } from "react-intl";
 import { goalDataKeys, IGoalData } from "types";
 
 import LinkCopy from "components/LinkCopy";
@@ -19,8 +20,7 @@ import {
 } from "store/services/GoalsService";
 import { copyStr, loadFonts } from "utils";
 import { ISelectItem } from "components/SelectInput";
-import { RoutePaths } from "routes";
-import { baseURL } from "consts";
+import { RoutePaths, baseURL } from "consts";
 import { IWidgetGoalData } from "appTypes";
 
 interface IGoalItem {
@@ -38,21 +38,21 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [editGoalData, setEditGoalData] = useState<IWidgetGoalData>({
     ...goalData,
-    title_font: {
-      name: goalData.title_font,
+    titleFont: {
+      name: goalData.titleFont,
       link: "",
     },
-    progress_font: {
-      name: goalData.progress_font,
+    progressFont: {
+      name: goalData.progressFont,
       link: "",
     },
   });
 
-  const { id, title, amount_goal, amount_raised, is_archive, progress_color } =
+  const { id, title, amountGoal, amountRaised, isArchive, progressColor } =
     editGoalData;
 
   const handleActiveDetails = () =>
-    !is_archive && setisActiveDetails(!isActiveDetails);
+    !isArchive && setisActiveDetails(!isActiveDetails);
 
   const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -66,11 +66,11 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
 
   const initGoalItem = async () => {
     if (fonts) {
-      const { title_font, progress_font } = goalData;
+      const { titleFont, progressFont } = goalData;
 
       const loadedFonts = await loadFonts({
         fonts,
-        fields: { title_font, progress_font },
+        fields: { titleFont, progressFont },
       });
 
       // convert IGoalData -> IWidgetGoalData
@@ -88,15 +88,12 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
   const editWidgetData = (isReset?: boolean) => async () => {
     try {
       const { id } = goalData;
-      const { title_font, progress_font } = editGoalData;
+      const { titleFont, progressFont } = editGoalData;
 
       await editGoal({
-        goalData: {
-          ...editGoalData,
-          title_font: title_font.name,
-          progress_font: progress_font.name,
-          creator_id: userID,
-        },
+        ...editGoalData,
+        titleFont: titleFont.name,
+        progressFont: progressFont.name,
         isReset,
         id,
       });
@@ -140,7 +137,7 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
       <div
         className={clsx("item", {
           active: isActiveDetails,
-          archived: is_archive,
+          archived: isArchive,
         })}
         onClick={handleActiveDetails}
       >
@@ -148,9 +145,9 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
           <Col xs={3}>
             <Progress
               type="circle"
-              percent={Math.round((amount_raised / amount_goal) * 100)}
+              percent={Math.round((amountRaised / amountGoal) * 100)}
               width={83}
-              strokeColor={progress_color}
+              strokeColor={progressColor}
               format={(percent) => (
                 <span
                   style={{
@@ -177,13 +174,16 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
                 <div className="mainInfo">
                   <p className="title">{title}</p>
                   <p className="description">
-                    Raised: {amount_raised}/{amount_goal} USD
+                    <FormattedMessage
+                      id="goals_widget_card_raised"
+                      values={{ amountRaised, amountGoal }}
+                    />
                   </p>
                 </div>
               </Col>
               {!isLaptop && (
                 <Col span={13}>
-                  {!is_archive && (
+                  {!isArchive && (
                     <div className="link">
                       <LinkCopy
                         link={linkForCopy}
@@ -197,12 +197,12 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
             </Row>
           </Col>
           <div className="btns">
-            {isLaptop && !is_archive && (
+            {isLaptop && !isArchive && (
               <div className="btn-item" onClick={clickCopyBtn}>
                 <CopyIcon />
               </div>
             )}
-            {!is_archive && (
+            {!isArchive && (
               <div
                 className="btn-item"
                 onClick={clickEditBtn}

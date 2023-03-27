@@ -1,13 +1,9 @@
 import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { LoadingReducer, NotificationsReducer, UserReducer } from "./reducers";
 import {
-  LoadingReducer,
-  NotificationsReducer,
-  UserReducer,
-  WalletReducer,
-} from "./reducers";
-import {
+  authApi,
   userApi,
   notificationsApi,
   donationsApi,
@@ -23,9 +19,9 @@ const rootReducer = combineReducers({
   user: UserReducer,
   loading: LoadingReducer,
   notifications: NotificationsReducer,
-  blockchain: WalletReducer,
 
   // RTK
+  [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [notificationsApi.reducerPath]: notificationsApi.reducer,
   [donationsApi.reducerPath]: donationsApi.reducer,
@@ -39,8 +35,9 @@ const rootReducer = combineReducers({
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([
+    getDefaultMiddleware({ serializableCheck: false }).concat([
       rtkQueryErrorLogger,
+      authApi.middleware,
       userApi.middleware,
       notificationsApi.middleware,
       donationsApi.middleware,

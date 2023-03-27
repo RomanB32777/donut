@@ -1,11 +1,13 @@
 import { FC, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { FormattedMessage } from "react-intl";
 
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import Sidebar from "components/Sidebar";
 import { EmailIcon } from "icons";
 
+import { useEditUserMutation } from "store/services/UserService";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { useAppSelector } from "hooks/reduxHooks";
 import { IRoute, routers } from "routes";
@@ -19,13 +21,23 @@ interface IGetItemParams {
 
 interface IAdminSidebar {
   collapsed: boolean;
+  sidebarStyles?: React.CSSProperties;
   setCollapsed: (state: boolean) => any;
 }
 
-const AdminSidebar: FC<IAdminSidebar> = ({ collapsed, setCollapsed }) => {
-  const { id, roleplay } = useAppSelector(({ user }) => user);
+const AdminSidebar: FC<IAdminSidebar> = ({
+  collapsed,
+  sidebarStyles,
+  setCollapsed,
+}) => {
+  const { id, roleplay, walletAddress } = useAppSelector(({ user }) => user);
   const { pathname } = useLocation();
   const { isMobile } = useWindowDimensions();
+  const [editUser] = useEditUserMutation();
+
+  const connectedWallet = async (walletAddress: string) => {
+    await editUser({ walletAddress, isVisibleNotification: false });
+  };
 
   const getItem = ({ label, path, icon, children }: IGetItemParams) => ({
     key: path,
@@ -86,14 +98,14 @@ const AdminSidebar: FC<IAdminSidebar> = ({ collapsed, setCollapsed }) => {
       menuItems.map(({ name, icon, menu, path, children }) => {
         return menu
           ? getItem({
-              label: name,
+              label: <FormattedMessage id={name} />,
               path,
               icon,
               children: children
                 ? children.map((el) =>
                     el.menu
                       ? getItem({
-                          label: el.name,
+                          label: <FormattedMessage id={el.name} />,
                           path: path + (`/${el.path}` || ""),
                           icon: el.icon,
                         })
@@ -114,6 +126,7 @@ const AdminSidebar: FC<IAdminSidebar> = ({ collapsed, setCollapsed }) => {
       collapsed={collapsed}
       setCollapsed={setCollapsed}
       width={{ mobile: 325, desktop: 250 }}
+      styles={sidebarStyles}
       bottomEl={
         <div className="sidebar-btmEl">
           <a
@@ -123,19 +136,22 @@ const AdminSidebar: FC<IAdminSidebar> = ({ collapsed, setCollapsed }) => {
             className="sidebar-link"
           >
             <QuestionCircleOutlined />
-            <span className="link-text">Help center</span>
+            <span className="link-text">
+              <FormattedMessage id="sidebar_help" />
+            </span>
           </a>
           <a href="mailto:info@cryptodonutz.xyz" className="sidebar-link">
             <EmailIcon />
-            <span className="link-text"> info@cryptodonutz.xyz</span>
+            <span className="link-text">info@cryptodonutz.xyz</span>
           </a>
         </div>
       }
     >
-      {isMobile && (
+      {walletAddress && isMobile && (
         <WalletBlock
           modificator="sidebar-wallet"
           popupModificator="wallet-popup"
+          connectedWallet={connectedWallet}
         />
       )}
     </Sidebar>

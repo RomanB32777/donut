@@ -8,18 +8,21 @@ import NotificationsPopup from "components/HeaderComponents/NotificationsPopup";
 interface IAdminHeader {
   collapsedSidebar: boolean;
   headerModificator?: string;
+  headerStyles?: React.CSSProperties;
   setCollapsedSidebar: (state: boolean) => any;
 }
 
 const AdminHeader: FC<IAdminHeader> = ({
   collapsedSidebar,
   headerModificator,
+  headerStyles,
   setCollapsedSidebar,
 }) => (
   <HeaderComponent
     collapsedSidebar={collapsedSidebar}
     setCollapsedSidebar={setCollapsedSidebar}
     modificator={clsx("layout-header", headerModificator)}
+    styles={headerStyles}
     visibleGamburger
   >
     <NotificationsPopup />

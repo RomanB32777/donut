@@ -1,13 +1,14 @@
 import { Col, Row, RowProps, Switch, SwitchProps, Tooltip } from "antd";
 import clsx from "clsx";
-import useWindowDimensions from "hooks/useWindowDimensions";
 import { useMemo } from "react";
+import { FormattedMessage } from "react-intl";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISliderProps extends SwitchProps {
   // extends SliderBaseProps
   afterComponent?: React.ReactNode;
-  label?: string;
+  label?: React.ReactNode;
   switchCol?: number;
   labelCol?: number;
   maxWidth?: number;
@@ -15,7 +16,7 @@ interface ISliderProps extends SwitchProps {
   rowProps?: RowProps;
   labelModificator?: string;
   isVisibleStatus?: boolean;
-  tooltipTitle?: string;
+  tooltipTitle?: React.ReactNode;
   setValue: (value: boolean) => void;
 }
 
@@ -68,11 +69,19 @@ const SwitchForm = ({
         )}
         <Col md={switchCol || (label ? 12 : 24)} xs={24}>
           <div className="switch-wrapper">
-            {isVisibleStatus && <span>Disabled</span>}
+            {isVisibleStatus && (
+              <span>
+                <FormattedMessage id="switch_disabled" />
+              </span>
+            )}
             <Tooltip title={tooltipTitle} trigger={tooltipTrigger}>
               <Switch checked={checked} onChange={setValue} />
             </Tooltip>
-            {isVisibleStatus && <span>Abled</span>}
+            {isVisibleStatus && (
+              <span>
+                <FormattedMessage id="switch_abled" />
+              </span>
+            )}
           </div>
         </Col>
       </Row>

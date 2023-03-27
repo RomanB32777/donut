@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Col, Empty, Row } from "antd";
+import { Col, Row } from "antd";
 import { FormattedMessage } from "react-intl";
 import { IBadgeInfo } from "types";
 
@@ -10,6 +10,7 @@ import BaseButton from "components/BaseButton";
 import BadgePage from "./BadgePage";
 import CreateBadgeForm from "./CreateBadge";
 import Loader from "components/Loader";
+import EmptyComponent from "components/EmptyComponent";
 
 import { useAppSelector, useActions } from "hooks/reduxHooks";
 import {
@@ -23,14 +24,14 @@ import "./styles.sass";
 const BadgesContainer = () => {
   const { setUpdatedFlag } = useActions();
 
-  const { id, wallet_address, roleplay } = useAppSelector(({ user }) => user);
+  const { id, roleplay } = useAppSelector(({ user }) => user);
   const { list, shouldUpdateApp } = useAppSelector(
     ({ notifications }) => notifications
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeBadge, setActiveBadge] = useState<IBadgeInfo | null>(null);
+  const [activeBadge, setActiveBadge] = useState<string | null>(null);
   const [isOpenCreateForm, setIsOpenCreateForm] = useState(false);
 
   const queryID = searchParams.get("id");
@@ -39,7 +40,7 @@ const BadgesContainer = () => {
     data: badgesList,
     isLoading,
     refetch: getBadges,
-  } = useGetBadgesQuery(wallet_address, { skip: !wallet_address });
+  } = useGetBadgesQuery();
   const [deleteBadge] = useDeleteBadgeMutation();
 
   const removeQueryParams = useCallback(() => {
@@ -48,9 +49,9 @@ const BadgesContainer = () => {
   }, [searchParams, setSearchParams]);
 
   const toBadgePage = useCallback(
-    (badgeData: IBadgeInfo) => {
-      setSearchParams(`id=${badgeData.id}`);
-      setActiveBadge({ ...badgeData });
+    (id: string) => {
+      setSearchParams(`id=${id}`);
+      setActiveBadge(id);
       scrollToPosition();
     },
     [setSearchParams]
@@ -73,16 +74,14 @@ const BadgesContainer = () => {
   );
 
   const deleteSelectedBadge = useCallback(
-    async (badgeID: number) => await deleteBadge(badgeID),
+    async (badgeId: string) => await deleteBadge(badgeId),
     [deleteBadge]
   );
 
   useEffect(() => {
     if (queryID) {
-      const findActiveBadge = badgesList?.find(
-        (badge) => badge.id === +queryID
-      );
-      if (findActiveBadge) setActiveBadge(findActiveBadge);
+      const findActiveBadge = badgesList?.find((badge) => badge.id === queryID);
+      if (findActiveBadge) setActiveBadge(findActiveBadge.id);
     }
   }, [queryID, badgesList]);
 
@@ -97,7 +96,7 @@ const BadgesContainer = () => {
   if (isLoading) return <Loader size="big" />;
 
   if (activeBadge)
-    return <BadgePage activeBadge={activeBadge} backBtn={backToMainPage} />;
+    return <BadgePage badgeId={activeBadge} backBtn={backToMainPage} />;
 
   if (isOpenCreateForm) return <CreateBadgeForm backBtn={backToMainPage} />;
 
@@ -108,7 +107,7 @@ const BadgesContainer = () => {
       {id && roleplay === "creators" && (
         <div className="new-badge-wrapper">
           <span>
-            <FormattedMessage id="badges_page_new_title" />
+            <FormattedMessage id="badges_new_title" />
           </span>
           <BaseButton
             formatId="create_badge_form_button"
@@ -135,7 +134,7 @@ const BadgesContainer = () => {
               </Col>
             ))
           ) : (
-            <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <EmptyComponent />
           )}
         </Row>
       </div>

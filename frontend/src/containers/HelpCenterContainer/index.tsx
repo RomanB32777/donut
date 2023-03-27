@@ -6,11 +6,11 @@ import Sidebar from "components/Sidebar";
 import PageTitle from "components/PageTitle";
 import AdminHeader from "components/AdminComponents/AdminHeader";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import { RoutePaths } from "routes";
+import { getRandomStr } from "utils";
+import { RoutePaths } from "consts";
 import { themes } from "./const";
 import { IHelpContent } from "./types";
 import "./styles.sass";
-import { getRandomStr } from "utils";
 
 const sidebarWidth = 350;
 

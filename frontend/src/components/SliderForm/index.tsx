@@ -5,11 +5,11 @@ import useWindowDimensions from "hooks/useWindowDimensions";
 import "./styles.sass";
 
 interface ISliderProps extends SliderBaseProps {
-  label: string;
+  label: React.ReactNode;
   value?: number;
   defaultValue?: number;
   modificator?: string;
-  description?: string;
+  description?: React.ReactNode;
   sliderCol?: number;
   labelCol?: number;
   maxWidth?: number;

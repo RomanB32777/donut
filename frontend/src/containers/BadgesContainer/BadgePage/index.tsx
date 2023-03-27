@@ -1,6 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { Col, Row } from "antd";
-import { IBadgeInfo, ISocketEmitObj, IShortUserData } from "types";
+import { FormattedMessage } from "react-intl";
+import { ISocketEmitObj, IShortUserData } from "types";
 
 import { WebSocketContext } from "contexts/Websocket";
 import PageTitle from "components/PageTitle";
@@ -9,71 +10,76 @@ import BadgeHolders from "./components/BadgeHolders";
 import BadgeAssignBlock from "./components/BadgeAssignBlock";
 import { LeftArrowIcon } from "icons";
 
-import { useAppSelector } from "hooks/reduxHooks";
 import {
   useGetBadgeQuery,
   useGetHoldersQuery,
 } from "store/services/BadgesService";
+import { IBadgePage } from "appTypes";
 import "./styles.sass";
 
+const initState: IBadgePage = {
+  image: "",
+  id: "",
+  title: "",
+  description: "",
+  blockchain: "Polygon",
+  creator: "",
+};
+
 const BadgePage = ({
-  activeBadge,
+  badgeId,
   backBtn,
 }: {
-  activeBadge: IBadgeInfo;
+  badgeId: string;
   backBtn: (updateList?: boolean) => () => void;
 }) => {
   const socket = useContext(WebSocketContext);
-  const user = useAppSelector(({ user }) => user);
+  // const user = useAppSelector(({ user }) => user);
 
-  const [badgeInfo, setBadgeInfo] = useState<IBadgeInfo>(activeBadge);
+  const [badgeInfo, setBadgeInfo] = useState<IBadgePage>({
+    ...initState,
+    id: badgeId,
+  });
   const [updateList, setUpdateList] = useState(false);
 
-  const { id: userID, wallet_address } = user;
-  const { id, image, title, is_creator, token_id } = badgeInfo;
+  const { id, image, title, isCreator, tokenId } = badgeInfo;
 
-  const { data: badgeData, isLoading: isBadgeInfoLoading } = useGetBadgeQuery(
-    { id, wallet_address },
-    { skip: !userID && !wallet_address }
-  );
+  const { data: badgeData, isLoading: isBadgeInfoLoading } =
+    useGetBadgeQuery(id);
 
   const {
     data: holders,
     isLoading: isHoldersLoading,
     refetch: getHolders,
   } = useGetHoldersQuery(id, {
-    skip: !is_creator,
+    skip: !isCreator,
   });
 
   const sendAssignedBadge = useCallback(
     async (selectedUser: IShortUserData) => {
       if (socket) {
-        const { id: userID, username } = user;
-
         const sendData: ISocketEmitObj = {
-          supporter: {
-            username: selectedUser.username,
-            id: selectedUser.id,
-          },
-          creator: {
-            id: userID,
-            username,
-          },
           id,
+          toSendUsername: selectedUser.username,
         };
-        socket.emit("new_badge", sendData);
+        socket.emit("newBadge", sendData);
       }
       getHolders();
     },
-    [id, socket, user, getHolders]
+    [id, socket, getHolders]
   );
 
   useEffect(() => {
-    !token_id && setUpdateList(true);
-  }, [token_id]);
+    !tokenId && setUpdateList(true);
+  }, [tokenId]);
 
   useEffect(() => {
-    badgeData && setBadgeInfo((prev) => ({ ...prev, ...badgeData }));
+    if (badgeData) {
+      setBadgeInfo((prev) => ({
+        ...prev,
+        ...badgeData,
+      }));
+    }
   }, [badgeData]);
 
   return (
@@ -87,7 +93,9 @@ const BadgePage = ({
 
       <Row gutter={[4, 16]} className="form" justify="space-between">
         <Col lg={10} md={8} xs={18}>
-          <p className="image-title">Badge Image</p>
+          <p className="image-title">
+            <FormattedMessage id="badge_image" />
+          </p>
           <div className="image-block">
             <div className="content">
               <img src={image} alt={title} />
@@ -96,7 +104,7 @@ const BadgePage = ({
         </Col>
         <Col lg={13} md={15} xs={24}>
           <BadgeDetails badgeInfo={badgeInfo} isLoading={isBadgeInfoLoading} />
-          {is_creator && (
+          {isCreator && (
             <Row gutter={[0, 24]}>
               {holders && Boolean(holders.length) && (
                 <Col span={24}>
@@ -106,10 +114,9 @@ const BadgePage = ({
                   />
                 </Col>
               )}
-
               <Col span={24}>
                 <BadgeAssignBlock
-                  badgeInfo={activeBadge}
+                  badgeInfo={badgeInfo}
                   sendAssignedBadge={sendAssignedBadge}
                 />
               </Col>

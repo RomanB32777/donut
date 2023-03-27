@@ -1,8 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
+import { IDonationWidgetInfo } from "appTypes";
 import {
-  exchangeNameTypes,
   IDonation,
-  IDonationsQueryData,
+  donationsQueryData,
   IFullSendDonat,
   IShortUserData,
   statsDataTypes,
@@ -10,40 +10,40 @@ import {
 import { baseQuery } from "./utils";
 
 interface IDonationsGetParams {
-  userID: number;
-  data_type?: statsDataTypes | "stats";
-  query?: IDonationsQueryData;
+  userId?: string;
+  dataType?: statsDataTypes | "stats";
+  query?: Partial<donationsQueryData>;
 }
 
 const donationsApi = createApi({
   reducerPath: "donationsApi",
   baseQuery: baseQuery({
-    apiURL: "api/donation",
+    apiURL: "api/donations",
   }),
   tagTypes: ["donations"],
   endpoints: (build) => ({
     getWidgetDonations: build.query<any[], IDonationsGetParams>({
-      query: ({ data_type, userID, query }) => ({
-        url: `widgets/${data_type}/${userID}`,
+      query: ({ dataType, userId, query }) => ({
+        url: `widgets/${dataType}/${userId}`,
         params: query,
       }),
       providesTags: ["donations"],
     }),
 
-    getDonationsPage: build.query<any[], IDonationsGetParams>({
-      query: ({ userID, query }) => ({
-        url: `page/${userID}`,
+    getDonationsPage: build.query<IDonationWidgetInfo[], IDonationsGetParams>({
+      query: ({ query }) => ({
+        url: "page",
         params: query,
       }),
       providesTags: ["donations"],
     }),
 
-    getSupporters: build.query<IShortUserData[], number>({
-      query: (userID) => `supporters/${userID}`,
+    getSupporters: build.query<IShortUserData[], void>({
+      query: () => "supporters",
     }),
 
-    getUsdKoef: build.query<number, exchangeNameTypes>({
-      query: (blockchain) => ({ url: `exchange`, params: { blockchain } }),
+    getUsdKoef: build.query<number, string>({
+      query: (chainSymbol) => ({ url: `exchange/${chainSymbol}` }),
     }),
 
     createDonation: build.mutation<IDonation, IFullSendDonat>({

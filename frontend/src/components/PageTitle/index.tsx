@@ -1,7 +1,6 @@
 import { FC, memo } from "react";
 import clsx from "clsx";
 import { FormattedMessage } from "react-intl";
-
 import "./styles.sass";
 
 interface IPageTitle {

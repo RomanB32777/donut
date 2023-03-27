@@ -1,17 +1,15 @@
 import { INotification, INotificationQueries } from "types";
 
-interface INotificationsState {
+export interface INotificationsState {
   list: INotification[];
   shouldUpdateApp: boolean;
 }
 
-interface INotificationParams extends INotificationQueries {
-  user: number | string;
+export interface INotificationParams extends INotificationQueries {
+  username: string;
   shouldUpdateApp?: boolean;
 }
 
-interface IVisibleNotification {
+export interface IVisibleNotification {
   isVisibleNotification?: boolean;
 }
-
-export type { INotificationsState, INotificationParams, IVisibleNotification };

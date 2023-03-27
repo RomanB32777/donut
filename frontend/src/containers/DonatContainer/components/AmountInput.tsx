@@ -1,26 +1,19 @@
-import {
-  FC,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 import clsx from "clsx";
-import { blockchainsSymbols, ISendDonat } from "types";
+import { ISendDonat } from "types";
 
-import { WalletContext } from "contexts/Wallet";
 import FormInput from "components/FormInput";
 import SelectComponent from "components/SelectComponent";
 import TabsComponent from "components/TabsComponent";
 import BlockchainOption from "components/SelectInput/options/BlockchainOption";
 
-import { useActions, useAppSelector } from "hooks/reduxHooks";
 import { useLazyGetUsdKoefQuery } from "store/services/DonationsService";
+import { fullChainsInfo, BlockchainNetworks } from "utils/wallets/wagmi";
 import { formatNumber } from "utils";
-import { IBlockchain } from "appTypes";
 import { IFormHandler } from "../types";
+import { FormattedMessage } from "react-intl";
+import Loader from "components/Loader";
 
 const tabCountTypes = [5, 10, 30];
 
@@ -34,47 +27,39 @@ interface IAmountInput {
   form: ISendDonat;
   usdtKoef: number;
   isNotValid: boolean;
+  isLoading: boolean;
   formHandler: ({ field, value }: IFormHandler) => void;
   setUsdtKoef: (num: number) => void;
+  switchNetwork?: (chainId?: number) => void;
 }
 
-const AmountInput: FC<IAmountInput> = ({
+const AmountInput: React.FC<IAmountInput> = ({
   form,
   color,
   usdtKoef,
   isNotValid,
+  isLoading,
   formHandler,
   setUsdtKoef,
+  switchNetwork,
 }) => {
-  const { setWallet } = useActions();
   const [getUsdKoef] = useLazyGetUsdKoefQuery();
-  const blockchain = useAppSelector(({ blockchain }) => blockchain);
-  const walletConf = useContext(WalletContext);
-
   const [tabCount, setTabCount] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
+  const { chain: currentChain, chains } = useNetwork();
 
-  const { amount, selectedBlockchain } = form;
+  const { sum, blockchain: selectedBlockchain } = form;
 
-  const setBlockchainInfo = async ({
-    selected,
-    blockchainInfo,
-  }: {
-    selected: blockchainsSymbols;
-    blockchainInfo: IBlockchain;
-  }) => {
-    formHandler({ field: "selectedBlockchain", value: selected });
-    setWallet(blockchainInfo.name);
-    const { data: newUsdtKoef } = await getUsdKoef(
-      blockchainInfo.nativeCurrency.exchangeName
-    );
+  const setBlockchainInfo = async (chainSymbol: string) => {
+    formHandler({ field: "blockchain", value: chainSymbol });
+    const { data: newUsdtKoef } = await getUsdKoef(chainSymbol);
 
     if (newUsdtKoef) {
       setUsdtKoef(newUsdtKoef);
 
       if (tabCount) {
         const blockchainValue = tabCount / newUsdtKoef;
-        formHandler({ field: "amount", value: blockchainValue });
+        formHandler({ field: "sum", value: blockchainValue });
         setInputValue(String(formatNumber(blockchainValue)));
       }
     }
@@ -88,67 +73,59 @@ const AmountInput: FC<IAmountInput> = ({
 
     const amountValue = +num;
     setInputValue(num);
-    formHandler({ field: "amount", value: amountValue });
+    formHandler({ field: "sum", value: amountValue });
     // setTabCount(null);
   };
 
-  const setBlockchain = async (selected: blockchainsSymbols) => {
-    const blockchainInfo = walletConf.main_contract.blockchains.find(
-      (b) => b.nativeCurrency.symbol === selected
-    );
-    if (blockchainInfo) {
-      const newBlockchaind = await walletConf.changeBlockchain(
-        blockchainInfo.name
+  const setBlockchain = async (selectedSymbol: string) => {
+    if (selectedBlockchain !== selectedSymbol) {
+      const blockchainInfo = Object.values(fullChainsInfo).find(
+        ({ nativeCurrency }) => nativeCurrency.symbol === selectedSymbol
       );
-      if (newBlockchaind) await setBlockchainInfo({ blockchainInfo, selected });
+      if (blockchainInfo) {
+        switchNetwork?.(blockchainInfo.id);
+        await setBlockchainInfo(selectedSymbol);
+      }
     }
   };
 
   const setTabContent = useCallback(
     async (key: string) => {
-      const blockchainInfo = walletConf.main_contract.blockchains.find(
-        (b) => b.nativeCurrency.symbol === selectedBlockchain
-      );
+      const numberFormat = +key;
+      const blockchainValue = numberFormat / usdtKoef;
 
-      if (blockchainInfo) {
-        const numberFormat = +key;
-        const blockchainValue = numberFormat / usdtKoef;
-
-        setTabCount(numberFormat);
-        formHandler({ field: "amount", value: blockchainValue });
-        setInputValue(String(formatNumber(blockchainValue)));
-      }
+      setTabCount(numberFormat);
+      formHandler({ field: "sum", value: blockchainValue });
+      setInputValue(String(formatNumber(blockchainValue)));
     },
-    [walletConf, usdtKoef, selectedBlockchain, formHandler]
+    [usdtKoef, formHandler]
   );
 
   const convertedUsdSum = useMemo(
-    () => formatNumber(+amount * usdtKoef),
-    [amount, usdtKoef]
+    () => formatNumber(+sum * usdtKoef),
+    [sum, usdtKoef]
   );
 
-  const selectedBlockchainIconInfo = useMemo(() => {
-    const info = walletConf.main_contract.blockchains.find(
-      (b) => b.nativeCurrency.symbol === selectedBlockchain
-    );
-    return info;
-  }, [walletConf, selectedBlockchain]);
+  const selectedBlockchainIconInfo = useMemo(
+    () =>
+      Object.values(fullChainsInfo).find(
+        (chainInfo) => chainInfo.nativeCurrency.symbol === selectedBlockchain
+      ),
+    [selectedBlockchain]
+  );
 
   useEffect(() => {
-    if (blockchain) {
-      const blockchainInfo = walletConf.main_contract.blockchains.find(
-        (b) => b.name === blockchain
-      );
+    if (currentChain) {
+      const chainNetwork = currentChain.network as BlockchainNetworks;
+      const blockchainInfo = fullChainsInfo[chainNetwork];
+
       if (blockchainInfo) {
         const blockchainSymbol = blockchainInfo.nativeCurrency.symbol;
-        formHandler({ field: "selectedBlockchain", value: blockchainSymbol });
-        setBlockchainInfo({
-          selected: blockchainSymbol,
-          blockchainInfo,
-        });
+        formHandler({ field: "blockchain", value: blockchainSymbol });
+        setBlockchainInfo(blockchainInfo.nativeCurrency.symbol);
       }
     }
-  }, [walletConf, blockchain]);
+  }, [currentChain]);
 
   useEffect(() => {
     const value = +convertedUsdSum;
@@ -162,39 +139,41 @@ const AmountInput: FC<IAmountInput> = ({
         setValue={setAmountValue}
         typeInput="number"
         addonAfter={
-          <SelectComponent
-            title={
-              <div className="selected-blockchain">
-                {selectedBlockchainIconInfo && (
-                  <div
-                    className="blockchain-icon"
-                    style={{
-                      background: selectedBlockchainIconInfo.color,
-                    }}
-                  >
-                    <img
-                      src={selectedBlockchainIconInfo.icon}
-                      alt={selectedBlockchain}
-                    />
-                  </div>
-                )}
-                <span>{selectedBlockchain}</span>
-              </div>
-            }
-            list={walletConf.main_contract.blockchains.map(
-              ({ name, nativeCurrency }) => nativeCurrency.symbol
-            )}
-            selected={selectedBlockchain}
-            selectItem={setBlockchain}
-            renderOption={(item) => (
-              <BlockchainOption value={item} key={item} />
-            )}
-            listWrapperModificator="blockchains-list"
-            modificator="inputs-select"
-            styles={{ background: color }}
-          />
+          isLoading ? (
+            <Loader size="small" modificator="blockchainLoading" />
+          ) : (
+            <SelectComponent
+              title={
+                <div className="selectedBlockchain">
+                  {selectedBlockchainIconInfo && (
+                    <div
+                      className="blockchain-icon"
+                      style={{
+                        background: selectedBlockchainIconInfo.color,
+                      }}
+                    >
+                      <img
+                        src={selectedBlockchainIconInfo.icon}
+                        alt={selectedBlockchain}
+                      />
+                    </div>
+                  )}
+                  <span>{selectedBlockchain}</span>
+                </div>
+              }
+              list={chains.map(({ nativeCurrency }) => nativeCurrency.symbol)}
+              selected={selectedBlockchain}
+              selectItem={setBlockchain}
+              renderOption={(item) => (
+                <BlockchainOption value={item} key={item} />
+              )}
+              listWrapperModificator="blockchains-list"
+              modificator="inputs-select"
+              styles={{ background: color }}
+            />
+          )
         }
-        placeholder="Donation amount"
+        placeholder="donat_form_amount"
         modificator={clsx("inputs-amount", { isNotValid })}
         addonsModificator="select-blockchain"
         descriptionModificator="count-modificator"
@@ -206,9 +185,10 @@ const AmountInput: FC<IAmountInput> = ({
               tabs={countTabs}
             />
             <p className="usd-equal">
-              Equal to&nbsp;
-              {convertedUsdSum}
-              &nbsp;USD
+              <FormattedMessage
+                id="donat_form_equal_usd"
+                values={{ convertedUsdSum }}
+              />
             </p>
           </>
         }

@@ -1,6 +1,7 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { Col, Radio, RadioChangeEvent, Row, Space } from "antd";
 import clsx from "clsx";
+import { FormattedMessage } from "react-intl";
 import { ISendDonat, IUser } from "types";
 
 import Loader from "components/Loader";
@@ -16,29 +17,27 @@ const Goals = ({
   form: ISendDonat;
   setForm: (value: React.SetStateAction<ISendDonat>) => void;
 }) => {
-  const { donat_page, id } = personInfo;
+  const { creator, id } = personInfo;
 
   const { data: goals, isLoading } = useGetGoalsQuery(id, { skip: !id });
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
-
-  const { main_color } = donat_page;
 
   const onChangeRadio = useCallback(
     (e: RadioChangeEvent) => {
       setForm((form) => ({
         ...form,
-        selectedGoal: e.target.value,
+        goal: e.target.value,
       }));
     },
     [setForm]
   );
 
   const goalsActive = useMemo(
-    () => (goals ? goals.filter((goal) => !goal.is_archive) : []),
+    () => (goals ? goals.filter((goal) => !goal.isArchive) : []),
     [goals]
   );
 
-  const { selectedGoal } = form;
+  const { goal } = form;
 
   if (isLoading) return <Loader size="small" />;
 
@@ -54,33 +53,35 @@ const Goals = ({
             })}
             onClick={() => setIsOpenSelectGoal(!isOpenSelectGoal)}
             style={{
-              background: main_color,
+              background: creator?.mainColor,
             }}
           >
             <div className="header">
               <StarIcon />
-              <p>Donation goals</p>
+              <p>
+                <FormattedMessage id="donat_form_goal_title" />
+              </p>
             </div>
             <p className="description">
-              Help {personInfo.username} achieve his donation goals
+              <FormattedMessage
+                id="donat_form_goal_description"
+                values={{ username: personInfo.username }}
+              />
             </p>
           </div>
         </Col>
         {isOpenSelectGoal && (
           <Col md={14} xs={11}>
             <div className="list">
-              <Radio.Group
-                onChange={onChangeRadio}
-                value={String(selectedGoal || "0")}
-              >
+              <Radio.Group onChange={onChangeRadio} value={goal || "0"}>
                 <Space direction="vertical">
                   <Radio className="radio-select" value="0">
-                    Don't participate
+                    <FormattedMessage id="donat_form_goal_dont_participate" />
                   </Radio>
                   {goalsActive.map(
-                    ({ id, title, amount_raised, amount_goal }) => (
+                    ({ id, title, amountRaised, amountGoal }) => (
                       <Radio className="radio-select" key={id} value={id}>
-                        {title} ({amount_raised}/{amount_goal}
+                        {title} ({amountRaised}/{amountGoal}
                         &nbsp;USD)
                       </Radio>
                     )

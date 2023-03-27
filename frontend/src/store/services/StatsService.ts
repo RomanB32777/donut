@@ -1,26 +1,21 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import {
-  IEditStatData,
-  IStatData,
-  IStatDataBase,
-  IWidgetQueryData,
-} from "types";
+import { IEditStatData, IStatData, IStatDataBase } from "types";
 import { baseQuery } from "./utils";
 
 const statsApi = createApi({
   reducerPath: "statsApi",
   baseQuery: baseQuery({
-    apiURL: "api/widget/stats-widget",
+    apiURL: "api/widgets/stats",
   }),
   tagTypes: ["stats"],
   endpoints: (build) => ({
-    getStats: build.query<IStatData[], number>({
-      query: (user) => `/${user}`,
+    getStats: build.query<IStatData[], void>({
+      query: () => "/",
       providesTags: ["stats"],
     }),
 
-    getStatsWidgetData: build.query<IStatData, IWidgetQueryData>({
-      query: ({ username, id }) => `/${username}/${id}`,
+    getStatsWidgetData: build.query<IStatData, string>({
+      query: (id) => `/${id}`,
     }),
 
     createStat: build.mutation<IStatData, IStatDataBase>({
@@ -33,9 +28,9 @@ const statsApi = createApi({
     }),
 
     editStat: build.mutation<IStatData, IEditStatData>({
-      query: (statInfo) => ({
-        url: "/",
-        method: "PUT",
+      query: ({ id, ...statInfo }) => ({
+        url: `/${id}`,
+        method: "PATCH",
         body: statInfo,
       }),
       invalidatesTags: ["stats"],

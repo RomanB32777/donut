@@ -3,7 +3,7 @@ echo "update donut app"
 
 project_dir=$(dirname "$0")
 types_dir="types"
-modulesWithTypes=('backend' 'frontend' 'sockets')
+modulesWithTypes=('backend' 'frontend')
 
 cd $project_dir
 
@@ -15,6 +15,12 @@ git stash
 git pull origin $branch
 
 git stash pop
+
+cd ./$types_dir
+
+npm run build
+
+cd ..
 
 for i in ${modulesWithTypes[@]}
 do

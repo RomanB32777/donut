@@ -1,37 +1,33 @@
 import React, { useEffect } from "react";
 import { Modal, ModalProps } from "antd";
 import clsx from "clsx";
+
 import useWindowDimensions from "hooks/useWindowDimensions";
 import Loader from "components/Loader";
+
 import "./styles.sass";
 
-interface IModalComponent extends ModalProps {
+export interface IModalComponent extends ModalProps {
   topModal?: boolean;
   noPadding?: boolean;
   children?: React.ReactNode;
 }
 
-const ModalComponent = ({
-  open,
-  title,
+const ModalComponent: React.FC<IModalComponent> = ({
   width,
   confirmLoading,
   topModal,
   centered,
-  onCancel,
   noPadding,
-  closable,
   children,
   className,
-}: IModalComponent) => (
+  ...props
+}) => (
   <Modal
-    title={title}
-    open={open}
+    {...props}
     confirmLoading={confirmLoading || false}
-    onCancel={onCancel}
     width={width || 520}
     style={{ top: topModal ? 20 : centered ? 0 : 100 }}
-    closable={closable}
     footer={null}
     bodyStyle={{
       padding: noPadding ? 0 : 24,
@@ -51,13 +47,13 @@ const ModalComponent = ({
 );
 
 interface ILoadingModalComponent extends IModalComponent {
-  message: string;
+  message: React.ReactNode;
 }
 
-export const LoadingModalComponent = ({
+export const LoadingModalComponent: React.FC<ILoadingModalComponent> = ({
   message,
   ...props
-}: ILoadingModalComponent) => (
+}) => (
   <ModalComponent {...props} closable={false} width={600}>
     <div className="donat-loading">
       <p className="message">{message}</p>
@@ -66,13 +62,14 @@ export const LoadingModalComponent = ({
   </ModalComponent>
 );
 
-export const ErrorModalComponent = ({
+export const ErrorModalComponent: React.FC<ILoadingModalComponent> = ({
   message,
   ...props
-}: ILoadingModalComponent) => (
+}) => (
   <ModalComponent {...props} closable={false} width={600}>
     <div className="modal-error">
-      <p className="message" dangerouslySetInnerHTML={{ __html: message }} />
+      <p className="message">{message}</p>
+      {/* dangerouslySetInnerHTML={{ __html: message }} */}
     </div>
   </ModalComponent>
 );
@@ -80,17 +77,17 @@ export const ErrorModalComponent = ({
 interface ISuccessModalComponent extends ILoadingModalComponent {
   onClose: () => void;
   showDurationPopup?: number;
-  description?: string;
+  description?: React.ReactNode;
 }
 
-export const SuccessModalComponent = ({
+export const SuccessModalComponent: React.FC<ISuccessModalComponent> = ({
   message,
   open,
   onClose,
   showDurationPopup,
   description,
   ...props
-}: ISuccessModalComponent) => {
+}) => {
   const { isTablet } = useWindowDimensions();
 
   useEffect(() => {

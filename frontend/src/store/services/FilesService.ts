@@ -1,19 +1,19 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { defaultAssetsFolders, ISoundInfo } from "types";
+import { defaultAssetsFolders, IStaticFile } from "types";
 import { baseQuery } from "./utils";
 
 const filesApi = createApi({
   reducerPath: "filesApi",
   baseQuery: baseQuery({
-    apiURL: "api/file",
+    apiURL: "api/files",
   }),
   endpoints: (build) => ({
-    getDefaultImages: build.query<string[], defaultAssetsFolders>({
+    getDefaultImages: build.query<IStaticFile[], defaultAssetsFolders>({
       query: (type) => `/default-images/${type}`,
     }),
 
-    getSounds: build.query<ISoundInfo[], string>({
-      query: (username) => `/sounds/${username}`,
+    getSounds: build.query<IStaticFile[], void>({
+      query: () => "/sounds",
     }),
   }),
 });

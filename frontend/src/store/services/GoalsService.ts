@@ -13,17 +13,17 @@ interface IGoalEditData extends IEditGoalData, IVisibleNotification {}
 const goalsApi = createApi({
   reducerPath: "goalsApi",
   baseQuery: baseQuery({
-    apiURL: "api/widget/goals-widget",
+    apiURL: "api/widgets/goals",
   }),
   tagTypes: ["goals"],
   endpoints: (build) => ({
-    getGoals: build.query<IGoalData[], number>({
+    getGoals: build.query<IGoalData[], string>({
       query: (user) => `/${user}`,
       providesTags: ["goals"],
     }),
 
     getGoalsWidgetData: build.query<IGoalData, IWidgetQueryData>({
-      query: ({ username, id }) => `/${username}/${id}`,
+      query: ({ username, id }) => `${username}/${id}`,
       providesTags: ["goals"],
     }),
 
@@ -37,9 +37,9 @@ const goalsApi = createApi({
     }),
 
     editGoal: build.mutation<IGoalData, IGoalEditData>({
-      query: ({ isVisibleNotification, ...goalInfo }) => ({
-        url: "/",
-        method: "PUT",
+      query: ({ isVisibleNotification, id, ...goalInfo }) => ({
+        url: `/${id}`,
+        method: "PATCH",
         params: { isVisibleNotification },
         body: goalInfo,
       }),

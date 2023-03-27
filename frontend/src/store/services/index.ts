@@ -1,3 +1,4 @@
+import authApi from "./AuthService";
 import userApi from "./UserService";
 import notificationsApi from "./NotificationsService";
 import donationsApi from "./DonationsService";
@@ -8,6 +9,7 @@ import badgesApi from "./BadgesService";
 import filesApi from "./FilesService";
 
 export {
+  authApi,
   userApi,
   notificationsApi,
   donationsApi,

@@ -1,4 +1,10 @@
-import { IDonatPageWithFiles, IFileInfo, IUserWithFiles } from "appTypes";
+import {
+  IAuthToken,
+  IWebToken,
+  IDonatPageWithFiles,
+  IFileInfo,
+  IUserWithFiles,
+} from "appTypes";
 import { IShortUserData, IUser } from "types";
 
 const initFileInfo: IFileInfo = {
@@ -7,48 +13,57 @@ const initFileInfo: IFileInfo = {
 };
 
 const initUser: IUser = {
-  id: 0,
+  id: "",
   username: "",
   roleplay: "creators",
-  wallet_address: "",
-  avatar: "",
-  created_at: "",
-  spam_filter: false,
-  donat_page: {
-    header_banner: "",
-    background_banner: "",
-    welcome_text: "",
-    btn_text: "",
-    main_color: "",
-    background_color: "",
-  },
+  walletAddress: "",
+  avatarLink: "",
+  createdAt: new Date(),
+  email: "",
+  status: "confirmation",
 };
 
 const initDonatPage: IDonatPageWithFiles = {
-  header_banner: initFileInfo,
-  background_banner: initFileInfo,
-  welcome_text: "",
-  btn_text: "",
-  main_color: "",
-  background_color: "",
+  headerBanner: initFileInfo,
+  backgroundBanner: initFileInfo,
+  welcomeText: "",
+  btnText: "",
+  mainColor: "",
+  backgroundColor: "",
 };
 
 const initUserWithFiles: IUserWithFiles = {
-  id: 0,
+  id: "",
   username: "",
   roleplay: "creators",
-  wallet_address: "",
-  avatar: initFileInfo,
-  created_at: "",
-  spam_filter: false,
-  donat_page: initDonatPage,
+  walletAddress: "",
+  avatarLink: initFileInfo,
+  createdAt: new Date(),
+  email: "",
+  status: "confirmation",
 };
 
 const shortUserInfo: IShortUserData = {
-  id: 0,
+  id: "",
   username: "",
-  wallet_address: "",
+  walletAddress: "",
   roleplay: "backers",
 };
 
-export { initFileInfo, initUser, initDonatPage, initUserWithFiles, shortUserInfo };
+const initAuthToken: IAuthToken = {
+  access_token: "",
+};
+
+const initWebToken: IWebToken = {
+  web_token: "",
+};
+
+export {
+  initFileInfo,
+  initUser,
+  initDonatPage,
+  initUserWithFiles,
+  shortUserInfo,
+  initAuthToken,
+  initWebToken,
+};

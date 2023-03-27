@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14.0-alpine
+    container_name: db-dev
+    ports:
+      - ${TYPEORM_PORT}:${TYPEORM_PORT}
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_DATABASE}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    container_name: backend-dev
+    build: ./backend
+    depends_on:
+      - db
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=${API_PORT}
+      - TYPEORM_HOST=db
+    volumes:
+      - ./backend/dist/mail:/app/dist/mail
+      - ./backend/dist/static:/app/dist/static
+    env_file: ./.env
+
+  frontend:
+    container_name: frontend-dev
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+        - BACKEND_PORT=${API_PORT}
+        - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+        - ACCESS_TOKEN_EXPIRATION=${ACCESS_TOKEN_EXPIRATION}
+    platform: linux/amd64
+    environment:
+      - DOCKER_DEFAULT_PLATFORM=linux/amd64
+    depends_on:
+      - backend
+    ports:
+      - "8095:80"
+    restart: unless-stopped
+
+  # nginx:
+  #   container_name: nginx-dev
+  #   build: ./nginx
+  #   depends_on:
+  #     - backend
+  #   ports:
+  #     - "8000:${NGINX_PORT}"
+  #   restart: unless-stopped
+  #   environment:
+  #     - NGINX_PORT=${NGINX_PORT}
+  #     - API_PORT=${API_PORT}
+  #   volumes:
+  #     - ./nginx/templates/:/etc/nginx/templates
+
+volumes:
+  pg_data:   

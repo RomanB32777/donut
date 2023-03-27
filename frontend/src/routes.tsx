@@ -18,7 +18,9 @@ import DonationPage from "pages/DonationPage";
 import StreamStatsPage from "pages/StreamStatsPage";
 import DonationGoalsPage from "pages/DonationGoalsPage";
 import SettingsPage from "pages/SettingsPage";
-import RegistrationContainer from "containers/RegistrationContainer";
+import ResetPasswordContainer from "containers/ResetPasswordContainer";
+import ChangePasswordContainer from "containers/ChangePasswordContainer";
+import ResendConfirmContainer from "containers/ResendConfirmContainer";
 import AdminContainer from "containers/AdminContainer";
 import Loader from "components/Loader";
 import DonatAlertPage from "pages/DonatAlertPage";
@@ -28,26 +30,8 @@ import LandingPage from "pages/LandingPage";
 import NoPage from "pages/NoPage";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { useWallet } from "hooks/walletHooks";
-
-enum RoutePaths {
-  main = "/",
-  admin = "admin",
-  dashboard = "dashboard",
-  donat = "donat",
-  widgets = "widgets",
-  alerts = "alerts",
-  stats = "stats",
-  goals = "goals",
-  donations = "donations",
-  badges = "badges",
-  settings = "settings",
-  register = "register",
-  support = "support",
-  donatMessage = "donat-message",
-  donatGoal = "donat-goal",
-  donatStat = "donat-stat",
-}
+import useAuth from "hooks/useAuth";
+import { RoutePaths } from "consts";
 
 interface IRoute {
   path?: string;
@@ -71,17 +55,17 @@ type ProtectedRouteType = {
 };
 
 const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
-  const { checkWallet } = useWallet();
-  const { user, loading } = useAppSelector((state) => state);
-  const { id, roleplay } = user;
+  const { id, roleplay } = useAppSelector(({ user }) => user);
+  const loading = useAppSelector(({ loading }) => loading);
+  const { checkAuth } = useAuth();
 
   useEffect(() => {
-    !id && checkWallet(true);
+    !id && checkAuth();
   }, [id]);
 
   if (!id && loading) return <Loader size="big" />;
 
-  //if the role required is there or not
+  // if the role required is there or not
   if (roleRequired)
     return id ? (
       roleRequired === roleplay ? (
@@ -90,9 +74,9 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
         <Navigate to={`/${RoutePaths.admin}/${RoutePaths.donations}`} />
       )
     ) : (
-      <Navigate to={`/${RoutePaths.register}`} />
+      <Navigate to={RoutePaths.main} />
     );
-  return id ? <Outlet /> : <Navigate to={`/${RoutePaths.register}`} />;
+  return id ? <Outlet /> : <Navigate to={RoutePaths.main} />;
 };
 
 export const routers: IRoute[] = [
@@ -120,7 +104,7 @@ export const routers: IRoute[] = [
           {
             path: RoutePaths.dashboard,
             element: <MainPage />,
-            name: "Dashboard",
+            name: "sidebar_dashboard",
             icon: <PieChartOutlined />,
             menu: true,
             menuOrder: 1,
@@ -128,7 +112,7 @@ export const routers: IRoute[] = [
           {
             path: RoutePaths.donat,
             element: <DonationPage />,
-            name: "Donation page",
+            name: "sidebar_donation_page",
             icon: <DonationPageIcon />,
             menu: true,
             menuOrder: 4,
@@ -136,26 +120,26 @@ export const routers: IRoute[] = [
           {
             path: RoutePaths.widgets,
             element: <WidgetsPage />,
-            name: "Widgets",
+            name: "sidebar_widgets",
             icon: <AppstoreOutlined />,
             menu: true,
             menuOrder: 6,
             children: [
               {
                 path: RoutePaths.alerts,
-                name: "Alerts",
+                name: "sidebar_widgets_alerts",
                 element: <AlertsPage />,
                 menu: true,
               },
               {
                 path: RoutePaths.stats,
-                name: "In-stream stats",
+                name: "sidebar_widgets_stats",
                 element: <StreamStatsPage />,
                 menu: true,
               },
               {
                 path: RoutePaths.goals,
-                name: "Donation goals",
+                name: "sidebar_widgets_goals",
                 element: <DonationGoalsPage />,
                 menu: true,
               },
@@ -166,7 +150,7 @@ export const routers: IRoute[] = [
       {
         path: RoutePaths.donations,
         element: <DonationsPage />,
-        name: "Donations",
+        name: "sidebar_donations",
         icon: <PeopleIcon />,
         menu: true,
         menuOrder: 2,
@@ -174,7 +158,7 @@ export const routers: IRoute[] = [
       {
         path: RoutePaths.badges,
         element: <BadgesPage />,
-        name: "Badges",
+        name: "sidebar_badges",
         icon: <ShieldMenuIcon />,
         menu: true,
         menuOrder: 3,
@@ -182,7 +166,7 @@ export const routers: IRoute[] = [
       {
         path: RoutePaths.settings,
         element: <SettingsPage />,
-        name: "Settings",
+        name: "sidebar_settings",
         icon: <SettingOutlined />,
         menu: true,
         menuOrder: 5,
@@ -190,9 +174,19 @@ export const routers: IRoute[] = [
     ],
   },
   {
-    path: RoutePaths.register,
-    name: "Registration",
-    element: <RegistrationContainer />,
+    path: RoutePaths.reset,
+    name: "Reset password",
+    element: <ResetPasswordContainer />,
+  },
+  {
+    path: RoutePaths.change,
+    name: "Change password",
+    element: <ChangePasswordContainer />,
+  },
+  {
+    path: RoutePaths.resend,
+    name: "Resend confirm email",
+    element: <ResendConfirmContainer />,
   },
   {
     path: `${RoutePaths.support}/:name`,
@@ -222,19 +216,6 @@ export const routers: IRoute[] = [
     hiddenLayoutElements: true,
     transparet: true,
   },
-  // {
-  //   path: RoutePaths.help,
-  //   name: "Help center",
-  //   element: <ProtectedRoutes />,
-  //   children: [
-  //     {
-  //       path: `${RoutePaths.center}?/:theme`,
-  //       element: <HelpCenter />,
-  //       hiddenLayoutElements: true,
-  //       noPaddingMainConteiner: true,
-  //     },
-  //   ],
-  // },
   {
     path: "*",
     element: <NoPage />,

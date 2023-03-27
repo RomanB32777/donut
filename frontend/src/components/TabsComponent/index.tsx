@@ -1,4 +1,4 @@
-import { FC, memo, useCallback } from "react";
+import { memo, useCallback } from "react";
 import clsx from "clsx";
 import { Tabs } from "antd";
 import "./styles.sass";
@@ -8,23 +8,23 @@ interface ITab {
   key: string;
 }
 
-interface ITabsComponent {
+interface ITabsComponent<T> {
   tabs: ITab[];
   activeKey?: string;
   modificator?: string;
   isBigTabs?: boolean;
-  setTabContent: (key: string) => void;
+  setTabContent: (key: T) => void;
 }
 
-const TabsComponent: FC<ITabsComponent> = ({
+const TabsComponent = <T extends string>({
   tabs,
   activeKey,
   modificator,
   isBigTabs,
   setTabContent,
-}) => {
+}: ITabsComponent<T>) => {
   const tabsHandler = useCallback(
-    (key: string) => setTabContent(key),
+    <T extends string>(key: T) => setTabContent(key as any),
     [setTabContent]
   );
 

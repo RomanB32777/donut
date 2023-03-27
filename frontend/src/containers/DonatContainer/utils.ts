@@ -1,63 +1,97 @@
 import { useContext, useState } from "react";
 import { Socket } from "socket.io-client";
+import {
+  RpcError,
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+} from "wagmi";
+import { useIntl } from "react-intl";
+import { utils } from "ethers";
 import { ISocketEmitObj, ISendDonat, IUser } from "types";
 
 import { useSocketConnection, WebSocketContext } from "contexts/Websocket";
-import { WalletContext } from "contexts/Wallet";
-import { addNotification } from "utils";
-import { useEditGoalMutation } from "store/services/GoalsService";
 import {
   useLazyCheckIsExistUserQuery,
-  useRegisterUserMutation,
+  useCreateUserMutation,
 } from "store/services/UserService";
+import useAuth from "hooks/useAuth";
+import { useActions } from "hooks/reduxHooks";
 import { useCreateDonationMutation } from "store/services/DonationsService";
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
-import { ProviderRpcError } from "appTypes";
+import { BlockchainNetworks, fullChainsInfo } from "utils/wallets/wagmi";
+import { addNotification, removeAuthToken } from "utils";
+import { mainAbi } from "consts";
+import { IError } from "appTypes";
 
 const usePayment = ({
   form,
   supporterInfo,
   creatorInfo,
-  usdtKoef,
   balance,
 }: {
   form: ISendDonat;
   supporterInfo: IUser;
   creatorInfo: IUser;
-  usdtKoef: number;
   balance: number;
 }) => {
-  const { amount, selectedGoal, username } = form;
+  const { sum, username } = form;
 
+  const intl = useIntl();
   const socket = useContext(WebSocketContext);
-  const walletConf = useContext(WalletContext);
-
+  const { address } = useAccount();
+  const { chain: currentChain } = useNetwork();
+  const { checkWebToken, checkWallet } = useAuth();
+  const { logoutUser } = useActions();
   const { connectSocket } = useSocketConnection(username);
   const [createDonation] = useCreateDonationMutation();
-  const [registerUser] = useRegisterUserMutation();
+  const [registerUser] = useCreateUserMutation();
   const [getNotifications] = useLazyGetNotificationsQuery();
   const [checkIsExistUser] = useLazyCheckIsExistUserQuery();
-  const [editGoal] = useEditGoalMutation();
+
+  const currentChainNetwork = currentChain?.network;
+
+  const chainContract = currentChainNetwork
+    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks].contractAddress
+    : undefined;
+
+  const { config } = usePrepareContractWrite({
+    address: chainContract,
+    abi: JSON.parse(mainAbi),
+    functionName: "transferMoney",
+    args: [creatorInfo.walletAddress],
+    overrides: {
+      from: address,
+      value: utils.parseEther(String(sum)),
+    },
+  });
+
+  const { writeAsync } = useContractWrite(config);
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const registerSupporter = async () => {
     try {
-      const walletData = await walletConf.getWalletData();
-
-      if (walletData) {
-        const { username } = form;
-        const { address } = walletData;
-
+      let newUsername = username;
+      if (address) {
+        if (supporterInfo.id) {
+          removeAuthToken();
+          const isExistSupporter = await checkWallet();
+          if (!isExistSupporter) {
+            newUsername = `${username}Supporter`;
+            logoutUser();
+          }
+        }
+        await checkWebToken();
         const userDadta = await registerUser({
-          ...supporterInfo,
-          username,
-          wallet_address: address,
+          username: newUsername,
+          walletAddress: address,
           roleplay: "backers",
         }).unwrap();
         return userDadta;
-      }
+      } else setIsSuccess(false);
     } catch (error) {
       console.log(error);
       setIsSuccess(false);
@@ -69,7 +103,7 @@ const usePayment = ({
       let userInfo: IUser | undefined = supporterInfo;
       let socketInfo: Socket | null = socket;
 
-      if (!userInfo.id) {
+      if (!userInfo.id || userInfo.roleplay === "creators") {
         userInfo = await registerSupporter();
         socketInfo = connectSocket();
       }
@@ -83,30 +117,15 @@ const usePayment = ({
 
         if (donationData) {
           const emitObj: ISocketEmitObj = {
-            supporter: {
-              username: userInfo.username,
-              id: userInfo.id,
-            },
-            creator: {
-              username: creatorInfo.username,
-              id: donationData.creator_id,
-            },
+            toSendUsername: userInfo.username,
             id: donationData.id,
           };
 
-          if (socketInfo) socketInfo.emit("new_donat", emitObj);
+          if (socketInfo) socketInfo.emit("newDonat", emitObj);
           else console.log("not connected user");
 
-          if (selectedGoal)
-            await editGoal({
-              donat: amount * usdtKoef,
-              creator_id: donationData.creator_id,
-              id: selectedGoal,
-              isVisibleNotification: false,
-            });
-
           await getNotifications({
-            user: userInfo.username,
+            username: userInfo.username,
             shouldUpdateApp: true,
           });
 
@@ -120,15 +139,10 @@ const usePayment = ({
 
   const triggerContract = async () => {
     try {
-      const walletData = await walletConf.getWalletData();
+      if (address) {
+        const { walletAddress } = creatorInfo;
 
-      const { amount, username } = form;
-
-      if (walletData) {
-        const { signer, address } = walletData;
-        const { wallet_address } = creatorInfo;
-
-        if (address !== wallet_address) {
+        if (address !== walletAddress) {
           setIsLoading(true);
 
           if (!supporterInfo.id) {
@@ -137,56 +151,54 @@ const usePayment = ({
             if (isExistUser) {
               addNotification({
                 type: "warning",
-                title:
-                  "Unfortunately, this username is already busy. Enter another one",
+                title: intl.formatMessage({
+                  id: "donat_warning_message_username_description",
+                }),
               });
               return;
             }
           }
 
-          if (balance >= Number(amount)) {
-            const currentBlockchain = await walletConf.getCurrentBlockchain();
-
-            if (currentBlockchain) {
-              const res =
-                await walletConf.transfer_contract_methods.paymentMethod({
-                  contract: currentBlockchain.address,
-                  addressTo: wallet_address,
-                  sum: String(amount),
-                  signer,
-                });
-
+          if (balance >= Number(sum)) {
+            if (currentChain) {
+              const res = await writeAsync?.();
               if (res) await sendDonation();
             }
           } else {
             addNotification({
               type: "warning",
-              title: "Insufficient balance",
-              message:
-                "Unfortunately, there are not enough funds on your balance to carry out the operation",
+              title: intl.formatMessage({
+                id: "donat_warning_message_balance_title",
+              }),
+              message: intl.formatMessage({
+                id: "donat_warning_message_balance_description",
+              }),
             });
           }
         } else {
           addNotification({
             type: "warning",
-            title: "Seriously ?)",
-            message: "You are trying to send a donation to yourself",
+            title: intl.formatMessage({
+              id: "donat_warning_message_himself_title",
+            }),
+            message: intl.formatMessage({
+              id: "donat_warning_message_himself_description",
+            }),
           });
         }
       }
     } catch (error) {
-      const errInfo = error as ProviderRpcError;
-
-      errInfo.code !== "ACTION_REJECTED" &&
+      const errInfo = error as RpcError<IError>;
+      if (errInfo.code !== 4001 && errInfo?.data?.statusCode !== 500) {
         addNotification({
           type: "danger",
           title: "Error",
           message:
-            errInfo.reason ||
-            (error as any)?.response?.data?.message ||
-            (error as Error).message ||
-            `An error occurred while sending data`,
+            errInfo.message ||
+            errInfo?.data?.message ||
+            "An error occurred while sending data",
         });
+      }
     } finally {
       setIsLoading(false);
     }

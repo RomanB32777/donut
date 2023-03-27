@@ -1,6 +1,8 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Row } from "antd";
+import { FormattedMessage } from "react-intl";
 import { EyeOutlined, SettingOutlined } from "@ant-design/icons";
+
 import TabsComponent from "components/TabsComponent";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { typesTabContent } from "appTypes";
@@ -21,7 +23,7 @@ const tabs = [
     label: (
       <>
         <SettingOutlined />
-        Settings
+        <FormattedMessage id="widget_tab_settings" />
       </>
     ),
   },
@@ -30,7 +32,7 @@ const tabs = [
     label: (
       <>
         <EyeOutlined />
-        Preview
+        <FormattedMessage id="widget_tab_preview" />
       </>
     ),
   },

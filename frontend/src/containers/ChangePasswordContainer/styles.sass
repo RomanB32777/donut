@@ -1,0 +1,51 @@
+@use 'commonStyles/variables'
+
+.changeModal
+    width: 100%
+    height: 65vh
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+
+    .modalTitle
+        font-family: variables.$vt-font
+        font-style: normal
+        font-weight: 400
+        font-size: 60px
+        line-height: 60px
+        color: variables.$white-color
+        text-align: center
+        margin: 0 0 40px
+
+    .changeInputs
+        transition: opacity .3s ease-in-out
+        display: flex
+        flex-direction: column
+        align-items: center
+        max-width: 100%
+
+        @media (max-width: 640px)
+            max-width: 96%
+
+        .changeInputWrapper
+            margin: 0 auto
+            width: 100%
+            display: flex
+            align-items: center
+            justify-content: center
+            margin-bottom: 10px
+
+            .changeInput
+                &.isNotValid
+                    border-radius: variables.$border-radius
+                    border: 1px solid variables.$main-color
+
+    .btnWrapper
+        margin: 0 auto
+
+        .changeBtn
+            padding: 11px 45px
+            font-size: 25px
+            line-height: 28px
+            margin-top: 30px

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { INotification } from "types";
-import notificationsApi from "store/services/NotificationsService";
+import { notificationsApi } from "store/services";
 import { INotificationsState } from "appTypes/notifications";
 
 const initialState: INotificationsState = {

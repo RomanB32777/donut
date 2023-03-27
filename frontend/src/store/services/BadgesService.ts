@@ -1,53 +1,51 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
+import { IBadgePage } from "appTypes";
 import {
+  FileUploadTypes,
   IBadgeCreatingInfo,
-  IBadgeInfo,
-  IBadgeQueryData,
   IBagdeAssignInfo,
-  IQueryPriceParams,
   IShortUserData,
 } from "types";
 import { setFormDataValues } from "utils";
 import { baseQuery } from "./utils";
-import { IDataWithFile } from "appTypes";
+
+interface IBadgeCreate extends IBadgeCreatingInfo {
+  [FileUploadTypes.badges]?: File | null;
+}
 
 const badgesApi = createApi({
   reducerPath: "badgesApi",
   baseQuery: baseQuery({
-    apiURL: "api/badge",
+    apiURL: "api/badges",
   }),
   tagTypes: ["badges", "holders"],
   endpoints: (build) => ({
-    getBadges: build.query<IBadgeInfo[], string>({
-      query: (wallet_address) => `/${wallet_address}`,
+    getBadges: build.query<IBadgePage[], void>({
+      query: () => "/",
       providesTags: ["badges"],
     }),
 
-    getBadge: build.query<IBadgeInfo, IBadgeQueryData>({
-      query: ({ id, wallet_address }) => `/${id}/${wallet_address}`,
+    getBadge: build.query<IBadgePage, string>({
+      query: (id) => `/${id}`,
       providesTags: ["badges"],
     }),
 
-    getHolders: build.query<IShortUserData[], number>({
+    getHolders: build.query<IShortUserData[], string>({
       query: (id) => `holders/${id}`,
       providesTags: ["badges"],
     }),
 
-    getAssignPrice: build.query<number, IQueryPriceParams>({
-      query: ({ wallet_address, token_id }) => ({
-        url: "price",
-        params: {
-          wallet_address,
-          token_id,
-        },
+    getAssignPrice: build.query<number, IBagdeAssignInfo>({
+      query: (queryParams) => ({
+        url: "price/assign",
+        params: queryParams,
       }),
     }),
 
-    createBadge: build.mutation<IBadgeInfo, IDataWithFile<IBadgeCreatingInfo>>({
+    createBadge: build.mutation<IBadgePage, IBadgeCreate>({
       query: (badgeInfo) => {
         const formData = new FormData();
         setFormDataValues({ formData, dataValues: badgeInfo });
-
         return {
           url: "/",
           method: "POST",
@@ -58,16 +56,16 @@ const badgesApi = createApi({
       invalidatesTags: ["badges"],
     }),
 
-    assignBadge: build.mutation<string, IBagdeAssignInfo>({
-      query: (assignInfo) => ({
-        url: "/assign-badge",
-        method: "POST",
+    assignBadge: build.mutation<string, IBagdeAssignInfo & { id: string }>({
+      query: ({ id, ...assignInfo }) => ({
+        url: `/${id}`,
+        method: "PATCH",
         body: assignInfo,
       }),
       invalidatesTags: ["badges"],
     }),
 
-    deleteBadge: build.mutation<IBadgeInfo, number>({
+    deleteBadge: build.mutation<IBadgePage, string>({
       query: (id) => ({
         url: `/${id}`,
         method: "DELETE",

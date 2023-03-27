@@ -1,38 +1,39 @@
-import { memo, useContext, useMemo } from "react";
+import { memo } from "react";
 import { Col, Row } from "antd";
-import { IBadgeInfo } from "types";
+import { FormattedMessage } from "react-intl";
 
-import { WalletContext } from "contexts/Wallet";
 import SelectedBlockchain from "containers/BadgesContainer/SelectedBlockchain";
 import Loader from "components/Loader";
+import { fullChainsInfo } from "utils/wallets/wagmi";
+import { IBadgePage } from "appTypes";
 
 const BadgeDetails = ({
   badgeInfo,
   isLoading,
 }: {
-  badgeInfo: IBadgeInfo;
+  badgeInfo: IBadgePage;
   isLoading: boolean;
 }) => {
-  const walletConf = useContext(WalletContext);
+  const { title, description, isCreator, assigned, blockchain } = badgeInfo;
 
-  const { title, description, is_creator, assigned, blockchain } = badgeInfo;
-
-  const selectedBlockchainInfo = useMemo(
-    () =>
-      walletConf.main_contract.blockchains.find((b) => b.name === blockchain),
-    [walletConf, blockchain]
+  const selectedBlockchainInfo = Object.values(fullChainsInfo).find(
+    (ch) => ch.name === blockchain
   );
 
   if (isLoading) return <Loader size="big" />;
 
   return (
     <div className="details">
-      <p className="information-title">Badge information</p>
+      <p className="information-title">
+        <FormattedMessage id="badge_information_title" />
+      </p>
       <div className="content">
         <div className="row">
           <Row justify="space-between">
             <Col md={5} xs={7}>
-              <p className="title">Name</p>
+              <p className="title">
+                <FormattedMessage id="badge_information_name" />
+              </p>
             </Col>
             <Col md={18} xs={16}>
               <p className="value">{title}</p>
@@ -42,7 +43,9 @@ const BadgeDetails = ({
         <div className="row">
           <Row justify="space-between">
             <Col md={5} xs={7}>
-              <p className="title">Description</p>
+              <p className="title">
+                <FormattedMessage id="badge_information_description" />
+              </p>
             </Col>
             <Col md={18} xs={16}>
               <p className="value">{description}</p>
@@ -52,7 +55,13 @@ const BadgeDetails = ({
         <div className="row">
           <Row justify="space-between">
             <Col md={5} xs={7}>
-              <p className="title">{is_creator ? "Assigned" : "Quantity"}</p>
+              <p className="title">
+                {isCreator ? (
+                  <FormattedMessage id="badge_information_assigned" />
+                ) : (
+                  <FormattedMessage id="badge_information_quantity" />
+                )}
+              </p>
             </Col>
             <Col md={18} xs={16}>
               <p className="value">{assigned}</p>
@@ -62,7 +71,9 @@ const BadgeDetails = ({
         <div className="row">
           <Row justify="space-between" align="middle">
             <Col md={5} xs={7}>
-              <p className="title">Blockchain</p>
+              <p className="title">
+                <FormattedMessage id="badge_information_blockchain" />
+              </p>
             </Col>
             <Col md={18} xs={16}>
               <div className="value">

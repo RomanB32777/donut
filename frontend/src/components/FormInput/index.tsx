@@ -1,5 +1,6 @@
 import { HTMLInputTypeAttribute, useState } from "react";
 import { Col, Row, RowProps } from "antd";
+import { useIntl } from "react-intl";
 import clsx from "clsx";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
@@ -7,9 +8,10 @@ import "./styles.sass";
 
 interface IFormInput {
   value: string;
-  label?: string;
+  label?: React.ReactNode;
   name?: string;
   placeholder?: string;
+  placeholderValues?: Record<string, string | number>;
   typeInput?: HTMLInputTypeAttribute;
   disabled?: boolean;
   modificator?: string;
@@ -33,6 +35,7 @@ const FormInput = ({
   value,
   name,
   placeholder,
+  placeholderValues,
   typeInput,
   disabled,
   modificator,
@@ -50,6 +53,7 @@ const FormInput = ({
   addonAfter,
   setValue,
 }: IFormInput) => {
+  const intl = useIntl();
   const { isMobile } = useWindowDimensions();
   const [active, setActive] = useState(false);
 
@@ -95,7 +99,14 @@ const FormInput = ({
                 })}
                 disabled={disabled || !Boolean(setValue)}
                 name={name || ""}
-                placeholder={placeholder || ""}
+                placeholder={
+                  placeholder
+                    ? intl.formatMessage(
+                        { id: placeholder },
+                        { ...placeholderValues }
+                      )
+                    : ""
+                }
                 maxLength={maxLength || 524288}
                 value={value}
                 onChange={changeHandler}
@@ -112,7 +123,9 @@ const FormInput = ({
                 onBlur={onBlur}
                 disabled={disabled || !Boolean(setValue)}
                 name={name}
-                placeholder={placeholder}
+                placeholder={
+                  placeholder ? intl.formatMessage({ id: placeholder }) : ""
+                }
                 type={typeInput || "text"}
                 maxLength={maxLength || 524288}
                 onWheel={onWheel}

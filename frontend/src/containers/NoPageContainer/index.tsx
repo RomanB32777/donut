@@ -1,7 +1,7 @@
 import { Result } from "antd";
 import { useNavigate } from "react-router-dom";
 import BaseButton from "components/BaseButton";
-import { RoutePaths } from "routes";
+import { RoutePaths } from "consts";
 import "./styles.sass";
 
 const NoPageContainer = () => {

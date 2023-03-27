@@ -1,31 +1,44 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { IAlertData, ISoundInfo, IWidgetQueryData } from "types";
+import {
+  FileUploadTypes,
+  IAlertData,
+  IEditAlertData,
+  IStaticFile,
+} from "types";
 import { setFormDataValues } from "utils";
 import { baseQuery } from "./utils";
-import { IDataWithFile } from "appTypes";
+
+interface IEditCreatorInfo extends IEditAlertData {
+  [FileUploadTypes.alert]?: File | null;
+}
 
 const alertsApi = createApi({
   reducerPath: "alertsApi",
   baseQuery: baseQuery({
-    apiURL: "api/widget/alerts-widget",
+    apiURL: "api/widgets/alerts",
   }),
   tagTypes: ["alerts"],
   endpoints: (build) => ({
-    getAlertWidgetData: build.query<IAlertData, IWidgetQueryData>({
-      query: ({ username, id }) => `/${username}` + (id ? `/${id}` : ""),
+    getAlertWidgetData: build.query<IAlertData, string>({
+      query: (id) => `/${id}`,
       providesTags: ["alerts"],
     }),
 
-    editAlertsWidget: build.mutation<IAlertData, IDataWithFile<IAlertData>>({
-      query: (alertInfo) => {
+    getAlertWidgetDataByCreator: build.query<IAlertData, string>({
+      query: (userId) => `creator/${userId}`,
+      providesTags: ["alerts"],
+    }),
+
+    editAlertsWidget: build.mutation<IAlertData, IEditCreatorInfo>({
+      query: ({ id, ...alertInfo }) => {
         const formData = new FormData();
         setFormDataValues({
           formData,
           dataValues: alertInfo,
         });
         return {
-          url: "/",
-          method: "PUT",
+          url: `/${id}`,
+          method: "PATCH",
           body: formData,
         };
       },
@@ -51,7 +64,10 @@ const alertsApi = createApi({
       invalidatesTags: ["alerts"],
     }),
 
-    uploadSound: build.mutation<ISoundInfo, IDataWithFile>({
+    uploadSound: build.mutation<
+      IStaticFile,
+      { [FileUploadTypes.sound]: File | null }
+    >({
       query: (soundInfo) => {
         const formData = new FormData();
         setFormDataValues({ formData, dataValues: soundInfo });
@@ -69,6 +85,8 @@ const alertsApi = createApi({
 export const {
   useGetAlertWidgetDataQuery,
   useLazyGetAlertWidgetDataQuery,
+  useGetAlertWidgetDataByCreatorQuery,
+  useLazyGetAlertWidgetDataByCreatorQuery,
   useEditAlertsWidgetMutation,
   useUploadSoundMutation,
 } = alertsApi;

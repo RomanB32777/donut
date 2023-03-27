@@ -1,0 +1,67 @@
+@use 'commonStyles/variables'
+
+.loginModal
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+
+    .loginModalContent
+        width: 100%
+        margin-top: 30px
+
+    .loginInputs
+        transition: opacity .3s ease-in-out
+        display: flex
+        flex-direction: column
+        align-items: center
+        max-width: 80%
+        margin: 0 auto
+
+        @media (max-width: 640px)
+            max-width: 96%
+
+        .loginInputWrapper
+            margin: 0 auto
+            width: 100%
+            display: flex
+            align-items: center
+            justify-content: center
+            margin-bottom: 10px
+
+            .loginInput
+                &.isNotValid
+                    border-radius: variables.$border-radius
+                    border: 1px solid variables.$main-color
+
+            .notValidMessage
+                color: variables.$main-color
+
+    .btnWrapper
+        margin: 0 auto
+
+        .loginBtn
+            padding: 11px 45px
+            font-size: 25px
+            line-height: 28px
+            margin-top: 30px
+
+    .loginLink, .resetLink
+        font-family: variables.$pt-font
+        color: variables.$white-color
+        font-weight: 400
+        font-size: 14px
+        line-height: 18px
+
+    .loginLink
+        margin: 25px 0 0
+
+        span
+            color: variables.$main-color
+            cursor: pointer
+
+    .resetLink
+        margin: 10px 0 0
+        text-decoration: underline
+        cursor: pointer

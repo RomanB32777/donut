@@ -3,7 +3,8 @@ import { createSelector } from "@reduxjs/toolkit";
 import { Checkbox, Col, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
-import { IDonationsQueryData, periodItemsTypes, userRoles } from "types";
+import { FormattedMessage, useIntl } from "react-intl";
+import { donationsQueryData, periodItemsTypes, userRoles } from "types";
 
 import PageTitle from "components/PageTitle";
 import FormInput from "components/FormInput";
@@ -22,19 +23,23 @@ import { exportToExcel } from "./utils";
 import { filterPeriodItems } from "consts";
 
 import "./styles.sass";
+import { IDonationWidgetInfo } from "appTypes";
 
 const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
+  const intl = useIntl();
   const { setUpdatedFlag } = useActions();
-  const { id, roleplay, spam_filter } = useAppSelector(({ user }) => user);
+  const { id, roleplay, creator } = useAppSelector(({ user }) => user);
   const { list, shouldUpdateApp } = useAppSelector(
     ({ notifications }) => notifications
   );
   const { isLaptop } = useWindowDimensions();
 
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
-  const [queryForm, setQueryForm] = useState<IDonationsQueryData>({
+  const [queryForm, setQueryForm] = useState<
+    donationsQueryData<periodItemsTypes>
+  >({
     timePeriod: "7days",
     searchStr: "",
     groupByName: false,
@@ -47,22 +52,45 @@ const DonationsContainer = () => {
   const selectTableData = useMemo(
     () =>
       createSelector(
-        (res: any) => res.data,
-        (res: any, roleplay: userRoles) => roleplay,
+        (res: IDonationWidgetInfo[] | undefined) => res,
+        (res: IDonationWidgetInfo[] | undefined, roleplay: userRoles) =>
+          roleplay,
         (data, roleplay) => {
-          const forTableData: ITableData[] = data?.map(
-            (donat: any, key: number) => ({
-              key: donat.id || key,
-              name: donat.username,
-              donationToken: +formatNumber(donat.sum_donation),
-              donationUSD: +formatNumber(donat.sum_usd_donation),
-              blockchain: donat.blockchain,
-              date: donat.created_at || "-",
-              role: roleplay,
-              message: donat.donation_message,
-            })
-          );
-          return forTableData ?? [];
+          if (data) {
+            const forTableData = data.reduce<ITableData[]>(
+              (
+                data,
+                {
+                  id,
+                  creator,
+                  backer,
+                  blockchainSum,
+                  sum,
+                  blockchain,
+                  message,
+                  createdAt,
+                }
+              ) => {
+                data.push({
+                  key: id,
+                  name:
+                    roleplay === "backers" ? creator.username : backer.username,
+                  donationToken: blockchainSum
+                    ? +formatNumber(blockchainSum)
+                    : 0,
+                  donationUSD: +formatNumber(sum),
+                  blockchain: blockchain,
+                  date: createdAt || "-",
+                  role: roleplay,
+                  message: message,
+                });
+                return data;
+              },
+              []
+            );
+            return forTableData;
+          }
+          return [];
         }
       ),
     []
@@ -74,10 +102,10 @@ const DonationsContainer = () => {
     refetch: sendQuery,
   } = useGetDonationsPageQuery(
     {
-      userID: id,
+      userId: id,
       query: {
         roleplay,
-        spam_filter,
+        spamFilter: creator?.spamFilter,
         ...queryForm,
       },
     },
@@ -85,7 +113,7 @@ const DonationsContainer = () => {
       skip: !id,
       selectFromResult: (result) => ({
         ...result,
-        tableData: selectTableData(result, roleplay),
+        tableData: selectTableData(result.data, roleplay),
       }),
     }
   );
@@ -134,7 +162,7 @@ const DonationsContainer = () => {
                       setValue={(value) =>
                         setQueryForm({ ...queryForm, searchStr: value })
                       }
-                      placeholder="Search by name"
+                      placeholder="donations_search_placeholder"
                       modificator="input"
                       addonsModificator="search-icon"
                       addonBefore={<SearchOutlined />}
@@ -143,11 +171,19 @@ const DonationsContainer = () => {
                 )}
                 <Col md={10} xs={11}>
                   <SelectInput
-                    value={timePeriod}
+                    value={{
+                      value: timePeriod,
+                      label: intl.formatMessage({
+                        id: filterPeriodItems[timePeriod || "7days"],
+                      }),
+                    }}
                     list={Object.keys(filterPeriodItems).map((key) => ({
                       key,
                       value: filterPeriodItems[key as periodItemsTypes],
                     }))}
+                    renderOption={(item) =>
+                      intl.formatMessage({ id: item.value })
+                    }
                     modificator="select"
                     onChange={(selected) =>
                       setQueryForm({
@@ -201,7 +237,9 @@ const DonationsContainer = () => {
       </div>
       {visibleDatesPicker && (
         <div className="selectDates fadeIn">
-          <p>Choose the exact time period</p>
+          <p>
+            <FormattedMessage id="donations_select_dates" />
+          </p>
           <DatesPicker
             setValue={(startDate, endDate) =>
               setQueryForm({ ...queryForm, startDate, endDate })
@@ -218,7 +256,7 @@ const DonationsContainer = () => {
             }
             checked={groupByName}
           >
-            Group donations with the same sender name
+            <FormattedMessage id="donations_group_checkbox" />
           </Checkbox>
         </div>
       )}
@@ -235,8 +273,13 @@ const DonationsContainer = () => {
         {isCreator && (
           <div className="title">
             <p>
-              Found {tableData.length} result for the amount of&nbsp;
-              {formatNumber(allAmountUSD)} USD
+              <FormattedMessage
+                id="donations_found_txt"
+                values={{
+                  num: tableData.length,
+                  amount: formatNumber(allAmountUSD),
+                }}
+              />
             </p>
           </div>
         )}

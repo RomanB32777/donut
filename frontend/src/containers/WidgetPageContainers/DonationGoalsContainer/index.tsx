@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Empty } from "antd";
+import { FormattedMessage } from "react-intl";
 import { IGoalData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -7,6 +7,7 @@ import BaseButton from "components/BaseButton";
 import PageTitle from "components/PageTitle";
 import GoalItem from "./components/GoalItem";
 import GoalsModal from "./components/GoalsModal";
+import EmptyComponent from "components/EmptyComponent";
 
 import { useGetGoalsQuery } from "store/services/GoalsService";
 import { getFontsList } from "utils";
@@ -36,12 +37,12 @@ const DonationGoalsContainer = () => {
   }, []);
 
   const activeGoals = useMemo(
-    () => (goals ? goals.filter((goal: IGoalData) => !goal.is_archive) : []),
+    () => (goals ? goals.filter((goal: IGoalData) => !goal.isArchive) : []),
     [goals]
   );
 
   const archivedGoals = useMemo(
-    () => (goals ? goals.filter((goal: IGoalData) => goal.is_archive) : []),
+    () => (goals ? goals.filter((goal: IGoalData) => goal.isArchive) : []),
     [goals]
   );
 
@@ -64,7 +65,7 @@ const DonationGoalsContainer = () => {
       <PageTitle formatId="page_title_donation_goals" />
       <div className="headerPage">
         <p className="subtitle">
-          Start fundraising for a specific purchase or goal.
+          <FormattedMessage id="goals_subtitle" />
         </p>
         <BaseButton
           formatId="create_new_form_button"
@@ -85,7 +86,7 @@ const DonationGoalsContainer = () => {
             />
           ))
         ) : (
-          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <EmptyComponent />
         )}
       </div>
       <PageTitle formatId="page_title_donation_history" />
@@ -95,7 +96,7 @@ const DonationGoalsContainer = () => {
             <GoalItem key={goal.id} goalData={goal} fonts={[]} />
           ))
         ) : (
-          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <EmptyComponent />
         )}
       </div>
       <GoalsModal

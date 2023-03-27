@@ -1,10 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { IUser, userDataKeys } from "types";
+import { FormattedMessage } from "react-intl";
+import { ICreatorInfo } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { WalletContext } from "contexts/Wallet";
+import { WalletsModal } from "components/ModalComponent/wallets-modal";
 import PageTitle from "components/PageTitle";
 import FormInput from "components/FormInput";
 import BaseButton from "components/BaseButton";
@@ -14,92 +15,100 @@ import SwitchForm from "components/SwitchForm";
 
 import {
   useDeleteUserMutation,
-  useEditUserAvatarMutation,
+  useEditCreatorMutation,
   useEditUserMutation,
 } from "store/services/UserService";
-import { useLogoutUser } from "hooks/userHooks";
+import useAuth from "hooks/useAuth";
 import { copyStr, shortStr } from "utils";
-import { initUserWithFiles } from "consts";
 import { IUserWithFiles } from "appTypes";
 import "./styles.sass";
 
-const excludedСhangesFields: userDataKeys[] = [
-  "id",
-  "donat_page",
-  "created_at",
-  "roleplay",
-];
+interface IFormSettings
+  extends Pick<IUserWithFiles, "avatarLink" | "walletAddress" | "username">,
+    Pick<ICreatorInfo, "spamFilter"> {}
 
-const filesFields: userDataKeys[] = ["avatar"];
+type formKeys = keyof IFormSettings;
+
+const initState: IFormSettings = {
+  avatarLink: {
+    file: null,
+    preview: "",
+  },
+  walletAddress: "",
+  username: "",
+  spamFilter: false,
+};
 
 const SettingsContainer = () => {
-  const [editUser, { isLoading: isEditUserLoading }] = useEditUserMutation();
-  const [editAvatar, { isLoading: isEditAvatarLoading }] =
-    useEditUserAvatarMutation();
+  const [editUser, { isLoading }] = useEditUserMutation();
+  const [editCreatorInfo] = useEditCreatorMutation();
   const [deleteUser] = useDeleteUserMutation();
-  const logout = useLogoutUser();
-
+  const { logout } = useAuth();
   const user = useAppSelector(({ user }) => user);
 
-  const walletConf = useContext(WalletContext);
+  const [isOpenWalletsModal, setIsOpenWalletsModal] = useState(false);
+  const [formSettings, setFormSettings] = useState<IFormSettings>(initState);
 
-  const [formSettings, setFormSettings] =
-    useState<IUserWithFiles>(initUserWithFiles);
+  const { creator } = user;
+  const { username, walletAddress, avatarLink, spamFilter } = formSettings;
 
-  const { username, wallet_address, avatar, spam_filter } = formSettings;
-
-  const isLoading = useMemo(
-    () => isEditUserLoading || isEditAvatarLoading,
-    [isEditUserLoading, isEditAvatarLoading]
+  const formElementsHandler = useCallback(
+    <T,>(field: keyof IFormSettings) =>
+      (value: T) =>
+        setFormSettings((form) => ({ ...form, [field]: value })),
+    []
   );
+
+  const openWalletsModal = () => setIsOpenWalletsModal(true);
+  const closeWalletsModal = () => setIsOpenWalletsModal(false);
+
+  const setWalletAddress = async (walletAddress: string) => {
+    if (walletAddress !== user.walletAddress) {
+      await editUser({ walletAddress });
+    }
+    closeWalletsModal();
+  };
+
+  const copyWalletAddress = () => copyStr(walletAddress, "Wallet address");
 
   const changeUserData = async (
     changedFields: {
-      key: userDataKeys;
+      key: formKeys;
       value: any;
     }[]
   ) => {
     if (!isLoading && changedFields.length) {
-      const fileField = changedFields.find((f) => filesFields.includes(f.key));
+      const changedUserInfo = {
+        ...changedFields.reduce(
+          (acc, { key, value }) => ({
+            ...acc,
+            [key]: value,
+          }),
+          {} as Partial<IFormSettings>
+        ),
+      };
+      const { avatarLink, spamFilter, ...baseInfo } = changedUserInfo;
 
-      if (fileField) {
-        await editAvatar({
-          file: fileField.value,
-          username: user.username,
-        });
+      if (typeof spamFilter !== "undefined") {
+        await editCreatorInfo({ spamFilter });
       }
 
-      const changedFieldsWithoutFiles = changedFields.filter(
-        (f) => !filesFields.includes(f.key)
-      );
+      const [editArgs]: Parameters<typeof editUser> = [baseInfo];
 
-      if (changedFieldsWithoutFiles.length) {
-        const changedUserInfo = {
-          ...changedFieldsWithoutFiles.reduce(
-            (acc, { key, value }) => ({
-              ...acc,
-              [key]: value,
-            }),
-            {} as IUser
-          ),
-        };
-        await editUser({ ...changedUserInfo, id: user.id });
-      }
+      const uploadedFile = avatarLink?.file;
+
+      if (uploadedFile) editArgs.avatar = uploadedFile;
+      await editUser(editArgs);
     }
   };
 
-  const usernameBtnClick = async () =>
+  const usernameBtnClick = async () => {
     await changeUserData([{ key: "username", value: username }]);
+  };
 
   const saveSettings = async () => {
     const changedFields = changedElements.map((field) => {
-      const key = field as userDataKeys;
-      if (key === "avatar")
-        return {
-          key,
-          value: formSettings[key].file,
-        };
-
+      const key = field as formKeys;
       return {
         key,
         value: formSettings[key],
@@ -110,45 +119,53 @@ const SettingsContainer = () => {
   };
 
   const avatarBtnClick = async () =>
-    await changeUserData([{ key: "avatar", value: avatar.file }]);
+    await changeUserData([{ key: "avatarLink", value: avatarLink.file }]);
 
   const deleteProfile = async () => {
-    await deleteUser(user.id);
+    await deleteUser();
     logout();
   };
 
   const shortWalletToken = useMemo(
-    () => user.wallet_address && shortStr(user.wallet_address, 12),
-    [user]
+    () => (walletAddress ? shortStr(walletAddress, 12) : ""),
+    [walletAddress]
   );
 
   const changedElements = useMemo(
     () =>
       Object.keys(formSettings).filter((key) => {
-        const keyType = key as keyof IUserWithFiles;
+        const keyType = key as formKeys;
 
-        if (excludedСhangesFields.includes(keyType)) return false;
-
-        if (keyType === "avatar")
+        if (keyType === "avatarLink") {
           return formSettings[keyType].preview !== user[keyType];
-        else return formSettings[keyType] !== user[keyType];
+        } else if (keyType === "spamFilter") {
+          if (user.creator) {
+            return formSettings[keyType] !== user.creator[keyType];
+          }
+          return false;
+        } else return formSettings[keyType] !== user[keyType];
       }),
     [formSettings, user]
   );
 
   useEffect(() => {
-    const { id, username, wallet_address, spam_filter, avatar } = user;
-    id &&
-      setFormSettings({
-        ...formSettings,
-        username,
-        wallet_address,
-        spam_filter,
-        avatar: {
-          ...formSettings.avatar,
-          preview: avatar || "",
-        },
+    const { id, username, walletAddress, creator, avatarLink } = user;
+    if (id) {
+      setFormSettings((form) => {
+        const updatedState: IFormSettings = {
+          ...form,
+          username,
+          walletAddress,
+          avatarLink: {
+            ...form.avatarLink,
+            preview: avatarLink || "",
+          },
+        };
+
+        if (creator) updatedState.spamFilter = creator.spamFilter;
+        return updatedState;
       });
+    }
   }, [user]);
 
   return (
@@ -161,18 +178,10 @@ const SettingsContainer = () => {
               <Row justify="space-between" align="middle">
                 <Col span={16}>
                   <UploadImage
-                    label="Avatar:"
+                    label={<FormattedMessage id="settings_avatar" />}
                     formats={["PNG", "JPG", "JPEG", "GIF"]}
-                    filePreview={avatar.preview}
-                    setFile={({ preview, file }) =>
-                      setFormSettings({
-                        ...formSettings,
-                        avatar: {
-                          file,
-                          preview,
-                        },
-                      })
-                    }
+                    filePreview={avatarLink.preview}
+                    setFile={formElementsHandler("avatarLink")}
                     labelCol={8}
                     inputCol={15}
                     rowProps={{ justify: "space-between" }}
@@ -181,11 +190,11 @@ const SettingsContainer = () => {
                 <Col span={7}>
                   <p
                     className={clsx("action", {
-                      active: changedElements.includes("avatar"),
+                      active: changedElements.includes("avatarLink"),
                     })}
                     onClick={avatarBtnClick}
                   >
-                    Change
+                    <FormattedMessage id="settings_change_button" />
                   </p>
                 </Col>
               </Row>
@@ -196,12 +205,10 @@ const SettingsContainer = () => {
               <Row justify="space-between" align="middle">
                 <Col span={16}>
                   <FormInput
-                    label="Username:"
+                    label={<FormattedMessage id="settings_username" />}
                     name="username"
                     value={username}
-                    setValue={(value) =>
-                      setFormSettings({ ...formSettings, username: value })
-                    }
+                    setValue={formElementsHandler("username")}
                     labelCol={8}
                     inputCol={15}
                     gutter={[0, 16]}
@@ -215,7 +222,7 @@ const SettingsContainer = () => {
                     })}
                     onClick={usernameBtnClick}
                   >
-                    Change
+                    <FormattedMessage id="settings_change_button" />
                   </p>
                 </Col>
               </Row>
@@ -226,17 +233,9 @@ const SettingsContainer = () => {
               <Row justify="space-between" align="middle">
                 <Col span={16}>
                   <FormInput
-                    label="Wallet:"
+                    label={<FormattedMessage id="settings_wallet" />}
                     name="wallet"
                     value={shortWalletToken}
-                    addonBefore={
-                      <div className="wallet-icon">
-                        <img
-                          src={walletConf.main_contract.icon}
-                          alt="walletIcon"
-                        />
-                      </div>
-                    }
                     addonsModificator="wallet-addon"
                     labelCol={8}
                     inputCol={15}
@@ -244,28 +243,31 @@ const SettingsContainer = () => {
                     rowProps={{ justify: "space-between" }}
                   />
                 </Col>
-                <Col span={7}>
+                <Col offset={1} span={3}>
+                  <p className="action wallet" onClick={openWalletsModal}>
+                    <FormattedMessage id="settings_change_button" />
+                  </p>
+                </Col>
+                <Col span={4}>
                   <p
-                    className="action copy"
-                    onClick={() => {
-                      copyStr(wallet_address, "Wallet address");
-                    }}
+                    className={clsx("action", "wallet", {
+                      disabled: !walletAddress,
+                    })}
+                    onClick={copyWalletAddress}
                   >
-                    Copy
+                    <FormattedMessage id="settings_copy_button" />
                   </p>
                 </Col>
               </Row>
             </div>
           </Col>
-          {user.roleplay === "creators" && (
+          {creator && (
             <Col xl={18} xs={24}>
               <div className="form-element">
                 <SwitchForm
                   label="Spam filter:"
-                  checked={spam_filter}
-                  setValue={(flag) =>
-                    setFormSettings({ ...formSettings, spam_filter: flag })
-                  }
+                  checked={spamFilter}
+                  setValue={formElementsHandler("spamFilter")}
                   labelModificator="switch-label"
                   labelCol={6}
                   switchCol={2}
@@ -298,6 +300,11 @@ const SettingsContainer = () => {
           </Col>
         </Row>
       </div>
+      <WalletsModal
+        open={isOpenWalletsModal}
+        onCancel={closeWalletsModal}
+        connectedWallet={setWalletAddress}
+      />
     </div>
   );
 };

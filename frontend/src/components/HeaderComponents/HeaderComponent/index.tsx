@@ -13,6 +13,7 @@ interface IHeaderComponent {
   hidden?: boolean;
   contentModificator?: string;
   modificator?: string;
+  styles?: React.CSSProperties;
   backgroundColor?: string;
   collapsedSidebar?: boolean;
   children?: React.ReactNode;
@@ -27,6 +28,7 @@ const HeaderComponent = ({
   logoUrl,
   contentModificator,
   modificator,
+  styles,
   backgroundColor,
   collapsedSidebar,
   children,
@@ -40,6 +42,7 @@ const HeaderComponent = ({
       onClick={onClick}
       style={{
         background: backgroundColor,
+        ...styles,
       }}
     >
       <Row

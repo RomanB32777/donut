@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useState } from "react";
+
 import AdminSidebar from "components/AdminComponents/AdminSidebar";
 import AdminHeader from "components/AdminComponents/AdminHeader";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
-
 import "./styles.sass";
 
 interface IAdminContainer {
@@ -12,6 +12,7 @@ interface IAdminContainer {
 
 const AdminContainer: FC<IAdminContainer> = ({ children }) => {
   const { isTablet } = useWindowDimensions();
+
   const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {

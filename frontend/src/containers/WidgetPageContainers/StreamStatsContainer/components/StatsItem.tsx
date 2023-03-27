@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, memo, FC } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
+import { FormattedMessage, useIntl } from "react-intl";
 import { IStatData } from "types";
 
 import LinkCopy from "components/LinkCopy";
@@ -24,8 +25,7 @@ import {
   loadFonts,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
-import { RoutePaths } from "routes";
-import { baseURL } from "consts";
+import { RoutePaths, baseURL } from "consts";
 import { IWidgetStatData } from "appTypes";
 
 interface IStatsItem {
@@ -35,6 +35,7 @@ interface IStatsItem {
 }
 
 const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
+  const intl = useIntl();
   const { username } = useAppSelector(({ user }) => user);
   const { isTablet } = useWindowDimensions();
   const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
@@ -43,17 +44,17 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
   const [isActiveDetails, setisActiveDetails] = useState(false);
   const [editStatData, setEditStatData] = useState<IWidgetStatData>({
     ...statData,
-    title_font: {
-      name: statData.title_font,
+    titleFont: {
+      name: statData.titleFont,
       link: "",
     },
-    content_font: {
-      name: statData.content_font,
+    contentFont: {
+      name: statData.contentFont,
       link: "",
     },
   });
 
-  const { id, title, stat_description, template, data_type, time_period } =
+  const { id, title, description, template, dataType, timePeriod } =
     editStatData;
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
@@ -69,11 +70,11 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
   };
 
   const initStatsItem = async () => {
-    const { title_font, content_font } = statData;
+    const { titleFont, contentFont } = statData;
 
     const loadedFonts = await loadFonts({
       fonts,
-      fields: { title_font, content_font },
+      fields: { titleFont, contentFont },
     });
 
     // convert statData:IStatData to statsItemValues:IWidgetStatData
@@ -88,20 +89,18 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
   const editWidgetData = (isReset?: boolean) => async () => {
     try {
       const { id } = statData;
-      const { title_font, content_font } = editStatData;
+      const { titleFont, contentFont } = editStatData;
 
       const forSentStatData = Object.keys(editStatData).reduce((obj, key) => {
         const dataKey = key as keyof IWidgetStatData;
-        if (dataKey === "custom_period") return obj;
+        if (dataKey === "customPeriod") return obj;
         return { ...obj, [dataKey]: editStatData[dataKey] };
       }, {} as IWidgetStatData);
 
       await editStat({
-        statData: {
-          ...forSentStatData,
-          title_font: title_font.name,
-          content_font: content_font.name,
-        },
+        ...forSentStatData,
+        titleFont: titleFont.name,
+        contentFont: contentFont.name,
         isReset,
         id,
       });
@@ -131,15 +130,13 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
     [linkForCopy, id]
   );
 
-  const timePeriodName = useMemo(
-    () => getCurrentTimePeriodQuery(time_period),
-    [time_period]
-  );
+  const timePeriodName = intl.formatMessage({
+    id: getCurrentTimePeriodQuery(timePeriod),
+  });
 
-  const typeStatData = useMemo(
-    () => getStatsDataTypeQuery(data_type),
-    [data_type]
-  );
+  const typeStatData = intl.formatMessage({
+    id: getStatsDataTypeQuery(dataType),
+  });
 
   const isLoading = useMemo(
     () => isEditLoading || isDeleteLoading,
@@ -162,14 +159,29 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
           <Col sm={11} xs={24}>
             <div className="mainInfo">
               <p className="title">{title}</p>
-              <p className="description">{stat_description}</p>
+              <p className="description">{description}</p>
             </div>
           </Col>
           <Col sm={11} xs={24}>
             <div className="parameters">
-              <p>Date period: {timePeriodName} </p>
-              <p>Date type: {typeStatData}</p>
-              <p>Template: {template}</p>
+              <p>
+                <FormattedMessage
+                  id="stats_widget_card_period"
+                  values={{ timePeriodName }}
+                />
+              </p>
+              <p>
+                <FormattedMessage
+                  id="stats_widget_card_type"
+                  values={{ typeStatData }}
+                />
+              </p>
+              <p>
+                <FormattedMessage
+                  id="stats_widget_card_template"
+                  values={{ template }}
+                />
+              </p>
               {!isTablet && (
                 <LinkCopy
                   link={linkForCopy}

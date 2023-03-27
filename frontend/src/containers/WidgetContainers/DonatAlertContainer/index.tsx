@@ -24,13 +24,9 @@ const DonatAlertContainer = () => {
   const { list } = useAppSelector(({ notifications }) => notifications);
   const { name, id } = useParams();
 
-  const { data: alertData, error } = useGetAlertWidgetDataQuery(
-    {
-      username: name as string,
-      id: id as string,
-    },
-    { skip: !id || !name }
-  );
+  const { data: alertData, error } = useGetAlertWidgetDataQuery(id as string, {
+    skip: !id || !name,
+  });
 
   const [lastNotif, setLastNotif] = useState<INotification | null>(null);
 
@@ -49,17 +45,17 @@ const DonatAlertContainer = () => {
   }, [list]);
 
   useEffect(() => {
-    const { voice, sound, gender_voice } = alertWidgetData;
+    const { voice, sound, genderVoice } = alertWidgetData;
     const donation = lastNotif?.donation;
     if (donation) {
-      const { donation_message } = donation;
+      const { message } = donation;
       if (sound && maxDuration) {
-        playSound(sound.link);
+        playSound(sound.path);
         setTimeout(() => {
           const { duration } = alertWidgetData;
           if (voice) {
             const tmp = new Audio(
-              `${baseURL}/api/widget/sound?text=${donation_message}&gender_voice=${gender_voice}`
+              `${baseURL}/api/widget/sound?text=${message}&genderVoice=${genderVoice}`
             );
             tmp.play();
           }
@@ -77,12 +73,12 @@ const DonatAlertContainer = () => {
 
       const fonts = await getFontsList();
 
-      const { name_font, message_font, sum_font, banner, sound, duration } =
+      const { nameFont, messageFont, sumFont, banner, sound, duration } =
         alertData;
 
       const loadedFonts = await loadFonts({
         fonts,
-        fields: { name_font, message_font, sum_font },
+        fields: { nameFont, messageFont, sumFont },
       });
 
       setAlertWidgetData((alertWidgetData) => ({
@@ -111,16 +107,19 @@ const DonatAlertContainer = () => {
 
   const {
     banner,
-    message_color,
-    message_font,
-    name_color,
-    name_font,
-    sum_color,
-    sum_font,
+    messageColor,
+    messageFont,
+    nameColor,
+    nameFont,
+    sumColor,
+    sumFont,
   } = alertWidgetData;
 
   if (lastNotif && lastNotif.donation) {
-    const { sum_donation, blockchain, donation_message } = lastNotif.donation;
+    const { sum, blockchain, message } = lastNotif.donation;
+    const sender = lastNotif.users.find(
+      ({ roleplay }) => roleplay === "sender"
+    );
     return (
       <div className="donat-messsage-container">
         <img
@@ -131,19 +130,19 @@ const DonatAlertContainer = () => {
           })}
         />
         <div className="donat-messsage-container_title">
-          <span style={getFontColorStyles(name_color, name_font)}>
-            {lastNotif.sender}
+          <span style={getFontColorStyles(nameColor, nameFont)}>
+            {sender?.user.username}
           </span>
           &nbsp;-&nbsp;
-          <span style={getFontColorStyles(sum_color, sum_font)}>
-            {formatNumber(sum_donation, 3)} {blockchain}
+          <span style={getFontColorStyles(sumColor, sumFont)}>
+            {formatNumber(sum, 3)} {blockchain}
           </span>
         </div>
         <p
           className="donat-messsage-container_message"
-          style={getFontColorStyles(message_color, message_font)}
+          style={getFontColorStyles(messageColor, messageFont)}
         >
-          {donation_message}
+          {message}
         </p>
       </div>
     );

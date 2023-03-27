@@ -1,5 +1,6 @@
 import { FC, memo, useCallback, useMemo } from "react";
 import { Col, Row } from "antd";
+import { FormattedMessage, useIntl } from "react-intl";
 import { allPeriodItemsTypes, statsDataTypes } from "types";
 
 import BaseButton from "components/BaseButton";
@@ -19,7 +20,7 @@ import {
   filterCurrentPeriodItems,
   filterDataTypeItems,
 } from "consts";
-import { IWidgetStatData, keyPeriodItems } from "appTypes";
+import { IWidgetStatData } from "appTypes";
 
 const templates = ["{username}", "{sum}", "{message}"];
 
@@ -41,35 +42,30 @@ const StatsModal: FC<IStatsModal> = ({
   setFormData,
   setIsOpenModal,
 }) => {
+  const intl = useIntl();
   const { id: userID } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
 
   const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
   const [createStat, { isLoading: isCreateLoading }] = useCreateStatMutation();
 
-  const {
-    title,
-    stat_description,
-    template,
-    data_type,
-    time_period,
-    custom_period,
-  } = formData;
+  const { title, description, template, dataType, timePeriod, customPeriod } =
+    formData;
 
   const currTemplateList = useMemo(
     () =>
-      data_type === filterDataTypeItems["top-supporters"]
+      dataType === "top-supporters"
         ? templateList.filter((t) => t.key !== "{message}")
         : templateList,
-    [data_type]
+    [dataType]
   );
 
   const currTemplate = useMemo(
     () =>
-      data_type === filterDataTypeItems["top-supporters"]
+      dataType === "top-supporters"
         ? (template as string[]).filter((t) => t !== "{message}")
         : template,
-    [data_type, template]
+    [dataType, template]
   );
 
   const closeEditModal = useCallback(() => {
@@ -82,34 +78,34 @@ const StatsModal: FC<IStatsModal> = ({
       const {
         id,
         title,
-        stat_description,
+        description,
         template,
-        data_type,
-        time_period,
-        custom_period,
+        dataType,
+        timePeriod,
+        customPeriod,
       } = formData;
 
-      const timePeriod = time_period === "custom" ? custom_period : time_period;
-      id
-        ? await editStat({
-            statData: {
-              title,
-              stat_description,
-              template: (template as string[]).join(" "),
-              data_type,
-              time_period: timePeriod as any,
-              creator_id: userID,
-            },
-            id,
-          })
-        : await createStat({
-            title,
-            stat_description,
-            template: (template as string[]).join(" "),
-            data_type,
-            time_period: timePeriod as any,
-            creator_id: userID,
-          });
+      const sendTimePeriod =
+        timePeriod === "custom" ? customPeriod : timePeriod;
+      if (id) {
+        await editStat({
+          id,
+          title,
+          description,
+          template: (template as string[]).join(" "),
+          dataType,
+          timePeriod: sendTimePeriod,
+        });
+      } else {
+        await createStat({
+          title,
+          description,
+          template: (template as string[]).join(" "),
+          dataType,
+          timePeriod: sendTimePeriod,
+          creator: userID,
+        });
+      }
 
       setIsOpenModal(false);
       setFormData(initWidgetStatData);
@@ -121,7 +117,7 @@ const StatsModal: FC<IStatsModal> = ({
   return (
     <ModalComponent
       open={isOpenModal}
-      title="New widget creation"
+      title={<FormattedMessage id="stats_modal_title" />}
       onCancel={closeEditModal}
       width={880}
       topModal
@@ -131,7 +127,7 @@ const StatsModal: FC<IStatsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <FormInput
-                label="Widget title:"
+                label={<FormattedMessage id="stats_modal_form_title" />}
                 name="widgetTitle"
                 value={title}
                 setValue={(value) => setFormData({ ...formData, title: value })}
@@ -145,11 +141,11 @@ const StatsModal: FC<IStatsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <FormInput
-                label="Widget description:"
-                name="stat_description"
-                value={stat_description}
+                label={<FormattedMessage id="stats_modal_form_description" />}
+                name="description"
+                value={description}
                 setValue={(value) =>
-                  setFormData({ ...formData, stat_description: value })
+                  setFormData({ ...formData, description: value })
                 }
                 labelCol={6}
                 inputCol={17}
@@ -162,16 +158,22 @@ const StatsModal: FC<IStatsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <SelectInput
-                label="Data type:"
+                label={<FormattedMessage id="stats_modal_form_type" />}
                 list={Object.keys(filterDataTypeItems).map((key) => ({
                   key,
                   value: filterDataTypeItems[key as statsDataTypes],
                 }))}
-                value={data_type}
+                renderOption={(item) => intl.formatMessage({ id: item.value })}
+                value={{
+                  value: dataType,
+                  label: intl.formatMessage({
+                    id: filterDataTypeItems[dataType],
+                  }),
+                }}
                 onChange={(value) =>
                   setFormData({
                     ...formData,
-                    data_type: value as statsDataTypes,
+                    dataType: value as statsDataTypes,
                   })
                 }
                 labelCol={6}
@@ -184,16 +186,22 @@ const StatsModal: FC<IStatsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <SelectInput
-                label="Time period:"
+                label={<FormattedMessage id="stats_modal_form_time" />}
                 list={Object.keys(filterCurrentPeriodItems).map((key) => ({
                   key,
                   value: filterCurrentPeriodItems[key as allPeriodItemsTypes],
                 }))}
-                value={time_period}
+                renderOption={(item) => intl.formatMessage({ id: item.value })}
+                value={{
+                  value: timePeriod,
+                  label: intl.formatMessage({
+                    id: filterCurrentPeriodItems[timePeriod],
+                  }),
+                }}
                 onChange={(value) =>
                   setFormData({
                     ...formData,
-                    time_period: value as keyPeriodItems,
+                    timePeriod: value,
                   })
                 }
                 labelCol={6}
@@ -201,19 +209,19 @@ const StatsModal: FC<IStatsModal> = ({
                 gutter={[0, 18]}
                 rowProps={{ justify: "space-between" }}
               />
-              {time_period === "custom" && (
+              {timePeriod === "custom" && (
                 <div className="customDatesPicker">
                   <Row>
                     <Col offset={isMobile ? 0 : 7}>
                       <DatesPicker
                         defaultValue={
-                          Array.isArray(custom_period) ? custom_period : []
+                          Array.isArray(customPeriod) ? customPeriod : []
                         }
                         setValue={(startDate, endDate) =>
                           setFormData({
                             ...formData,
-                            time_period: "custom",
-                            custom_period: `${startDate}-${endDate}`,
+                            timePeriod: "custom",
+                            customPeriod: `${startDate}-${endDate}`,
                           })
                         }
                       />
@@ -226,7 +234,7 @@ const StatsModal: FC<IStatsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <SelectInput
-                label="Template:"
+                label={<FormattedMessage id="stats_modal_form_template" />}
                 list={currTemplateList}
                 value={currTemplate}
                 onChange={(value) =>
@@ -251,7 +259,7 @@ const StatsModal: FC<IStatsModal> = ({
         <div className="btns">
           <div className="btns_cancel">
             <BaseButton
-              formatId="profile_form_cancel_button"
+              formatId="form_cancel_button"
               padding="6px 35px"
               onClick={closeEditModal}
               fontSize="18px"
@@ -259,7 +267,7 @@ const StatsModal: FC<IStatsModal> = ({
           </div>
           <div className="btns_save">
             <BaseButton
-              formatId="profile_form_save_widget_button"
+              formatId="form_save_widget_button"
               padding="6px 35px"
               onClick={sendData}
               disabled={isEditLoading || isCreateLoading}

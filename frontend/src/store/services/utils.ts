@@ -4,9 +4,12 @@ import { isRejectedWithValue } from "@reduxjs/toolkit";
 import {
   addErrorNotification,
   addSuccessNotification,
-  setAuthToken,
+  getAuthToken,
+  getWebToken,
+  removeAuthToken,
+  removeWebToken,
 } from "utils";
-import { baseURL, storageToken } from "consts";
+import { baseURL } from "consts";
 
 const getQueryArgs = ({
   args,
@@ -25,14 +28,23 @@ const getQueryArgs = ({
 const rtkQueryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
     if (isRejectedWithValue(action)) {
+      const message = action.payload?.data?.message || "error";
+      const messages = Array.isArray(message) && message.join(", ");
+
       addErrorNotification({
-        message: action.payload?.data?.message || "error",
+        message: messages || message,
       });
     }
     return next(action);
   };
 
-const baseQuery = ({ apiURL }: { apiURL: string }) =>
+const baseQuery = ({
+  apiURL,
+  isVisibleAllNotification = true,
+}: {
+  apiURL: string;
+  isVisibleAllNotification?: boolean;
+}) =>
   retry(
     async (args: string | FetchArgs, api, extraOptions) => {
       const queryArgs = getQueryArgs({ args, isQuery: api.type === "query" });
@@ -40,19 +52,24 @@ const baseQuery = ({ apiURL }: { apiURL: string }) =>
       const result = await fetchBaseQuery({
         baseUrl: `${baseURL}/${apiURL}`,
         prepareHeaders: (headers) => {
-          const token = localStorage.getItem(storageToken);
-          if (token) headers.set("Authorization", token);
+          const token = getAuthToken();
+          if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+          } else {
+            const webToken = getWebToken();
+            webToken && headers.set("Authorization", webToken);
+          }
           return headers;
         },
       })(queryArgs, api, extraOptions);
 
+      let isVisibleNotification = isVisibleAllNotification;
+
       const isVisibleNotificationArg = (args as FetchArgs).params
         ?.isVisibleNotification;
 
-      const isVisibleNotification =
-        isVisibleNotificationArg === undefined
-          ? true
-          : isVisibleNotificationArg;
+      if (isVisibleNotificationArg !== undefined)
+        isVisibleNotification = isVisibleNotificationArg;
 
       const response = result.meta?.response;
       const request = result.meta?.request;
@@ -71,7 +88,7 @@ const baseQuery = ({ apiURL }: { apiURL: string }) =>
                 });
               break;
 
-            case "PUT":
+            case "PATCH":
               isVisibleNotification &&
                 addSuccessNotification({
                   message: "Data saved successfully",
@@ -96,8 +113,14 @@ const baseQuery = ({ apiURL }: { apiURL: string }) =>
       const errorStatus = result.error?.status;
 
       if (errorStatus) {
-        if (errorStatus === 401) await setAuthToken();
-        else retry.fail(result.error);
+        if (errorStatus === 401) {
+          // TODO ???
+          removeWebToken();
+          removeAuthToken();
+          api.dispatch({ type: "user/logoutUser" });
+          api.dispatch({ type: "loading/setLoading", payload: false });
+        }
+        retry.fail(result.error);
       }
 
       return result;

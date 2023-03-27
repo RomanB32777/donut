@@ -7,14 +7,14 @@ import "./styles.sass";
 
 const { Option } = Select;
 
-export interface ISelectItem {
+export interface ISelectItem<T = string> {
   key: string;
-  value: string;
+  value: T;
 }
 
 interface ISelectInput extends SelectProps {
   list: ISelectItem[] | null; // string[]
-  label?: string;
+  label?: React.ReactNode;
   gutter?: number | [number, number];
   modificator?: string;
   labelModificator?: string;
@@ -99,7 +99,10 @@ const SelectInput: FC<ISelectInput> = ({
       {descriptionSelect && (
         <Row>
           <Col
-            offset={(!isMobile ? (offset || labelCol) : 0) || (label && !isMobile ? 12 : 0)}
+            offset={
+              (!isMobile ? offset || labelCol : 0) ||
+              (label && !isMobile ? 12 : 0)
+            }
             md={selectCol || (label ? 12 : 24)}
           >
             <p className="description">{descriptionSelect}</p>

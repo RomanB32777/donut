@@ -28,85 +28,72 @@ const images = {
 const features: IFeature[] = [
   {
     icon: <DashboardLandingIcon />,
-    title: "In-stream widgets",
-    description:
-      "Display every crypto donation on the stream, highlight you most active supporters, create donation goals and let your audience be involved.",
+    title: "landing_features_widgets_title",
+    description: "landing_features_widgets_description",
   },
   {
     icon: <ShieldLandingIcon />,
-    title: "Badges as NFTs",
-    description:
-      "Why not grant your valuable supporters with unique badge? Especially with NFT one. Your crypto supporters will definitely love it.",
+    title: "landing_features_badges_title",
+    description: "landing_features_badges_description",
   },
-
   {
     icon: <CodeIcon />,
-    title: "One link integration",
-    description:
-      "One link is all it takes. Just copy and paste your widget link to OBS or any other broadcast software you use. Start displaying your incoming donations on a stream.",
+    title: "landing_features_link_title",
+    description: "landing_features_link_description",
   },
   {
     icon: <LinkIcon />,
-    title: "Donation page link",
-    description:
-      "Copy your unique donation page link and give it to your supporters. Increase your conversion rate and therefore your revenue.",
+    title: "landing_features_donations_title",
+    description: "landing_features_donations_description",
   },
   {
     icon: <PencilLandingIcon />,
-    title: "Everything is customizable",
-    description:
-      "Use your own distinctive colors, texts and images. Customize widgets and donation page. Your imagination is the only limit.",
+    title: "landing_features_customizable_title",
+    description: "landing_features_customizable_description",
   },
   {
     icon: <GraphIcon />,
-    title: "Donation reports",
-    description:
-      "Our visual graphs and summary reports will get the most out of your donation breakdown. Use time filters to see the donations for any time period.",
+    title: "landing_features_reports_title",
+    description: "landing_features_reports_description",
   },
   {
     icon: <CrossIcon />,
-    title: "Compatible with fiat services",
-    description:
-      "Crypto Donutz is designed to make the best use of blockchain technology. Use both fiat and crypto services to maximize your profit.",
+    title: "landing_features_fiat_title",
+    description: "landing_features_fiat_description",
   },
   {
     icon: <ClockIcon />,
-    title: "No pending balances",
-    description:
-      "Every transaction is processed via smart contract and donation goes directly to your wallet address. We have no control over your money.",
+    title: "landing_features_nopending_title",
+    description: "landing_features_nopending_description",
   },
 ];
 
 const cryptoSteps = [
   {
-    title: "Metamask wallet connection",
-    description:
-      "Sign-up with your Metamask wallet, choose the user name and register account.",
+    title: "landing_howWork_connection_title",
+    description: "landing_howWork_connection_description",
   },
   {
-    title: "Widget and donation page set up",
-    description:
-      "Go to Widgets section, copy widget link and paste it to your broadcast software. Get your donation page link in Donation page section and give it to your supporters.",
+    title: "landing_howWork_widget_title",
+    description: "landing_howWork_widget_description",
   },
   {
-    title: "Get your tasty Crypto Donutz",
-    description:
-      "Mint NFT badges to your most active supporters, analyze your donation reports and have fun!",
+    title: "landing_howWork_actions_title",
+    description: "landing_howWork_actions_description",
   },
 ];
 
 const help = [
   {
-    title: "Ask in discord",
+    title: "landing_help_discord_title",
     icon: <ChatIcon />,
-    description:
-      "Create ticket on our discord server and talk to our support team",
+    description: "landing_help_discord_description",
     link: "https://discord.gg/PHEQCjnY",
   },
   {
-    title: "Check help center",
+    title: "landing_help_center_title",
     icon: <HelpIcon />,
-    description: "We've collected all the FAQ in Help center. Check it out!",
+    description: "landing_help_center_description",
     link: "https://crypto-donutz.gitbook.io/product-docs/",
   },
 ];

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Col, Row } from "antd";
+import { FormattedMessage } from "react-intl";
+import { gendersType } from "types";
 
 import ModalComponent from "components/ModalComponent";
 import ColorPicker from "components/ColorPicker";
@@ -15,7 +17,6 @@ import {
 } from "components/SelectInput/options/FontSelectOption";
 import UploadSound from "./UploadSound";
 
-import { useAppSelector } from "hooks/reduxHooks";
 import {
   useGetSoundsQuery,
   useLazyGetDefaultImagesQuery,
@@ -29,11 +30,11 @@ const alertSound = new Audio();
 const voiceTabs = [
   {
     key: "MALE",
-    label: "Male",
+    label: <FormattedMessage id="alerts_voice_male" />,
   },
   {
     key: "FEMALE",
-    label: "Female",
+    label: <FormattedMessage id="alerts_voice_female" />,
   },
 ];
 
@@ -48,19 +49,17 @@ const SettingsAlertsBlock = ({
 }) => {
   const {
     banner,
-    message_color,
-    message_font,
-    name_color,
-    name_font,
-    sum_color,
-    sum_font,
+    messageColor,
+    messageFont,
+    nameColor,
+    nameFont,
+    sumColor,
+    sumFont,
     duration,
     sound,
     voice,
-    gender_voice,
+    genderVoice,
   } = formData;
-
-  const { id, username } = useAppSelector(({ user }) => user);
 
   const [modalInfo, setModalInfo] = useState<IDefaultImagesModal>({
     isOpen: false,
@@ -72,9 +71,7 @@ const SettingsAlertsBlock = ({
 
   const [getDefaultImages] = useLazyGetDefaultImagesQuery();
   const [uploadSound] = useUploadSoundMutation();
-  const { data: soundsList, refetch: getSounds } = useGetSoundsQuery(username, {
-    skip: !username,
-  });
+  const { data: soundsList, refetch: getSounds } = useGetSoundsQuery();
 
   const openDefaultImages = async () => {
     const { data: images } = await getDefaultImages("alert");
@@ -111,13 +108,11 @@ const SettingsAlertsBlock = ({
   const uploadUserSound = async (file: File) => {
     try {
       const uploadedSound = await uploadSound({
-        file,
-        username,
-        userID: id,
+        sound: file,
       }).unwrap();
       if (uploadedSound) {
-        const { link } = uploadedSound;
-        playSound(link);
+        const { path } = uploadedSound;
+        playSound(path);
         getSounds();
         setFormData({
           ...formData,
@@ -133,7 +128,7 @@ const SettingsAlertsBlock = ({
     const soundInfo = soundsList?.find((s) => s.name === selected);
 
     if (soundInfo) {
-      playSound(soundInfo.link);
+      playSound(soundInfo.path);
 
       setFormData({
         ...formData,
@@ -143,7 +138,8 @@ const SettingsAlertsBlock = ({
   };
 
   const voiseTabsHandler = useCallback(
-    (gender_voice: string) => setFormData({ ...formData, gender_voice }),
+    (key: string) =>
+      setFormData({ ...formData, genderVoice: key as gendersType }),
     [formData, setFormData]
   );
 
@@ -157,7 +153,7 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <UploadImage
-              label="Banner:"
+              label={<FormattedMessage id="alerts_banner" />}
               formats={["PNG", "JPG", "JPEG", "GIF"]}
               filePreview={banner.preview || dummyImg}
               setFile={({ preview, file }) =>
@@ -173,6 +169,7 @@ const SettingsAlertsBlock = ({
                 <UploadAfterEl
                   mdCol={8}
                   size="1200*800"
+                  alsoText={<FormattedMessage id="upload_choose_or_banners" />}
                   openBanners={openDefaultImages}
                 />
               }
@@ -184,11 +181,12 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="alerts_message_color"
               setColor={(color) =>
-                setFormData({ ...formData, message_color: color })
+                setFormData({ ...formData, messageColor: color })
               }
-              color={message_color}
-              label="Message color:"
+              color={messageColor}
+              label={<FormattedMessage id="alerts_message_color" />}
               labelCol={8}
               inputCol={14}
               gutter={[0, 18]}
@@ -198,11 +196,12 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="alerts_name_color"
               setColor={(color) =>
-                setFormData({ ...formData, name_color: color })
+                setFormData({ ...formData, nameColor: color })
               }
-              color={name_color}
-              label="Donor name color:"
+              color={nameColor}
+              label={<FormattedMessage id="alerts_name_color" />}
               labelCol={8}
               inputCol={14}
               gutter={[0, 18]}
@@ -212,11 +211,12 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="alerts_sum_color"
               setColor={(color) =>
-                setFormData({ ...formData, sum_color: color })
+                setFormData({ ...formData, sumColor: color })
               }
-              color={sum_color}
-              label="Donation sum color:"
+              color={sumColor}
+              label={<FormattedMessage id="alerts_sum_color" />}
               labelCol={8}
               inputCol={14}
               gutter={[0, 18]}
@@ -226,17 +226,17 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Message font:"
+              label={<FormattedMessage id="alerts_message_font" />}
               value={{
-                value: message_font.name,
-                label: <FontStyleElement fontName={message_font.name} />,
+                value: messageFont.name,
+                label: <FontStyleElement fontName={messageFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setFormData({
                   ...formData,
-                  message_font: {
+                  messageFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },
@@ -255,17 +255,17 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Supporter font:"
+              label={<FormattedMessage id="alerts_supporter_font" />}
               value={{
-                value: name_font.name,
-                label: <FontStyleElement fontName={name_font.name} />,
+                value: nameFont.name,
+                label: <FontStyleElement fontName={nameFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setFormData({
                   ...formData,
-                  name_font: {
+                  nameFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },
@@ -284,17 +284,17 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Donation sum font:"
+              label={<FormattedMessage id="alerts_donation_font" />}
               value={{
-                value: sum_font.name,
-                label: <FontStyleElement fontName={sum_font.name} />,
+                value: sumFont.name,
+                label: <FontStyleElement fontName={sumFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setFormData({
                   ...formData,
-                  sum_font: {
+                  sumFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },
@@ -315,7 +315,9 @@ const SettingsAlertsBlock = ({
             <div className="form-element">
               <Row gutter={[0, 18]} align="middle">
                 <Col md={8} xs={24}>
-                  <span className="form-element__label">Alert sound:</span>
+                  <span className="form-element__label">
+                    <FormattedMessage id="alerts_sound" />
+                  </span>
                 </Col>
                 <Col md={14} xs={24}>
                   <SelectComponent
@@ -344,14 +346,19 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SliderForm
-              label="Alert duration:"
+              label={<FormattedMessage id="alerts_duration" />}
               step={1}
               max={10}
               min={3}
               setValue={(num) => setFormData({ ...formData, duration: num })}
               value={+duration}
               maxWidth={250}
-              description={`${duration} sec`}
+              description={
+                <FormattedMessage
+                  id="alerts_duration_value"
+                  values={{ duration }}
+                />
+              }
               labelCol={8}
               sliderCol={14}
               gutter={[0, 18]}
@@ -361,7 +368,7 @@ const SettingsAlertsBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SwitchForm
-              label="Voice alerts:"
+              label={<FormattedMessage id="alerts_voice" />}
               checked={voice}
               setValue={(flag) => setFormData({ ...formData, voice: flag })}
               maxWidth={250}
@@ -372,7 +379,7 @@ const SettingsAlertsBlock = ({
                 voice ? (
                   <TabsComponent
                     setTabContent={voiseTabsHandler}
-                    activeKey={gender_voice}
+                    activeKey={genderVoice}
                     tabs={voiceTabs}
                   />
                 ) : null
@@ -383,20 +390,20 @@ const SettingsAlertsBlock = ({
         </Col>
         <ModalComponent
           open={isOpen}
-          title="Default donation alert banners"
+          title={<FormattedMessage id="alerts_banners_model" />}
           width={900}
           onCancel={closeModal}
           className="alert-modal"
           topModal
         >
           <Row gutter={[16, 32]} justify="space-between">
-            {images.map((image, key) => (
-              <Col md={8} sm={12} xs={24} key={`banner-${image}-${key}`}>
+            {images.map(({ name, path }, key) => (
+              <Col md={8} sm={12} xs={24} key={`banner-${name}-${key}`}>
                 <div
                   className="default-banner"
-                  onClick={() => selectDefaultBanner(image)}
+                  onClick={() => selectDefaultBanner(path)}
                 >
-                  <img src={image} alt={`banner-${key}`} />
+                  <img src={path} alt={`banner-${key}`} />
                 </div>
               </Col>
             ))}

@@ -1,5 +1,6 @@
 import { FC, memo } from "react";
 import { Col, Row } from "antd";
+import { FormattedMessage } from "react-intl";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import BaseButton from "components/BaseButton";
@@ -30,7 +31,7 @@ const GoalsModal: FC<IGoalsModal> = ({
   const [editGoal, { isLoading: isEditLoading }] = useEditGoalMutation();
   const [createGoal, { isLoading: isCreateLoading }] = useCreateGoalMutation();
 
-  const { id, amount_goal, title } = formData;
+  const { id, amountGoal, title } = formData;
 
   const closeEditModal = () => {
     setFormData({
@@ -41,16 +42,15 @@ const GoalsModal: FC<IGoalsModal> = ({
 
   const sendData = async () => {
     try {
-      id
-        ? await editGoal({
-            goalData: {
-              title,
-              amount_goal,
-              creator_id: userID,
-            },
-            id,
-          })
-        : await createGoal({ title, amount_goal, creator_id: userID });
+      if (id) {
+        await editGoal({
+          title,
+          amountGoal,
+          id,
+        });
+      } else {
+        await createGoal({ title, amountGoal, creator: userID });
+      }
 
       setIsOpenModal(false);
       setFormData({
@@ -64,7 +64,7 @@ const GoalsModal: FC<IGoalsModal> = ({
   return (
     <ModalComponent
       open={isOpenModal}
-      title="New donation goal"
+      title={<FormattedMessage id="goals_modal_title" />}
       onCancel={closeEditModal}
       width={880}
     >
@@ -73,7 +73,7 @@ const GoalsModal: FC<IGoalsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <FormInput
-                label="Goal description:"
+                label={<FormattedMessage id="goals_modal_form_description" />}
                 name="widgetDescription"
                 value={title}
                 setValue={(value) => setFormData({ ...formData, title: value })}
@@ -86,12 +86,12 @@ const GoalsModal: FC<IGoalsModal> = ({
           <Col span={24}>
             <div className="form-element">
               <FormInput
-                label="Amount to raise:"
+                label={<FormattedMessage id="goals_modal_form_amount" />}
                 name="widgetAmount"
-                value={String(amount_goal)}
+                value={String(amountGoal)}
                 typeInput="number"
                 setValue={(value) =>
-                  setFormData({ ...formData, amount_goal: +value })
+                  setFormData({ ...formData, amountGoal: +value })
                 }
                 addonAfter={<span>USD</span>}
                 labelCol={6}
@@ -104,7 +104,7 @@ const GoalsModal: FC<IGoalsModal> = ({
         <div className="btns">
           <div className="save">
             <BaseButton
-              formatId="profile_form_save_goal_button"
+              formatId="form_save_goal_button"
               padding="6px 35px"
               onClick={sendData}
               fontSize="18px"
@@ -114,7 +114,7 @@ const GoalsModal: FC<IGoalsModal> = ({
           </div>
           <div className="cancel">
             <BaseButton
-              formatId="profile_form_cancel_button"
+              formatId="form_cancel_button"
               padding="6px 35px"
               onClick={closeEditModal}
               fontSize="18px"

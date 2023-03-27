@@ -21,10 +21,7 @@ const FormBtnsBlock = ({
         disabled={disabled}
         isMain
       />
-      <ConfirmPopup
-        confirm={resetMethod}
-        title="Are you sure you want to reset to default settings?"
-      >
+      <ConfirmPopup confirm={resetMethod} title="confirm_reset">
         <BaseButton
           formatId="reset_changes_button"
           padding="6px 35px"

@@ -5,7 +5,7 @@ import { io, Socket } from "socket.io-client";
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
 import { useGetCreatorInfoQuery } from "store/services/UserService";
 import { addNotFoundUserNotification } from "utils";
-import { baseURL, isProduction, socketsBaseUrl } from "consts";
+import { baseURL } from "consts";
 
 export const DonatWebSocketContext = createContext<Socket | null>(null);
 
@@ -24,33 +24,33 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const setUnloginUserSocket = ({
       username,
-      spam_filter,
+      spamFilter,
     }: {
       username: string;
-      spam_filter: boolean;
+      spamFilter: boolean;
     }) => {
-      const socket = io(isProduction ? baseURL : socketsBaseUrl, {
+      const socket = io(baseURL, {
         path: "/sockt/",
         query: {
           userName: username,
         },
       });
 
-      socket.on("new_donat_notification", async () => {
+      socket.on("newDonat", async () => {
         getNotifications({
-          user: username,
+          username,
           limit: 1,
-          spam_filter,
+          spamFilter,
           roleplay: "recipient",
         });
       });
       return socket;
     };
 
-    if (name && personInfo) {
+    if (name && personInfo?.creator) {
       const socketUnlogin = setUnloginUserSocket({
         username: name,
-        spam_filter: personInfo.spam_filter,
+        spamFilter: personInfo.creator?.spamFilter,
       });
       setValueContext(socketUnlogin);
       return () => {

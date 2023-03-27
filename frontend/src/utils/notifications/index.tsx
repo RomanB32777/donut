@@ -7,7 +7,7 @@ import {
   INotificationWithoutType,
 } from "./types";
 import { formatNumber } from "utils/appMethods";
-import { RoutePaths } from "routes";
+import { RoutePaths } from "consts";
 
 const addNotification = ({ type, title, message, id }: INotification) => {
   Store.addNotification({
@@ -48,12 +48,16 @@ const addErrorNotification = ({ message, title }: INotificationWithoutType) =>
     type: "danger",
   });
 
-const addSuccessNotification = ({ message, title, id }: INotificationWithoutType) =>
+const addSuccessNotification = ({
+  message,
+  title,
+  id,
+}: INotificationWithoutType) =>
   addNotification({
     title: title || "Success",
     message,
     type: "success",
-    id: id || "success"
+    id: id || "success",
   });
 
 const addNotFoundUserNotification = (
@@ -62,6 +66,7 @@ const addNotFoundUserNotification = (
   addNotification({
     type: "danger",
     title,
+    id: "notFound",
   });
 
 const addInstallWalletNotification = (
@@ -98,7 +103,7 @@ const addInstallWalletNotification = (
 //   ...arg,
 // });
 
-// const { sum_donation, blockchain } = mapNotificationData({
+// const { sum, blockchain } = mapNotificationData({
 //   ...data,
 // });
 
@@ -106,14 +111,13 @@ const getDonatNotificationMessage = (
   args: INotificationMessage<IDonationShortInfo>
 ): React.ReactNode => {
   const { type, user, data } = args;
-  const { sum_donation, blockchain } = data;
+  const { sum, blockchain } = data;
   switch (type) {
     case "donat_creator":
-      return `${user} sent you ${formatNumber(sum_donation)} ${blockchain}!`;
+      return `${user} sent you ${formatNumber(sum)} ${blockchain}!`;
 
     case "donat_supporter":
-      const { sum_donation: supporterSum, blockchain: supporterBlockchain } =
-        args.data;
+      const { sum: supporterSum, blockchain: supporterBlockchain } = args.data;
       return `You sent ${formatNumber(
         supporterSum
       )} ${supporterBlockchain} to ${user}!`;

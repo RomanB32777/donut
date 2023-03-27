@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Col, Empty, Row } from "antd";
-import { stringFormatTypes } from "types";
+import { Col, Row } from "antd";
+import { FormattedMessage } from "react-intl";
 
-import SelectComponent from "components/SelectComponent";
+import EmptyComponent from "components/EmptyComponent";
 import WidgetLoader from "../WidgetLoader";
+import FilterSelect from "../FilterSelect";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useGetWidgetDonationsQuery } from "store/services/DonationsService";
@@ -33,8 +34,8 @@ const WidgetTopSup = () => {
     refetch,
   } = useGetWidgetDonationsQuery(
     {
-      userID: id,
-      data_type: "top-supporters",
+      userId: id,
+      dataType: "top-supporters",
       query: {
         limit: LIMIT_SUPPORTERS,
         timePeriod,
@@ -56,17 +57,13 @@ const WidgetTopSup = () => {
       ) : (
         <>
           <div className="header">
-            <span className="widget-title">Top supporters</span>
-            <div className="filter">
-              <SelectComponent
-                title={activeFilterItem}
-                list={Object.values(filterPeriodItems)}
-                selectItem={(selected) =>
-                  setActiveFilterItem(selected as stringFormatTypes)
-                }
-                listWrapperModificator="filter-list"
-              />
-            </div>
+            <span className="widget-title">
+              <FormattedMessage id="dashboard_widgets_supporters" />
+            </span>
+            <FilterSelect
+              selectedItem={activeFilterItem}
+              selectItem={setActiveFilterItem}
+            />
           </div>
 
           {topSupporters && Boolean(topSupporters.length) ? (
@@ -76,16 +73,14 @@ const WidgetTopSup = () => {
                   <Col span={12} key={donat.username}>
                     <div className="widget-item simple">
                       <div className="name">{donat.username}</div>
-                      <div className="sum">
-                        {formatNumber(donat.sum_donation)} USD
-                      </div>
+                      <div className="sum">{formatNumber(donat.sum)} USD</div>
                     </div>
                   </Col>
                 ))}
               </Row>
             </div>
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <EmptyComponent />
           )}
         </>
       )}

@@ -1,20 +1,27 @@
 import { Popconfirm } from "antd";
+import { useIntl } from "react-intl";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const ConfirmPopup = ({
-  title = "Are you sure?",
   children,
+  title = "confirm_sure",
+  cancelText = "confirm_cancel",
+  okText = "confirm_ok",
   confirm,
 }: {
-
-  title?: string;
   children: React.ReactNode;
+  title?: string;
+  cancelText?: string;
+  okText?: string;
   confirm: () => void;
 }) => {
+  const intl = useIntl();
   return (
     <Popconfirm
-      title={title}
+      title={intl.formatMessage({ id: title })}
       icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+      cancelText={intl.formatMessage({ id: cancelText })}
+      okText={intl.formatMessage({ id: okText })}
       onConfirm={confirm}
     >
       {children}

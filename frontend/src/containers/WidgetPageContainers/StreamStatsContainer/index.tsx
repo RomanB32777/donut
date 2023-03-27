@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Empty } from "antd";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { FormattedMessage } from "react-intl";
 import { IStatData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -8,6 +9,7 @@ import PageTitle from "components/PageTitle";
 import StatsModal from "./components/StatsModal";
 import StatsItem from "./components/StatsItem";
 import Loader from "components/Loader";
+import EmptyComponent from "components/EmptyComponent";
 
 import { useGetStatsQuery } from "store/services/StatsService";
 import { getFontsList } from "utils";
@@ -25,7 +27,7 @@ const StreamStatsContainer = () => {
     ...initWidgetStatData,
   });
 
-  const { data: stats, isLoading } = useGetStatsQuery(id, { skip: !id });
+  const { data: stats, isLoading } = useGetStatsQuery();
 
   const openCreateModal = useCallback(() => setIsOpenModal(true), []);
 
@@ -33,18 +35,18 @@ const StreamStatsContainer = () => {
     const { template } = widget;
     setFormData({
       ...widget,
-      // time_period: isCustomDate ? "custom" : time_period,
-      // custom_period: isCustomDate ? time_period : "",
+      // timePeriod: isCustomDate ? "custom" : timePeriod,
+      // customPeriod: isCustomDate ? timePeriod : "",
       template: (template as string).split(" "),
     });
 
-    // const isCustomDate = time_period.includes("/");
-    // const formatValues = time_period
+    // const isCustomDate = timePeriod.includes("/");
+    // const formatValues = timePeriod
     //   .split("-")
     //   .map((d) => dayjsModule(dayjsModule(d).format("DD/MM/YYYY")));
 
     // console.log(
-    //   time_period.split("-"),
+    //   timePeriod.split("-"),
     //   dayjsModule("12/02/2023"),
     //   formatValues
     // );
@@ -67,7 +69,7 @@ const StreamStatsContainer = () => {
       <PageTitle formatId="page_title_stream_stats" />
       <div className="stats-header">
         <p className="subtitle">
-          Create your custom widgets to display on your streams
+          <FormattedMessage id="stats_subtitle" />
         </p>
         <BaseButton
           formatId="create_new_form_button"
@@ -88,7 +90,7 @@ const StreamStatsContainer = () => {
             />
           ))
         ) : (
-          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <EmptyComponent />
         )}
       </div>
       <StatsModal

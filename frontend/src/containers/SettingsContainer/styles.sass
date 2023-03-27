@@ -19,31 +19,20 @@
         margin: 0
         transition: .4s
 
-        &:not(.copy)
+        &:not(.wallet)
             pointer-events: none
 
-        &:not(.copy).active
+        &:not(.wallet).active
             pointer-events: auto
             color: variables.$main-color
+
+        &.wallet
+            &.disabled
+                pointer-events: none
+                cursor: none
+                opacity: .3
 
         @media (max-width: 768px)
             margin-top: 35px
             font-size: 18px
             line-height: 22px
-
-    .wallet-icon
-        background: variables.$orange-transparent-color
-        display: flex
-        justify-content: center
-        align-items: center
-        overflow: hidden
-        width: 30px
-        height: 30px
-        border-radius: 50%
-
-        img
-            width: 26px
-            height: 26px
-
-    .wallet-addon
-        padding: 8px

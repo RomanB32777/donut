@@ -3,6 +3,7 @@ import { getRandomStr } from "utils";
 import "./styles.sass";
 
 const ColorPicker = ({
+  name,
   label,
   color,
   inputCol,
@@ -10,14 +11,15 @@ const ColorPicker = ({
   gutter,
   setColor,
 }: {
-  label: string;
+  name: string;
+  label: React.ReactNode;
   color: string;
   inputCol?: number;
   labelCol?: number;
   gutter?: number | [number, number];
   setColor: (color: string) => void;
 }) => {
-  const idForInput = `color_${label.split(" ").join("_") + getRandomStr(4)}`;
+  const idForInput = `color_${name.split(" ").join("_") + getRandomStr(4)}`;
   return (
     <div className="colorPicker">
       <Row

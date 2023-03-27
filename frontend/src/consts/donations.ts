@@ -1,22 +1,22 @@
 import { IDonation, ISendDonat } from "types";
 
 const initSendDonatData: ISendDonat = {
-  message: "",
+  blockchain: "MATIC",
+  isAnonymous: false,
   username: "",
-  amount: 0,
-  selectedBlockchain: "MATIC",
-  selectedGoal: null,
-  is_anonymous: false,
+  message: "",
+  sum: 0,
 };
 
 const initDonationData: IDonation = {
-  id: 0,
-  blockchain: "polygon",
-  backer_id: 0,
-  creator_id: 0,
-  sum_donation: 0,
-  created_at: "",
-  donation_message: "",
+  id: "",
+  blockchain: "MATIC",
+  backer: "",
+  creator: "",
+  sum: 0,
+  createdAt: new Date(),
+  message: "",
+  isAnonymous: false,
 };
 
 export { initSendDonatData, initDonationData };

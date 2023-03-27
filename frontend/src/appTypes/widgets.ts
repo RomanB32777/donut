@@ -1,43 +1,20 @@
-import {
-  IAlertData,
-  ICurrentPeriodItemsTypes,
-  IGoalData,
-  ISoundInfo,
-  IStatData,
-} from "types";
-import { IDonationWidgetInfo } from "./donations";
+import { IAlertData, IGoalData, IStatData, IStaticFile } from "types";
 import { IFileInfo } from "./files";
 
-type AlignText = "left" | "center" | "right";
+export type AlignText = "left" | "center" | "right";
 
-interface IFont {
+export interface IFont {
   name: string;
   link: string;
 }
 
 // goals
-interface IWidgetGoalData extends IGoalData<IFont> {}
+export interface IWidgetGoalData extends IGoalData<IFont> {}
 
-// stats
-type keyPeriodItems = keyof ICurrentPeriodItemsTypes;
-
-interface IWidgetStatData extends IStatData<IFont> {
-  custom_period?: any;
+// // stats
+export interface IWidgetStatData extends IStatData<IFont> {
+  customPeriod?: any;
 }
 
 // alert
-interface IAlert extends IAlertData<IFont, IFileInfo, ISoundInfo> {}
-
-interface IDonationWidgetItem {
-  donat: IDonationWidgetInfo;
-}
-
-export type {
-  AlignText,
-  IFont,
-  keyPeriodItems,
-  IWidgetGoalData,
-  IWidgetStatData,
-  IAlert,
-  IDonationWidgetItem,
-};
+export interface IAlert extends IAlertData<IFont, IFileInfo, IStaticFile> {}

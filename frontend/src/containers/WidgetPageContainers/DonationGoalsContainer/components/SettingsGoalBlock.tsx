@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Col, Row } from "antd";
+import { FormattedMessage } from "react-intl";
 
 import ColorPicker from "components/ColorPicker";
 import SelectInput, { ISelectItem } from "components/SelectInput";
@@ -26,11 +27,11 @@ const SettingsGoalBlock = ({
   );
 
   const {
-    title_color,
-    progress_color,
-    background_color,
-    title_font,
-    progress_font,
+    titleColor,
+    progressColor,
+    backgroundColor,
+    titleFont,
+    progressFont,
   } = editGoalData;
 
   const onOpenFontSelect = (isOpen: boolean) =>
@@ -44,11 +45,12 @@ const SettingsGoalBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="goals_widget_settings_title"
               setColor={(color) =>
-                setEditGoalData({ ...editGoalData, title_color: color })
+                setEditGoalData({ ...editGoalData, titleColor: color })
               }
-              color={title_color}
-              label="Goal title color:"
+              color={titleColor}
+              label={<FormattedMessage id="goals_widget_settings_title" />}
               labelCol={9}
               gutter={[0, 18]}
             />
@@ -57,11 +59,12 @@ const SettingsGoalBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="goals_widget_settings_bar_color"
               setColor={(color) =>
-                setEditGoalData({ ...editGoalData, progress_color: color })
+                setEditGoalData({ ...editGoalData, progressColor: color })
               }
-              color={progress_color}
-              label="Progress bar color:"
+              color={progressColor}
+              label={<FormattedMessage id="goals_widget_settings_bar_color" />}
               labelCol={9}
               gutter={[0, 18]}
             />
@@ -70,14 +73,17 @@ const SettingsGoalBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="goals_widget_settings_background_color"
               setColor={(color) =>
                 setEditGoalData({
                   ...editGoalData,
-                  background_color: color,
+                  backgroundColor: color,
                 })
               }
-              color={background_color}
-              label="Background color:"
+              color={backgroundColor}
+              label={
+                <FormattedMessage id="goals_widget_settings_background_color" />
+              }
               labelCol={9}
               gutter={[0, 18]}
             />
@@ -86,17 +92,17 @@ const SettingsGoalBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Goal title font:"
+              label={<FormattedMessage id="goals_widget_settings_title_font" />}
               value={{
-                value: title_font.name,
-                label: <FontStyleElement fontName={title_font.name} />,
+                value: titleFont.name,
+                label: <FontStyleElement fontName={titleFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setEditGoalData({
                   ...editGoalData,
-                  title_font: {
+                  titleFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },
@@ -114,17 +120,19 @@ const SettingsGoalBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Goal progress font:"
+              label={
+                <FormattedMessage id="goals_widget_settings_progress_font" />
+              }
               value={{
-                value: progress_font.name,
-                label: <FontStyleElement fontName={progress_font.name} />,
+                value: progressFont.name,
+                label: <FontStyleElement fontName={progressFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setEditGoalData({
                   ...editGoalData,
-                  progress_font: {
+                  progressFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },

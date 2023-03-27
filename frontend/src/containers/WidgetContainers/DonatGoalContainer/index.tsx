@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { Progress } from "antd";
 import { goalDataKeys, IGoalData } from "types";
-
-import { useParams } from "react-router";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useGetGoalsWidgetDataQuery } from "store/services/GoalsService";
@@ -12,7 +11,7 @@ import { ISelectItem } from "components/SelectInput";
 import { IFont, IWidgetGoalData } from "appTypes";
 import "./styles.sass";
 
-const fontsFields: goalDataKeys[] = ["title_font", "progress_font"];
+const fontsFields: goalDataKeys[] = ["titleFont", "progressFont"];
 
 const DonatGoalContainer = () => {
   const { id, name } = useParams();
@@ -56,13 +55,13 @@ const DonatGoalContainer = () => {
       if (!fonts.length) {
         const fontsInfo = await getFontsList();
 
-        const { title_font, progress_font } = widgetData;
+        const { titleFont, progressFont } = widgetData;
 
         loadedFonts = await loadFonts({
           fonts: fontsInfo,
           fields: {
-            title_font: title_font,
-            progress_font: progress_font,
+            titleFont: titleFont,
+            progressFont: progressFont,
           },
         });
 
@@ -78,20 +77,20 @@ const DonatGoalContainer = () => {
   useEffect(() => {
     if (list.length && id) {
       const { donation } = list[0];
-      if (donation && donation.goal_id === id) refetch();
+      if (donation && donation.goal === id) refetch();
     }
   }, [list, id]);
 
   if (goalData) {
     const {
       title,
-      title_color,
-      title_font,
-      progress_color,
-      progress_font,
-      background_color,
-      amount_goal,
-      amount_raised,
+      titleColor,
+      titleFont,
+      progressColor,
+      progressFont,
+      backgroundColor,
+      amountGoal,
+      amountRaised,
     } = goalData;
 
     return (
@@ -99,7 +98,7 @@ const DonatGoalContainer = () => {
         <div className="donat-goal_container">
           <div className="donat-goal_title">
             <p>
-              <span style={getFontColorStyles(title_color, title_font)}>
+              <span style={getFontColorStyles(titleColor, titleFont)}>
                 {title}
               </span>
             </p>
@@ -107,14 +106,14 @@ const DonatGoalContainer = () => {
           <div
             className="donat-goal_progress"
             style={{
-              background: background_color,
+              background: backgroundColor,
             }}
           >
             <Progress
               type="circle"
-              percent={Math.round((amount_raised / amount_goal) * 100)}
+              percent={Math.round((amountRaised / amountGoal) * 100)}
               width={150}
-              strokeColor={progress_color}
+              strokeColor={progressColor}
               format={(percent) => (
                 <span
                   style={{
@@ -125,8 +124,8 @@ const DonatGoalContainer = () => {
                 </span>
               )}
             />
-            <p style={getFontColorStyles("#fff", progress_font)}>
-              {amount_raised} / {amount_goal} USD
+            <p style={getFontColorStyles("#fff", progressFont)}>
+              {amountRaised} / {amountGoal} USD
             </p>
           </div>
         </div>

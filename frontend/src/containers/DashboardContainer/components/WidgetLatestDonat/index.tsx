@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Empty } from "antd";
-import { stringFormatTypes } from "types";
+import { FormattedMessage } from "react-intl";
 
+import EmptyComponent from "components/EmptyComponent";
 import WidgetItem from "../WidgetItem";
-import SelectComponent from "components/SelectComponent";
 import WidgetLoader from "../WidgetLoader";
+import FilterSelect from "../FilterSelect";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useGetWidgetDonationsQuery } from "store/services/DonationsService";
@@ -14,7 +14,7 @@ import { filterPeriodItems } from "consts";
 const LIMIT_LATEST = 6;
 
 const WidgetLatestDonat = () => {
-  const { id, spam_filter } = useAppSelector(({ user }) => user);
+  const { id, creator } = useAppSelector(({ user }) => user);
   const { list, shouldUpdateApp } = useAppSelector(
     ({ notifications }) => notifications
   );
@@ -34,12 +34,12 @@ const WidgetLatestDonat = () => {
     refetch,
   } = useGetWidgetDonationsQuery(
     {
-      userID: id,
-      data_type: "latest-donations",
+      userId: id,
+      dataType: "latest-donations",
       query: {
         limit: LIMIT_LATEST,
         timePeriod,
-        spam_filter,
+        spamFilter: creator?.spamFilter,
       },
     },
     {
@@ -58,17 +58,13 @@ const WidgetLatestDonat = () => {
       ) : (
         <>
           <div className="header">
-            <span className="widget-title">Recent donations</span>
-            <div className="filter">
-              <SelectComponent
-                title={activeFilterItem}
-                list={Object.values(filterPeriodItems)}
-                selectItem={(selected) =>
-                  setActiveFilterItem(selected as stringFormatTypes)
-                }
-                listWrapperModificator="filter-list"
-              />
-            </div>
+            <span className="widget-title">
+              <FormattedMessage id="dashboard_widgets_recent" />
+            </span>
+            <FilterSelect
+              selectedItem={activeFilterItem}
+              selectItem={setActiveFilterItem}
+            />
           </div>
           {latestDonations && Boolean(latestDonations.length) ? (
             <div className="items">
@@ -77,7 +73,7 @@ const WidgetLatestDonat = () => {
               ))}
             </div>
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <EmptyComponent />
           )}
         </>
       )}

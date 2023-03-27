@@ -2,6 +2,8 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "antd";
 
 import { useActions, useAppSelector } from "hooks/reduxHooks";
+import { FormattedMessage } from "react-intl";
+
 import useOnClickOutside from "hooks/useClickOutside";
 import NotificationItem from "./components/NotificationItem";
 import { AlertIcon } from "icons";
@@ -14,10 +16,8 @@ import "./styles.sass";
 
 const NotificationsPopup = () => {
   const { setNotifications } = useActions();
-
-  const { notifications: notificationsApp, user } = useAppSelector(
-    (state) => state
-  );
+  const { list } = useAppSelector(({ notifications }) => notifications);
+  const { username } = useAppSelector(({ user }) => user);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef(null);
@@ -25,15 +25,12 @@ const NotificationsPopup = () => {
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
     useState(false);
 
-  const { list } = notificationsApp;
-  const { id: userID } = user;
-
   const { refetch } = useGetNotificationsQuery(
     {
-      user: userID,
+      username,
       shouldUpdateApp: false,
     },
-    { skip: !userID }
+    { skip: !username }
   );
   const [deleteAll, { isSuccess }] = useDeleteAllMutation();
 
@@ -42,7 +39,7 @@ const NotificationsPopup = () => {
     []
   );
 
-  const clearAll = async () => await deleteAll(userID);
+  const clearAll = async () => await deleteAll();
 
   useOnClickOutside(
     isNotificationPopupOpened,
@@ -50,9 +47,17 @@ const NotificationsPopup = () => {
     handlerNotificationPopup
   );
 
+  // const unreadedNotificationsCount = useMemo(
+  //   () => list.filter(({ read }) => !read).length,
+  //   [list]
+  // );
+
   const unreadedNotificationsCount = useMemo(
-    () => list.filter(({ read }) => !read).length,
-    [list]
+    () =>
+      list.filter(({ users }) =>
+        users.some(({ user, read }) => user.username === username && !read)
+      ).length,
+    [list, username]
   );
 
   useEffect(() => {
@@ -100,6 +105,7 @@ const NotificationsPopup = () => {
                 {list.map((n) => (
                   <NotificationItem
                     key={n.id}
+                    username={username}
                     notification={n}
                     handlerNotificationPopup={handlerNotificationPopup}
                   />
@@ -112,7 +118,7 @@ const NotificationsPopup = () => {
                     }}
                   >
                     <Badge dot={false} className="dot">
-                      No notifications
+                      <FormattedMessage id="notifications_no" />
                     </Badge>
                   </div>
                 )}

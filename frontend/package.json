@@ -38,6 +38,7 @@
     "socket.io-client": "^4.5.2",
     "types": "file:../types",
     "typescript": "^4.8.2",
+    "wagmi": "^0.12.2",
     "web-vitals": "^2.1.4",
     "web3-token": "^1.0.4",
     "xlsx": "^0.18.5"
@@ -46,7 +47,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "types:install": "npm ci --prefix types",
+    "types:build": "npm run build --prefix types"
   },
   "eslintConfig": {
     "extends": [

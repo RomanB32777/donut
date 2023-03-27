@@ -14,12 +14,12 @@ body
   width: 100%
   margin: 0
   padding: 0
-  -webkit-touch-callout: none
-  -webkit-user-select: none
-  -khtml-user-select: none
-  -moz-user-select: none
-  -ms-user-select: none
-  user-select: none
+  // -webkit-touch-callout: none
+  // -webkit-user-select: none
+  // -khtml-user-select: none
+  // -moz-user-select: none
+  // -ms-user-select: none
+  // user-select: none
 
 .container
   position: relative
@@ -147,7 +147,8 @@ body,
   background: none
 
 .empty-el
-  margin: 0 auto
+  margin-left: auto
+  margin-right: auto
 
 .ant-slider-dot
   display: none
@@ -253,6 +254,16 @@ body,
   animation-name: fadeIn
   animation-duration: 200ms
 
+.fadeInDown
+  animation-fill-mode: both
+  animation-name: fadeInDown
+  animation-duration: 400ms
+
+.fadeInUp
+  animation-fill-mode: both
+  animation-name: fadeInUp
+  animation-duration: 400ms
+
 .fadeInBlur
   animation-fill-mode: both
   animation-name: fadeInBlur
@@ -276,6 +287,24 @@ body,
 
   to
     opacity: 1
+
+@keyframes fadeInDown
+  from
+    opacity: 0
+    transform: translate3d(0, -50px, 0)
+
+  to
+    opacity: 1
+    transform: none
+
+@keyframes fadeInUp
+  from
+    opacity: 1
+    transform: none
+
+  to
+    opacity: 0
+    transform: translate3d(0, -50px, 0)
 
 @keyframes fadeInBlur
   from

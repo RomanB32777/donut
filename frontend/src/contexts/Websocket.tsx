@@ -9,7 +9,7 @@ import {
   getBadgeNotificationMessage,
   getDonatNotificationMessage,
 } from "utils";
-import { baseURL, isProduction, socketsBaseUrl } from "consts";
+import { baseURL } from "consts";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -17,10 +17,10 @@ const useSocketConnection = (username: string) => {
   const [getNotifications] = useLazyGetNotificationsQuery();
 
   const connectSocket = () => {
-    const socket = io(isProduction ? baseURL : socketsBaseUrl, {
+    const socket = io(baseURL, {
       path: "/sockt/",
       query: {
-        userName: username,
+        username,
       },
     });
 
@@ -36,7 +36,7 @@ const useSocketConnection = (username: string) => {
       console.log("disconnect");
     });
 
-    socket.on("new_donat_notification", (data: ISocketNotification) => {
+    socket.on("newDonat", (data: ISocketNotification) => {
       addNotification({
         type: "info",
         title: "New donut",
@@ -46,24 +46,21 @@ const useSocketConnection = (username: string) => {
           data: data.additional,
         }),
       });
-      getNotifications({ user: username });
+      getNotifications({ username });
     });
 
-    socket.on(
-      "new_badge_notification",
-      (data: ISocketNotification<IBadgeBase>) => {
-        addNotification({
-          type: "info",
-          title: "New badge",
-          message: getBadgeNotificationMessage({
-            type: "add_badge_supporter",
-            user: data.supporter,
-            data: data.additional,
-          }),
-        });
-        getNotifications({ user: username });
-      }
-    );
+    socket.on("newBadge", (data: ISocketNotification<IBadgeBase>) => {
+      addNotification({
+        type: "info",
+        title: "New badge",
+        message: getBadgeNotificationMessage({
+          type: "add_badge_supporter",
+          user: data.supporter,
+          data: data.additional,
+        }),
+      });
+      getNotifications({ username });
+    });
 
     return socket;
   };

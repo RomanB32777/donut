@@ -1,24 +1,18 @@
-import { IDataWithFile } from "appTypes";
-
 const setFormDataValues = <T extends object>({
   formData,
   dataValues,
 }: {
   formData: FormData;
-  dataValues: IDataWithFile<T>;
+  dataValues: T;
 }) => {
-  const { data, file, ...params } = dataValues;
-  const paramsObj = params as Record<string, string>;
+  for (const key in dataValues) {
+    const fieldName = key as keyof T;
+    const fieldValue = dataValues[fieldName];
 
-  if (data) {
-    for (const key in data) formData.append(key, String(data[key]));
+    if (fieldValue instanceof File) {
+      formData.append(String(fieldName), fieldValue);
+    } else formData.append(String(fieldName), String(fieldValue));
   }
-
-  for (const key in paramsObj)
-    paramsObj[key] && formData.append(key, String(paramsObj[key]));
-
-  if (file) formData.append("file", file);
-  // formData.append("fileName", file.name);
 
   return formData;
 };

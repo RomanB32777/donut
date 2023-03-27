@@ -48,7 +48,7 @@ export const renderStrWithTokens = (
 
 export const renderStatItem = (
   template: string | string[],
-  objToRender: any,
+  objToRender: any
 ) => {
   return renderStrWithTokens(template, [
     {
@@ -57,11 +57,11 @@ export const renderStatItem = (
     },
     {
       re: /{sum}/gi,
-      to: `${formatNumber(objToRender.sum_donation)} USD`,
+      to: `${formatNumber(objToRender.sum)} USD`,
     },
     {
       re: /{message}/gi,
-      to: objToRender.donation_message || "",
+      to: objToRender.message || "",
     },
   ]);
 };

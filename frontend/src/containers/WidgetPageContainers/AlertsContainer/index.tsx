@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { fileUploadTypes } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -14,11 +15,10 @@ import NoPageContainer from "containers/NoPageContainer";
 
 import {
   useEditAlertsWidgetMutation,
-  useGetAlertWidgetDataQuery,
+  useGetAlertWidgetDataByCreatorQuery,
 } from "store/services/AlertsService";
 import { getFontsList, loadFonts } from "utils";
-import { RoutePaths } from "routes";
-import { initAlertData, baseURL } from "consts";
+import { RoutePaths, initAlertData, baseURL } from "consts";
 import { ISelectItem } from "components/SelectInput";
 import { IAlert } from "appTypes";
 import "./styles.sass";
@@ -29,22 +29,16 @@ const AlertsContainer = () => {
   const { id, username } = useAppSelector(({ user }) => user);
   const { isLaptop } = useWindowDimensions();
 
-  const [formData, setFormData] = useState<IAlert>({ ...initAlertData });
+  const [formData, setFormData] = useState<IAlert>(initAlertData);
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
   const {
     data: alertData,
     isLoading: isGetLoading,
     isError: isGetError,
-  } = useGetAlertWidgetDataQuery(
-    {
-      username: username,
-      id: "",
-    },
-    {
-      skip: !username,
-    }
-  );
+  } = useGetAlertWidgetDataByCreatorQuery(id, {
+    skip: !username,
+  });
 
   const [editAlert, { isLoading: isEditLoading }] =
     useEditAlertsWidgetMutation();
@@ -52,51 +46,45 @@ const AlertsContainer = () => {
   const { id: widgetID } = formData;
 
   const sendData = (isReset?: boolean) => async () => {
-    const { banner, message_font, name_font, sum_font, sound } = formData;
+    const { banner, messageFont, nameFont, sumFont, sound, ...alertData } =
+      formData;
 
-    await editAlert({
-      data: {
-        ...formData,
-        message_font: message_font.name,
-        name_font: name_font.name,
-        sum_font: sum_font.name,
-        sound: sound.link,
-        banner: banner.preview,
+    const [editArgs]: Parameters<typeof editAlert> = [
+      {
+        ...alertData,
+        messageFont: messageFont.name,
+        nameFont: nameFont.name,
+        sumFont: sumFont.name,
+        sound: sound.path,
       },
-      file: banner.file,
-      filelink: banner.preview,
-      username,
-      userID: id,
-      isReset,
-    });
-    // .unwrap()
+    ];
+
+    if (typeof isReset !== "undefined") editArgs.isReset = isReset;
+
+    if (banner) {
+      const { file, preview } = banner;
+      if (file) editArgs.alert = file;
+      else if (preview) editArgs.banner = preview;
+    }
+
+    await editAlert(editArgs);
   };
 
-  const resetData = sendData(true);
-
-  const linkForStream = useMemo(
-    () => `${baseURL}/${RoutePaths.donatMessage}/${username}/${widgetID}`,
-    [username, widgetID]
-  );
+  const linkForStream = `${baseURL}/${RoutePaths.donatMessage}/${username}/${widgetID}`;
 
   const renderLinkForStream = useMemo(
     () => linkForStream.replace(widgetID, "⁕⁕⁕⁕⁕"),
     [linkForStream, widgetID]
   );
 
-  const isLoading = useMemo(
-    () => isGetLoading || isEditLoading,
-    [isGetLoading, isEditLoading]
-  );
-
   useEffect(() => {
     const setAlertData = async () => {
       if (alertData) {
-        const { name_font, message_font, sum_font, banner, sound } = alertData;
+        const { nameFont, messageFont, sumFont, banner, sound } = alertData;
 
         const loadedFonts = await loadFonts({
           fonts,
-          fields: { name_font, message_font, sum_font },
+          fields: { nameFont, messageFont, sumFont },
         });
 
         setFormData((prev) => ({
@@ -109,7 +97,7 @@ const AlertsContainer = () => {
           },
           sound: {
             name: sound.split(`${soundsFolderName}/`)[1],
-            link: sound,
+            path: sound,
           },
         }));
       }
@@ -134,8 +122,7 @@ const AlertsContainer = () => {
       <PageTitle formatId="page_title_alerts" />
       <div className="link-top">
         <p>
-          Paste this link into broadcasting software you use and display your
-          incoming donations
+          <FormattedMessage id="alerts_subtitle" />
         </p>
         <LinkCopy
           link={linkForStream}
@@ -145,7 +132,7 @@ const AlertsContainer = () => {
       </div>
       <div className="alertsSettings">
         <PageTitle formatId="page_title_design" />
-        {isLoading ? (
+        {isGetLoading || !formData.id ? (
           <div className="init-loader">
             <Loader size="big" />
           </div>
@@ -166,8 +153,8 @@ const AlertsContainer = () => {
         )}
         <FormBtnsBlock
           saveMethod={sendData()}
-          resetMethod={resetData}
-          disabled={isLoading}
+          resetMethod={sendData(true)}
+          disabled={isEditLoading}
         />
       </div>
       {/* <ChromePicker color={color} onChangeComplete={handleChange} disableAlpha /> */}

@@ -1,35 +1,32 @@
+import { ICurrentPeriodItemsTypes, IFilterPeriodItems } from "types";
 import {
-  ICurrentPeriodItemsTypes,
-  IFilterPeriodItems,
   IStatsDataType,
+  stringAllFormatTypes,
   stringFormatTypes,
-} from "types";
+} from "appTypes";
 
 const filterPeriodItems: IFilterPeriodItems<stringFormatTypes> = {
-  today: "Today",
-  "7days": "Last 7 days",
-  "30days": "Last 30 days",
-  year: "This year",
+  today: "filter_today",
+  "7days": "filter_7days",
+  "30days": "filter_month",
+  year: "filter_year",
 };
 
-const filterCurrentPeriodItems: ICurrentPeriodItemsTypes = {
-  yesterday: "Yesterday",
-  today: "Today",
-  "7days": "Last 7 days",
-  "30days": "Last 30 days",
-  year: "Current year",
-  all: "All time",
-  custom: "Custom date",
-};
+const filterCurrentPeriodItems: ICurrentPeriodItemsTypes<stringAllFormatTypes> =
+  {
+    yesterday: "filter_yesterday",
+    today: "filter_today",
+    "7days": "filter_7days",
+    "30days": "filter_month",
+    year: "filter_current_year",
+    all: "filter_all_time",
+    custom: "filter_custom",
+  };
 
 const filterDataTypeItems: IStatsDataType = {
-  "top-donations": "Top donations",
-  "latest-donations": "Recent donations",
-  "top-supporters": "Top supporters",
+  "top-donations": "filter_top_donations",
+  "latest-donations": "filter_recent_donations",
+  "top-supporters": "filter_top_supporters",
 };
 
-export {
-  filterPeriodItems,
-  filterCurrentPeriodItems,
-  filterDataTypeItems,
-};
+export { filterPeriodItems, filterCurrentPeriodItems, filterDataTypeItems };

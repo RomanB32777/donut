@@ -1,0 +1,50 @@
+@use 'commonStyles/variables'
+
+.roleModal
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+
+.modalTitle
+    font-family: variables.$vt-font
+    font-style: normal
+    font-weight: 400
+    font-size: 45px
+    line-height: 45px
+    color: variables.$white-color
+    text-align: center
+    margin: 0 0 40px
+
+.roles
+    width: 100%
+    text-align: center
+
+.role
+    color: variables.$white-color
+    font-family: variables.$pt-font
+    font-style: normal
+    font-weight: 400
+    font-size: 20px
+    line-height: 24px
+    background: variables.$blue-transparent-color
+    border: 1px solid transparent
+    border-radius: variables.$border-radius
+    padding: 9px 0
+    cursor: pointer
+
+    &.isActive
+        color: variables.$green-color
+        border: 1px solid variables.$green-color
+
+    &:first-child
+        margin-bottom: 10px
+
+.btnWrapper
+    margin: 0 auto
+
+    .rolesBtn
+        padding: 11px 30px
+        font-size: 25px
+        line-height: 28px
+        margin-top: 40px

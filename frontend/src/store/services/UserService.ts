@@ -1,84 +1,107 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { donatAssetTypes, IEditUserInfo, IShortUserData, IUser } from "types";
+import {
+  FileUploadTypes,
+  IEditCreator,
+  IShortUserData,
+  IUser,
+  userRoles,
+} from "types";
 import { setFormDataValues } from "utils";
 import { baseQuery } from "./utils";
-import { IDataWithFile } from "appTypes";
 
-interface IEditCreatorImage extends IDataWithFile {
-  fileType: donatAssetTypes;
+interface IEditUserInfo extends Pick<IUser, "walletAddress" | "username"> {
+  [FileUploadTypes.avatar]: File | null;
+}
+
+interface IEditCreatorInfo extends IEditCreator {
+  [FileUploadTypes.background]: File | null;
+  [FileUploadTypes.header]: File | null;
 }
 
 const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQuery({
-    apiURL: "api/user",
+    apiURL: "api/users",
   }),
-  tagTypes: ["user"],
+  tagTypes: ["users"],
   endpoints: (build) => ({
-    getUser: build.query<IUser, string>({
-      query: (address) => `/${address}`,
-      providesTags: ["user"],
+    getUser: build.query<
+      IUser,
+      Partial<Pick<IUser, "id" | "username" | "walletAddress" | "roleplay">>
+    >({
+      query: ({ roleplay, ...checkField }) => {
+        const [param] = Object.entries(checkField);
+        const [field, value] = param;
+        return {
+          url: `/${field}/${value}`,
+          params: { roleplay },
+        };
+      },
+      providesTags: ["users"],
     }),
 
     getCreatorInfo: build.query<IUser, string>({
-      query: (username) => `/creators/${username}`,
+      query: (username) => `/creator/${username}`,
     }),
 
-    checkIsExistUser: build.query<boolean, string>({
-      query: (addressOrUsername) => `/check-user-exist/${addressOrUsername}`,
+    checkIsExistUser: build.query<false | Pick<IUser, "roleplay">, string>({
+      query: (addressOrUsername) => `/exist/${addressOrUsername}`,
     }),
 
-    registerUser: build.mutation<IUser, IShortUserData>({
-      query: (userInfo) => ({
-        url: `/`,
-        method: "POST",
-        params: { isVisibleNotification: false },
-        body: userInfo,
-      }),
-      invalidatesTags: ["user"],
-      extraOptions: {},
+    checkIsExistUserRole: build.query<
+      boolean,
+      { role: userRoles; field: string }
+    >({
+      query: ({ role, field }) => `/exist/${role}/${field}`,
     }),
 
-    editUser: build.mutation<IUser, IEditUserInfo>({
+    getLocation: build.query<any, void>({
+      query: () => "location",
+    }),
+
+    createUser: build.mutation<IUser, Omit<IShortUserData, "id">>({
       query: (userInfo) => ({
         url: "/",
-        method: "PUT",
+        method: "POST",
         body: userInfo,
       }),
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
+      // extraOptions: {},
     }),
 
-    editUserAvatar: build.mutation<null, IDataWithFile>({
-      query: (avatarInfo) => {
+    editUser: build.mutation<
+      IUser,
+      Partial<IEditUserInfo & { isVisibleNotification: boolean }>
+    >({
+      query: ({ isVisibleNotification, ...userInfo }) => {
         const formData = new FormData();
-        setFormDataValues({ formData, dataValues: avatarInfo });
-
+        setFormDataValues({ formData, dataValues: userInfo });
         return {
-          url: "/edit-image",
-          method: "PUT",
+          url: "/",
+          method: "PATCH",
+          body: formData,
+          params: { isVisibleNotification },
+        };
+      },
+      invalidatesTags: ["users"],
+    }),
+
+    editCreator: build.mutation<IUser, Partial<IEditCreatorInfo>>({
+      query: (creatorInfo) => {
+        const formData = new FormData();
+        setFormDataValues({ formData, dataValues: creatorInfo });
+        return {
+          url: "/creator",
+          method: "PATCH",
           body: formData,
         };
       },
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
     }),
 
-    editCreatorImage: build.mutation<void, IEditCreatorImage>({
-      query: ({ fileType, ...imageInfo }) => {
-        const formData = new FormData();
-        setFormDataValues({ formData, dataValues: imageInfo });
-
-        return {
-          url: `/edit-creator-image/${fileType}`,
-          method: "PUT",
-          body: formData,
-        };
-      },
-      // invalidatesTags: ["user"],
-    }),
-
-    deleteUser: build.mutation<IUser, number>({
-      query: (id) => ({
-        url: `/${id}`,
+    deleteUser: build.mutation<IUser, void>({
+      query: () => ({
+        url: "/",
         method: "DELETE",
       }),
     }),
@@ -87,15 +110,18 @@ const userApi = createApi({
 
 export const {
   useGetUserQuery,
+  useLazyGetUserQuery,
   useGetCreatorInfoQuery,
   useCheckIsExistUserQuery,
+  useCheckIsExistUserRoleQuery,
+  useLazyCheckIsExistUserRoleQuery,
+  useGetLocationQuery,
+  useLazyGetLocationQuery,
   useLazyCheckIsExistUserQuery,
   useLazyGetCreatorInfoQuery,
-  useLazyGetUserQuery,
-  useRegisterUserMutation,
+  useCreateUserMutation,
   useEditUserMutation,
-  useEditUserAvatarMutation,
-  useEditCreatorImageMutation,
+  useEditCreatorMutation,
   useDeleteUserMutation,
 } = userApi;
 export default userApi;

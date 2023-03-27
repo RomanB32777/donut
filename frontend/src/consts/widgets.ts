@@ -19,72 +19,72 @@ const initAlertData: IAlert = {
     preview: "",
     file: null,
   },
-  message_color: "#ffffff",
-  message_font: {
+  messageColor: "#ffffff",
+  messageFont: {
     name: "",
     link: "",
   },
-  name_color: "#ffffff",
-  name_font: {
+  nameColor: "#ffffff",
+  nameFont: {
     name: "",
     link: "",
   },
-  sum_color: "#ffffff",
-  sum_font: {
+  sumColor: "#ffffff",
+  sumFont: {
     name: "",
     link: "",
   },
   duration: 15,
   sound: {
     name: "",
-    link: "",
+    path: "",
   },
   voice: false,
-  gender_voice: "MAN",
-  creator_id: 0,
+  genderVoice: "MALE",
+  creator: "",
 };
 
 const initWidgetGoalData: IWidgetGoalData = {
-  amount_goal: 0,
+  amountGoal: 0,
   id: "",
   title: "",
-  amount_raised: 0,
-  is_archive: false,
-  creator_id: 0,
-  title_color: "",
-  title_font: {
+  amountRaised: 0,
+  isArchive: false,
+  creator: "",
+  titleColor: "",
+  titleFont: {
     name: "",
     link: "",
   },
-  progress_color: "",
-  progress_font: {
+  progressColor: "",
+  progressFont: {
     name: "",
     link: "",
   },
-  background_color: "",
+  backgroundColor: "",
 };
 
 const initWidgetStatData: IWidgetStatData = {
   id: "",
   title: "",
-  stat_description: "",
+  description: "",
   template: [],
-  data_type: "top-donations",
-  time_period: "today",
-  custom_period: "",
-  title_color: "",
-  title_font: {
+  dataType: "top-donations",
+  timePeriod: "today",
+  customPeriod: "",
+  titleColor: "",
+  titleFont: {
     name: "",
     link: "",
   },
-  bar_color: "",
-  content_color: "",
-  content_font: {
+  barColor: "",
+  contentColor: "",
+  contentFont: {
     name: "",
     link: "",
   },
-  aligment: "Left",
-  creator_id: 0,
+  textAligment: "Left",
+  creator: "",
 };
 
 export {

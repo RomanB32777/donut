@@ -6,7 +6,7 @@ import { IDonationShortInfo } from "types";
 
 export interface INotification {
   type: NOTIFICATION_TYPE;
-  title: string;
+  title: NotificationTitleMessage;
   message?: NotificationTitleMessage;
   id?: string;
 }

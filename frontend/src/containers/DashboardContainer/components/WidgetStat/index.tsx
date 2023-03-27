@@ -3,10 +3,11 @@ import { createSelector } from "@reduxjs/toolkit";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
-import { periodItemsTypes, stringFormatTypes } from "types";
+import { FormattedMessage } from "react-intl";
+import { periodItemsTypes } from "types";
 
-import SelectComponent from "components/SelectComponent";
 import WidgetLoader from "../WidgetLoader";
+import FilterSelect from "../FilterSelect";
 
 import dayjsModule, { ManipulateType } from "modules/dayjsModule";
 import { useAppSelector } from "hooks/reduxHooks";
@@ -80,7 +81,7 @@ const WidgetStat = () => {
               const date = DateFormatter(d.date_group, dateFormat[timePeriod]);
               return {
                 ...acc,
-                [date]: +formatNumber(d.sum_donation),
+                [date]: +formatNumber(d.sum),
               };
             }, initGroupDates as { [key: string]: number });
 
@@ -108,8 +109,8 @@ const WidgetStat = () => {
 
   const { dataChart, isLoading, refetch } = useGetWidgetDonationsQuery(
     {
-      userID: id,
-      data_type: "stats",
+      userId: id,
+      dataType: "stats",
       query: {
         timePeriod,
       },
@@ -134,17 +135,13 @@ const WidgetStat = () => {
       ) : (
         <>
           <div className="header">
-            <span className="widget-title">Stats</span>
-            <div className="filter">
-              <SelectComponent
-                title={activeFilterItem}
-                list={Object.values(filterPeriodItems)}
-                selectItem={(selected) =>
-                  setActiveFilterItem(selected as stringFormatTypes)
-                }
-                listWrapperModificator="filter-list"
-              />
-            </div>
+            <span className="widget-title">
+              <FormattedMessage id="dashboard_widgets_stats" />
+            </span>
+            <FilterSelect
+              selectedItem={activeFilterItem}
+              selectItem={setActiveFilterItem}
+            />
           </div>
           <div className="widget_graph">
             <Line data={dataChart} options={options} />

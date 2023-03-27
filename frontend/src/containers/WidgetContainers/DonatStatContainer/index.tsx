@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
-import { IStatData, statsDataKeys } from "types";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useIntl } from "react-intl";
+import { donationsQueryData, IStatData, statsDataKeys } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useGetCreatorInfoQuery } from "store/services/UserService";
@@ -26,9 +28,10 @@ import { AlignText, IFont, IWidgetStatData } from "appTypes";
 import "./styles.sass";
 
 const LIMIT = 3;
-const fontsFields: statsDataKeys[] = ["title_font", "content_font"];
+const fontsFields: statsDataKeys[] = ["titleFont", "contentFont"];
 
 const DonatStatContainer = () => {
+  const intl = useIntl();
   const { id, name } = useParams();
   const { list } = useAppSelector(({ notifications }) => notifications);
 
@@ -36,14 +39,7 @@ const DonatStatContainer = () => {
     skip: !name,
   });
 
-  const { data: widgetData } = useGetStatsWidgetDataQuery(
-    {
-      username: name as string,
-      id: id as string,
-    },
-    { skip: !name || !id }
-  );
-
+  const { data: widgetData } = useGetStatsWidgetDataQuery(id ?? skipToken);
   const [getWidgetDonations] = useLazyGetWidgetDonationsQuery();
 
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
@@ -78,11 +74,11 @@ const DonatStatContainer = () => {
         if (!fonts.length) {
           const fontsInfo = await getFontsList();
 
-          const { title_font, content_font } = widgetData;
+          const { titleFont, contentFont } = widgetData;
 
           const loadedFonts = await loadFonts({
             fonts: fontsInfo,
-            fields: { title_font, content_font },
+            fields: { titleFont, contentFont },
           });
 
           setFonts(fontsInfo);
@@ -100,25 +96,26 @@ const DonatStatContainer = () => {
     const getDonations = async () => {
       if (statData && personInfo) {
         try {
-          const { time_period, data_type } = statData;
-          const customPeriod = time_period.split("-");
+          const { id: userId, creator } = personInfo;
+          const { timePeriod, dataType } = statData;
+          const customPeriod = timePeriod.split("-");
 
-          const query = {
+          const query: donationsQueryData = {
             limit: LIMIT,
-            timePeriod: time_period,
-            spam_filter: personInfo.spam_filter,
+            timePeriod: timePeriod,
+            spamFilter: creator?.spamFilter,
           };
 
           const { data } = await getWidgetDonations({
-            userID: personInfo.id,
-            data_type,
+            userId,
+            dataType,
             query:
               customPeriod.length > 1
                 ? Object.assign(query, {
                     timePeriod: "custom",
                     startDate: customPeriod[0],
                     endDate: customPeriod[1],
-                  })
+                  } as donationsQueryData)
                 : query,
           });
           data && setRenderList(data);
@@ -132,12 +129,20 @@ const DonatStatContainer = () => {
   }, [list, statData, personInfo]);
 
   const timePeriodName = useMemo(
-    () => statData && getCurrentTimePeriodQuery(statData.time_period),
+    () =>
+      statData &&
+      intl.formatMessage({
+        id: getCurrentTimePeriodQuery(statData.timePeriod),
+      }),
     [statData]
   );
 
   const typeStatData = useMemo(
-    () => statData && getStatsDataTypeQuery(statData.data_type),
+    () =>
+      statData &&
+      intl.formatMessage({
+        id: getStatsDataTypeQuery(statData.dataType),
+      }),
     [statData]
   );
 
@@ -148,12 +153,12 @@ const DonatStatContainer = () => {
 
   if (statData) {
     const {
-      title_color,
-      title_font,
-      bar_color,
-      content_color,
-      content_font,
-      aligment,
+      titleColor,
+      titleFont,
+      barColor,
+      contentColor,
+      contentFont,
+      textAligment,
       template,
     } = statData;
 
@@ -163,8 +168,8 @@ const DonatStatContainer = () => {
           <span
             className="title"
             style={{
-              background: bar_color,
-              ...getFontColorStyles(title_color, title_font),
+              background: barColor,
+              ...getFontColorStyles(titleColor, titleFont),
             }}
           >
             {typeStatData} {timePeriodName && timePeriodName.toLowerCase()}
@@ -172,7 +177,7 @@ const DonatStatContainer = () => {
           <div
             className="list__wrapper"
             style={{
-              justifyContent: alignFlextItemsList[aligment],
+              justifyContent: alignFlextItemsList[textAligment],
             }}
           >
             <div className="list">
@@ -184,9 +189,10 @@ const DonatStatContainer = () => {
                       key={renderStr}
                       className="item"
                       style={{
-                        ...getFontColorStyles(content_color, content_font),
+                        ...getFontColorStyles(contentColor, contentFont),
                         textAlign:
-                          (alignItemsList[aligment] as AlignText) || "center",
+                          (alignItemsList[textAligment] as AlignText) ||
+                          "center",
                       }}
                     >
                       {renderStr}
