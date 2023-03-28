@@ -61,3 +61,11 @@ export const fileMimetypeFilter =
       );
     }
   };
+
+export const delay = (ms: number, cb?: (params?: any) => any) =>
+  new Promise<void>((resolve) => {
+    setTimeout(() => {
+      cb?.();
+      resolve();
+    }, ms);
+  });

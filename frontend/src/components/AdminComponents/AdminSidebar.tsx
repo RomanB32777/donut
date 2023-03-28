@@ -7,7 +7,6 @@ import WalletBlock from "components/HeaderComponents/WalletBlock";
 import Sidebar from "components/Sidebar";
 import { EmailIcon } from "icons";
 
-import { useEditUserMutation } from "store/services/UserService";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { useAppSelector } from "hooks/reduxHooks";
 import { IRoute, routers } from "routes";
@@ -33,13 +32,13 @@ const AdminSidebar: FC<IAdminSidebar> = ({
   const { id, roleplay, walletAddress } = useAppSelector(({ user }) => user);
   const { pathname } = useLocation();
   const { isMobile } = useWindowDimensions();
-  const [editUser] = useEditUserMutation();
+  // const [editUser] = useEditUserMutation();
 
   const isSupporter = roleplay === "backers";
 
-  const connectedWallet = async (walletAddress: string) => {
-    await editUser({ walletAddress, isVisibleNotification: false });
-  };
+  // const connectedWallet = async (walletAddress: string) => {
+  //   await editUser({ walletAddress, isVisibleNotification: false });
+  // };
 
   const getItem = ({ label, path, icon, children }: IGetItemParams) => ({
     key: path,
@@ -153,7 +152,7 @@ const AdminSidebar: FC<IAdminSidebar> = ({
         <WalletBlock
           modificator="sidebar-wallet"
           popupModificator="wallet-popup"
-          connectedWallet={connectedWallet}
+          // connectedWallet={connectedWallet}
         />
       )}
     </Sidebar>

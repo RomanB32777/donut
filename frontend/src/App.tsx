@@ -26,11 +26,10 @@ const App = () => {
       const userLocation = Object.entries(LOCALES).find(
         ([key]) => key === data?.country
       );
-      console.log(userLocation);
       if (userLocation) {
         const [_, locale] = userLocation;
         handleLocale(locale);
-      }
+      } else handleLocale(LOCALES.EN);
     };
 
     const storageLocale = localStorage.getItem(localesStorageKey);

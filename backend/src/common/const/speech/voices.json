@@ -1,0 +1,788 @@
+{
+  "af-ZA": [
+    {
+      "voiceName": "af-ZA-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "af-ZA-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ar-XA": [
+    {
+      "voiceName": "ar-XA-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ar-XA-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "bg-BG": [
+    {
+      "voiceName": "bg-BG-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "bg-BG-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "bn-IN": [
+    {
+      "voiceName": "bn-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "bn-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ca-ES": [
+    {
+      "voiceName": "ca-ES-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ca-ES-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "cs-CZ": [
+    {
+      "voiceName": "cs-CZ-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "cs-CZ-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "cy-GB": [
+    {
+      "voiceName": "cy-GB-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "cy-GB-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "da-DK": [
+    {
+      "voiceName": "da-DK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "da-DK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "de-DE": [
+    {
+      "voiceName": "de-DE-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "de-DE-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "el-GR": [
+    {
+      "voiceName": "el-GR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "el-GR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "en-AU": [
+    {
+      "voiceName": "en-AU-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "en-AU-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "en-GB": [
+    {
+      "voiceName": "en-GB-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "en-GB-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "en-IN": [
+    {
+      "voiceName": "en-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "en-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "en-US": [
+    {
+      "voiceName": "en-US-Standard-B",
+      "ssmlGender": "MALE"
+    },
+    {
+      "voiceName": "en-US-Standard-C",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "en-US-Standard-D",
+      "ssmlGender": "MALE"
+    },
+    {
+      "voiceName": "en-US-Standard-E",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "en-US-Standard-G",
+      "ssmlGender": "MALE"
+    },
+    {
+      "voiceName": "en-US-Standard-H",
+      "ssmlGender": "FEMALE"
+    }
+  ],
+  "es-ES": [
+    {
+      "voiceName": "es-ES-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "es-ES-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "et-EE": [
+    {
+      "voiceName": "et-EE-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "et-EE-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "eu-ES": [
+    {
+      "voiceName": "eu-ES-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "eu-ES-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "fa-IR": [
+    {
+      "voiceName": "fa-IR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "fa-IR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "fi-FI": [
+    {
+      "voiceName": "fi-FI-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "fi-FI-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "fil-PH": [
+    {
+      "voiceName": "fil-PH-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "fil-PH-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "fr-CA": [
+    {
+      "voiceName": "fr-CA-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "fr-CA-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "fr-FR": [
+    {
+      "voiceName": "fr-FR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "fr-FR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "gl-ES": [
+    {
+      "voiceName": "gl-ES-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "gl-ES-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "gu-IN": [
+    {
+      "voiceName": "gu-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "gu-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "hi-IN": [
+    {
+      "voiceName": "hi-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "hi-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "hr-HR": [
+    {
+      "voiceName": "hr-HR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "hr-HR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "hu-HU": [
+    {
+      "voiceName": "hu-HU-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "hu-HU-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "hy-AM": [
+    {
+      "voiceName": "hy-AM-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "hy-AM-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "id-ID": [
+    {
+      "voiceName": "id-ID-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "id-ID-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "is-IS": [
+    {
+      "voiceName": "is-IS-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "is-IS-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "it-IT": [
+    {
+      "voiceName": "it-IT-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "it-IT-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ja-JP": [
+    {
+      "voiceName": "ja-JP-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ja-JP-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "jv-ID": [
+    {
+      "voiceName": "jv-ID-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "jv-ID-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ka-GE": [
+    {
+      "voiceName": "ka-GE-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ka-GE-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "kk-KZ": [
+    {
+      "voiceName": "kk-KZ-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "kk-KZ-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "km-KH": [
+    {
+      "voiceName": "km-KH-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "km-KH-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "kn-IN": [
+    {
+      "voiceName": "kn-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "kn-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ko-KR": [
+    {
+      "voiceName": "ko-KR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ko-KR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ky-KG": [
+    {
+      "voiceName": "ky-KG-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ky-KG-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "lo-LA": [
+    {
+      "voiceName": "lo-LA-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "lo-LA-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "lt-LT": [
+    {
+      "voiceName": "lt-LT-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "lt-LT-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "lv-LV": [
+    {
+      "voiceName": "lv-LV-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "lv-LV-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "mk-MK": [
+    {
+      "voiceName": "mk-MK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "mk-MK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ml-IN": [
+    {
+      "voiceName": "ml-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ml-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "mn-MN": [
+    {
+      "voiceName": "mn-MN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "mn-MN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "mr-IN": [
+    {
+      "voiceName": "mr-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "mr-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ms-MY": [
+    {
+      "voiceName": "ms-MY-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ms-MY-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "my-MM": [
+    {
+      "voiceName": "my-MM-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "my-MM-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "nb-NO": [
+    {
+      "voiceName": "nb-NO-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "nb-NO-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ne-NP": [
+    {
+      "voiceName": "ne-NP-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ne-NP-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "nl-BE": [
+    {
+      "voiceName": "nl-BE-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "nl-BE-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "nl-NL": [
+    {
+      "voiceName": "nl-NL-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "nl-NL-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "pl-PL": [
+    {
+      "voiceName": "pl-PL-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "pl-PL-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "pt-BR": [
+    {
+      "voiceName": "pt-BR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "pt-BR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "pt-PT": [
+    {
+      "voiceName": "pt-PT-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "pt-PT-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ro-RO": [
+    {
+      "voiceName": "ro-RO-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ro-RO-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ru-RU": [
+    {
+      "voiceName": "ru-RU-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ru-RU-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "si-LK": [
+    {
+      "voiceName": "si-LK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "si-LK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "sk-SK": [
+    {
+      "voiceName": "sk-SK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "sk-SK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "sl-SI": [
+    {
+      "voiceName": "sl-SI-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "sl-SI-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "sq-AL": [
+    {
+      "voiceName": "sq-AL-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "sq-AL-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "sr-RS": [
+    {
+      "voiceName": "sr-RS-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "sr-RS-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "su-ID": [
+    {
+      "voiceName": "su-ID-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "su-ID-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "sv-SE": [
+    {
+      "voiceName": "sv-SE-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "sv-SE-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "sw-KE": [
+    {
+      "voiceName": "sw-KE-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "sw-KE-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ta-IN": [
+    {
+      "voiceName": "ta-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ta-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "te-IN": [
+    {
+      "voiceName": "te-IN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "te-IN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "th-TH": [
+    {
+      "voiceName": "th-TH-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "th-TH-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "tr-TR": [
+    {
+      "voiceName": "tr-TR-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "tr-TR-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "uk-UA": [
+    {
+      "voiceName": "uk-UA-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "uk-UA-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "ur-PK": [
+    {
+      "voiceName": "ur-PK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "ur-PK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "uz-UZ": [
+    {
+      "voiceName": "uz-UZ-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "uz-UZ-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "vi-VN": [
+    {
+      "voiceName": "vi-VN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "vi-VN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "yue-HK": [
+    {
+      "voiceName": "yue-HK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "yue-HK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "zh-CN": [
+    {
+      "voiceName": "zh-CN-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "zh-CN-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "zh-HK": [
+    {
+      "voiceName": "zh-HK-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "zh-HK-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ],
+  "zh-TW": [
+    {
+      "voiceName": "zh-TW-Standard-A",
+      "ssmlGender": "FEMALE"
+    },
+    {
+      "voiceName": "zh-TW-Standard-B",
+      "ssmlGender": "MALE"
+    }
+  ]
+}

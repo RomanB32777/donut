@@ -7,6 +7,7 @@ import { BlockchainsSymbols, ExchangeNames } from 'types';
 
 import { Exchange } from './entities/exchange.entity';
 import { CreateExchangeDto } from './dto/create-exchange.dto';
+import { delay } from 'src/utils';
 
 @Injectable()
 export class ExchangeService {
@@ -54,6 +55,8 @@ export class ExchangeService {
       ExchangeNames,
     )) {
       if (notFoundExchanges.includes(blockchainName as BlockchainsSymbols)) {
+        // TODO
+        // await delay(1000);
         const apiRequest = this.axiosService
           .get(
             `https://api.coingecko.com/api/v3/simple/price?ids=${exchangeName}&vs_currencies=usd`,
@@ -70,6 +73,8 @@ export class ExchangeService {
             coin: blockchainName as BlockchainsSymbols,
             price: apiExchange,
           });
+        } else {
+          console.log('apiExchange error', apiExchange);
         }
       }
     }
@@ -96,7 +101,6 @@ export class ExchangeService {
         ...dbExchanges.filter(({ coin }) => !notFoundExchanges.includes(coin)),
       ];
     }
-
     return exchanges.reduce(
       (acc, { coin, price }) => ({ ...acc, [coin]: price }),
       {},

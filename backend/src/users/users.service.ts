@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -38,7 +39,11 @@ export class UsersService {
   ) {}
 
   async create(createdUser: CreateUserDto) {
-    const { roleplay } = createdUser;
+    const { roleplay, walletAddress } = createdUser;
+    const isExist = await this.checkUserExist(walletAddress);
+    if (isExist) {
+      throw new BadRequestException('User with this address already exists');
+    }
     const newUser = this.usersRepository.create({ ...createdUser });
 
     if (roles.filter((role) => role !== 'backers').includes(roleplay)) {
@@ -130,6 +135,7 @@ export class UsersService {
           btnText: true,
           mainColor: true,
           backgroundColor: true,
+          spamFilter: true,
         },
       },
       where: { roleplay: 'creators', username },

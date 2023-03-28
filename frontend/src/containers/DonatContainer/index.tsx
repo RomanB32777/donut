@@ -24,7 +24,10 @@ import SwitchForm from "components/SwitchForm";
 import LocalesSwitcher from "components/HeaderComponents/LocalesSwitcher";
 
 import useAuth from "hooks/useAuth";
-import { useGetCreatorInfoQuery } from "store/services/UserService";
+import {
+  useGetCreatorInfoQuery,
+  useLazyGetUserQuery,
+} from "store/services/UserService";
 import { addNotFoundUserNotification, addNotification } from "utils";
 import { usePayment } from "./utils";
 import { dummyImg, RoutePaths, initSendDonatData, initUser } from "consts";
@@ -49,6 +52,7 @@ const DonatContainer = () => {
     isError,
     isLoading: isGetCreatorLoading,
   } = useGetCreatorInfoQuery(name ?? skipToken);
+  const [getUser] = useLazyGetUserQuery();
 
   const { address } = useAccount();
   const { switchNetwork, isLoading: isSwitchLoading } = useSwitchNetwork();
@@ -114,8 +118,13 @@ const DonatContainer = () => {
     [username]
   );
 
-  const closeSuccessPopup = () =>
+  const closeSuccessPopup = () => {
     navigate(`/${RoutePaths.admin}/${RoutePaths.donations}`);
+  };
+
+  const getUserByAddress = async (walletAddress: string) => {
+    await getUser({ walletAddress, roleplay: "backers" });
+  };
 
   const sendBtnHandler = useCallback(async () => {
     const keys = Object.keys(form) as sendDonatFieldsKeys[];
@@ -221,6 +230,7 @@ const DonatContainer = () => {
         <WalletBlock
           modificator="donut-wallet"
           isPropLoading={isSwitchLoading}
+          connectedWallet={getUserByAddress}
         />
       </HeaderComponent>
       <div className="donat-container">

@@ -22,7 +22,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Stream } from 'stream';
-import { FileUploadTypes, Genders } from 'types';
+import { FileUploadTypes } from 'types';
 
 import { User } from 'src/users/entities/user.entity';
 import { AuthenticationGuard } from 'src/auth/guards/auth.guard';
@@ -36,6 +36,7 @@ import { AlertsService } from './alerts.service';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
 import { AlertWidget } from './entities/alert-widget.entity';
+import { QuerySoundDto } from './dto/query-sound.dto';
 
 @ApiTags('Alerts')
 @Controller('widgets/alerts')
@@ -122,15 +123,8 @@ export class AlertsController {
   @Get('generate/sound')
   @Header('Content-Type', 'audio/mpeg')
   @Header('Transfer-Encoding', 'chunked')
-  async generateSound(
-    @Query('text') text: string,
-    @Query('genderVoice') genderVoice: Genders,
-  ) {
-    const audioContent = await this.alertsService.generateSound(
-      text,
-      genderVoice,
-    );
-
+  async generateSound(@Query() query: QuerySoundDto) {
+    const audioContent = await this.alertsService.generateSound(query);
     if (audioContent) {
       const bufferStream = new Stream.PassThrough();
       bufferStream.end(Buffer.from(audioContent));

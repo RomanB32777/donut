@@ -57,6 +57,11 @@ interface IAlertData<
   creator: string;
 }
 
+interface IGenerateSoundQuery extends Pick<IAlertData, "genderVoice"> {
+  text: string;
+  languageCode: string;
+}
+
 interface IEditAlertData
   extends Partial<Omit<IAlertData, "creator">>,
     IResetField {
@@ -125,6 +130,7 @@ export type {
 
   // alerts
   IAlertData,
+  IGenerateSoundQuery,
   IEditAlertData,
 
   // stats

@@ -32,7 +32,7 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
       const socket = io(baseURL, {
         path: "/sockt/",
         query: {
-          userName: username,
+          username,
         },
       });
 
@@ -41,7 +41,6 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
           username,
           limit: 1,
           spamFilter,
-          roleplay: "recipient",
         });
       });
       return socket;

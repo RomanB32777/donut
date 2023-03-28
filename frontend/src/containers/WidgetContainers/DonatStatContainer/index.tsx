@@ -14,6 +14,7 @@ import {
   getCurrentTimePeriodQuery,
   getFontColorStyles,
   getFontsList,
+  getRandomStr,
   getStatsDataTypeQuery,
   loadFonts,
   renderStatItem,
@@ -43,7 +44,7 @@ const DonatStatContainer = () => {
   const [getWidgetDonations] = useLazyGetWidgetDonationsQuery();
 
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
-  const [renderList, setRenderList] = useState<any[]>([]);
+  const [renderList, setRenderList] = useState<any[]>([]); // TODO - remove any
   const [statData, setStatData] = useState<IWidgetStatData | null>(null);
 
   const getWidgetStatData = (
@@ -186,7 +187,7 @@ const DonatStatContainer = () => {
                   const renderStr = renderStatItem(template, item);
                   return (
                     <p
-                      key={renderStr}
+                      key={getRandomStr(5)}
                       className="item"
                       style={{
                         ...getFontColorStyles(contentColor, contentFont),

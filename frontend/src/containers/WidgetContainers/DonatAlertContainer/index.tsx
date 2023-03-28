@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useParams } from "react-router";
-import { INotification } from "types";
+import { franc } from "franc";
+import { IGenerateSoundQuery, INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useGetAlertWidgetDataQuery } from "store/services/AlertsService";
@@ -54,8 +55,19 @@ const DonatAlertContainer = () => {
         setTimeout(() => {
           const { duration } = alertWidgetData;
           if (voice) {
+            const text = message.replaceAll("*", "");
+            const queryParams: IGenerateSoundQuery = {
+              text,
+              languageCode: franc(text),
+              genderVoice,
+            };
+
+            const queryString = Object.entries(queryParams)
+              .map(([param, value]) => `${param}=${value}`)
+              .join("&");
+
             const tmp = new Audio(
-              `${baseURL}/api/widget/sound?text=${message}&genderVoice=${genderVoice}`
+              `${baseURL}/api/widgets/alerts/generate/sound?${queryString}`
             );
             tmp.play();
           }

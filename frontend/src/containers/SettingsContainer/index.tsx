@@ -43,7 +43,7 @@ const SettingsContainer = () => {
   const [editUser, { isLoading }] = useEditUserMutation();
   const [editCreatorInfo] = useEditCreatorMutation();
   const [deleteUser] = useDeleteUserMutation();
-  const { logout, checkWebToken } = useAuth();
+  const { logout } = useAuth();
   const user = useAppSelector(({ user }) => user);
 
   const [isOpenWalletsModal, setIsOpenWalletsModal] = useState(false);
@@ -51,6 +51,8 @@ const SettingsContainer = () => {
 
   const { creator, roleplay } = user;
   const { username, walletAddress, avatarLink, spamFilter } = formSettings;
+
+  const isCreator = roleplay === "creators";
 
   const formElementsHandler = useCallback(
     <T,>(field: keyof IFormSettings) =>
@@ -64,10 +66,6 @@ const SettingsContainer = () => {
 
   const setWalletAddress = async (walletAddress: string) => {
     if (walletAddress !== user.walletAddress) {
-      // if (roleplay === "backers") {
-      //   removeWebToken();
-      //   await checkWebToken();
-      // }
       await editUser({ walletAddress });
     }
     closeWalletsModal();
@@ -247,12 +245,14 @@ const SettingsContainer = () => {
                     rowProps={{ justify: "space-between" }}
                   />
                 </Col>
-                <Col offset={1} span={3}>
-                  <p className="action wallet" onClick={openWalletsModal}>
-                    <FormattedMessage id="settings_change_button" />
-                  </p>
-                </Col>
-                <Col span={4}>
+                {isCreator && (
+                  <Col offset={1} span={3}>
+                    <p className="action wallet" onClick={openWalletsModal}>
+                      <FormattedMessage id="settings_change_button" />
+                    </p>
+                  </Col>
+                )}
+                <Col span={isCreator ? 4 : 7}>
                   <p
                     className={clsx("action", "wallet", {
                       disabled: !walletAddress,

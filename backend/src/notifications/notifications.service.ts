@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
-import { QueryParamsDto } from 'src/common/dto/query-params.dto';
 import { clean } from 'src/utils/badWords';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -11,6 +10,7 @@ import {
 } from './entities/notification.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateUserNotificationDto } from './dto/update-notification.dto';
+import { QueryNotificationParamsDto } from './dto/query-params.dto';
 
 @Injectable()
 export class NotificationsService {
@@ -48,23 +48,7 @@ export class NotificationsService {
     });
   }
 
-  async findAll(username: string, queryParams?: QueryParamsDto) {
-    // const test = await this.notificationsRepository
-    //   .createQueryBuilder('notification')
-    //   .select('un.users.user')
-    //   .from(
-    //     (qb) =>
-    //       qb
-    //         .from(Notification, 'n')
-    //         .select('n.id', 'id')
-    //         .addSelect('users.visible', 'visible')
-    //         .addSelect('users.user', 'users.user')
-    //         // .addSelect('n.users', 'users')
-    //         .leftJoin('n.users', 'users')
-    //         .leftJoin('users.user', 'user'),
-    //     'un',
-    //   )
-    //   .getRawMany();
+  async findAll(username: string, queryParams?: QueryNotificationParamsDto) {
     const selectedNotifications = await this.notificationsRepository.find({
       select: {
         id: true,

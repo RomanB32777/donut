@@ -153,9 +153,6 @@ const useAuth = () => {
     try {
       setIsLoading(true);
       const isCreator = await checkAuthToken();
-
-      console.log("dasgsdg", redirectToMainPage, isCreator);
-
       if (!isCreator) {
         const isBacker = await checkWallet();
         if (!isBacker) {

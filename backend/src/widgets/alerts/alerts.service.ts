@@ -1,16 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import googlePkg from '@google-cloud/text-to-speech/build/protos/protos.js';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import { Genders, IStaticFile } from 'types';
+import { IStaticFile } from 'types';
 
 import { getDefaultValues, getRepositoryFields } from 'src/utils';
+import { languageCodes, languageVoices } from 'src/common/const';
 import { FilesService } from 'src/files/files.service';
 import { User } from 'src/users/entities/user.entity';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
 import { AlertWidget } from './entities/alert-widget.entity';
+import { QuerySoundDto } from './dto/query-sound.dto';
 
 @Injectable()
 export class AlertsService {
@@ -48,20 +50,44 @@ export class AlertsService {
     });
   }
 
-  async generateSound(text: string, genderVoice: Genders) {
-    const voiceName =
-      genderVoice === Genders.FEMALE ? 'en-US-Neural2-C' : 'en-US-Neural2-A';
+  async generateSound({ text, genderVoice, languageCode }: QuerySoundDto) {
+    const lang = Object.values(languageCodes).find(
+      ({ franc }) => franc === languageCode,
+    );
 
     const request: googlePkg.google.cloud.texttospeech.v1.ISynthesizeSpeechRequest =
       {
         input: { text: text.replaceAll('*', '') },
         voice: {
           languageCode: 'en-US',
-          name: voiceName,
-          ssmlGender: genderVoice,
+          ssmlGender: 'NEUTRAL',
         },
         audioConfig: { audioEncoding: 'MP3' },
       };
+
+    if (lang) {
+      request.voice = {
+        ...request.voice,
+        languageCode: lang.google,
+      };
+
+      let voiceName = null;
+      Object.entries(languageVoices).forEach(([langCode, variants]) => {
+        const findEl = variants.find(
+          ({ ssmlGender }) =>
+            langCode === lang.google && ssmlGender === genderVoice,
+        );
+        if (findEl) voiceName = findEl.voiceName;
+      });
+
+      if (voiceName) {
+        request.voice = {
+          ...request.voice,
+          ssmlGender: genderVoice,
+          name: voiceName,
+        };
+      }
+    }
 
     const speechClient = new TextToSpeechClient();
     const [response] = await speechClient.synthesizeSpeech(request);

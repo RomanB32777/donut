@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import {
   RpcError,
@@ -61,6 +61,7 @@ const usePayment = ({
   const { config } = usePrepareContractWrite({
     address: chainContract,
     abi: JSON.parse(mainAbi),
+    chainId: currentChain?.id,
     functionName: "transferMoney",
     args: [creatorInfo.walletAddress],
     overrides: {
@@ -70,6 +71,8 @@ const usePayment = ({
   });
 
   const { writeAsync } = useContractWrite(config);
+
+  // useEffect(() => console.log(writeAsync), [writeAsync]);
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -163,20 +166,14 @@ const usePayment = ({
               return;
             }
           }
-
-          console.log(supporterInfo);
-
           if (balance >= Number(sum)) {
-            console.log(currentChain, writeAsync);
+            console.log(writeAsync);
 
-            if (currentChain) {
-              const wrireRes = await writeAsync?.();
-
-              console.log(wrireRes);
-
+            if (currentChain && writeAsync) {
+              const wrireRes = await writeAsync();
               const result = await wrireRes?.wait();
               if (result) await sendDonation();
-            }
+            } else setIsLoading(false);
           } else {
             addNotification({
               type: "warning",

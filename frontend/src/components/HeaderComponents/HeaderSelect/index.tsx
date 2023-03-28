@@ -6,7 +6,6 @@ import WalletBlock from "components/HeaderComponents/WalletBlock";
 import LocalesSwitcher from "../LocalesSwitcher";
 import { LogoutIcon, SmallToggleListArrowIcon } from "icons";
 
-import { useEditUserMutation } from "store/services/UserService";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
@@ -24,7 +23,7 @@ const HeaderSelect = ({
     ({ user }) => user
   );
   const { isMobile } = useWindowDimensions();
-  const [editUser] = useEditUserMutation();
+  // const [editUser] = useEditUserMutation();
   const blockRef = useRef(null);
   const { logout } = useAuth();
 
@@ -39,16 +38,18 @@ const HeaderSelect = ({
     logout();
   };
 
-  const connectedWallet = async (walletAddress: string) => {
-    await editUser({ walletAddress, isVisibleNotification: false });
-  };
+  // const connectedWallet = async (walletAddress: string) => {
+  //   await editUser({ walletAddress, isVisibleNotification: false });
+  // };
 
   useOnClickOutside(isOpenSelect, blockRef, handlerSelect);
 
   return (
     <div ref={blockRef} className="header-select">
       {isSupporter && !isMobile && walletAddress && (
-        <WalletBlock connectedWallet={connectedWallet} />
+        <WalletBlock
+        // connectedWallet={connectedWallet}
+        />
       )}
       <LocalesSwitcher />
       <div

@@ -24,6 +24,7 @@ const DatesPicker = ({
   const [pickerLocale, setPickerLocale] = useState<any>(null);
 
   useEffect(() => {
+    // TODO
     // console.log(locale);
     // const settedLocale = locale as LOCALES;
     // antdLocales[settedLocale]().then((importedLocale: any) => {

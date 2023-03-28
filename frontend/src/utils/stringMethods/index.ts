@@ -48,12 +48,12 @@ export const renderStrWithTokens = (
 
 export const renderStatItem = (
   template: string | string[],
-  objToRender: any
+  objToRender: any // TODO
 ) => {
   return renderStrWithTokens(template, [
     {
       re: /{username}/gi,
-      to: objToRender.username,
+      to: objToRender?.username || objToRender?.backer?.username,
     },
     {
       re: /{sum}/gi,
