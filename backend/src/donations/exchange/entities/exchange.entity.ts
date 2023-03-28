@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm';
 import { Min } from 'class-validator';
 import { BaseEntity } from 'src/utils/base';
-import { BlockchainsSymbols, blockchainsSymbols } from 'types';
+import { BlockchainsSymbols } from 'types';
 
 @Entity('exchange')
 export class Exchange extends BaseEntity {
@@ -23,5 +23,5 @@ export class Exchange extends BaseEntity {
     type: 'enum',
     enum: BlockchainsSymbols,
   })
-  coin: blockchainsSymbols;
+  coin: BlockchainsSymbols;
 }

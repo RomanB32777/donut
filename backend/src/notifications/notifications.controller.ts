@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from 'src/auth/guards/auth.guard';
 import { UserInfo } from 'src/auth/decorators/user.decorator';
 import { QueryParamsDto } from 'src/common/dto/query-params.dto';
+import { User } from 'src/users/entities/user.entity';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
@@ -50,7 +51,7 @@ export class NotificationsController {
 
   @Delete()
   @UseGuards(AuthenticationGuard)
-  removeAll(@UserInfo('id') userId: string) {
-    return this.notificationsService.removeAll(userId);
+  removeAll(@UserInfo() user: User) {
+    return this.notificationsService.removeAll(user);
   }
 }

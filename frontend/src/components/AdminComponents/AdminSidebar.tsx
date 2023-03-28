@@ -35,6 +35,8 @@ const AdminSidebar: FC<IAdminSidebar> = ({
   const { isMobile } = useWindowDimensions();
   const [editUser] = useEditUserMutation();
 
+  const isSupporter = roleplay === "backers";
+
   const connectedWallet = async (walletAddress: string) => {
     await editUser({ walletAddress, isVisibleNotification: false });
   };
@@ -147,7 +149,7 @@ const AdminSidebar: FC<IAdminSidebar> = ({
         </div>
       }
     >
-      {walletAddress && isMobile && (
+      {isSupporter && walletAddress && isMobile && (
         <WalletBlock
           modificator="sidebar-wallet"
           popupModificator="wallet-popup"

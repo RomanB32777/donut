@@ -16,8 +16,7 @@ import { User } from 'src/users/entities/user.entity';
 export class Badge extends BaseEntity implements IBadgeInfo<string, User> {
   @ApiProperty({ description: 'Badge creator', type: () => User })
   @OneToOne(() => User, {
-    // cascade: false,
-    nullable: false,
+    nullable: true,
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'creator_id' })
@@ -50,9 +49,4 @@ export class Badge extends BaseEntity implements IBadgeInfo<string, User> {
   @ApiProperty({ description: 'Token ???' })
   @Column({ type: 'integer', name: 'token_id', nullable: true })
   tokenId?: number;
-
-  // @AfterLoad()
-  // setComputed() {
-  //   this.testField = this.oneField + this.secondField;
-  // }
 }

@@ -76,15 +76,6 @@ export class UsersService {
     });
   }
 
-  // async checkUserExist(fields: ExistUserFiels) {
-  //   const filterOptions = Object.entries(fields).map(([field, value]) => ({
-  //     [field]: value,
-  //   }));
-  //   return this.usersRepository.exist({
-  //     where: filterOptions,
-  //   });
-  // }
-
   async getUsers(): Promise<User[]> {
     return await this.usersRepository.find({
       relations: {
@@ -170,8 +161,7 @@ export class UsersService {
   ): Promise<User> {
     const userInfo = await this.getUserById(userId);
     if (file && userInfo) {
-      const { username } = userInfo;
-      const { path } = this.fileService.uploadFile(file, username, 'avatar');
+      const { path } = this.fileService.uploadFile(file, userId, 'avatar');
       updatedUser.avatarLink = path;
     }
     await this.usersRepository.update({ id: userId }, { ...updatedUser });
@@ -183,7 +173,7 @@ export class UsersService {
     updatedCreator: UpdateCreatorDto,
     uploadFiles?: UserFiles,
   ): Promise<User> {
-    const { id, username } = user;
+    const { id } = user;
     const { isReset, ...creatorData } = updatedCreator;
 
     if (isReset) {
@@ -195,13 +185,7 @@ export class UsersService {
           if (files) {
             const folderType = key as donatAssetTypes;
             const [file] = files;
-
-            const { path } = this.fileService.uploadFile(
-              file,
-              username,
-              folderType,
-            );
-
+            const { path } = this.fileService.uploadFile(file, id, folderType);
             const updatedField = `${folderType}Banner`;
             creatorData[updatedField] = path;
           }

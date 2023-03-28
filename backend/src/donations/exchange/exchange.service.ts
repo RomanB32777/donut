@@ -48,29 +48,29 @@ export class ExchangeService {
     return { exchanges: exchange, count };
   }
 
-  async getApiExchange() {
+  async getApiExchange(notFoundExchanges: BlockchainsSymbols[]) {
     const apiExchanges: CreateExchangeDto[] = [];
-    // const uniqExchangeNames = new Set(Object.values(ExchangeNames));
     for await (const [blockchainName, exchangeName] of Object.entries(
       ExchangeNames,
     )) {
-      // Array.from(uniqExchangeNames)
-      const apiRequest = this.axiosService
-        .get(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${exchangeName}&vs_currencies=usd`,
-        )
-        .pipe(
-          map(({ data }) => Number(data[exchangeName].usd)),
-          catchError(async (err) => err.code),
-        );
+      if (notFoundExchanges.includes(blockchainName as BlockchainsSymbols)) {
+        const apiRequest = this.axiosService
+          .get(
+            `https://api.coingecko.com/api/v3/simple/price?ids=${exchangeName}&vs_currencies=usd`,
+          )
+          .pipe(
+            map(({ data }) => Number(data[exchangeName].usd)),
+            catchError(async (err) => err.code),
+          );
 
-      const apiExchange = await lastValueFrom(apiRequest);
+        const apiExchange = await lastValueFrom(apiRequest);
 
-      if (typeof apiExchange === 'number') {
-        apiExchanges.push({
-          coin: blockchainName as BlockchainsSymbols,
-          price: apiExchange,
-        });
+        if (typeof apiExchange === 'number') {
+          apiExchanges.push({
+            coin: blockchainName as BlockchainsSymbols,
+            price: apiExchange,
+          });
+        }
       }
     }
     if (apiExchanges.length) {
@@ -86,7 +86,16 @@ export class ExchangeService {
 
     if (count === Object.keys(BlockchainsSymbols).length) {
       exchanges = dbExchanges;
-    } else exchanges = await this.getApiExchange();
+    } else {
+      const notFoundExchanges = Object.values(BlockchainsSymbols).filter(
+        (symbol) => !dbExchanges.some((exch) => exch.coin === symbol),
+      );
+      const apiExchanges = await this.getApiExchange(notFoundExchanges);
+      exchanges = [
+        ...apiExchanges.map(({ price, coin }) => ({ price, coin })),
+        ...dbExchanges.filter(({ coin }) => !notFoundExchanges.includes(coin)),
+      ];
+    }
 
     return exchanges.reduce(
       (acc, { coin, price }) => ({ ...acc, [coin]: price }),

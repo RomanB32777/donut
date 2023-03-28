@@ -111,7 +111,6 @@ export class UsersController {
   @Get('location')
   @ApiOperation({ summary: 'Get user locations by ip' })
   async getLocation(@RealIP() ip: string) {
-    console.log('get location', ip);
     return lookup(ip);
   }
 

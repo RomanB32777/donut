@@ -143,6 +143,7 @@ export class WidgetsService {
     if (donations.length && spamFilter)
       return donations.map((donation) => ({
         ...donation,
+        // TODO - clean to AfterLoad
         message: donation.message ? clean(donation.message) : '-',
       }));
 

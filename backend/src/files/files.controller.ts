@@ -20,8 +20,8 @@ export class FilesController {
   }
 
   @Get('sounds')
-  getSounds(@UserInfo('username') username: string) {
-    const uploadSounds = this.filesService.getUploadsFiles('sound', username);
+  getSounds(@UserInfo('id') userId: string) {
+    const uploadSounds = this.filesService.getUploadsFiles('sound', userId);
     const assetsSounds = this.filesService.getAssetsFiles('sound');
     return [...uploadSounds, ...assetsSounds];
   }

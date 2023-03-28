@@ -34,6 +34,7 @@ export class GoalsController {
   }
 
   @Get(':userId')
+  // TODO - select query by goals fields
   findAll(@Param('userId') userId: string) {
     return this.goalsService.findAll(userId);
   }

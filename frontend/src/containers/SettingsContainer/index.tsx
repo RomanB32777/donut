@@ -19,7 +19,7 @@ import {
   useEditUserMutation,
 } from "store/services/UserService";
 import useAuth from "hooks/useAuth";
-import { copyStr, shortStr } from "utils";
+import { copyStr, removeWebToken, shortStr } from "utils";
 import { IUserWithFiles } from "appTypes";
 import "./styles.sass";
 
@@ -43,13 +43,13 @@ const SettingsContainer = () => {
   const [editUser, { isLoading }] = useEditUserMutation();
   const [editCreatorInfo] = useEditCreatorMutation();
   const [deleteUser] = useDeleteUserMutation();
-  const { logout } = useAuth();
+  const { logout, checkWebToken } = useAuth();
   const user = useAppSelector(({ user }) => user);
 
   const [isOpenWalletsModal, setIsOpenWalletsModal] = useState(false);
   const [formSettings, setFormSettings] = useState<IFormSettings>(initState);
 
-  const { creator } = user;
+  const { creator, roleplay } = user;
   const { username, walletAddress, avatarLink, spamFilter } = formSettings;
 
   const formElementsHandler = useCallback(
@@ -64,6 +64,10 @@ const SettingsContainer = () => {
 
   const setWalletAddress = async (walletAddress: string) => {
     if (walletAddress !== user.walletAddress) {
+      // if (roleplay === "backers") {
+      //   removeWebToken();
+      //   await checkWebToken();
+      // }
       await editUser({ walletAddress });
     }
     closeWalletsModal();

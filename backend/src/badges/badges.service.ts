@@ -50,8 +50,8 @@ export class BadgesService {
   }
 
   async create(createBadgeDto: CreateBadgeDto, file: Express.Multer.File) {
-    const { username } = createBadgeDto.creator;
-    const { path } = this.fileService.uploadFile(file, username, 'badges');
+    const { id } = createBadgeDto.creator;
+    const { path } = this.fileService.uploadFile(file, id, 'badges');
     return await this.badgesRepository.save({
       ...createBadgeDto,
       image: path,

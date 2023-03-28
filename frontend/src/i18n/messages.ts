@@ -67,6 +67,10 @@ const messages = {
     create_badge_form_button: "Create badge",
     sign_out_button: "Sign-out",
 
+    // not found
+    not_found_title: "Sorry, the page you visited does not exist.",
+    not_found_button: "Back to main page",
+
     // landing
     landing_main_button: "Sign up",
     landing_main_button_logged: "Go to profile",
@@ -157,6 +161,15 @@ const messages = {
     sidebar_badges: "Badges",
     sidebar_settings: "Settings",
     sidebar_help: "Help center",
+
+    // page names
+    title_reset_page: "Reset password",
+    title_change_password_page: "Change password",
+    title_resend_page: "Resend confirm email",
+    title_donat_page: "Donat page",
+    title_alert_page: "Donat alert page",
+    title_goal_page: "Donat goal page",
+    title_stat_page: "Donat stat page",
 
     // dashboard
     dashboard_widgets_stats: "Stats",

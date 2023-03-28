@@ -3,14 +3,16 @@ import { useLocation, useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FloatButton, Layout } from "antd";
+import { useIntl } from "react-intl";
 import DocumentTitle from "react-document-title";
 import clsx from "clsx";
 
 import Loader from "components/Loader";
 import AuthModals from "./authModals";
 import useAuth from "hooks/useAuth";
-import { Pages, routersInfo, routers, RoutePaths } from "routes";
 import { useCheckTokenQuery } from "store/services/AuthService";
+import { Pages, routersInfo, routers, RoutePaths } from "routes";
+import { dashboardPath } from "consts";
 import { setAuthToken } from "utils";
 import "./styles.sass";
 
@@ -20,6 +22,7 @@ const transparentClass = "transparent";
 
 const LayoutApp = () => {
   const navigate = useNavigate();
+  const intl = useIntl();
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { checkAuth, isAuthLoading } = useAuth();
@@ -67,7 +70,8 @@ const LayoutApp = () => {
       return allRoutesPath.includes(el);
     });
 
-    if (currentPage) return routersInfo[currentPage].name;
+    if (currentPage)
+      return intl.formatMessage({ id: routersInfo[currentPage].name });
     return "";
   }, [pathname]);
 
@@ -79,6 +83,7 @@ const LayoutApp = () => {
         searchParams.delete("token");
         searchParams.delete("confirmStatus");
         setSearchParams(searchParams);
+        navigate(dashboardPath);
       }
     };
 

@@ -10,7 +10,7 @@ import { getRandomStr } from 'src/utils';
 export class FilesService {
   uploadFile(
     file: Express.Multer.File,
-    username: string,
+    userId: string,
     folderType: fileUploadTypes,
     isOriginalName = false,
   ): IStaticFile {
@@ -22,7 +22,7 @@ export class FilesService {
       const name =
         (isOriginalName ? fileName : getRandomStr(32)) + fileExtension;
 
-      const folderPath = [uploadsFolder, username, folderType];
+      const folderPath = [uploadsFolder, userId, folderType];
 
       const filePath = resolve(
         __dirname,
@@ -44,11 +44,8 @@ export class FilesService {
     }
   }
 
-  getUploadsFiles(
-    folderType: fileUploadTypes,
-    username: string,
-  ): IStaticFile[] {
-    const folderPath = [uploadsFolder, username, folderType];
+  getUploadsFiles(folderType: fileUploadTypes, userId: string): IStaticFile[] {
+    const folderPath = [uploadsFolder, userId, folderType];
 
     const filePath = resolve(
       __dirname,

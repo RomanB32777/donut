@@ -2,15 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { getDefaultValues } from 'src/utils';
+import { getDefaultValues, getRepositoryFields } from 'src/utils';
 import { User } from 'src/users/entities/user.entity';
 import { ExchangeService } from 'src/donations/exchange/exchange.service';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { UpdateGoalDto } from './dto/update-goal.dto';
-import {
-  GoalWidget,
-  GoalWidgetWithAmountRaised,
-} from './entities/goal-widget.entity';
+import { GoalWidget } from './entities/goal-widget.entity';
 
 @Injectable()
 export class GoalsService {
@@ -25,21 +22,17 @@ export class GoalsService {
     const { id: userId, username } = user;
     const sumSelect = await this.exchangeService.sumQuerySelect();
 
-    const fields: (keyof GoalWidget)[] = [
-      'id',
-      'isArchive',
-      'title',
-      'amountGoal',
-      'titleColor',
-      'titleFont',
-      'progressColor',
-      'progressFont',
-      'backgroundColor',
-    ];
+    const fields = getRepositoryFields(this.goalsRepository, [
+      'createdAt',
+      'updatedAt',
+      'deletedAt',
+      'creator',
+      'donations',
+    ]);
 
     const query = this.goalsRepository
       .createQueryBuilder('goal')
-      .select('sums.sum', 'amountRaised')
+      .select('ROUND(sums.sum::numeric, 2)', 'amountRaised')
       .leftJoin(
         (subQ) =>
           subQ
@@ -86,7 +79,7 @@ export class GoalsService {
 
   async checkGoalRelevance(userId: string, id: string) {
     const goalsQuery = await this.getSelectQuery({ id: userId }, id);
-    const goalSums = await goalsQuery.getRawOne<GoalWidgetWithAmountRaised>();
+    const goalSums = await goalsQuery.getRawOne<GoalWidget>();
 
     if (goalSums) {
       const { amountRaised, amountGoal } = goalSums;

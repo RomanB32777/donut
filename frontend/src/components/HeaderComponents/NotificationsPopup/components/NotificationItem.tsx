@@ -67,7 +67,11 @@ const NotificationItem = ({
 
   if (!userNotification) return null;
 
-  const { read, user } = userNotification;
+  const otherUserNotification = users.find(
+    ({ user }) => user.username !== username
+  );
+
+  const { read } = userNotification;
 
   return (
     <InView onChange={handleChange} key={id}>
@@ -79,7 +83,7 @@ const NotificationItem = ({
                 {donation &&
                   getDonatNotificationMessage({
                     type: notificationType,
-                    user: user.username,
+                    user: otherUserNotification?.user.username || "@user",
                     data: {
                       sum: donation.sum,
                       blockchain: donation.blockchain,
@@ -90,7 +94,7 @@ const NotificationItem = ({
                 {badge &&
                   getBadgeNotificationMessage({
                     type: notificationType,
-                    user: user.username,
+                    user: otherUserNotification?.user.username || "@user",
                     data: {
                       id: badge.id,
                       title: badge.title,

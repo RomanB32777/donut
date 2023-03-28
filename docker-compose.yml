@@ -44,6 +44,7 @@ services:
       - "8095:80"
     restart: unless-stopped
     environment:
+      - DOLLAR=$$
       - API_PORT=${API_PORT}
 
   # nginx:

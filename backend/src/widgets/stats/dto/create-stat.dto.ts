@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
+import { excludedColumsArr } from 'src/utils/base';
 import { StatWidget } from '../entities/stat-widget.entity';
 
-export class CreateStatDto extends PartialType(StatWidget) {}
+export class CreateStatDto extends PartialType(
+  OmitType(StatWidget, excludedColumsArr),
+) {}

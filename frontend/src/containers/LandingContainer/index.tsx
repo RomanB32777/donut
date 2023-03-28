@@ -32,7 +32,7 @@ const LandingContainer = () => {
   const { rocketImg, moneyImg, listImg } = images;
 
   useEffect(() => {
-    !id && checkAuth(false);
+    if (!id) checkAuth(false);
   }, [id]);
 
   if (isAuthLoading) {

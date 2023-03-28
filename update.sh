@@ -16,12 +16,6 @@ git pull origin $branch
 
 git stash pop
 
-cd ./$types_dir
-
-npm run build
-
-cd ..
-
 for i in ${modulesWithTypes[@]}
 do
    cp -r ./$types_dir ./$i

@@ -10,6 +10,7 @@ import { WebSocketProvider } from "contexts/Websocket";
 import { useLazyGetLocationQuery } from "store/services/UserService";
 import { client } from "utils/wallets/wagmi";
 import messages from "i18n/messages";
+import { localesStorageKey } from "consts";
 import { LOCALES } from "appTypes";
 
 import "react-notifications-component/dist/theme.css";
@@ -22,11 +23,18 @@ const App = () => {
   useEffect(() => {
     const getUserLocation = async () => {
       const { data } = await getLocation();
-      // handleLocale
-      console.log(data);
+      const userLocation = Object.entries(LOCALES).find(
+        ([key]) => key === data?.country
+      );
+      console.log(userLocation);
+      if (userLocation) {
+        const [_, locale] = userLocation;
+        handleLocale(locale);
+      }
     };
 
-    getUserLocation();
+    const storageLocale = localStorage.getItem(localesStorageKey);
+    !storageLocale && getUserLocation();
   }, []);
 
   return (

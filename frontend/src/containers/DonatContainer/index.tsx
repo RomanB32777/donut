@@ -331,7 +331,7 @@ const DonatContainer = () => {
           </div>
         </div>
         <LoadingModalComponent
-          open={!notValidFields.length && (isBalanceLoading || isLoading)}
+          open={!notValidFields.length && isLoading}
           message={<FormattedMessage id="donat_loading_message" />}
           centered
         />

@@ -79,7 +79,10 @@ const useAuth = () => {
           });
           if (isExistBacker) {
             await checkWebToken();
-            await getUser({ walletAddress: address, roleplay: "backers" });
+            await getUser({
+              walletAddress: address,
+              roleplay: "backers",
+            });
             return true;
             // not registered user - to registration page
           }
@@ -150,12 +153,18 @@ const useAuth = () => {
     try {
       setIsLoading(true);
       const isCreator = await checkAuthToken();
+
+      console.log("dasgsdg", redirectToMainPage, isCreator);
+
       if (!isCreator) {
         const isBacker = await checkWallet();
-        if (!isBacker && redirectToMainPage) {
-          navigate(RoutePaths.main);
+        if (!isBacker) {
+          if (redirectToMainPage) navigate(RoutePaths.main);
+          else return false;
         }
+        return isBacker;
       }
+      return isCreator;
     } finally {
       setIsLoading(false);
     }

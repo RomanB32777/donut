@@ -69,12 +69,14 @@ const DonationsContainer = () => {
                   blockchain,
                   message,
                   createdAt,
+                  username,
                 }
               ) => {
+                let name =
+                  roleplay === "backers" ? creator?.username : backer?.username;
                 data.push({
                   key: id,
-                  name:
-                    roleplay === "backers" ? creator.username : backer.username,
+                  name: name ?? username,
                   donationToken: blockchainSum
                     ? +formatNumber(blockchainSum)
                     : 0,

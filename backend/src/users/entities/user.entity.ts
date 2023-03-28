@@ -35,6 +35,7 @@ export class User extends BaseEntity implements IUser {
 
   @ApiProperty({ description: 'Password', required: false })
   @Column({ type: 'varchar', nullable: true }) //  select: false
+  // @Exclude()
   password: string;
 
   @ApiProperty({
@@ -44,7 +45,6 @@ export class User extends BaseEntity implements IUser {
   })
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.confirmation })
   @IsEnum(UserStatus)
-  // @Exclude()
   status: userStatus;
 
   @ApiProperty({

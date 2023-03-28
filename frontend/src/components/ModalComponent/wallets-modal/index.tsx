@@ -28,7 +28,7 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
   useEffect(() => {
     if (error) {
       if (error.name === "ConnectorAlreadyConnectedError") {
-        connectedWallet && address && connectedWallet(address);
+        address && connectedWallet?.(address);
         switchNetwork?.(defaultChain?.id);
       } else if (error.name !== "UserRejectedRequestError") {
         addErrorNotification({ message: error.message });
@@ -37,8 +37,8 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
   }, [error, address]);
 
   useEffect(() => {
-    if (isSuccess && address && connectedWallet) {
-      connectedWallet(address);
+    if (isSuccess && address) {
+      connectedWallet?.(address);
     }
   }, [isSuccess, address]);
 

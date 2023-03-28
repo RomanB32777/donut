@@ -20,7 +20,7 @@ const HeaderSelect = ({
   title?: string;
   isNotVisibleAvatarInMobile?: boolean;
 }) => {
-  const { id, avatarLink, username, walletAddress } = useAppSelector(
+  const { id, avatarLink, username, walletAddress, roleplay } = useAppSelector(
     ({ user }) => user
   );
   const { isMobile } = useWindowDimensions();
@@ -29,6 +29,8 @@ const HeaderSelect = ({
   const { logout } = useAuth();
 
   const [isOpenSelect, setIsOpenSelect] = useState(false);
+
+  const isSupporter = roleplay === "backers";
 
   const handlerSelect = () => setIsOpenSelect((prev) => !prev);
 
@@ -45,7 +47,7 @@ const HeaderSelect = ({
 
   return (
     <div ref={blockRef} className="header-select">
-      {!isMobile && walletAddress && (
+      {isSupporter && !isMobile && walletAddress && (
         <WalletBlock connectedWallet={connectedWallet} />
       )}
       <LocalesSwitcher />

@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  AfterLoad,
 } from 'typeorm';
 import { notificationRoles, NotificationRoles } from 'types';
 
@@ -28,6 +29,22 @@ export class Notification extends BaseEntity {
     cascade: true,
   })
   public users: NotificationsUsers[];
+
+  @AfterLoad()
+  checkAnonymous() {
+    if (this.donation && this.donation.isAnonymous) {
+      this.users = this.users.map((userNotification) => {
+        const { roleplay, user } = userNotification;
+        if (roleplay === 'sender') {
+          return {
+            ...userNotification,
+            user: { ...user, username: 'anonymous' },
+          };
+        }
+        return userNotification;
+      });
+    }
+  }
 }
 
 @Entity('notifications_users')

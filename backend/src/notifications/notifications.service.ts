@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
+import { QueryParamsDto } from 'src/common/dto/query-params.dto';
+import { clean } from 'src/utils/badWords';
+import { User } from 'src/users/entities/user.entity';
 import {
   Notification,
   NotificationsUsers,
 } from './entities/notification.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateUserNotificationDto } from './dto/update-notification.dto';
-import { QueryParamsDto } from 'src/common/dto/query-params.dto';
-import { clean } from 'src/utils/badWords';
 
 @Injectable()
 export class NotificationsService {
@@ -21,6 +22,7 @@ export class NotificationsService {
   async create(createNotificationDto: CreateNotificationDto) {
     const notification = new Notification();
     notification.donation = createNotificationDto.donation;
+    notification.badge = createNotificationDto.badge;
     notification.users = createNotificationDto.users;
 
     const notificationsUser: NotificationsUsers[] = [];
@@ -63,7 +65,6 @@ export class NotificationsService {
     //     'un',
     //   )
     //   .getRawMany();
-    // console.log(test);
     const selectedNotifications = await this.notificationsRepository.find({
       select: {
         id: true,
@@ -86,11 +87,13 @@ export class NotificationsService {
             sum: true,
             message: true,
             blockchain: true,
+            isAnonymous: true,
             goal: {
               id: true,
             },
           },
           badge: {
+            id: true,
             title: true,
           },
           users: {
@@ -178,8 +181,8 @@ export class NotificationsService {
     return notVisibleNotifications;
   }
 
-  async removeAll(userId: string) {
-    const notifications = await this.findAll(userId);
+  async removeAll({ username, id: userId }: User) {
+    const notifications = await this.findAll(username);
     if (notifications.length) {
       const ids = notifications.map(({ id }) => id);
       return await this.remove(userId, ids);

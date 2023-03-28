@@ -17,7 +17,7 @@ import "./styles.sass";
 const NotificationsPopup = () => {
   const { setNotifications } = useActions();
   const { list } = useAppSelector(({ notifications }) => notifications);
-  const { username } = useAppSelector(({ user }) => user);
+  const { username, creator } = useAppSelector(({ user }) => user);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef(null);
@@ -29,6 +29,7 @@ const NotificationsPopup = () => {
     {
       username,
       shouldUpdateApp: false,
+      spamFilter: creator?.spamFilter,
     },
     { skip: !username }
   );

@@ -15,6 +15,7 @@ import { useSocketConnection, WebSocketContext } from "contexts/Websocket";
 import {
   useLazyCheckIsExistUserQuery,
   useCreateUserMutation,
+  useLazyGetUserQuery,
 } from "store/services/UserService";
 import useAuth from "hooks/useAuth";
 import { useActions } from "hooks/reduxHooks";
@@ -49,11 +50,12 @@ const usePayment = ({
   const [registerUser] = useCreateUserMutation();
   const [getNotifications] = useLazyGetNotificationsQuery();
   const [checkIsExistUser] = useLazyCheckIsExistUserQuery();
+  const [getUser] = useLazyGetUserQuery();
 
   const currentChainNetwork = currentChain?.network;
 
   const chainContract = currentChainNetwork
-    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks].contractAddress
+    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks]?.contractAddress
     : undefined;
 
   const { config } = usePrepareContractWrite({
@@ -79,6 +81,7 @@ const usePayment = ({
         if (supporterInfo.id) {
           removeAuthToken();
           const isExistSupporter = await checkWallet();
+
           if (!isExistSupporter) {
             newUsername = `${username}Supporter`;
             logoutUser();
@@ -105,6 +108,8 @@ const usePayment = ({
 
       if (!userInfo.id || userInfo.roleplay === "creators") {
         userInfo = await registerSupporter();
+        // TODO можно ли без доп запроса ?
+        if (userInfo) await getUser({ id: userInfo.id });
         socketInfo = connectSocket();
       }
 
@@ -140,9 +145,9 @@ const usePayment = ({
   const triggerContract = async () => {
     try {
       if (address) {
-        const { walletAddress } = creatorInfo;
+        const { walletAddress, id } = creatorInfo;
 
-        if (address !== walletAddress) {
+        if (address !== walletAddress && id !== supporterInfo.id) {
           setIsLoading(true);
 
           if (!supporterInfo.id) {
@@ -159,10 +164,18 @@ const usePayment = ({
             }
           }
 
+          console.log(supporterInfo);
+
           if (balance >= Number(sum)) {
+            console.log(currentChain, writeAsync);
+
             if (currentChain) {
-              const res = await writeAsync?.();
-              if (res) await sendDonation();
+              const wrireRes = await writeAsync?.();
+
+              console.log(wrireRes);
+
+              const result = await wrireRes?.wait();
+              if (result) await sendDonation();
             }
           } else {
             addNotification({

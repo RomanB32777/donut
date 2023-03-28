@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { UnsupportedMediaTypeException } from '@nestjs/common';
 
-const getRandomStr = (length: number) => {
+export const getRandomStr = (length: number) => {
   let result = '';
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -11,7 +11,21 @@ const getRandomStr = (length: number) => {
   return result;
 };
 
-const getDefaultValues = <T>(
+export const getRepositoryFields = <T>(
+  repository: Repository<T>,
+  excludedFields?: (keyof T)[],
+) => {
+  const excludedArr = excludedFields || [];
+  return repository.metadata.columns.reduce<(keyof T)[]>((acc, c) => {
+    const name = c.propertyName as keyof T;
+    if (!excludedArr.includes(name)) {
+      acc.push(name);
+    }
+    return acc;
+  }, []);
+};
+
+export const getDefaultValues = <T>(
   repository: Repository<T>,
   excludedFields?: (keyof T)[],
 ) => {
@@ -29,7 +43,7 @@ const getDefaultValues = <T>(
   }, {} as Record<string, string | number>);
 };
 
-const fileMimetypeFilter =
+export const fileMimetypeFilter =
   (...mimetypes: string[]) =>
   (
     req: any,
@@ -47,5 +61,3 @@ const fileMimetypeFilter =
       );
     }
   };
-
-export { getRandomStr, getDefaultValues, fileMimetypeFilter };

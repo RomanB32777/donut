@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  AfterLoad,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { IGoalData } from 'types';
@@ -74,8 +81,14 @@ export class GoalWidget
   @IsString()
   @IsOptional()
   backgroundColor: string;
-}
 
-export class GoalWidgetWithAmountRaised extends GoalWidget {
-  amountRaised: number;
+  // TODO - not working ???
+  amountRaised?: number;
+
+  @AfterLoad()
+  transformAmountRaised() {
+    if (this.amountRaised) {
+      this.amountRaised = Number(this.amountRaised);
+    }
+  }
 }

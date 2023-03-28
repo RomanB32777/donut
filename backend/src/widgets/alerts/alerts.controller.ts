@@ -113,10 +113,10 @@ export class AlertsController {
     },
   })
   uploadSound(
-    @UserInfo('username') username: string,
+    @UserInfo('id') userId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.alertsService.uploadSound(username, file);
+    return this.alertsService.uploadSound(userId, file);
   }
 
   @Get('generate/sound')

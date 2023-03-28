@@ -49,9 +49,11 @@ export class AuthController {
     type: User,
   })
   registration(@Req() req: Request, @Body() createUserDto: CreateUserDto) {
-    const confirmLink = `${req.protocol}://${req.get(
-      'Host',
-    )}${req.originalUrl.replace('registration', 'confirm')}`;
+    // TODO - req.get('Host') = nginx server name ???
+    const confirmLink = `${req.get('Origin')}${req.originalUrl.replace(
+      'registration',
+      'confirm',
+    )}`;
     return this.authService.registration(createUserDto, confirmLink);
   }
 

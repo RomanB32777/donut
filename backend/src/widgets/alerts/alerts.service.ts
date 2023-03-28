@@ -5,7 +5,7 @@ import googlePkg from '@google-cloud/text-to-speech/build/protos/protos.js';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { Genders, IStaticFile } from 'types';
 
-import { getDefaultValues } from 'src/utils';
+import { getDefaultValues, getRepositoryFields } from 'src/utils';
 import { FilesService } from 'src/files/files.service';
 import { User } from 'src/users/entities/user.entity';
 import { CreateAlertDto } from './dto/create-alert.dto';
@@ -35,8 +35,16 @@ export class AlertsService {
   }
 
   async findOneByCreator(userId: string) {
-    return await this.alertsRepository.findOneByOrFail({
-      creator: { id: userId },
+    const selectFields = getRepositoryFields(this.alertsRepository, [
+      'createdAt',
+      'updatedAt',
+      'deletedAt',
+    ]);
+    return await this.alertsRepository.findOneOrFail({
+      select: selectFields,
+      where: {
+        creator: { id: userId },
+      },
     });
   }
 
@@ -60,8 +68,8 @@ export class AlertsService {
     return response.audioContent;
   }
 
-  uploadSound(username: string, file: Express.Multer.File): IStaticFile {
-    return this.fileService.uploadFile(file, username, 'sound', true);
+  uploadSound(userId: string, file: Express.Multer.File): IStaticFile {
+    return this.fileService.uploadFile(file, userId, 'sound', true);
   }
 
   async setDefaultSound(id: string) {
@@ -77,7 +85,7 @@ export class AlertsService {
     updateAlertDto: UpdateAlertDto,
     file?: Express.Multer.File,
   ) {
-    const { id: userId, username } = user;
+    const { id: userId } = user;
     const { isReset, ...alertData } = updateAlertDto;
 
     if (isReset) {
@@ -89,7 +97,7 @@ export class AlertsService {
       await this.setDefaultSound(id);
     } else {
       if (file) {
-        const { path } = this.fileService.uploadFile(file, username, 'alert');
+        const { path } = this.fileService.uploadFile(file, userId, 'alert');
         alertData.banner = path;
       }
 

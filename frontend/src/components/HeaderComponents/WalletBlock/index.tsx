@@ -75,10 +75,6 @@ const WalletBlock: FC<IWalletBlock> = ({
     }
   }, [isConnected, currentChainInfo]);
 
-  // useEffect(() => {
-  //   shouldUpdateApp && walletConf.getBalance(setBalance);
-  // }, [list, shouldUpdateApp]);
-
   return (
     <>
       <div className={clsx("wallet-wrapper", modificator)}>
