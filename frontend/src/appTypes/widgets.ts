@@ -12,9 +12,7 @@ export interface IFont {
 export interface IWidgetGoalData extends IGoalData<IFont> {}
 
 // // stats
-export interface IWidgetStatData extends IStatData<IFont> {
-  customPeriod?: any;
-}
+export interface IWidgetStatData extends IStatData<IFont> {}
 
 // alert
 export interface IAlert extends IAlertData<IFont, IFileInfo, IStaticFile> {}

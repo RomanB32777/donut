@@ -47,10 +47,11 @@ const SettingsStatBlock: FC<ISettingsStatBlock> = ({
     contentFont,
   } = editStatData;
 
-  const onOpenFontSelect = (isOpen: boolean) =>
+  const onOpenFontSelect = (isOpen: boolean) => {
     isOpen
       ? setFontList(fonts)
       : setFontList(fonts.slice(0, notVisibleFontsCount));
+  };
 
   const valueSlider = useMemo(
     () =>

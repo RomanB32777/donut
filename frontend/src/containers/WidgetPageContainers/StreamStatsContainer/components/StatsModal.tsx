@@ -21,6 +21,7 @@ import {
   filterDataTypeItems,
 } from "consts";
 import { IWidgetStatData } from "appTypes";
+import dayjsModule from "modules/dayjsModule";
 
 const templates = ["{username}", "{sum}", "{message}"];
 
@@ -49,8 +50,22 @@ const StatsModal: FC<IStatsModal> = ({
   const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
   const [createStat, { isLoading: isCreateLoading }] = useCreateStatMutation();
 
-  const { title, description, template, dataType, timePeriod, customPeriod } =
-    formData;
+  const {
+    title,
+    description,
+    template,
+    dataType,
+    timePeriod,
+    customTimePeriod,
+  } = formData;
+
+  const defaultCustomTimePeriod = useMemo(() => {
+    if (customTimePeriod) {
+      const dates = customTimePeriod.split("-");
+      return dates.map((d) => dayjsModule(d, "DD/MM/YYYY"));
+    }
+    return [];
+  }, [customTimePeriod]);
 
   const currTemplateList = useMemo(
     () =>
@@ -82,11 +97,9 @@ const StatsModal: FC<IStatsModal> = ({
         template,
         dataType,
         timePeriod,
-        customPeriod,
+        customTimePeriod,
       } = formData;
 
-      const sendTimePeriod =
-        timePeriod === "custom" ? customPeriod : timePeriod;
       if (id) {
         await editStat({
           id,
@@ -94,7 +107,8 @@ const StatsModal: FC<IStatsModal> = ({
           description,
           template: (template as string[]).join(" "),
           dataType,
-          timePeriod: sendTimePeriod,
+          timePeriod,
+          customTimePeriod,
         });
       } else {
         await createStat({
@@ -102,8 +116,9 @@ const StatsModal: FC<IStatsModal> = ({
           description,
           template: (template as string[]).join(" "),
           dataType,
-          timePeriod: sendTimePeriod,
+          timePeriod,
           creator: userID,
+          customTimePeriod,
         });
       }
 
@@ -214,14 +229,12 @@ const StatsModal: FC<IStatsModal> = ({
                   <Row>
                     <Col offset={isMobile ? 0 : 7}>
                       <DatesPicker
-                        defaultValue={
-                          Array.isArray(customPeriod) ? customPeriod : []
-                        }
+                        defaultValue={defaultCustomTimePeriod}
                         setValue={(startDate, endDate) =>
                           setFormData({
                             ...formData,
                             timePeriod: "custom",
-                            customPeriod: `${startDate}-${endDate}`,
+                            customTimePeriod: `${startDate}-${endDate}`,
                           })
                         }
                       />

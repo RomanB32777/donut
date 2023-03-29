@@ -54,8 +54,15 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
     },
   });
 
-  const { id, title, description, template, dataType, timePeriod } =
-    editStatData;
+  const {
+    id,
+    title,
+    description,
+    template,
+    dataType,
+    timePeriod,
+    customTimePeriod,
+  } = editStatData;
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
 
@@ -66,7 +73,7 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
 
   const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    copyStr(linkForCopy);
+    copyStr({ str: linkForCopy, intl });
   };
 
   const initStatsItem = async () => {
@@ -93,7 +100,6 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
 
       const forSentStatData = Object.keys(editStatData).reduce((obj, key) => {
         const dataKey = key as keyof IWidgetStatData;
-        if (dataKey === "customPeriod") return obj;
         return { ...obj, [dataKey]: editStatData[dataKey] };
       }, {} as IWidgetStatData);
 
@@ -130,9 +136,11 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
     [linkForCopy, id]
   );
 
-  const timePeriodName = intl.formatMessage({
-    id: getCurrentTimePeriodQuery(timePeriod),
-  });
+  const timePeriodName =
+    customTimePeriod ??
+    intl.formatMessage({
+      id: getCurrentTimePeriodQuery(timePeriod),
+    });
 
   const typeStatData = intl.formatMessage({
     id: getStatsDataTypeQuery(dataType),

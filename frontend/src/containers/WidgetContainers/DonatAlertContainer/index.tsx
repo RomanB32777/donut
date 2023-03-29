@@ -84,9 +84,15 @@ const DonatAlertContainer = () => {
       if (!alertData) return;
 
       const fonts = await getFontsList();
-
-      const { nameFont, messageFont, sumFont, banner, sound, duration } =
-        alertData;
+      const {
+        nameFont,
+        messageFont,
+        sumFont,
+        banner,
+        sound,
+        duration,
+        ...widgetData
+      } = alertData;
 
       const loadedFonts = await loadFonts({
         fonts,
@@ -95,7 +101,7 @@ const DonatAlertContainer = () => {
 
       setAlertWidgetData((alertWidgetData) => ({
         ...alertWidgetData,
-        ...(alertData as any),
+        ...widgetData,
         ...loadedFonts,
         banner: {
           ...alertWidgetData.banner,
@@ -103,7 +109,7 @@ const DonatAlertContainer = () => {
         },
         sound: {
           ...alertWidgetData.sound,
-          link: sound,
+          path: sound,
         },
         duration: Number(duration),
       }));

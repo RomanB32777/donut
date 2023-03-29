@@ -174,9 +174,6 @@ export class WidgetsService {
       .leftJoin('d.backer', 'backer')
       .where('d.isAnonymous = false')
       .andWhere('d.creator = :userId', { userId })
-      .andWhere('d.createdAt >= :filterDate', {
-        filterDate: getTimePeriod({ timePeriod }).value,
-      })
       .groupBy('username')
       .orderBy('sum', 'DESC');
 
@@ -185,10 +182,16 @@ export class WidgetsService {
       .select("'anonymous'", 'username')
       .addSelect(sumSelect, 'sum')
       .where('d.isAnonymous = true')
-      .andWhere('d.creator = :userId', { userId })
-      .andWhere('d.createdAt >= :filterDate', {
+      .andWhere('d.creator = :userId', { userId });
+
+    if (timePeriod !== 'all') {
+      notAnonymous.andWhere('d.createdAt >= :filterDate', {
         filterDate: getTimePeriod({ timePeriod }).value,
       });
+      anonymous.andWhere('d.createdAt >= :filterDate', {
+        filterDate: getTimePeriod({ timePeriod }).value,
+      });
+    }
 
     const parameters = notAnonymous.getParameters();
     const queryString = `(${anonymous.getQuery()} UNION ${notAnonymous.getQuery()})`;

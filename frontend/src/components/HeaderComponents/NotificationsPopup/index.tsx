@@ -89,9 +89,12 @@ const NotificationsPopup = () => {
           <div className="wrapper fadeIn">
             {Boolean(list.length) && (
               <div className="popup-header">
-                <p>Notifications</p>
+                <p>
+                  {" "}
+                  <FormattedMessage id="notifications_title" />
+                </p>
                 <p className="all-read" onClick={clearAll}>
-                  Clear all
+                  <FormattedMessage id="notifications_clear" />
                 </p>
               </div>
             )}

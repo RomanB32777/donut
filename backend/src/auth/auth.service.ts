@@ -41,12 +41,13 @@ export class AuthService {
 
   async login(userDto: UserLoginDto) {
     const { email, password } = userDto;
-    const user = await this.usersService.getUserByEmail(email);
+    const { password: userPassword, ...user } =
+      await this.usersService.getUserByEmail(email);
 
-    const passwordEquals = await compare(password, user.password);
+    const passwordEquals = await compare(password, userPassword);
 
-    if (user && passwordEquals) {
-      const { token } = await this.generateToken(user, false);
+    if (passwordEquals) {
+      const { token } = await this.generateToken({ ...user, password }, false);
       return { ...user, access_token: token };
     }
     throw new NotAcceptableException('Incorrect email or password');

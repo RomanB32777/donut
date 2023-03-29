@@ -33,11 +33,14 @@ const PreviewStatBlock: FC<IPreviewStatBlock> = ({
     textAligment,
     titleFont,
     contentFont,
+    customTimePeriod,
   } = editStatData;
 
-  const timePeriodName = intl.formatMessage({
-    id: getCurrentTimePeriodQuery(timePeriod),
-  });
+  const timePeriodName =
+    customTimePeriod ??
+    intl.formatMessage({
+      id: getCurrentTimePeriodQuery(timePeriod),
+    });
 
   const typeStatData = intl.formatMessage({
     id: getStatsDataTypeQuery(dataType),

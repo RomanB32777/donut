@@ -15,19 +15,20 @@ const messages = {
     change_success: "Success!",
 
     // registration
-    registration_creator_title: "Join Crypto Donutz!",
-    registration_backer_title: "Type in your username",
     registration_button: "Create",
-    registration_have_account: "Already have account? ",
-    registration_link: "Log in",
     sent_activation_link:
       "We’ve sent an activation link to {email}. Check your inbox!",
+    registration_creator_title: "Join Crypto Donutz!",
+    registration_backer_title: "Type in your username",
+    registration_have_account: "Already have account? ",
+    registration_link: "Log in",
 
     // login
     login_title: "Log in your account",
     login_button: "Log in",
     login_no_account: "No account? ",
     login_link: "Create one",
+    login_forgot: "Forgot the password",
 
     // roles
     roles_title: "Who are you?",
@@ -195,6 +196,7 @@ const messages = {
     donation_button_text: "Button text:",
     donation_main_color: "Main color:",
     donation_background_color: "Background color:",
+    donation_default_banners: "Default {bannerType} banners",
 
     // badges page
     badges_new_title: "Mint and manage the Badges for your supporters",
@@ -204,7 +206,6 @@ const messages = {
     badges_create_information_blockhain: "Blockhain",
     badges_create_information_input_name: "Badge name",
     badges_create_information_input_description: "Badge description",
-
     badges_success_modal_title: "Congratulations! You've created new badge!",
     badges_success_modal_description:
       "Click on it and assign to your supporters",
@@ -217,7 +218,6 @@ const messages = {
     badge_information_assigned: "Assigned",
     badge_information_quantity: "Quantity",
     badge_information_blockchain: "Blockchain",
-
     badge_assign_label: "Assign badge",
     badge_assign_placeholder: "Choose supporter",
     badge_assign_loading:
@@ -225,13 +225,16 @@ const messages = {
     badge_assign_success:
       "Congratulations! You've successfully assigned the badge to {username}",
     badge_assign_button: "Assign",
+    badge_holders: "Badge holders",
 
     // settings
     settings_avatar: "Avatar:",
     settings_username: "Username:",
     settings_wallet: "Wallet:",
+    settings_spam_filter: "Spam filter:",
     settings_change_button: "Change",
     settings_copy_button: "Copy",
+    settings_delete_account: "Delete account",
 
     // alerts
     alerts_subtitle:
@@ -334,6 +337,8 @@ const messages = {
 
     // notifications
     notifications_no: "No notifications",
+    notifications_title: "Notifications",
+    notifications_clear: "Clear all",
 
     // empty
     empty_data: "No data",
@@ -362,6 +367,10 @@ const messages = {
     confirm_reset: "Are you sure you want to reset to default settings?",
     confirm_cancel: "Cancel",
     confirm_ok: "Ok",
+
+    // copy
+    copy_message_successfully: "{formatCopyObject} is successfully copied",
+    copy_message_error: "An error occurred while copying the {copyObject}",
   },
   [LOCALES.RU]: {
     // reset
@@ -369,6 +378,8 @@ const messages = {
     reset_input_title:
       "Введите ваш email. На него мы вышлем ссылку для восстановления пароля",
     reset_button: "Отправить",
+    reset_send:
+      "Инструкции по сбросу пароля отправлены на вашу электронную почту. Проверьте свою почту!",
 
     // change
     change_title: "Change your password",
@@ -376,14 +387,29 @@ const messages = {
     change_success: "Успешно!",
 
     // registration
-    registration_title: "Зарегистрироваться в Crypto Donutz",
     registration_button: "Создать",
     sent_activation_link:
       "Мы отправили вам ссылку активации на {email}. Проверьте входящие сообщения!",
+    registration_creator_title: "Присоединяйтесь к Crypto Donutz!",
+    registration_backer_title: "Введите ваше имя пользователя",
+    registration_have_account: "Уже есть аккаунт? ",
+    registration_link: "Войти",
 
     // login
     login_title: "Войти в Crypto Donutz",
     login_button: "Вход",
+    login_no_account: "Нет аккаунта? ",
+    login_link: "Создать",
+    login_forgot: "Забыли пароль?",
+
+    // roles
+    roles_title: "Кто вы?",
+    roles_creator: "Создатель контента",
+    roles_supporter: "Поддержка",
+    roles_button: "Продолжить",
+
+    // wallets modal
+    wallets_connect_title: "Подключить кошелек",
 
     // resend
     resend_title: "Отправить заново",
@@ -413,6 +439,10 @@ const messages = {
     form_save_goal_button: "Сохранить цель",
     create_badge_form_button: "Создать бейдж",
     sign_out_button: "Выйти",
+
+    // not found
+    not_found_title: "К сожалению, запрашиваемая вами страница не существует.",
+    not_found_button: "Вернуться на главную страницу",
 
     // landing
     landing_main_button: "Зарегистрироваться",
@@ -469,7 +499,7 @@ const messages = {
     // landing - howWork steps
     landing_howWork_connection_title: "Создайте аккаунт",
     landing_howWork_connection_description:
-      "Зарегистрируйтесь на сайте через email, выберите имя пользователя и создайте аккаунт.",
+      "Зарегистрируйтесь с помощью вашей электронной почты, выберите имя пользователя и зарегистрируйте аккаунт.",
     landing_howWork_widget_title: "Настройка виджета и донат страницы",
     landing_howWork_widget_description:
       "Перейдите в раздел 'Виджеты', скопируйте ссылку на донат оповещение и вставьте в стриминговое ПО. Также скопируйте ссылку на вашу донат страницу и вставьте ее в описание стрима.",
@@ -505,6 +535,15 @@ const messages = {
     sidebar_settings: "Настройки",
     sidebar_help: "Справочный центр",
 
+    // page names
+    title_reset_page: "Сброс пароля",
+    title_change_password_page: "Изменить пароль",
+    title_resend_page: "Повторная отправка письма с подтверждением",
+    title_donat_page: "Страница донатов",
+    title_alert_page: "Страница оповещений донатов",
+    title_goal_page: "Страница целей донатов",
+    title_stat_page: "Страница статистики донатов",
+
     // dashboard
     dashboard_widgets_stats: "Статистика",
     dashboard_widgets_recent: "Последние донаты",
@@ -530,6 +569,7 @@ const messages = {
     donation_button_text: "Текст кнопки:",
     donation_main_color: "Основной цвет:",
     donation_background_color: "Цвет фона страницы:",
+    donation_default_banners: "Баннеры по умолчанию {bannerType}",
 
     // badges page
     badges_new_title: "Минт и управление бейджами для ваших донатеров",
@@ -539,10 +579,26 @@ const messages = {
     badges_create_information_blockhain: "Блокчейн",
     badges_create_information_input_name: "Название бейджа",
     badges_create_information_input_description: "Описание бейджа",
-
     badges_success_modal_title: "Поздравляем! Вы создали новый бейдж!",
     badges_success_modal_description:
       "Нажмите на него и выдайте его вашему донатеру",
+
+    // badge page
+    badge_image: "Изображение бейджа",
+    badge_information_title: "Информация о бейдже",
+    badge_information_name: "Имя",
+    badge_information_description: "Описание",
+    badge_information_assigned: "Назначено",
+    badge_information_quantity: "Количество",
+    badge_information_blockchain: "Блокчейн",
+    badge_assign_label: "Назначить бейдж",
+    badge_assign_placeholder: "Выберите донора",
+    badge_assign_loading:
+      "Подождите, пока бейдж будет создан на адресе {username}",
+    badge_assign_success:
+      "Поздравляем! Вы успешно назначили бейдж пользователю {username}",
+    badge_assign_button: "Назначить",
+    badge_holders: "Держатели бейджей",
 
     // settings
     settings_avatar: "Аватар:",
@@ -550,6 +606,7 @@ const messages = {
     settings_wallet: "Кошелек:",
     settings_change_button: "Изменить",
     settings_copy_button: "Копировать",
+    settings_delete_account: "Удалить аккаунт",
 
     // alerts
     alerts_subtitle:
@@ -568,6 +625,7 @@ const messages = {
     alerts_voice_male: "Мужской",
     alerts_voice_female: "Женский",
     alerts_banners_model: "Баннеры оповещения донатов по умолчанию",
+    alerts_preview_message: "Спасибо за ваш стрим!",
 
     // stats
     stats_subtitle: "Создавайте собственные виджеты для отображения на стриме.",
@@ -586,6 +644,8 @@ const messages = {
     stats_widget_settings_title_font: "Шрифт заголовка цели:",
     stats_widget_settings_сontent_font: "Шрифт контента:",
     stats_widget_settings_сontent_alignment: "Выравнивание контента:",
+    stats_widget_preview_message: "Привет! Это тестовое сообщение",
+    stats_widget_preview_message_2: "Как дела?",
 
     // goals
     goals_subtitle: "Начните сбор средств для конкретной покупки или цели.",
@@ -598,6 +658,30 @@ const messages = {
     goals_widget_settings_background_color: "Цвет фона:",
     goals_widget_settings_title_font: "Шрифт заголовка цели:",
     goals_widget_settings_progress_font: "Шрифт индикатора выполнения:",
+
+    // donat page
+    donat_form_username: "Ваше имя пользователя",
+    donat_form_switch_label: "Включите, чтобы быть анонимным",
+    donat_form_message: "Сообщение для {username}",
+    donat_form_amount: "Сумма пожертвования",
+    donat_form_equal_usd: "Эквивалент {convertedUsdSum} USD",
+    donat_form_goal_title: "Цели пожертвований",
+    donat_form_goal_description: "Помогите {username} достичь его донат целей",
+    donat_form_goal_dont_participate: "Не участвовать",
+    donat_loading_message:
+      "Пожалуйста, не закрывайте это окно до подтверждения пожертвования",
+    donat_success_message:
+      "Вы успешно отправили {sum} {selectedBlockchain} пользователю {name}",
+    donat_success_message_description:
+      "Проверьте историю своих пожертвований в разделе «Пожертвования»",
+    donat_warning_message_username_description:
+      "К сожалению, это имя пользователя уже занято. Введите другое",
+    donat_warning_message_balance_title: "Недостаточно средств",
+    donat_warning_message_balance_description:
+      "К сожалению, на вашем счете недостаточно средств для выполнения операции",
+    donat_warning_message_himself_title: "Серьезно?",
+    donat_warning_message_himself_description:
+      "Вы пытаетесь отправить пожертвование самому себе",
 
     // mobile widget tabs
     widget_tab_settings: "Настройки",
@@ -634,6 +718,29 @@ const messages = {
     input_placeholder_username: "Имя пользователя",
     input_placeholder_password: "Пароль",
     input_placeholder_confirm_password: "Подтвердить пароль",
+
+    // filters
+    filter_today: "Сегодня",
+    filter_7days: "Последние 7 дней",
+    filter_month: "Последние 30 дней",
+    filter_year: "В этом году",
+    filter_current_year: "Текущий год",
+    filter_yesterday: "Вчера",
+    filter_all_time: "Все время",
+    filter_custom: "Выбрать даты",
+    filter_top_donations: "Лучшие пожертвования",
+    filter_recent_donations: "Последние пожертвования",
+    filter_top_supporters: "Топ спонсоров",
+
+    // confirm popup
+    confirm_sure: "Вы уверены?",
+    confirm_reset: "Вы уверены, что хотите сбросить настройки?",
+    confirm_cancel: "Отмена",
+    confirm_ok: "Ок",
+
+    // copy
+    copy_message_successfully: "{formatCopyObject} успешно скопировано",
+    copy_message_error: "При копировании {copyObject} произошла ошибка",
   },
 
   [LOCALES.ES]: {
@@ -642,6 +749,8 @@ const messages = {
     reset_input_title:
       "Ingrese la dirección de correo electrónico de su cuenta para recibir instrucciones.",
     reset_button: "Enviar",
+    reset_send:
+      "Las instrucciones para restablecer la contraseña se han enviado a su correo electrónico. ¡Compruebe su bandeja de entrada!",
 
     // change
     change_title: "Cambiar contraseña",
@@ -649,14 +758,29 @@ const messages = {
     change_success: "¡Éxito!",
 
     // registration
-    registration_title: "Registrarse en Crypto Donutz",
     registration_button: "Crear",
     sent_activation_link:
       "Hemos enviado un enlace de activación a {email}. ¡Revisa tu bandeja de entrada!",
+    registration_creator_title: "¡Únete a Crypto Donutz!",
+    registration_backer_title: "Escribe tu nombre de usuario",
+    registration_have_account: "¿Ya tienes cuenta? ",
+    registration_link: "Iniciar sesión",
 
     // login
     login_title: "Iniciar sesión en Crypto Donutz",
     login_button: "Iniciar sesión",
+    login_no_account: "¿No tienes una cuenta?",
+    login_link: "Crea una",
+    login_forgot: "¿Olvidaste tu contraseña?",
+
+    // roles
+    roles_title: "¿Quién eres?",
+    roles_creator: "Creador de contenido",
+    roles_supporter: "Patrocinador",
+    roles_button: "Continuar",
+
+    // wallets modal
+    wallets_connect_title: "Conectar billetera",
 
     // resend
     resend_title: "Reenviar correo de confirmación",
@@ -687,6 +811,10 @@ const messages = {
     form_save_goal_button: "Guardar objetivo",
     create_badge_form_button: "Crear insignia",
     sign_out_button: "Cerrar sesión",
+
+    // not found
+    not_found_title: "Lo siento, la página que visitó no existe.",
+    not_found_button: "Volver a la página principal",
 
     // landing
     landing_main_button: "Registrarse",
@@ -745,7 +873,7 @@ const messages = {
     // landing - howWork steps
     landing_howWork_connection_title: "Inscribirse",
     landing_howWork_connection_description:
-      "Regístrate con tu correo electrónico, elige el nombre de usuario y crea una cuenta.",
+      "Regístrate con tu correo electrónico, elige el nombre de usuario y registra la cuenta.",
     landing_howWork_widget_title: "Configurar widget y página de donaciones",
     landing_howWork_widget_description:
       "Ve a la sección de Widgets, copia el enlace del widget y pégalo en tu software de transmisión. Obtén el enlace de tu página de donaciones en la sección de Página de donaciones y entrégaselo a tus seguidores.",
@@ -781,6 +909,15 @@ const messages = {
     sidebar_settings: "Configuración",
     sidebar_help: "Centro de ayuda",
 
+    // page names
+    title_reset_page: "Restablecer contraseña",
+    title_change_password_page: "Cambiar contraseña",
+    title_resend_page: "Reenviar correo de confirmación",
+    title_donat_page: "Página de donación",
+    title_alert_page: "Página de alerta de donación",
+    title_goal_page: "Página de metas de donación",
+    title_stat_page: "Página de estadísticas de donación",
+
     // dashboard
     dashboard_widgets_stats: "Estadísticas",
     dashboard_widgets_recent: "Donaciones recientes",
@@ -807,6 +944,7 @@ const messages = {
     donation_button_text: "Texto del botón:",
     donation_main_color: "Color principal:",
     donation_background_color: "Color de fondo:",
+    donation_default_banners: "Banners {bannerType} por defecto",
 
     // badges page
     badges_new_title: "Crea y administra las Insignias para tus seguidores",
@@ -816,10 +954,26 @@ const messages = {
     badges_create_information_blockhain: "Blockchain",
     badges_create_information_input_name: "Nombre de la insignia",
     badges_create_information_input_description: "Descripción de la insignia",
-
     badges_success_modal_title: "¡Felicidades! ¡Has creado una nueva insignia!",
     badges_success_modal_description:
       "Haz clic en ella y asígnala a tus seguidores",
+
+    // badge page
+    badge_image: "Imagen de insignia",
+    badge_information_title: "Información de la insignia",
+    badge_information_name: "Nombre",
+    badge_information_description: "Descripción",
+    badge_information_assigned: "Asignado",
+    badge_information_quantity: "Cantidad",
+    badge_information_blockchain: "Blockchain",
+    badge_assign_label: "Asignar insignia",
+    badge_assign_placeholder: "Elegir patrocinador",
+    badge_assign_loading:
+      "Espere a que se acuñe la insignia en la dirección de {username}",
+    badge_assign_success:
+      "¡Felicidades! Ha asignado con éxito la insignia a {username}",
+    badge_assign_button: "Asignar",
+    badge_holders: "Titulares de insignias",
 
     // settings
     settings_avatar: "Avatar:",
@@ -827,6 +981,7 @@ const messages = {
     settings_wallet: "Cartera:",
     settings_change_button: "Cambiar",
     settings_copy_button: "Copiar",
+    settings_delete_account: "Eliminar cuenta",
 
     // alerts
     alerts_subtitle:
@@ -845,6 +1000,7 @@ const messages = {
     alerts_voice_male: "Masculino",
     alerts_voice_female: "Femenino",
     alerts_banners_model: "Banners predeterminados para alertas de donaciones",
+    alerts_preview_message: "¡Gracias por tu transmisión!",
 
     // stats
     stats_subtitle:
@@ -864,6 +1020,8 @@ const messages = {
     stats_widget_settings_title_font: "Fuente del título de la meta:",
     stats_widget_settings_сontent_font: "Fuente del contenido:",
     stats_widget_settings_сontent_alignment: "Alineación del contenido:",
+    stats_widget_preview_message: "¡Hola! Este es un mensaje de prueba",
+    stats_widget_preview_message_2: "¿Cómo estás?",
 
     // goals
     goals_subtitle:
@@ -877,6 +1035,31 @@ const messages = {
     goals_widget_settings_background_color: "Color de fondo:",
     goals_widget_settings_title_font: "Fuente del título de la meta:",
     goals_widget_settings_progress_font: "Fuente del progreso de la meta:",
+
+    // donat page
+    donat_form_username: "Tu nombre de usuario",
+    donat_form_switch_label: "Activa para ser anónimo",
+    donat_form_message: "Mensaje para {username}",
+    donat_form_amount: "Cantidad de la donación",
+    donat_form_equal_usd: "Equivalente a {convertedUsdSum} USD",
+    donat_form_goal_title: "Metas de donación",
+    donat_form_goal_description:
+      "Ayuda a {username} a alcanzar sus metas de donación",
+    donat_form_goal_dont_participate: "No participar",
+    donat_loading_message:
+      "No cierre esta ventana hasta la confirmación de la donación",
+    donat_success_message:
+      "Has enviado con éxito {sum} {selectedBlockchain} a {name}",
+    donat_success_message_description:
+      "Verifica tu historial de donaciones en la sección «Donaciones»",
+    donat_warning_message_username_description:
+      "Desafortunadamente, este nombre de usuario ya está ocupado. Introduce otro",
+    donat_warning_message_balance_title: "Saldo insuficiente",
+    donat_warning_message_balance_description:
+      "Desafortunadamente, no hay suficientes fondos en tu saldo para llevar a cabo la operación",
+    donat_warning_message_himself_title: "¿En serio? ;)",
+    donat_warning_message_himself_description:
+      "Estás intentando enviarte una donación a ti mismo",
 
     // mobile widget tabs
     widget_tab_settings: "Configuración",
@@ -913,12 +1096,38 @@ const messages = {
     input_placeholder_username: "Nombre de usuario",
     input_placeholder_password: "Contraseña",
     input_placeholder_confirm_password: "Confirmar contraseña",
+
+    // filters
+    filter_today: "Hoy",
+    filter_7days: "Últimos 7 días",
+    filter_month: "Últimos 30 días",
+    filter_year: "Este año",
+    filter_current_year: "Año actual",
+    filter_yesterday: "Ayer",
+    filter_all_time: "Todo el tiempo",
+    filter_custom: "Fecha personalizada",
+    filter_top_donations: "Donaciones más altas",
+    filter_recent_donations: "Donaciones recientes",
+    filter_top_supporters: "Mejores patrocinadores",
+
+    // confirm popup
+    confirm_sure: "¿Estás seguro?",
+    confirm_reset:
+      "¿Estás seguro de que quieres restablecer la configuración predeterminada?",
+    confirm_cancel: "Cancelar",
+    confirm_ok: "Ok",
+
+    // copy
+    copy_message_successfully: "{formatCopyObject} se copió correctamente",
+    copy_message_error: "Se produjo un error al copiar {copyObject}",
   },
   [LOCALES.TH]: {
     // reset
     reset_title: "ตั้งรหัสผ่านใหม่",
     reset_input_title: "กรอกที่อยู่อีเมล์ของบัญชีเพื่อขอคำแนะนำ",
     reset_button: "ส่ง",
+    reset_send:
+      "คำแนะนำการรีเซ็ตรหัสผ่านถูกส่งไปยังอีเมลของคุณ โปรดตรวจสอบกล่องขาเข้าของคุณ!",
 
     // change
     change_title: "เปลี่ยนรหัสผ่านของคุณ",
@@ -926,14 +1135,29 @@ const messages = {
     change_success: "สำเร็จ!",
 
     // registration
-    registration_title: "สมัคร Crypto Donutz",
     registration_button: "สร้าง",
     sent_activation_link:
       "เราได้ส่งลิงก์เปิดใช้งานไปยัง {email} ตรวจสอบกล่องขาเข้าของคุณ!",
+    registration_creator_title: "เข้าร่วม Crypto Donutz!",
+    registration_backer_title: "พิมพ์ชื่อผู้ใช้ของคุณ",
+    registration_have_account: "มีบัญชีอยู่แล้วหรือไม่? ",
+    registration_link: "เข้าสู่ระบบ",
 
     // login
     login_title: "เข้าสู่ระบบ Crypto Donutz",
     login_button: "เข้าสู่ระบบ",
+    login_no_account: "ไม่มีบัญชี? ",
+    login_link: "สร้างบัญชี",
+    login_forgot: "ลืมรหัสผ่าน",
+
+    // roles
+    roles_title: "คุณคือใคร?",
+    roles_creator: "ผู้สร้างเนื้อหา",
+    roles_supporter: "ผู้สนับสนุน",
+    roles_button: "ต่อไป",
+
+    // wallets modal
+    wallets_connect_title: "เชื่อมต่อกระเป๋าเงิน",
 
     // resend
     resend_title: "ส่งอีเมล์ยืนยันอีกครั้ง",
@@ -963,6 +1187,10 @@ const messages = {
     form_save_goal_button: "บันทึกเป้าหมาย",
     create_badge_form_button: "สร้างแบดจ์",
     sign_out_button: "ออกจากระบบ",
+
+    // not found
+    not_found_title: "ขออภัย หน้าที่คุณเข้าชมไม่มีอยู่จริง",
+    not_found_button: "กลับสู่หน้าหลัก",
 
     // landing
     landing_main_button: "สมัคร",
@@ -1019,7 +1247,7 @@ const messages = {
     // landing - howWork steps
     landing_howWork_connection_title: "ลงทะเบียน",
     landing_howWork_connection_description:
-      "ลงทะเบียนด้วยอีเมลของคุณ เลือกชื่อผู้ใช้และสร้างบัญชี",
+      "ลงทะเบียนด้วยอีเมลของคุณ เลือกชื่อผู้ใช้และลงทะเบียนบัญชี",
     landing_howWork_widget_title: "ตั้งค่าวิดเจ็ตและหน้ารับบริจาค",
     landing_howWork_widget_description:
       "ไปที่ส่วนของวิดเจ็ต คัดลอกลิงก์วิดเจ็ตและวางลงในซอฟต์แวร์สื่อสารของคุณ รับลิงก์หน้ารับบริจาคในส่วนของหน้ารับบริจาคและแจกให้กับผู้สนับสนุนของคุณ",
@@ -1055,6 +1283,15 @@ const messages = {
     sidebar_settings: "การตั้งค่า",
     sidebar_help: "ศูนย์ช่วยเสริม",
 
+    // page names
+    title_reset_page: "รีเซ็ตรหัสผ่าน",
+    title_change_password_page: "เปลี่ยนรหัสผ่าน",
+    title_resend_page: "ส่งอีเมลยืนยันอีกครั้ง",
+    title_donat_page: "หน้าบริจาค",
+    title_alert_page: "หน้าแจ้งเตือนบริจาค",
+    title_goal_page: "หน้าเป้าหมายของบริจาค",
+    title_stat_page: "หน้าสถิติบริจาค",
+
     // dashboard
     dashboard_widgets_stats: "สถิติ",
     dashboard_widgets_recent: "การบริจาคล่าสุด",
@@ -1079,6 +1316,7 @@ const messages = {
     donation_button_text: "ข้อความปุ่ม:",
     donation_main_color: "สีหลัก:",
     donation_background_color: "สีพื้นหลัง:",
+    donation_default_banners: "แบนเนอร์ประเภท {bannerType} เริ่มต้น",
 
     // badges page
     badges_new_title: "ปั้นและจัดการแบดจ์ให้กับผู้สนับสนุนของคุณ",
@@ -1087,9 +1325,24 @@ const messages = {
     badges_create_information_blockhain: "บล็อกเชน",
     badges_create_information_input_name: "ชื่อแบดจ์",
     badges_create_information_input_description: "คำอธิบายแบดจ์",
-
     badges_success_modal_title: "ยินดีด้วย! คุณได้สร้างแบดจ์ใหม่แล้ว!",
     badges_success_modal_description: "คลิกที่นี่และกำหนดให้ผู้สนับสนุนของคุณ",
+
+    // badge page
+    badge_image: "รูปภาพเหรียญตรา",
+    badge_information_title: "ข้อมูลเหรียญตรา",
+    badge_information_name: "ชื่อ",
+    badge_information_description: "คำอธิบาย",
+    badge_information_assigned: "กำหนด",
+    badge_information_quantity: "จำนวน",
+    badge_information_blockchain: "บล็อกเชน",
+    badge_assign_label: "กำหนดเหรียญตรา",
+    badge_assign_placeholder: "เลือกผู้สนับสนุน",
+    badge_assign_loading: "รอให้ตราที่กำหนดบนที่อยู่ {username} ถูกตั้งต้น",
+    badge_assign_success:
+      "ขอแสดงความยินดี! คุณได้กำหนดตราเรียบร้อยแล้วสำหรับ {username}",
+    badge_assign_button: "กำหนด",
+    badge_holders: "ผู้ถือเหรียญตรา",
 
     // settings
     settings_avatar: "อวาตาร์:",
@@ -1097,6 +1350,7 @@ const messages = {
     settings_wallet: "กระเป๋าเงิน:",
     settings_change_button: "เปลี่ยน",
     settings_copy_button: "คัดลอก",
+    settings_delete_account: "ลบบัญชีผู้ใช้งาน",
 
     // alerts
     alerts_subtitle:
@@ -1115,6 +1369,7 @@ const messages = {
     alerts_voice_male: "ชาย",
     alerts_voice_female: "หญิง",
     alerts_banners_model: "แบนเนอร์เตือนการบริจาคเริ่มต้น",
+    alerts_preview_message: "ขอบคุณสำหรับการสตรีมของคุณ!",
 
     // stats
     stats_subtitle: "สร้างวิดเจ็ตที่กำหนดเองเพื่อแสดงในสตรีมของคุณ",
@@ -1134,6 +1389,8 @@ const messages = {
     stats_widget_settings_title_font: "แบบอักษรชื่อเป้าหมาย:",
     stats_widget_settings_сontent_font: "แบบอักษรเนื้อหา:",
     stats_widget_settings_сontent_alignment: "การจัดเนื้อหา:",
+    stats_widget_preview_message: "สวัสดี! นี่เป็นข้อความทดสอบ",
+    stats_widget_preview_message_2: "สบายดีไหม?",
 
     // goals
     goals_subtitle: "เริ่มระดมทุนสำหรับการซื้อหรือเป้าหมายเฉพาะ",
@@ -1146,6 +1403,31 @@ const messages = {
     goals_widget_settings_background_color: "สีพื้นหลัง:",
     goals_widget_settings_title_font: "แบบอักษรชื่อเป้าหมาย:",
     goals_widget_settings_progress_font: "แบบอักษรความคืบหน้าเป้าหมาย:",
+
+    // donat page
+    donat_form_username: "ชื่อผู้ใช้ของคุณ",
+    donat_form_switch_label: "เปิดใช้งานเพื่อเป็นนิรนาม",
+    donat_form_message: "ข้อความถึง {username}",
+    donat_form_amount: "จำนวนเงินบริจาค",
+    donat_form_equal_usd: "เท่ากับ {convertedUsdSum} ดอลลาร์สหรัฐ",
+    donat_form_goal_title: "เป้าหมายการบริจาค",
+    donat_form_goal_description:
+      "ช่วยให้ {username} บรรลุเป้าหมายการบริจาคของตนเอง",
+    donat_form_goal_dont_participate: "ไม่ต้องการเข้าร่วม",
+    donat_loading_message:
+      "กรุณาอย่าปิดหน้าต่างนี้จนกว่าการยืนยันการบริจาคจะเสร็จสมบูรณ์",
+    donat_success_message:
+      "คุณได้ส่งเงินบริจาค {sum} {selectedBlockchain} ไปยัง {name} สำเร็จแล้ว",
+    donat_success_message_description:
+      "ตรวจสอบประวัติการบริจาคของคุณในส่วน «การบริจาค»",
+    donat_warning_message_username_description:
+      "ขออภัย ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว โปรดป้อนชื่อผู้ใช้อื่น",
+    donat_warning_message_balance_title: "ยอดเงินไม่เพียงพอ",
+    donat_warning_message_balance_description:
+      "ขออภัย ยอดเงินในบัญชีของคุณไม่เพียงพอที่จะดำเนินการนี้ได้",
+    donat_warning_message_himself_title: "จริงหรือเปล่า?  ",
+    donat_warning_message_himself_description:
+      "คุณกำลังพยายามส่งเงินบริจาคให้ตัวเอง",
 
     // mobile widget tabs
     widget_tab_settings: "การตั้งค่า",
@@ -1182,6 +1464,29 @@ const messages = {
     input_placeholder_username: "ชื่อผู้ใช้",
     input_placeholder_password: "รหัสผ่าน",
     input_placeholder_confirm_password: "ยืนยันรหัสผ่าน",
+
+    // filters
+    filter_today: "วันนี้",
+    filter_7days: "7 วันที่ผ่านมา",
+    filter_month: "เดือนที่ผ่านมา",
+    filter_year: "ปีนี้",
+    filter_current_year: "ปีปัจจุบัน",
+    filter_yesterday: "เมื่อวานนี้",
+    filter_all_time: "ตลอดเวลา",
+    filter_custom: "วันที่กำหนดเอง",
+    filter_top_donations: "การบริจาคยอดนิยม",
+    filter_recent_donations: "การบริจาคล่าสุด",
+    filter_top_supporters: "ผู้สนับสนุนยอดนิยม",
+
+    // confirm popup
+    confirm_sure: "คุณแน่ใจหรือไม่?",
+    confirm_reset: "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตเป็นการตั้งค่าเริ่มต้น?",
+    confirm_cancel: "ยกเลิก",
+    confirm_ok: "ตกลง",
+
+    // copy
+    copy_message_successfully: "{formatCopyObject} ถูกคัดลอกเรียบร้อยแล้ว",
+    copy_message_error: "เกิดข้อผิดพลาดขณะคัดลอก {copyObject}",
   },
 
   [LOCALES.PT]: {
@@ -1190,6 +1495,8 @@ const messages = {
     reset_input_title:
       "Digite o endereço de email da sua conta para obter instruções.",
     reset_button: "Enviar",
+    reset_send:
+      "As instruções de redefinição de senha foram enviadas para o seu e-mail. Verifique sua caixa de entrada!",
 
     // change
     change_title: "Alterar sua senha",
@@ -1197,14 +1504,29 @@ const messages = {
     change_success: "Sucesso!",
 
     // registration
-    registration_title: "Inscreva-se no Crypto Donutz",
     registration_button: "Criar",
     sent_activation_link:
       "Enviamos um link de ativação para {email}. Verifique sua caixa de entrada!",
+    registration_creator_title: "Junte-se ao Crypto Donutz!",
+    registration_backer_title: "Digite seu nome de usuário",
+    registration_have_account: "Já tem uma conta? ",
+    registration_link: "Entrar",
 
     // login
     login_title: "Entrar no Crypto Donutz",
     login_button: "Entrar",
+    login_no_account: "Não tem conta? ",
+    login_link: "Criar uma",
+    login_forgot: "Esqueceu a senha",
+
+    // roles
+    roles_title: "Quem é você?",
+    roles_creator: "Criador de conteúdo",
+    roles_supporter: "Apoiador",
+    roles_button: "Continuar",
+
+    // wallets modal
+    wallets_connect_title: "Conectar carteira",
 
     // resend
     resend_title: "Reenviar email de confirmação",
@@ -1235,6 +1557,10 @@ const messages = {
     form_save_goal_button: "Salvar meta",
     create_badge_form_button: "Criar distintivo",
     sign_out_button: "Sair",
+
+    // not found
+    not_found_title: "Desculpe, a página que você visitou não existe.",
+    not_found_button: "Voltar para a página principal",
 
     // landing
     landing_main_button: "Inscrever-se",
@@ -1293,7 +1619,7 @@ const messages = {
     // landing - howWork steps
     landing_howWork_connection_title: "Inscrever-se",
     landing_howWork_connection_description:
-      "Inscreva-se com seu e-mail, escolha um nome de usuário e crie uma conta.",
+      "Cadastre-se com seu e-mail, escolha um nome de usuário e registre sua conta.",
     landing_howWork_widget_title: "Configuração do widget e página de doação",
     landing_howWork_widget_description:
       "Vá para a seção Widgets, copie o link do widget e cole-o no seu software de transmissão. Obtenha o link da sua página de doação na seção Página de doação e compartilhe com seus apoiadores.",
@@ -1317,7 +1643,7 @@ const messages = {
 
     landing_footer_title: "Está pronto para agarrar seus Crypto Donutz?",
 
-    // menu lateral
+    // sidebar menu
     sidebar_dashboard: "Painel",
     sidebar_donation_page: "Página de doação",
     sidebar_widgets: "Widgets",
@@ -1328,6 +1654,15 @@ const messages = {
     sidebar_badges: "Distintivos",
     sidebar_settings: "Configurações",
     sidebar_help: "Centro de ajuda",
+
+    // page names
+    title_reset_page: "Reset password",
+    title_change_password_page: "Change password",
+    title_resend_page: "Resend confirm email",
+    title_donat_page: "Donat page",
+    title_alert_page: "Donat alert page",
+    title_goal_page: "Donat goal page",
+    title_stat_page: "Donat stat page",
 
     // painel
     dashboard_widgets_stats: "Estatísticas",
@@ -1353,6 +1688,7 @@ const messages = {
     donation_button_text: "Texto do botão:",
     donation_main_color: "Cor principal:",
     donation_background_color: "Cor de fundo:",
+    donation_default_banners: "Banners padrão {bannerType}",
 
     // badges page
     badges_new_title: "Crie e gerencie os distintivos para seus apoiadores",
@@ -1362,10 +1698,26 @@ const messages = {
     badges_create_information_blockhain: "Blockchain",
     badges_create_information_input_name: "Nome do distintivo",
     badges_create_information_input_description: "Descrição do distintivo",
-
     badges_success_modal_title: "Parabéns! Você criou um novo distintivo!",
     badges_success_modal_description:
       "Clique nele e atribua aos seus apoiadores",
+
+    // badge page
+    badge_image: "Imagem do crachá",
+    badge_information_title: "Informações do crachá",
+    badge_information_name: "Nome",
+    badge_information_description: "Descrição",
+    badge_information_assigned: "Atribuído",
+    badge_information_quantity: "Quantidade",
+    badge_information_blockchain: "Blockchain",
+    badge_assign_label: "Atribuir crachá",
+    badge_assign_placeholder: "Escolha um apoiador",
+    badge_assign_loading:
+      "Aguarde o crachá ser criado no endereço de {username}",
+    badge_assign_success:
+      "Parabéns! Você atribuiu o crachá a {username} com sucesso",
+    badge_assign_button: "Atribuir",
+    badge_holders: "Detentores de crachá",
 
     // settings
     settings_avatar: "Avatar:",
@@ -1373,6 +1725,7 @@ const messages = {
     settings_wallet: "Carteira:",
     settings_change_button: "Alterar",
     settings_copy_button: "Copiar",
+    settings_delete_account: "Excluir conta",
 
     // alerts
     alerts_subtitle:
@@ -1391,6 +1744,7 @@ const messages = {
     alerts_voice_male: "Masculino",
     alerts_voice_female: "Feminino",
     alerts_banners_model: "Banners padrão de alerta de doação",
+    alerts_preview_message: "Obrigado pela transmissão!",
 
     // stats
     stats_subtitle:
@@ -1410,6 +1764,8 @@ const messages = {
     stats_widget_settings_title_font: "Fonte do título do objetivo:",
     stats_widget_settings_сontent_font: "Fonte do conteúdo:",
     stats_widget_settings_сontent_alignment: "Alinhamento do conteúdo:",
+    stats_widget_preview_message: "Olá! Esta é uma mensagem de teste",
+    stats_widget_preview_message_2: "Como você está?",
 
     // goals
     goals_subtitle:
@@ -1423,6 +1779,31 @@ const messages = {
     goals_widget_settings_background_color: "Cor de fundo:",
     goals_widget_settings_title_font: "Fonte do título do objetivo:",
     goals_widget_settings_progress_font: "Fonte do progresso do objetivo:",
+
+    // donat page
+    donat_form_username: "Seu nome de usuário",
+    donat_form_switch_label: "Ativar para ser anônimo",
+    donat_form_message: "Mensagem para {username}",
+    donat_form_amount: "Valor da doação",
+    donat_form_equal_usd: "Equivalente a {convertedUsdSum} USD",
+    donat_form_goal_title: "Metas de doação",
+    donat_form_goal_description:
+      "Ajude {username} a alcançar suas metas de doação",
+    donat_form_goal_dont_participate: "Não participar",
+    donat_loading_message:
+      "Por favor, não feche esta janela até a confirmação da doação",
+    donat_success_message:
+      "Você enviou com sucesso {sum} {selectedBlockchain} para {name}",
+    donat_success_message_description:
+      "Verifique seu histórico de doações na seção «Doações»",
+    donat_warning_message_username_description:
+      "Infelizmente, este nome de usuário já está em uso. Insira outro nome",
+    donat_warning_message_balance_title: "Saldo insuficiente",
+    donat_warning_message_balance_description:
+      "Infelizmente, não há fundos suficientes em seu saldo para realizar esta operação",
+    donat_warning_message_himself_title: "Sério? :)",
+    donat_warning_message_himself_description:
+      "Você está tentando enviar uma doação para si mesmo",
 
     // mobile widget tabs
     widget_tab_settings: "Configurações",
@@ -1459,6 +1840,30 @@ const messages = {
     input_placeholder_username: "Nome de usuário",
     input_placeholder_password: "Senha",
     input_placeholder_confirm_password: "Confirme a senha",
+
+    // filters
+    filter_today: "Hoje",
+    filter_7days: "Últimos 7 dias",
+    filter_month: "Últimos 30 dias",
+    filter_year: "Este ano",
+    filter_current_year: "Ano atual",
+    filter_yesterday: "Ontem",
+    filter_all_time: "Todos os tempos",
+    filter_custom: "Data personalizada",
+    filter_top_donations: "Maiores doações",
+    filter_recent_donations: "Doações recentes",
+    filter_top_supporters: "Principais apoiadores",
+
+    // confirm popup
+    confirm_sure: "Tem certeza?",
+    confirm_reset:
+      "Tem certeza de que deseja redefinir as configurações padrão?",
+    confirm_cancel: "Cancelar",
+    confirm_ok: "Ok",
+
+    // copy
+    copy_message_successfully: "{formatCopyObject} foi copiado com sucesso",
+    copy_message_error: "Ocorreu um erro ao copiar {copyObject}",
   },
 
   [LOCALES.KR]: {
@@ -1466,6 +1871,8 @@ const messages = {
     reset_title: "비밀번호 초기화",
     reset_input_title: "안내 메일을 받을 이메일 주소를 입력하세요.",
     reset_button: "보내기",
+    reset_send:
+      "비밀번호 재설정 안내가 이메일로 발송되었습니다. 받은 편지함을 확인해주세요!",
 
     // change
     change_title: "비밀번호 변경",
@@ -1473,14 +1880,29 @@ const messages = {
     change_success: "성공!",
 
     // registration
-    registration_title: "크립토 도넛 가입",
     registration_button: "생성",
     sent_activation_link:
       "{email}로 활성화 링크를 보냈습니다. 받은 편지함을 확인하세요!",
+    registration_creator_title: "크립토 도넛즈 가입하기!",
+    registration_backer_title: "사용자 이름 입력",
+    registration_have_account: "이미 계정이 있으신가요? ",
+    registration_link: "로그인",
 
     // login
     login_title: "크립토 도넛 로그인",
     login_button: "로그인",
+    login_no_account: "계정이 없으신가요? ",
+    login_link: "회원가입",
+    login_forgot: "비밀번호를 잊으셨나요",
+
+    // roles
+    roles_title: "당신은 누구신가요?",
+    roles_creator: "콘텐츠 크리에이터",
+    roles_supporter: "서포터",
+    roles_button: "계속하기",
+
+    // wallets modal
+    wallets_connect_title: "지갑 연결하기",
 
     // resend
     resend_title: "인증 이메일 재전송",
@@ -1510,6 +1932,10 @@ const messages = {
     form_save_goal_button: "목표 저장",
     create_badge_form_button: "배지 생성",
     sign_out_button: "로그아웃",
+
+    // not found
+    not_found_title: "죄송합니다, 방문하신 페이지는 존재하지 않습니다.",
+    not_found_button: "메인 페이지로 돌아가기",
 
     // landing
     landing_main_button: "가입하기",
@@ -1564,7 +1990,7 @@ const messages = {
     // landing - howWork steps
     landing_howWork_connection_title: "가입",
     landing_howWork_connection_description:
-      "이메일로 가입하고, 사용자 이름을 선택하고 계정을 등록하세요.",
+      "이메일로 가입하고 사용자 이름을 선택하여 계정을 등록하세요.",
     landing_howWork_widget_title: "위젯 및 기부 페이지 설정",
     landing_howWork_widget_description:
       "위젯 섹션으로 이동하여 위젯 링크를 복사하고 방송 소프트웨어에 붙여넣습니다. 기부 페이지 섹션에서 기부 페이지 링크를 가져와서 지지자들에게 제공하세요.",
@@ -1600,6 +2026,15 @@ const messages = {
     sidebar_settings: "설정",
     sidebar_help: "도움말 센터",
 
+    // page names
+    title_reset_page: "비밀번호 재설정",
+    title_change_password_page: "비밀번호 변경",
+    title_resend_page: "확인 이메일 재발송",
+    title_donat_page: "기부 페이지",
+    title_alert_page: "기부 알림 페이지",
+    title_goal_page: "기부 목표 페이지",
+    title_stat_page: "기부 통계 페이지",
+
     // 대시보드
     dashboard_widgets_stats: "통계",
     dashboard_widgets_recent: "최근 기부",
@@ -1624,24 +2059,43 @@ const messages = {
     donation_button_text: "버튼 텍스트:",
     donation_main_color: "주요 색상:",
     donation_background_color: "배경색:",
+    donation_default_banners: "기본 {bannerType} 배너",
 
-    // badges 페이지
+    // badges page
     badges_new_title: "지지자들을 위한 배지를 만들고 관리하십시오",
     badges_create_information_title: "배지 정보",
     badges_create_information_description: "필요한 정보를 입력하십시오",
     badges_create_information_blockhain: "블록체인",
     badges_create_information_input_name: "배지 이름",
     badges_create_information_input_description: "배지 설명",
-
     badges_success_modal_title: "축하합니다! 새로운 배지를 만들었습니다!",
     badges_success_modal_description:
       "그것을 클릭하고 지지자들에게 할당하세요.",
+
+    // badge page
+    badge_image: "배지 이미지",
+    badge_information_title: "배지 정보",
+    badge_information_name: "이름",
+    badge_information_description: "설명",
+    badge_information_assigned: "할당된",
+    badge_information_quantity: "수량",
+    badge_information_blockchain: "블록체인",
+    badge_assign_label: "배지 할당",
+    badge_assign_placeholder: "서포터 선택",
+    badge_assign_loading:
+      "배지가 {username} 주소에 성공적으로 민트될 때까지 기다려주세요.",
+    badge_assign_success:
+      "축하합니다! {username} 님에게 배지가 성공적으로 할당되었습니다.",
+    badge_assign_button: "할당하기",
+    badge_holders: "뱃지 소유자",
+
     // 설정
     settings_avatar: "아바타:",
     settings_username: "사용자 이름:",
     settings_wallet: "지갑:",
     settings_change_button: "변경",
     settings_copy_button: "복사",
+    settings_delete_account: "계정 삭제하기",
 
     // 알림
     alerts_subtitle:
@@ -1660,6 +2114,7 @@ const messages = {
     alerts_voice_male: "남성",
     alerts_voice_female: "여성",
     alerts_banners_model: "기본 기부 알림 배너",
+    alerts_preview_message: "스트림을 시청해주셔서 감사합니다!",
 
     // 통계
     stats_subtitle: "스트림에 표시할 사용자 정의 위젯을 만드십시오",
@@ -1678,6 +2133,8 @@ const messages = {
     stats_widget_settings_title_font: "목표 제목 글꼴:",
     stats_widget_settings_сontent_font: "콘텐츠 글꼴:",
     stats_widget_settings_сontent_alignment: "콘텐츠 정렬:",
+    stats_widget_preview_message: "안녕하세요! 이것은 테스트 메시지입니다.",
+    stats_widget_preview_message_2: "어떻게 지내시나요?",
 
     // 목표
     goals_subtitle: "특정 구매 또는 목표에 대한 모금을 시작하세요.",
@@ -1690,6 +2147,29 @@ const messages = {
     goals_widget_settings_background_color: "배경 색상:",
     goals_widget_settings_title_font: "목표 제목 글꼴:",
     goals_widget_settings_progress_font: "목표 진행률 글꼴:",
+
+    // donat page
+    donat_form_username: "사용자 이름",
+    donat_form_switch_label: "익명으로 기부하기",
+    donat_form_message: "{username} 님에게 메시지 보내기",
+    donat_form_amount: "기부 금액",
+    donat_form_equal_usd: "{convertedUsdSum} USD와 동일",
+    donat_form_goal_title: "기부 목표",
+    donat_form_goal_description:
+      "{username}님이 기부 목표를 달성할 수 있도록 도와주세요",
+    donat_form_goal_dont_participate: "참여하지 않음",
+    donat_loading_message: "기부가 확인될 때까지 이 창을 닫지 마세요",
+    donat_success_message:
+      "{name}님에게 {sum} {selectedBlockchain} 기부를 성공적으로 보냈습니다",
+    donat_success_message_description: "«기부» 섹션에서 기부 기록을 확인하세요",
+    donat_warning_message_username_description:
+      "죄송합니다. 이 사용자 이름은 이미 사용 중입니다. 다른 이름을 입력하세요",
+    donat_warning_message_balance_title: "잔액 부족",
+    donat_warning_message_balance_description:
+      "죄송합니다. 계정에 충분한 자금이 없어 이 작업을 수행할 수 없습니다",
+    donat_warning_message_himself_title: "정말요?)",
+    donat_warning_message_himself_description:
+      "본인에게 기부를 보내려고 합니다",
 
     // mobile widget tabs
     widget_tab_settings: "설정",
@@ -1726,6 +2206,30 @@ const messages = {
     input_placeholder_username: "사용자 이름",
     input_placeholder_password: "비밀번호",
     input_placeholder_confirm_password: "비밀번호 확인",
+
+    // filters
+    filter_today: "오늘",
+    filter_7days: "지난 7일",
+    filter_month: "지난 30일",
+    filter_year: "올해",
+    filter_current_year: "올해",
+    filter_yesterday: "어제",
+    filter_all_time: "모든 기간",
+    filter_custom: "사용자 설정",
+    filter_top_donations: "최고 기부",
+    filter_recent_donations: "최근 기부",
+    filter_top_supporters: "최고 후원자",
+
+    // confirm popup
+    confirm_sure: "확인하시겠습니까?",
+    confirm_reset: "기본 설정으로 재설정하시겠습니까?",
+    confirm_cancel: "취소",
+    confirm_ok: "확인",
+
+    // copy
+    copy_message_successfully:
+      "{formatCopyObject}이(가) 성공적으로 복사되었습니다",
+    copy_message_error: "{copyObject} 복사 중 오류가 발생했습니다",
   },
 };
 

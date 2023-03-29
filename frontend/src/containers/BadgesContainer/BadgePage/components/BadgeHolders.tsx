@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { Avatar, Col, Row, Tooltip } from "antd";
+import { FormattedMessage } from "react-intl";
 import { IShortUserData } from "types";
 
 import Loader from "components/Loader";
@@ -16,7 +17,9 @@ const BadgeHolders = ({
     <div className="holders">
       <Row justify="space-between" align="middle">
         <Col span={8}>
-          <p className="title">Badge holders</p>
+          <p className="title">
+            <FormattedMessage id="badge_holders" />
+          </p>
         </Col>
         <Col span={15}>
           <div className="users">

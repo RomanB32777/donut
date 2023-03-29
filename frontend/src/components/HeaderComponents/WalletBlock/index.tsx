@@ -1,6 +1,7 @@
 import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { useAccount, useBalance, useNetwork, useSwitchNetwork } from "wagmi";
+import { useIntl } from "react-intl";
 import { CheckOutlined } from "@ant-design/icons";
 
 import Loader from "components/Loader";
@@ -27,6 +28,7 @@ const WalletBlock: FC<IWalletBlock> = ({
   popupModificator,
   connectedWallet,
 }) => {
+  const intl = useIntl();
   const { address, isConnected } = useAccount();
   const { chain: currentChain } = useNetwork();
   const { isLoading, switchNetwork } = useSwitchNetwork();
@@ -47,7 +49,9 @@ const WalletBlock: FC<IWalletBlock> = ({
 
   const chains = Object.values(fullChainsInfo);
 
-  const copyAddress = () => address && copyStr(address, "Wallet address");
+  const copyAddress = () => {
+    address && copyStr({ str: address, copyObject: "Wallet address", intl });
+  };
   const handlerPopup = () => setOpenSelect((prev) => !prev);
   const closeWalletsModal = () => setIsOpenWalletsModal(false);
 

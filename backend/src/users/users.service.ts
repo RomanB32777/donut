@@ -40,9 +40,11 @@ export class UsersService {
 
   async create(createdUser: CreateUserDto) {
     const { roleplay, walletAddress } = createdUser;
-    const isExist = await this.checkUserExist(walletAddress);
-    if (isExist) {
-      throw new BadRequestException('User with this address already exists');
+    if (walletAddress) {
+      const isExist = await this.checkUserExist(walletAddress);
+      if (isExist) {
+        throw new BadRequestException('User with this address already exists');
+      }
     }
     const newUser = this.usersRepository.create({ ...createdUser });
 
@@ -111,7 +113,13 @@ export class UsersService {
 
   async getUserByEmail(email: string) {
     try {
-      return await this.usersRepository.findOneByOrFail({ email });
+      return await this.usersRepository.findOneOrFail({
+        where: { email },
+        relations: {
+          creator: true,
+          alert: true,
+        },
+      });
     } catch (error) {
       throw new NotFoundException(
         `email: ${userValidationMessages?.email?.notFound}`,

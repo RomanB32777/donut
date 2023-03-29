@@ -1,7 +1,8 @@
 import { Buffer } from "buffer";
-import { IReplaceObj } from "./types";
+import { IntlShape } from "react-intl";
 import { addNotification } from "../notifications";
 import { formatNumber } from "utils/appMethods";
+import { IReplaceObj } from "./types";
 
 export const getRandomStr = (length: number) => {
   let result = "";
@@ -20,18 +21,32 @@ export const shortStr = (str: string, length: number) => {
     : str;
 };
 
-export const copyStr = (str: string, copyObject: string = "link") => {
+export const copyStr = ({
+  str,
+  copyObject = "link",
+  intl,
+}: {
+  str: string;
+  copyObject?: string;
+  intl: IntlShape;
+}) => {
   try {
     navigator.clipboard.writeText(str);
     const formatCopyObject = copyObject[0].toUpperCase() + copyObject.slice(1);
     addNotification({
       type: "success",
-      title: `${formatCopyObject} is successfully copied`,
+      title: intl.formatMessage(
+        { id: "copy_message_successfully" },
+        { formatCopyObject }
+      ),
     });
   } catch (error) {
     addNotification({
       type: "warning",
-      title: `An error occurred while copying the ${copyObject.toLowerCase()}`,
+      title: intl.formatMessage(
+        { id: "copy_message_error" },
+        { copyObject: copyObject.toLowerCase() }
+      ),
     });
   }
 };

@@ -66,16 +66,21 @@ export class AlertsService {
       };
 
     if (lang) {
+      const cyrillic = ['rus', 'bel'];
+      const langConfig = cyrillic.includes(lang.franc)
+        ? languageCodes.Russian
+        : lang;
+
       request.voice = {
         ...request.voice,
-        languageCode: lang.google,
+        languageCode: langConfig.google,
       };
 
       let voiceName = null;
       Object.entries(languageVoices).forEach(([langCode, variants]) => {
         const findEl = variants.find(
           ({ ssmlGender }) =>
-            langCode === lang.google && ssmlGender === genderVoice,
+            langCode === langConfig.google && ssmlGender === genderVoice,
         );
         if (findEl) voiceName = findEl.voiceName;
       });

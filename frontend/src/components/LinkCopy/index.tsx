@@ -1,5 +1,7 @@
 import { FC, memo, useMemo } from "react";
 import clsx from "clsx";
+import { useIntl } from "react-intl";
+
 import { CopyIcon } from "icons";
 import { copyStr, shortStr } from "utils";
 import "./styles.sass";
@@ -19,6 +21,7 @@ const LinkCopy: FC<ILinkCopy> = ({
   linkLength,
   isSimple,
 }) => {
+  const intl = useIntl();
   const renderLink = useMemo(() => {
     if (title) return title;
     return linkLength ? shortStr(link, linkLength) : link;
@@ -35,7 +38,7 @@ const LinkCopy: FC<ILinkCopy> = ({
           className="icon"
           onClick={(event: React.MouseEvent<HTMLDivElement>) => {
             event.stopPropagation();
-            copyStr(link);
+            copyStr({ str: link, intl });
           }}
         >
           <CopyIcon />

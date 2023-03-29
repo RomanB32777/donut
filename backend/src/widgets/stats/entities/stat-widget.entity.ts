@@ -1,5 +1,11 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { IStatData, PeriodItemsAll, StatsDataTypes, TextAligmnet } from 'types';
+import {
+  IStatData,
+  PeriodItemsAll,
+  StatsDataTypes,
+  statsDataTypes,
+  TextAligmnet,
+} from 'types';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { BaseEntity } from 'src/utils/base';
@@ -36,7 +42,7 @@ export class StatWidget
     nullable: false,
   })
   @IsEnum(StatsDataTypes)
-  dataType: StatsDataTypes;
+  dataType: statsDataTypes;
 
   @Column({
     type: 'enum',
@@ -46,6 +52,14 @@ export class StatWidget
   })
   @IsEnum(PeriodItemsAll)
   timePeriod: PeriodItemsAll;
+
+  @Column({
+    type: 'varchar',
+    name: 'custom_time_period',
+    nullable: true,
+  })
+  @IsString()
+  customTimePeriod?: string;
 
   @Column({
     type: 'enum',

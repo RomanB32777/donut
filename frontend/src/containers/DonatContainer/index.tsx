@@ -1,9 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
-import { useAccount, useBalance, useSwitchNetwork } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useSwitchNetwork,
+} from "wagmi";
 import { FormattedMessage } from "react-intl";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { utils } from "ethers";
 import { ISendDonat, sendDonatFieldsKeys } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -28,9 +36,20 @@ import {
   useGetCreatorInfoQuery,
   useLazyGetUserQuery,
 } from "store/services/UserService";
-import { addNotFoundUserNotification, addNotification } from "utils";
+import {
+  addNotFoundUserNotification,
+  addNotification,
+  BlockchainNetworks,
+  fullChainsInfo,
+} from "utils";
 import { usePayment } from "./utils";
-import { dummyImg, RoutePaths, initSendDonatData, initUser } from "consts";
+import {
+  dummyImg,
+  RoutePaths,
+  initSendDonatData,
+  initUser,
+  mainAbi,
+} from "consts";
 import { IFormHandler } from "./types";
 
 import SpaceImg from "assets/space.png";
@@ -69,6 +88,29 @@ const DonatContainer = () => {
   const [notValidFields, setNotValidFields] = useState<sendDonatFieldsKeys[]>(
     []
   );
+
+  const { chain: currentChain } = useNetwork();
+
+  const currentChainNetwork = currentChain?.network;
+
+  const chainContract = currentChainNetwork
+    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks]?.contractAddress
+    : undefined;
+
+  const { config } = usePrepareContractWrite({
+    address: chainContract,
+    abi: JSON.parse(mainAbi),
+    chainId: currentChain?.id,
+    functionName: "transferMoney",
+    args: [personInfo?.walletAddress],
+    overrides: {
+      from: address,
+      value: utils.parseEther(String(form.sum)),
+      // gasLimit: BigNumber.from(100000),
+    },
+  });
+
+  const { writeAsync } = useContractWrite(config);
 
   const { id, username: usernameState } = user;
   const {
@@ -139,7 +181,7 @@ const DonatContainer = () => {
         type: "warning",
         title: "Not all fields are filled",
       });
-    } else if (personInfo) await triggerContract();
+    } else if (personInfo) await triggerContract(writeAsync);
   }, [form, personInfo]);
 
   const isNotValidAmountField = useMemo(

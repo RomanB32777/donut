@@ -1,14 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Socket } from "socket.io-client";
-import {
-  RpcError,
-  useAccount,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-} from "wagmi";
+import { RpcError, useAccount, useNetwork } from "wagmi";
 import { useIntl } from "react-intl";
-import { utils } from "ethers";
 import { ISocketEmitObj, ISendDonat, IUser } from "types";
 
 import { useSocketConnection, WebSocketContext } from "contexts/Websocket";
@@ -21,9 +14,7 @@ import useAuth from "hooks/useAuth";
 import { useActions } from "hooks/reduxHooks";
 import { useCreateDonationMutation } from "store/services/DonationsService";
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
-import { BlockchainNetworks, fullChainsInfo } from "utils/wallets/wagmi";
 import { addNotification, removeAuthToken } from "utils";
-import { mainAbi } from "consts";
 import { IError } from "appTypes";
 
 const usePayment = ({
@@ -51,28 +42,6 @@ const usePayment = ({
   const [getNotifications] = useLazyGetNotificationsQuery();
   const [checkIsExistUser] = useLazyCheckIsExistUserQuery();
   const [getUser] = useLazyGetUserQuery();
-
-  const currentChainNetwork = currentChain?.network;
-
-  const chainContract = currentChainNetwork
-    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks]?.contractAddress
-    : undefined;
-
-  const { config } = usePrepareContractWrite({
-    address: chainContract,
-    abi: JSON.parse(mainAbi),
-    chainId: currentChain?.id,
-    functionName: "transferMoney",
-    args: [creatorInfo.walletAddress],
-    overrides: {
-      from: address,
-      value: utils.parseEther(String(sum)),
-    },
-  });
-
-  const { writeAsync } = useContractWrite(config);
-
-  // useEffect(() => console.log(writeAsync), [writeAsync]);
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +114,7 @@ const usePayment = ({
     }
   };
 
-  const triggerContract = async () => {
+  const triggerContract = async (writeAsync?: () => Promise<any>) => {
     try {
       if (address) {
         const { walletAddress, id } = creatorInfo;

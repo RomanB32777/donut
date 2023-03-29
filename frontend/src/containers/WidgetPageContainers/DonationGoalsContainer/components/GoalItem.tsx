@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, memo, FC } from "react";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { goalDataKeys, IGoalData } from "types";
 
 import LinkCopy from "components/LinkCopy";
@@ -30,7 +30,8 @@ interface IGoalItem {
 }
 
 const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
-  const { id: userID, username } = useAppSelector(({ user }) => user);
+  const intl = useIntl();
+  const { username } = useAppSelector(({ user }) => user);
   const { isLaptop, isTablet } = useWindowDimensions();
   const [editGoal, { isLoading: isEditLoading }] = useEditGoalMutation();
   const [deleteGoal, { isLoading: isDeleteLoading }] = useDeleteGoalMutation();
@@ -61,7 +62,7 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
 
   const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    copyStr(linkForCopy);
+    copyStr({ str: linkForCopy, intl });
   };
 
   const initGoalItem = async () => {

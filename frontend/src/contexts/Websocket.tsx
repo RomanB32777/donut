@@ -69,12 +69,15 @@ const useSocketConnection = (username: string) => {
 };
 
 const WebSocketProvider = ({ children }: { children: ReactNode }) => {
-  const { username } = useAppSelector(({ user }) => user);
+  const user = useAppSelector(({ user }) => user);
+
+  console.log(user);
+
   const [socketContext, setSocketContext] = useState<null | Socket>(null);
-  const { connectSocket } = useSocketConnection(username);
+  const { connectSocket } = useSocketConnection(user?.username);
 
   useEffect(() => {
-    if (username) {
+    if (user?.username) {
       const socket = connectSocket();
       setSocketContext(socket);
 
@@ -82,7 +85,7 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
         socket.disconnect();
       };
     }
-  }, [username]);
+  }, [user]);
 
   return (
     <WebSocketContext.Provider value={socketContext}>

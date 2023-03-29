@@ -90,6 +90,7 @@ interface IStatDataBase {
   template: string | string[];
   dataType: statsDataTypes;
   timePeriod: allPeriodItemsTypes;
+  customTimePeriod?: string;
   creator: string;
 }
 

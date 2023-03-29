@@ -337,7 +337,14 @@ const DonationPageContainer = () => {
       </div>
       <ModalComponent
         open={isOpen}
-        title={`Default ${isHeaderBanner ? "header" : "background"} banners`}
+        title={
+          <FormattedMessage
+            id="donation_default_banners"
+            values={{
+              bannerType: isHeaderBanner ? "header" : "background",
+            }}
+          />
+        }
         width={900}
         onCancel={closeBannersPopup}
         className="donat-modal"

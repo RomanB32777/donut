@@ -1,19 +1,19 @@
 import { typeAligmnet } from "types";
 import { IAlert, IWidgetGoalData, IWidgetStatData } from "appTypes";
 
-const alignItemsList: { [key in typeAligmnet]: string } = {
+export const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
   Center: "center",
   Right: "end",
 };
 
-const alignFlextItemsList: { [key in typeAligmnet]: string } = {
+export const alignFlextItemsList: { [key in typeAligmnet]: string } = {
   Left: "flex-start",
   Center: "center",
   Right: "flex-end",
 };
 
-const initAlertData: IAlert = {
+export const initAlertData: IAlert = {
   id: "",
   banner: {
     preview: "",
@@ -44,7 +44,7 @@ const initAlertData: IAlert = {
   creator: "",
 };
 
-const initWidgetGoalData: IWidgetGoalData = {
+export const initWidgetGoalData: IWidgetGoalData = {
   amountGoal: 0,
   id: "",
   title: "",
@@ -64,14 +64,14 @@ const initWidgetGoalData: IWidgetGoalData = {
   backgroundColor: "",
 };
 
-const initWidgetStatData: IWidgetStatData = {
+export const initWidgetStatData: IWidgetStatData = {
   id: "",
   title: "",
   description: "",
   template: [],
   dataType: "top-donations",
   timePeriod: "today",
-  customPeriod: "",
+  customTimePeriod: "",
   titleColor: "",
   titleFont: {
     name: "",
@@ -85,12 +85,4 @@ const initWidgetStatData: IWidgetStatData = {
   },
   textAligment: "Left",
   creator: "",
-};
-
-export {
-  alignItemsList,
-  alignFlextItemsList,
-  initAlertData,
-  initWidgetGoalData,
-  initWidgetStatData,
 };

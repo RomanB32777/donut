@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { ICreatorInfo } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -19,7 +19,7 @@ import {
   useEditUserMutation,
 } from "store/services/UserService";
 import useAuth from "hooks/useAuth";
-import { copyStr, removeWebToken, shortStr } from "utils";
+import { copyStr, shortStr } from "utils";
 import { IUserWithFiles } from "appTypes";
 import "./styles.sass";
 
@@ -40,6 +40,7 @@ const initState: IFormSettings = {
 };
 
 const SettingsContainer = () => {
+  const intl = useIntl();
   const [editUser, { isLoading }] = useEditUserMutation();
   const [editCreatorInfo] = useEditCreatorMutation();
   const [deleteUser] = useDeleteUserMutation();
@@ -71,7 +72,9 @@ const SettingsContainer = () => {
     closeWalletsModal();
   };
 
-  const copyWalletAddress = () => copyStr(walletAddress, "Wallet address");
+  const copyWalletAddress = () => {
+    copyStr({ str: walletAddress, copyObject: "Wallet address", intl });
+  };
 
   const changeUserData = async (
     changedFields: {
@@ -269,7 +272,7 @@ const SettingsContainer = () => {
             <Col xl={18} xs={24}>
               <div className="form-element">
                 <SwitchForm
-                  label="Spam filter:"
+                  label={<FormattedMessage id="settings_spam_filter" />}
                   checked={spamFilter}
                   setValue={formElementsHandler("spamFilter")}
                   labelModificator="switch-label"
@@ -293,7 +296,7 @@ const SettingsContainer = () => {
               />
               <ConfirmPopup confirm={deleteProfile}>
                 <BaseButton
-                  title="Delete account"
+                  formatId="settings_delete_account"
                   padding="6px 30px"
                   fontSize="18px"
                   disabled={isLoading}

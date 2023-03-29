@@ -139,7 +139,7 @@ const LoginModal: React.FC<IAuthTypeModal> = ({ changeTypeModal }) => {
           </p>
 
           <p className="resetLink" onClick={toResetPage}>
-            Forgot the password
+            <FormattedMessage id="login_forgot" />
           </p>
         </div>
       </div>

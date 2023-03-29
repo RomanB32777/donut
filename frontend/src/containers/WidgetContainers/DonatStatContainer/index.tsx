@@ -98,8 +98,7 @@ const DonatStatContainer = () => {
       if (statData && personInfo) {
         try {
           const { id: userId, creator } = personInfo;
-          const { timePeriod, dataType } = statData;
-          const customPeriod = timePeriod.split("-");
+          const { timePeriod, dataType, customTimePeriod } = statData;
 
           const query: donationsQueryData = {
             limit: LIMIT,
@@ -107,18 +106,23 @@ const DonatStatContainer = () => {
             spamFilter: creator?.spamFilter,
           };
 
-          const { data } = await getWidgetDonations({
-            userId,
-            dataType,
-            query:
-              customPeriod.length > 1
-                ? Object.assign(query, {
-                    timePeriod: "custom",
-                    startDate: customPeriod[0],
-                    endDate: customPeriod[1],
-                  } as donationsQueryData)
-                : query,
-          });
+          const [params]: Parameters<typeof getWidgetDonations> = [
+            {
+              userId,
+              dataType,
+              query,
+            },
+          ];
+
+          if (customTimePeriod && params.query) {
+            const customPeriod = customTimePeriod.split("-");
+            params.query = {
+              ...params.query,
+              startDate: customPeriod[0],
+              endDate: customPeriod[1],
+            };
+          }
+          const { data } = await getWidgetDonations(params);
           data && setRenderList(data);
         } catch (error) {
           console.log(error);
@@ -129,14 +133,16 @@ const DonatStatContainer = () => {
     getDonations();
   }, [list, statData, personInfo]);
 
-  const timePeriodName = useMemo(
-    () =>
-      statData &&
-      intl.formatMessage({
-        id: getCurrentTimePeriodQuery(statData.timePeriod),
-      }),
-    [statData]
-  );
+  const timePeriodName = useMemo(() => {
+    if (statData) {
+      const { timePeriod, customTimePeriod } = statData;
+
+      if (customTimePeriod) return customTimePeriod;
+      return intl.formatMessage({
+        id: getCurrentTimePeriodQuery(timePeriod),
+      });
+    }
+  }, [statData]);
 
   const typeStatData = useMemo(
     () =>
