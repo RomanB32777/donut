@@ -19,11 +19,10 @@ const HeaderSelect = ({
   title?: string;
   isNotVisibleAvatarInMobile?: boolean;
 }) => {
-  const { id, avatarLink, username, walletAddress, roleplay } = useAppSelector(
+  const { id, avatarLink, username, roleplay } = useAppSelector(
     ({ user }) => user
   );
   const { isMobile } = useWindowDimensions();
-  // const [editUser] = useEditUserMutation();
   const blockRef = useRef(null);
   const { logout } = useAuth();
 
@@ -38,19 +37,11 @@ const HeaderSelect = ({
     logout();
   };
 
-  // const connectedWallet = async (walletAddress: string) => {
-  //   await editUser({ walletAddress, isVisibleNotification: false });
-  // };
-
   useOnClickOutside(isOpenSelect, blockRef, handlerSelect);
 
   return (
     <div ref={blockRef} className="header-select">
-      {isSupporter && !isMobile && walletAddress && (
-        <WalletBlock
-        // connectedWallet={connectedWallet}
-        />
-      )}
+      {isSupporter && !isMobile && <WalletBlock />}
       <LocalesSwitcher />
       <div
         className={clsx("info", {

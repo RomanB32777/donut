@@ -1,6 +1,8 @@
 import { typeAligmnet } from "types";
 import { IAlert, IWidgetGoalData, IWidgetStatData } from "appTypes";
 
+export const maxSoundDuration = 5; // s
+
 export const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
   Center: "center",

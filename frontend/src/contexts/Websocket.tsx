@@ -70,9 +70,6 @@ const useSocketConnection = (username: string) => {
 
 const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const user = useAppSelector(({ user }) => user);
-
-  console.log(user);
-
   const [socketContext, setSocketContext] = useState<null | Socket>(null);
   const { connectSocket } = useSocketConnection(user?.username);
 

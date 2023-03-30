@@ -709,10 +709,6 @@
     {
       "voiceName": "uk-UA-Standard-A",
       "ssmlGender": "FEMALE"
-    },
-    {
-      "voiceName": "uk-UA-Standard-B",
-      "ssmlGender": "MALE"
     }
   ],
   "ur-PK": [

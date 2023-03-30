@@ -10,8 +10,4 @@ export class QuerySoundDto implements IGenerateSoundQuery {
   @ApiProperty()
   @IsEnum(Genders)
   genderVoice: Genders;
-
-  @ApiProperty()
-  @IsString()
-  languageCode: string;
 }

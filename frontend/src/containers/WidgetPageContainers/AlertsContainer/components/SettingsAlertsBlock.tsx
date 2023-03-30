@@ -330,7 +330,9 @@ const SettingsAlertsBlock = ({
                     listModificator="list-sound"
                     listItemModificator="listItem-sound"
                     headerList={
-                      <div className="select-header">Donation sounds</div>
+                      <div className="select-header">
+                        <FormattedMessage id="alerts_sounds" />
+                      </div>
                     }
                     footerList={
                       <div className="select-footer">

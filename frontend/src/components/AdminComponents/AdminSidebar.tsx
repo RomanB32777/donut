@@ -29,16 +29,11 @@ const AdminSidebar: FC<IAdminSidebar> = ({
   sidebarStyles,
   setCollapsed,
 }) => {
-  const { id, roleplay, walletAddress } = useAppSelector(({ user }) => user);
+  const { id, roleplay } = useAppSelector(({ user }) => user);
   const { pathname } = useLocation();
   const { isMobile } = useWindowDimensions();
-  // const [editUser] = useEditUserMutation();
 
   const isSupporter = roleplay === "backers";
-
-  // const connectedWallet = async (walletAddress: string) => {
-  //   await editUser({ walletAddress, isVisibleNotification: false });
-  // };
 
   const getItem = ({ label, path, icon, children }: IGetItemParams) => ({
     key: path,
@@ -148,11 +143,10 @@ const AdminSidebar: FC<IAdminSidebar> = ({
         </div>
       }
     >
-      {isSupporter && walletAddress && isMobile && (
+      {isSupporter && isMobile && (
         <WalletBlock
           modificator="sidebar-wallet"
           popupModificator="wallet-popup"
-          // connectedWallet={connectedWallet}
         />
       )}
     </Sidebar>

@@ -32,10 +32,7 @@ import SwitchForm from "components/SwitchForm";
 import LocalesSwitcher from "components/HeaderComponents/LocalesSwitcher";
 
 import useAuth from "hooks/useAuth";
-import {
-  useGetCreatorInfoQuery,
-  useLazyGetUserQuery,
-} from "store/services/UserService";
+import { useGetCreatorInfoQuery } from "store/services/UserService";
 import {
   addNotFoundUserNotification,
   addNotification,
@@ -65,13 +62,13 @@ const requiredFormFields: sendDonatFieldsKeys[] = [
 const DonatContainer = () => {
   const navigate = useNavigate();
   const { name } = useParams();
-  const { checkAuth } = useAuth();
+  const { checkAuth, checkWallet } = useAuth();
   const {
     data: personInfo,
     isError,
     isLoading: isGetCreatorLoading,
   } = useGetCreatorInfoQuery(name ?? skipToken);
-  const [getUser] = useLazyGetUserQuery();
+  // const [getUser] = useLazyGetUserQuery();
 
   const { address } = useAccount();
   const { switchNetwork, isLoading: isSwitchLoading } = useSwitchNetwork();
@@ -111,6 +108,8 @@ const DonatContainer = () => {
   });
 
   const { writeAsync } = useContractWrite(config);
+
+  useEffect(() => console.log(!!writeAsync), [writeAsync]);
 
   const { id, username: usernameState } = user;
   const {
@@ -164,8 +163,9 @@ const DonatContainer = () => {
     navigate(`/${RoutePaths.admin}/${RoutePaths.donations}`);
   };
 
-  const getUserByAddress = async (walletAddress: string) => {
-    await getUser({ walletAddress, roleplay: "backers" });
+  const checkConnectedWallet = async () => {
+    // console.log(walletAddress);
+    await checkWallet();
   };
 
   const sendBtnHandler = useCallback(async () => {
@@ -193,6 +193,7 @@ const DonatContainer = () => {
     if (id) {
       setForm((prev) => ({ ...prev, username: usernameState }));
     } else {
+      setForm(initSendDonatData);
       checkAuth(false);
     }
   }, [id, usernameState]);
@@ -272,7 +273,7 @@ const DonatContainer = () => {
         <WalletBlock
           modificator="donut-wallet"
           isPropLoading={isSwitchLoading}
-          connectedWallet={getUserByAddress}
+          connectedWallet={checkConnectedWallet}
         />
       </HeaderComponent>
       <div className="donat-container">

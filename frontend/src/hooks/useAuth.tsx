@@ -83,8 +83,12 @@ const useAuth = () => {
               walletAddress: address,
               roleplay: "backers",
             });
+
             return true;
             // not registered user - to registration page
+          } else {
+            removeWebToken();
+            logoutUser();
           }
           return false;
         } else {
@@ -156,8 +160,10 @@ const useAuth = () => {
       if (!isCreator) {
         const isBacker = await checkWallet();
         if (!isBacker) {
-          if (redirectToMainPage) navigate(RoutePaths.main);
-          else return false;
+          if (redirectToMainPage) {
+            setIsLoading(false);
+            navigate(RoutePaths.main);
+          } else return false;
         }
         return isBacker;
       }

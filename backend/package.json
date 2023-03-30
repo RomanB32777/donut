@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^4.2.1",
+    "@google-cloud/translate": "^7.2.0",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.0.0",
@@ -62,7 +63,7 @@
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.6.1",
     "typeorm": "^0.3.12",
-    "types": "file:./types",
+    "types": "file:../types",
     "web3-token": "^1.0.4"
   },
   "devDependencies": {

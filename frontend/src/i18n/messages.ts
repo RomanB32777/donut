@@ -247,6 +247,7 @@ const messages = {
     alerts_supporter_font: "Supporter font:",
     alerts_donation_font: "Donation sum font:",
     alerts_sound: "Alert sound:",
+    alerts_sounds: "Donation sounds",
     alerts_duration: "Alert duration:",
     alerts_duration_value: "{duration} sec",
     alerts_voice: "Voice alerts:",
@@ -330,6 +331,7 @@ const messages = {
     upload_choose_banners: "You can also choose",
     upload_choose_or_banners: "Or choose",
     upload_label_image: "Upload Image",
+    upload_sound_label: "Upload custom sound +",
 
     // switch
     switch_abled: "Abled",

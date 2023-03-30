@@ -1,390 +1,125 @@
 {
-  "Arabic": {
-    "google": "ar-XA",
-    "franc": "ara"
-  },
-  "Armenian": {
-    "google": "hy-AM",
-    "franc": "hy"
-  },
-  "Azerbaijani": {
-    "google": "az-AZ",
-    "franc": "aze"
-  },
-  "Bengali": {
-    "google": "bn-IN",
-    "franc": "ben"
-  },
-  "Catalan": {
-    "google": "ca-ES",
-    "franc": "cat"
-  },
-  "Chinese (Cantonese)": {
-    "google": "yue-HK",
-    "franc": "zho"
-  },
-  "Chinese (Mandarin)": {
-    "google": "cmn-CN",
-    "franc": "zho"
-  },
-  "Croatian": {
-    "google": "hr-HR",
-    "franc": "hrv"
-  },
-  "Czech": {
-    "google": "cs-CZ",
-    "franc": "ces"
-  },
-  "Danish": {
-    "google": "da-DK",
-    "franc": "dan"
-  },
-  "Dutch": {
-    "google": "nl-NL",
-    "franc": "nld"
-  },
-  "English (Australia)": {
-    "google": "en-AU",
-    "franc": "eng"
-  },
-  "English (India)": {
-    "google": "en-IN",
-    "franc": "eng"
-  },
-  "English (United Kingdom)": {
-    "google": "en-GB",
-    "franc": "eng"
-  },
-  "English (United States)": {
-    "google": "en-US",
-    "franc": "eng"
-  },
-  "Estonian": {
-    "google": "et-EE",
-    "franc": "est"
-  },
-  "Filipino": {
-    "google": "fil-PH",
-    "franc": "fil"
-  },
-  "Finnish": {
-    "google": "fi-FI",
-    "franc": "fin"
-  },
-  "French (Canada)": {
-    "google": "fr-CA",
-    "franc": "fra"
-  },
-  "French (France)": {
-    "google": "fr-FR",
-    "franc": "fra"
-  },
-  "Galician": {
-    "google": "gl-ES",
-    "franc": "glg"
-  },
-  "Georgian": {
-    "google": "ka-GE",
-    "franc": "kat"
-  },
-  "German": {
-    "google": "de-DE",
-    "franc": "deu"
-  },
-  "Greek": {
-    "google": "el-GR",
-    "franc": "ell"
-  },
-  "Gujarati": {
-    "google": "gu-IN",
-    "franc": "guj"
-  },
-  "Haitian Creole": {
-    "google": "ht-HT",
-    "franc": "hat"
-  },
-  "Hebrew": {
-    "google": "he-IL",
-    "franc": "heb"
-  },
-  "Hungarian": {
-    "google": "hu-HU",
-    "franc": "hun"
-  },
-  "Hindi": {
-    "google": "hi-IN",
-    "franc": "hin"
-  },
-  "Icelandic": {
-    "google": "is-IS",
-    "franc": "isl"
-  },
-  "Indonesian": {
-    "google": "id-ID",
-    "franc": "ind"
-  },
-  "Irish": {
-    "google": "ga-IE",
-    "franc": "gle"
-  },
-  "Italian": {
-    "google": "it-IT",
-    "franc": "ita"
-  },
-  "Japanese": {
-    "google": "ja-JP",
-    "franc": "jpn"
-  },
-  "Javanese": {
-    "google": "jv-ID",
-    "franc": "jav"
-  },
-  "Kannada": {
-    "google": "kn-IN",
-    "franc": "kan"
-  },
-  "Khmer": {
-    "google": "km-KH",
-    "franc": "khm"
-  },
-  "Korean": {
-    "google": "ko-KR",
-    "franc": "kor"
-  },
-  "Kurdish (Sorani)": {
-    "google": "ckb-IQ",
-    "franc": "ckb"
-  },
-  "Lao": {
-    "google": "lo-LA",
-    "franc": "lao"
-  },
-  "Latvian": {
-    "google": "lv-LV",
-    "franc": "lav"
-  },
-  "Lithuanian": {
-    "google": "lt-LT",
-    "franc": "lit"
-  },
-  "Macedonian": {
-    "google": "mk-MK",
-    "franc": "mkd"
-  },
-  "Malagasy": {
-    "google": "mg-MG",
-    "franc": "mlg"
-  },
-  "Malay": {
-    "google": "ms-MY",
-    "franc": "msa"
-  },
-  "Malayalam": {
-    "google": "ml-IN",
-    "franc": "mal"
-  },
-  "Maltese": {
-    "google": "mt-MT",
-    "franc": "mlt"
-  },
-  "Maori": {
-    "google": "mi-NZ",
-    "franc": "mri"
-  },
-  "Marathi": {
-    "google": "mr-IN",
-    "franc": "mar"
-  },
-  "Mongolian": {
-    "google": "mn-MN",
-    "franc": "mon"
-  },
-  "Myanmar (Burmese)": {
-    "google": "my-MM",
-    "franc": "mya"
-  },
-  "Nepali": {
-    "google": "ne-NP",
-    "franc": "nep"
-  },
-  "Norwegian": {
-    "google": "nb-NO",
-    "franc": "nor"
-  },
-  "Nyanja (Chichewa)": {
-    "google": "ny-MW",
-    "franc": "nya"
-  },
-  "Odia (Oriya)": {
-    "google": "or-IN",
-    "franc": "ori"
-  },
-  "Pashto": {
-    "google": "ps-AF",
-    "franc": "pus"
-  },
-  "Persian": {
-    "google": "fa-IR",
-    "franc": "fas"
-  },
-  "Polish": {
-    "google": "pl-PL",
-    "franc": "pol"
-  },
-  "Portuguese (Brazil)": {
-    "google": "pt-BR",
-    "franc": "por"
-  },
-  "Portuguese (Portugal)": {
-    "google": "pt-PT",
-    "franc": "por"
-  },
-  "Punjabi": {
-    "google": "pa-IN",
-    "franc": "pan"
-  },
-  "Quechua": {
-    "google": "quz-PE",
-    "franc": "que"
-  },
-  "Romanian": {
-    "google": "ro-RO",
-    "franc": "ron"
-  },
-  "Russian": {
-    "google": "ru-RU",
-    "franc": "rus"
-  },
-  "Samoan": {
-    "google": "sm-WS",
-    "franc": "smo"
-  },
-  "Scots Gaelic": {
-    "google": "gd-GB",
-    "franc": "gla"
-  },
-  "Serbian": {
-    "google": "sr-RS",
-    "franc": "srp"
-  },
-  "Sesotho": {
-    "google": "st-ZA",
-    "franc": "sot"
-  },
-  "Shona": {
-    "google": "sn-ZW",
-    "franc": "sna"
-  },
-  "Sindhi": {
-    "google": "sd-PK",
-    "franc": "snd"
-  },
-  "Sinhala (Sinhalese)": {
-    "google": "si-LK",
-    "franc": "sin"
-  },
-  "Slovak": {
-    "google": "sk-SK",
-    "franc": "slk"
-  },
-  "Slovenian": {
-    "google": "sl-SI",
-    "franc": "slv"
-  },
-  "Somali": {
-    "google": "so-SO",
-    "franc": "som"
-  },
-  "Spanish (Spain)": {
-    "google": "es-ES",
-    "franc": "spa"
-  },
-  "Spanish (United States)": {
-    "google": "es-US",
-    "franc": "spa"
-  },
-  "Sundanese": {
-    "google": "su-ID",
-    "franc": "sun"
-  },
-  "Swahili": {
-    "google": "sw-KE",
-    "franc": "swa"
-  },
-  "Swedish": {
-    "google": "sv-SE",
-    "franc": "swe"
-  },
-  "Tagalog (Filipino)": {
-    "google": "tl-PH",
-    "franc": "tgl"
-  },
-  "Tajik": {
-    "google": "tg-TJ",
-    "franc": "tgk"
-  },
-  "Tamil": {
-    "google": "ta-IN",
-    "franc": "tam"
-  },
-  "Tatar": {
-    "google": "tt-RU",
-    "franc": "tat"
-  },
-  "Telugu": {
-    "google": "te-IN",
-    "franc": "tel"
-  },
-  "Thai": {
-    "google": "th-TH",
-    "franc": "tha"
-  },
-  "Turkish": {
-    "google": "tr-TR",
-    "franc": "tur"
-  },
-  "Turkmen": {
-    "google": "tk-TM",
-    "franc": "tuk"
-  },
-  "Ukrainian": {
-    "google": "uk-UA",
-    "franc": "ukr"
-  },
-  "Urdu": {
-    "google": "ur-PK",
-    "franc": "urd"
-  },
-  "Uyghur": {
-    "google": "ug-CN",
-    "franc": "uig"
-  },
-  "Uzbek": {
-    "google": "uz-UZ",
-    "franc": "uzb"
-  },
-  "Vietnamese": {
-    "google": "vi-VN",
-    "franc": "vie"
-  },
-  "Welsh": {
-    "google": "cy-GB",
-    "franc": "cym"
-  },
-  "Xhosa": {
-    "google": "xh-ZA",
-    "franc": "xho"
-  },
-  "Yiddish": {
-    "google": "yi-DE",
-    "franc": "yid"
-  },
-  "Yoruba": {
-    "google": "yo-NG",
-    "franc": "yor"
-  },
-  "Zulu": {
-    "google": "zu-ZA",
-    "franc": "zul"
-  }
+  "af": "af-ZA",
+  "am": "am-ET",
+  "ar": "ar-SA",
+  "as": "as-IN",
+  "az": "az-AZ",
+  "ba": "ba-RU",
+  "be": "be-BY",
+  "bg": "bg-BG",
+  "bn": "bn-BD",
+  "br": "br-FR",
+  "bs": "bs-BA",
+  "ca": "ca-ES",
+  "ceb": "ceb-PH",
+  "co": "co-FR",
+  "cs": "cs-CZ",
+  "cy": "cy-GB",
+  "da": "da-DK",
+  "de": "de-DE",
+  "el": "el-GR",
+  "en": "en-US",
+  "eo": "eo-EO",
+  "es": "es-ES",
+  "et": "et-EE",
+  "eu": "eu-ES",
+  "fa": "fa-IR",
+  "fi": "fi-FI",
+  "fil": "fil-PH",
+  "fo": "fo-FO",
+  "fr": "fr-FR",
+  "fy": "fy-NL",
+  "ga": "ga-IE",
+  "gd": "gd-GB",
+  "gl": "gl-ES",
+  "gn": "gn-PY",
+  "gu": "gu-IN",
+  "ha": "ha-NG",
+  "haw": "haw-US",
+  "he": "he-IL",
+  "hi": "hi-IN",
+  "hmn": "hmn-CN",
+  "hr": "hr-HR",
+  "ht": "ht-HT",
+  "hu": "hu-HU",
+  "hy": "hy-AM",
+  "ia": "ia-001",
+  "id": "id-ID",
+  "ig": "ig-NG",
+  "is": "is-IS",
+  "it": "it-IT",
+  "iu": "iu-CA",
+  "ja": "ja-JP",
+  "jv": "jv-ID",
+  "ka": "ka-GE",
+  "kk": "kk-KZ",
+  "km": "km-KH",
+  "kn": "kn-IN",
+  "ko": "ko-KR",
+  "ku": "ku-TR",
+  "ky": "ky-KG",
+  "la": "la-001",
+  "lb": "lb-LU",
+  "lo": "lo-LA",
+  "lt": "lt-LT",
+  "lv": "lv-LV",
+  "mg": "mg-MG",
+  "mi": "mi-NZ",
+  "mk": "mk-MK",
+  "ml": "ml-IN",
+  "mn": "mn-MN",
+  "mr": "mr-IN",
+  "ms": "ms-MY",
+  "mt": "mt-MT",
+  "my": "my-MM",
+  "nb": "nb-NO",
+  "ne": "ne-NP",
+  "nl": "nl-NL",
+  "nn": "nn-NO",
+  "no": "no-NO",
+  "ny": "ny-MW",
+  "or": "or-IN",
+  "pa": "pa-IN",
+  "pl": "pl-PL",
+  "ps": "ps-AF",
+  "pt": "pt-PT",
+  "ro": "ro-RO",
+  "ru": "ru-RU",
+  "rw": "rw-RW",
+  "sd": "sd-PK",
+  "si": "si-LK",
+  "sk": "sk-SK",
+  "sl": "sl-SI",
+  "sm": "sm-WS",
+  "sn": "sn-ZW",
+  "so": "so-SO",
+  "sq": "sq-AL",
+  "sr": "sr-RS",
+  "st": "st-LS",
+  "su": "su-ID",
+  "sv": "sv-SE",
+  "sw": "sw-KE",
+  "ta": "ta-IN",
+  "te": "te-IN",
+  "tg": "tg-TJ",
+  "th": "th-TH",
+  "ti": "ti-ET",
+  "tk": "tk-TM",
+  "tl": "tl-PH",
+  "tn": "tn-BW",
+  "to": "to-TO",
+  "tr": "tr-TR",
+  "tt": "tt-RU",
+  "tw": "tw-GH",
+  "ug": "ug-CN",
+  "uk": "uk-UA",
+  "ur": "ur-PK",
+  "uz": "uz-UZ",
+  "vi": "vi-VN",
+  "wo": "wo-SN",
+  "xh": "xh-ZA",
+  "yi": "yi-001",
+  "yo": "yo-NG",
+  "zh": "zh-CN",
+  "zu": "zu-ZA"
 }

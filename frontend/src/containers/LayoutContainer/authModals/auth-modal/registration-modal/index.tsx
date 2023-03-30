@@ -86,7 +86,6 @@ const RegistrationCreatorModal: React.FC<IRegistrationModal> = ({
           setIsVisibleBanner(false);
         },
       });
-      setForm(initState);
     } else if (address) {
       await checkWebToken();
       await createUser({

@@ -84,7 +84,8 @@ export class UsersController {
     type: User,
   })
   async getUserById(@Param('id') id: string) {
-    return await this.usersService.getUserById(id);
+    const { password, ...user } = await this.usersService.getUserById(id);
+    return user;
   }
 
   @Get('walletAddress/:address')

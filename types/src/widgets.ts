@@ -59,7 +59,6 @@ interface IAlertData<
 
 interface IGenerateSoundQuery extends Pick<IAlertData, "genderVoice"> {
   text: string;
-  languageCode: string;
 }
 
 interface IEditAlertData

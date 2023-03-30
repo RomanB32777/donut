@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import googlePkg from '@google-cloud/text-to-speech/build/protos/protos.js';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
+import { v2 } from '@google-cloud/translate';
+
 import { IStaticFile } from 'types';
 
 import { getDefaultValues, getRepositoryFields } from 'src/utils';
@@ -50,14 +52,16 @@ export class AlertsService {
     });
   }
 
-  async generateSound({ text, genderVoice, languageCode }: QuerySoundDto) {
-    const lang = Object.values(languageCodes).find(
-      ({ franc }) => franc === languageCode,
-    );
+  async generateSound({ text, genderVoice }: QuerySoundDto) {
+    const formatText = text.replaceAll('*', '');
+
+    const translate = new v2.Translate();
+    const [detectResult] = await translate.detect(formatText);
+    const lang = languageCodes[detectResult.language];
 
     const request: googlePkg.google.cloud.texttospeech.v1.ISynthesizeSpeechRequest =
       {
-        input: { text: text.replaceAll('*', '') },
+        input: { text: formatText },
         voice: {
           languageCode: 'en-US',
           ssmlGender: 'NEUTRAL',
@@ -66,21 +70,15 @@ export class AlertsService {
       };
 
     if (lang) {
-      const cyrillic = ['rus', 'bel'];
-      const langConfig = cyrillic.includes(lang.franc)
-        ? languageCodes.Russian
-        : lang;
-
       request.voice = {
         ...request.voice,
-        languageCode: langConfig.google,
+        languageCode: lang,
       };
 
       let voiceName = null;
       Object.entries(languageVoices).forEach(([langCode, variants]) => {
         const findEl = variants.find(
-          ({ ssmlGender }) =>
-            langCode === langConfig.google && ssmlGender === genderVoice,
+          ({ ssmlGender }) => langCode === lang && ssmlGender === genderVoice,
         );
         if (findEl) voiceName = findEl.voiceName;
       });
@@ -95,8 +93,19 @@ export class AlertsService {
     }
 
     const speechClient = new TextToSpeechClient();
-    const [response] = await speechClient.synthesizeSpeech(request);
-    return response.audioContent;
+    try {
+      const [response] = await speechClient.synthesizeSpeech(request);
+      return response.audioContent;
+    } catch (error) {
+      const [response] = await speechClient.synthesizeSpeech({
+        ...request,
+        voice: {
+          languageCode: 'en-US',
+          ssmlGender: 'NEUTRAL',
+        },
+      });
+      return response.audioContent;
+    }
   }
 
   uploadSound(userId: string, file: Express.Multer.File): IStaticFile {

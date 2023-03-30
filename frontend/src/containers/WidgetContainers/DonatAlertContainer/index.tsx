@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useParams } from "react-router";
-import { franc } from "franc";
 import { IGenerateSoundQuery, INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -12,14 +11,13 @@ import {
   getFontsList,
   loadFonts,
 } from "utils";
-import { initAlertData, baseURL } from "consts";
+import { initAlertData, baseURL, maxSoundDuration } from "consts";
 import { IAlert } from "appTypes";
 
 import bigImg from "assets/big_don.png";
 import "./styles.sass";
 
 const alertSound = new Audio();
-const maxDuration = 5000;
 
 const DonatAlertContainer = () => {
   const { list } = useAppSelector(({ notifications }) => notifications);
@@ -50,7 +48,7 @@ const DonatAlertContainer = () => {
     const donation = lastNotif?.donation;
     if (donation) {
       const { message } = donation;
-      if (sound && maxDuration) {
+      if (sound) {
         playSound(sound.path);
         setTimeout(() => {
           const { duration } = alertWidgetData;
@@ -58,7 +56,6 @@ const DonatAlertContainer = () => {
             const text = message.replaceAll("*", "");
             const queryParams: IGenerateSoundQuery = {
               text,
-              languageCode: franc(text),
               genderVoice,
             };
 
@@ -74,7 +71,7 @@ const DonatAlertContainer = () => {
           setTimeout(() => {
             setLastNotif(null);
           }, duration * 1000);
-        }, maxDuration);
+        }, maxSoundDuration * 1000);
       }
     }
   }, [lastNotif, alertWidgetData]);

@@ -4,7 +4,6 @@ import clsx from "clsx";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import Loader from "components/Loader";
-
 import "./styles.sass";
 
 export interface IModalComponent extends ModalProps {

@@ -105,9 +105,11 @@ export class UsersService {
   }
 
   async getUserByAddress(walletAddress: string, query?: QueryRole) {
-    return await this.usersRepository.findOneBy({
-      walletAddress: ILike(`%${walletAddress}%`),
-      roleplay: query?.roleplay,
+    return await this.usersRepository.findOne({
+      where: {
+        walletAddress: ILike(`%${walletAddress}%`),
+        roleplay: query?.roleplay,
+      },
     });
   }
 
@@ -174,6 +176,14 @@ export class UsersService {
     file?: Express.Multer.File,
   ): Promise<User> {
     const userInfo = await this.getUserById(userId);
+
+    if (updatedUser.walletAddress) {
+      const isExist = await this.checkUserExist(updatedUser.walletAddress);
+      if (isExist) {
+        throw new BadRequestException('User with this address already exists');
+      }
+    }
+
     if (file && userInfo) {
       const { path } = this.fileService.uploadFile(file, userId, 'avatar');
       updatedUser.avatarLink = path;
