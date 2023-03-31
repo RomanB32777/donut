@@ -3,6 +3,7 @@ import { Badge } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
+import { useIntl } from "react-intl";
 import { INotification } from "types";
 
 import {
@@ -24,6 +25,7 @@ const NotificationItem = ({
   notification: INotification;
   handlerNotificationPopup: () => void;
 }) => {
+  const intl = useIntl();
   const [setStatusNotification] = useSetStatusNotificationMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
 
@@ -81,25 +83,31 @@ const NotificationItem = ({
             <div className="content">
               <div className="message" onClick={messageClick}>
                 {donation &&
-                  getDonatNotificationMessage({
-                    type: notificationType,
-                    user: otherUserNotification?.user.username || "@user",
-                    data: {
-                      sum: donation.sum,
-                      blockchain: donation.blockchain,
-                      message: donation.message,
+                  getDonatNotificationMessage(
+                    {
+                      type: notificationType,
+                      user: otherUserNotification?.user.username || "@user",
+                      data: {
+                        sum: donation.sum,
+                        blockchain: donation.blockchain,
+                        message: donation.message,
+                      },
                     },
-                  })}
+                    intl
+                  )}
 
                 {badge &&
-                  getBadgeNotificationMessage({
-                    type: notificationType,
-                    user: otherUserNotification?.user.username || "@user",
-                    data: {
-                      id: badge.id,
-                      title: badge.title,
+                  getBadgeNotificationMessage(
+                    {
+                      type: notificationType,
+                      user: otherUserNotification?.user.username || "@user",
+                      data: {
+                        id: badge.id,
+                        title: badge.title,
+                      },
                     },
-                  })}
+                    intl
+                  )}
               </div>
               <CloseOutlined onClick={deleteItem} />
             </div>

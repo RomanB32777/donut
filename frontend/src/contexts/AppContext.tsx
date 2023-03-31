@@ -7,7 +7,7 @@ type ActiveAuthModalType = "roles" | "wallets" | "sign" | null;
 interface IAppContext {
   locale: LOCALES;
   activeAuthModal: ActiveAuthModalType;
-  handleLocale: (locale: LOCALES) => void;
+  handleLocale: (locale: LOCALES, isRealod?: boolean) => void;
   setActiveAuthModal: (modalType: ActiveAuthModalType) => void;
   // connectedWalletCb: (address: string) => any;
 }
@@ -25,9 +25,10 @@ const AppContext = createContext<IAppContext>(initAppContext);
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [context, setContext] = useState<IAppContext>(initAppContext);
 
-  const handleLocale = (locale: LOCALES) => {
+  const handleLocale = (locale: LOCALES, isReload = true) => {
     setContext((context) => ({ ...context, locale }));
     localStorage.setItem(localesStorageKey, locale);
+    if (isReload) window.location.reload();
   };
 
   const setActiveAuthModal = (modalType: ActiveAuthModalType) => {
@@ -36,7 +37,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const storageLocale = localStorage.getItem(localesStorageKey);
-    storageLocale && handleLocale(storageLocale as LOCALES);
+    storageLocale && handleLocale(storageLocale as LOCALES, false);
   }, []);
 
   return (

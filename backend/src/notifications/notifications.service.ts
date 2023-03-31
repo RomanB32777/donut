@@ -25,13 +25,14 @@ export class NotificationsService {
     notification.badge = createNotificationDto.badge;
     notification.users = createNotificationDto.users;
 
-    const notificationsUser: NotificationsUsers[] = [];
-    createNotificationDto.users.forEach(({ user, roleplay }) => {
-      const notificationUser = new NotificationsUsers();
-      notificationUser.user = user;
-      notificationUser.roleplay = roleplay;
-      notificationsUser.push(notificationUser);
-    });
+    const notificationsUser = createNotificationDto.users.map(
+      ({ user, roleplay }) => {
+        const notificationUser = new NotificationsUsers();
+        notificationUser.user = user;
+        notificationUser.roleplay = roleplay;
+        return notificationUser;
+      },
+    );
 
     notification.users = notificationsUser;
     return await this.notificationsRepository.save(notification);

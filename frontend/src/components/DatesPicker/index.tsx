@@ -19,19 +19,19 @@ const DatesPicker = ({
   toFormat?: string;
   setValue: (startDate: string, endDate: string) => void;
 }) => {
-  const { locale } = useIntl();
+  const intl = useIntl();
   // const { locale } = useContext(AppContext);
   const [pickerLocale, setPickerLocale] = useState<any>(null);
 
-  useEffect(() => {
-    // TODO
-    // console.log(locale);
-    // const settedLocale = locale as LOCALES;
-    // antdLocales[settedLocale]().then((importedLocale: any) => {
-    //   console.log(importedLocale);
-    //   setPickerLocale(importedLocale);
-    // });
-  }, [locale]);
+  // useEffect(() => {
+  // TODO
+  // console.log(locale);
+  // const settedLocale = locale as LOCALES;
+  // antdLocales[settedLocale]().then((importedLocale: any) => {
+  //   console.log(importedLocale);
+  //   setPickerLocale(importedLocale);
+  // });
+  // }, [locale]);
 
   return (
     <div className="datesPicker">
@@ -49,6 +49,10 @@ const DatesPicker = ({
         }
         locale={pickerLocale}
         disabledDate={(d) => !d || d.isAfter(dayjsModule())}
+        placeholder={[
+          intl.formatMessage({ id: "dates_picker_placeholder_start" }),
+          intl.formatMessage({ id: "dates_picker_placeholder_end" }),
+        ]}
       />
     </div>
   );

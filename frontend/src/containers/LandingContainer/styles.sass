@@ -6,6 +6,8 @@
     background: variables.$blue-dark-color
 
     .localeModificator
+        margin-left: 0
+        margin-right: 15px
 
     .landing-padding
         padding: 0 150px
@@ -29,9 +31,15 @@
         line-height: 28px
         padding: 10px 40px
 
-        &.connect-btn
-            margin-left: 15px
+        &.connectBtn
             padding: 10px 25px
+            font-size: 18px
+            line-height: 22px
+
+            @media (max-width: 768px)
+                padding: 10px
+                font-size: 16px
+                line-height: 18px
 
     .center-btn
         margin: 50px auto 0

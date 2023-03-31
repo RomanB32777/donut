@@ -21,9 +21,9 @@ import { ITableData, tableColumns } from "./tableData";
 import { formatNumber } from "utils";
 import { exportToExcel } from "./utils";
 import { filterPeriodItems } from "consts";
+import { IDonationWidgetInfo, LOCALES } from "appTypes";
 
 import "./styles.sass";
-import { IDonationWidgetInfo } from "appTypes";
 
 const LIMIT_DONATS = 15;
 
@@ -47,7 +47,14 @@ const DonationsContainer = () => {
     endDate: "",
   });
 
+  const { locale } = intl;
   const { timePeriod, searchStr, groupByName } = queryForm;
+
+  const rightBtnsXlCol = useMemo(() => {
+    if (locale === LOCALES.RU) return 8;
+    if (locale === LOCALES.KR) return 7;
+    return 6;
+  }, [locale]);
 
   const selectTableData = useMemo(
     () =>
@@ -126,7 +133,7 @@ const DonationsContainer = () => {
   );
 
   const exportExcelHandler = useCallback(
-    () => exportToExcel(tableData),
+    () => tableData.length && exportToExcel(tableData),
     [tableData]
   );
 
@@ -199,7 +206,7 @@ const DonationsContainer = () => {
                 {!isCreator && (
                   <Col md={12} xs={11}>
                     <BaseButton
-                      formatId="create_filter_button"
+                      formatId="filter_button"
                       onClick={filterBtnClick}
                       modificator="btn"
                       icon={<CalendarIcon />}
@@ -211,12 +218,12 @@ const DonationsContainer = () => {
             </div>
           </Col>
           {isCreator && (
-            <Col xl={6} md={13} xs={24}>
+            <Col xl={rightBtnsXlCol} md={13} xs={24}>
               <div className="right">
                 <Row justify={isLaptop ? "start" : "end"}>
                   <Col xl={12}>
                     <BaseButton
-                      formatId="create_filter_button"
+                      formatId="filter_button"
                       onClick={filterBtnClick}
                       modificator="btn"
                       icon={<CalendarIcon />}
@@ -225,10 +232,11 @@ const DonationsContainer = () => {
                   </Col>
                   <Col xl={12}>
                     <BaseButton
-                      formatId="create_export_button"
+                      formatId="export_button"
                       onClick={exportExcelHandler}
                       modificator="btn"
                       icon={<DownloadIcon />}
+                      disabled={!tableData.length}
                     />
                   </Col>
                 </Row>

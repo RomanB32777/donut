@@ -39,13 +39,14 @@ export class UsersService {
   ) {}
 
   async create(createdUser: CreateUserDto) {
-    const { roleplay, walletAddress } = createdUser;
+    const { roleplay, walletAddress, username } = createdUser;
     if (walletAddress) {
       const isExist = await this.checkUserExist(walletAddress);
       if (isExist) {
         throw new BadRequestException('User with this address already exists');
       }
     }
+    if (username[0] !== '@') createdUser.username = `@${username}`;
     const newUser = this.usersRepository.create({ ...createdUser });
 
     if (roles.filter((role) => role !== 'backers').includes(roleplay)) {
@@ -175,7 +176,7 @@ export class UsersService {
     updatedUser: UpdateUserDto,
     file?: Express.Multer.File,
   ): Promise<User> {
-    const userInfo = await this.getUserById(userId);
+    const { username } = updatedUser;
 
     if (updatedUser.walletAddress) {
       const isExist = await this.checkUserExist(updatedUser.walletAddress);
@@ -184,7 +185,11 @@ export class UsersService {
       }
     }
 
-    if (file && userInfo) {
+    if (username && username?.[0] !== '@') {
+      updatedUser.username = `@${username}`;
+    }
+
+    if (file) {
       const { path } = this.fileService.uploadFile(file, userId, 'avatar');
       updatedUser.avatarLink = path;
     }

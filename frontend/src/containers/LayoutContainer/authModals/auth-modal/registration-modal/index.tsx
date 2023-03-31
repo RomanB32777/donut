@@ -196,7 +196,7 @@ const RegistrationCreatorModal: React.FC<IRegistrationModal> = ({
               />
             </div>
           )}
-          <div className="btnWrapper">
+          <div className={clsx("btnWrapper", { noMargin: isCreator })}>
             <BaseButton
               formatId="registration_button"
               onClick={btnHandler}

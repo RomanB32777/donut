@@ -47,3 +47,7 @@ export interface IError {
   message: string;
   statusCode: number;
 }
+
+export interface IsVisibleNotification {
+  isVisibleNotification?: boolean;
+}

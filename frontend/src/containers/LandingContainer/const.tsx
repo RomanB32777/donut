@@ -99,10 +99,10 @@ const help = [
 ];
 
 const socialNetworks = [
-  {
-    link: "https://discord.gg/PHEQCjnY",
-    icon: <DiscordIcon />,
-  },
+  // {
+  //   link: "https://discord.gg/PHEQCjnY",
+  //   icon: <DiscordIcon />,
+  // },
   {
     link: "https://t.me/cryptodonutz_xyz",
     icon: <TelegramIcon />,

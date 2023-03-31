@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
 import { io, Socket } from "socket.io-client";
 import { IBadgeBase, ISocketNotification } from "types";
+import { useIntl } from "react-intl";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
@@ -14,6 +15,7 @@ import { baseURL } from "consts";
 const WebSocketContext = createContext<Socket | null>(null);
 
 const useSocketConnection = (username: string) => {
+  const intl = useIntl();
   const [getNotifications] = useLazyGetNotificationsQuery();
 
   const connectSocket = () => {
@@ -39,12 +41,15 @@ const useSocketConnection = (username: string) => {
     socket.on("newDonat", (data: ISocketNotification) => {
       addNotification({
         type: "info",
-        title: "New donut",
-        message: getDonatNotificationMessage({
-          type: "donat_creator",
-          user: data.supporter,
-          data: data.additional,
-        }),
+        title: intl.formatMessage({ id: "notifications_donat_title" }),
+        message: getDonatNotificationMessage(
+          {
+            type: "donat_creator",
+            user: data.supporter,
+            data: data.additional,
+          },
+          intl
+        ),
       });
       getNotifications({ username });
     });
@@ -52,12 +57,15 @@ const useSocketConnection = (username: string) => {
     socket.on("newBadge", (data: ISocketNotification<IBadgeBase>) => {
       addNotification({
         type: "info",
-        title: "New badge",
-        message: getBadgeNotificationMessage({
-          type: "add_badge_supporter",
-          user: data.supporter,
-          data: data.additional,
-        }),
+        title: intl.formatMessage({ id: "notifications_badge_title" }),
+        message: getBadgeNotificationMessage(
+          {
+            type: "add_badge_supporter",
+            user: data.supporter,
+            data: data.additional,
+          },
+          intl
+        ),
       });
       getNotifications({ username });
     });

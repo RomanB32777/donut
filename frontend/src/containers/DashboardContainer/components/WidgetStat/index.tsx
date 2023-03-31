@@ -3,7 +3,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import type { ChartData } from "chart.js";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { periodItemsTypes } from "types";
 
 import WidgetLoader from "../WidgetLoader";
@@ -27,7 +27,7 @@ const initChartData: ChartData<"line"> = {
   labels: [],
   datasets: [
     {
-      label: "Donation sum",
+      label: "dashboard_widgets_stats_label",
       data: [],
       fill: true,
       pointBackgroundColor: "rgba(233, 69, 96, 1)",
@@ -38,6 +38,7 @@ const initChartData: ChartData<"line"> = {
 };
 
 const WidgetStat = () => {
+  const intl = useIntl();
   const { id } = useAppSelector(({ user }) => user);
   const { list, shouldUpdateApp } = useAppSelector(
     ({ notifications }) => notifications
@@ -88,12 +89,19 @@ const WidgetStat = () => {
             const labels = Object.keys(groupDonats).map((date: string) => date);
             const values = Object.values(groupDonats).map((sum: any) => sum);
 
+            const initChart = {
+              ...initChartData.datasets[0],
+              label: intl.formatMessage({
+                id: "dashboard_widgets_stats_label",
+              }),
+            };
+
             const dataChart: ChartData<"line"> = {
               ...initChartData,
               labels,
               datasets: [
                 {
-                  ...initChartData.datasets[0],
+                  ...initChart,
                   data: values,
                 },
               ],

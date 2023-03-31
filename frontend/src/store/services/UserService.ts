@@ -8,6 +8,7 @@ import {
 } from "types";
 import { setFormDataValues } from "utils";
 import { baseQuery } from "./utils";
+import { IsVisibleNotification } from "appTypes";
 
 interface IEditUserInfo extends Pick<IUser, "walletAddress" | "username"> {
   [FileUploadTypes.avatar]: File | null;
@@ -59,11 +60,15 @@ const userApi = createApi({
       query: () => "location",
     }),
 
-    createUser: build.mutation<IUser, Omit<IShortUserData, "id">>({
-      query: (userInfo) => ({
+    createUser: build.mutation<
+      IUser,
+      Omit<IShortUserData & IsVisibleNotification, "id">
+    >({
+      query: ({ isVisibleNotification, ...userInfo }) => ({
         url: "/",
         method: "POST",
         body: userInfo,
+        params: { isVisibleNotification },
       }),
       invalidatesTags: ["users"],
       // extraOptions: {},
@@ -71,7 +76,7 @@ const userApi = createApi({
 
     editUser: build.mutation<
       IUser,
-      Partial<IEditUserInfo & { isVisibleNotification: boolean }>
+      Partial<IEditUserInfo & IsVisibleNotification>
     >({
       query: ({ isVisibleNotification, ...userInfo }) => {
         const formData = new FormData();

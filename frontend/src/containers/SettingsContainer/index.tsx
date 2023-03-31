@@ -249,15 +249,15 @@ const SettingsContainer = () => {
                   />
                 </Col>
                 {isCreator && (
-                  <Col offset={1} span={3}>
+                  <Col md={{ offset: 1, span: 3 }} xs={{ offset: 0, span: 10 }}>
                     <p className="action wallet" onClick={openWalletsModal}>
                       <FormattedMessage id="settings_change_button" />
                     </p>
                   </Col>
                 )}
-                <Col span={isCreator ? 4 : 7}>
+                <Col md={{ span: isCreator ? 4 : 7 }} xs={{ span: 14 }}>
                   <p
-                    className={clsx("action", "wallet", {
+                    className={clsx("action wallet", {
                       disabled: !walletAddress,
                     })}
                     onClick={copyWalletAddress}
@@ -287,9 +287,7 @@ const SettingsContainer = () => {
             <div className="btn-bottom">
               <BaseButton
                 formatId="save_changes_button"
-                padding="6px 25px"
-                fontSize="18px"
-                modificator="save-btn"
+                modificator="settingsBtn saveBtn"
                 onClick={saveSettings}
                 disabled={isLoading || !username || !changedElements.length}
                 isMain
@@ -297,8 +295,7 @@ const SettingsContainer = () => {
               <ConfirmPopup confirm={deleteProfile}>
                 <BaseButton
                   formatId="settings_delete_account"
-                  padding="6px 30px"
-                  fontSize="18px"
+                  modificator="settingsBtn"
                   disabled={isLoading}
                   isBlack
                 />

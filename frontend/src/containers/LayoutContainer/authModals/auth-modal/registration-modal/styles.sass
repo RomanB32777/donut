@@ -19,7 +19,7 @@
         max-width: 80%
         margin: 0 auto
 
-        @media (max-width: 640px)
+        @media (max-width: 576px)
             max-width: 96%
 
         .registrationInputWrapper
@@ -45,7 +45,16 @@
             padding: 11px 45px
             font-size: 25px
             line-height: 28px
-            margin-top: 30px
+            margin-top: 20px
+
+        @media (max-width: 768px)
+            margin: 0 auto 20px
+
+            &.noMargin
+                margin: 0
+
+            .registrationBtn
+                margin-top: 10px
 
     .loginLink
         font-family: variables.$pt-font

@@ -1,7 +1,12 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useDisconnect, useNetwork, useSignMessage } from "wagmi";
-import { switchNetwork } from "@wagmi/core";
+import {
+  useAccount,
+  useDisconnect,
+  useNetwork,
+  useSignMessage,
+  useSwitchNetwork,
+} from "wagmi";
 import Web3Token from "web3-token";
 import { userRoles } from "types";
 
@@ -30,6 +35,7 @@ const useAuth = () => {
   const { isConnected, address } = useAccount();
   const { chain: currentChain } = useNetwork();
   const { disconnect } = useDisconnect();
+  const { switchNetwork } = useSwitchNetwork();
   const [getUser] = useLazyGetUserQuery();
   const { signMessageAsync } = useSignMessage();
   const [verifyToken] = useLazyVerifyTokenQuery();
@@ -69,18 +75,21 @@ const useAuth = () => {
   // const selectWallet = (cb: (address: string) => void) => (address: string) =>
   //   cb(address);
 
-  const checkWallet = async () => {
+  const checkWallet = async (propAddress?: string) => {
     try {
-      if (address) {
+      const walletAddress = address ?? propAddress;
+
+      if (walletAddress) {
         if (currentChain) {
           const { data: isExistBacker } = await checkIsExistUser({
-            field: address,
+            field: walletAddress,
             role: "backers",
           });
+
           if (isExistBacker) {
             await checkWebToken();
             await getUser({
-              walletAddress: address,
+              walletAddress: walletAddress,
               roleplay: "backers",
             });
 
@@ -89,25 +98,19 @@ const useAuth = () => {
           } else {
             removeWebToken();
             logoutUser();
+            return false;
           }
-          return false;
         } else {
           const { maticmum, matic } = fullChainsInfo;
           const defaultChain =
             process.env.NODE_ENV === "development" ? maticmum : matic;
 
-          // switchNetwork?.(defaultChain.id);
-          await switchNetwork({
-            chainId: defaultChain.id,
-          });
+          switchNetwork?.(defaultChain.id);
           return false;
         }
       } else {
         console.log("not connected");
         return false;
-        // if (isRedirect) {
-        //   logout();
-        // } else setActiveAuthModal("wallets");
       }
     } catch (error) {
       console.log(error);

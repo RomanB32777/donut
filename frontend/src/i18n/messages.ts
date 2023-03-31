@@ -58,8 +58,8 @@ const messages = {
 
     // buttons
     create_new_form_button: "Create new",
-    create_export_button: "Export",
-    create_filter_button: "Filter",
+    export_button: "EXPORT",
+    filter_button: "FILTER",
     save_changes_button: "Save changes",
     reset_changes_button: "Reset",
     form_cancel_button: "Cancel",
@@ -174,6 +174,7 @@ const messages = {
 
     // dashboard
     dashboard_widgets_stats: "Stats",
+    dashboard_widgets_stats_label: "Donation sum",
     dashboard_widgets_recent: "Recent donations",
     dashboard_widgets_supporters: "Top supporters",
     dashboard_widgets_donations: "Top donations",
@@ -341,6 +342,12 @@ const messages = {
     notifications_no: "No notifications",
     notifications_title: "Notifications",
     notifications_clear: "Clear all",
+    notifications_donat_title: "New donut",
+    notifications_badge_title: "New badge",
+    notifications_donat_creator: "{user} sent you {sum} {blockchain}!",
+    notifications_donat_supporter: "You sent {sum} {blockchain} to {user}!",
+    notifications_add_badge_creator: "You sent {title} to {user}",
+    notifications_add_badge_supporter: "You received {title} from {user}",
 
     // empty
     empty_data: "No data",
@@ -373,6 +380,10 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} is successfully copied",
     copy_message_error: "An error occurred while copying the {copyObject}",
+
+    // dates picker
+    dates_picker_placeholder_start: "Start date",
+    dates_picker_placeholder_end: "End date",
   },
   [LOCALES.RU]: {
     // reset
@@ -432,13 +443,13 @@ const messages = {
 
     // buttons
     create_new_form_button: "Создать",
-    create_export_button: "Выгрузить",
-    create_filter_button: "Сортировать",
-    save_changes_button: "Сохранить изменения",
+    export_button: "Выгрузить",
+    filter_button: "Сортировать",
+    save_changes_button: "Сохранить",
     reset_changes_button: "Сбросить",
     form_cancel_button: "Отменить",
-    form_save_widget_button: "Сохранить виджет",
-    form_save_goal_button: "Сохранить цель",
+    form_save_widget_button: "Сохранить",
+    form_save_goal_button: "Сохранить",
     create_badge_form_button: "Создать бейдж",
     sign_out_button: "Выйти",
 
@@ -548,6 +559,7 @@ const messages = {
 
     // dashboard
     dashboard_widgets_stats: "Статистика",
+    dashboard_widgets_stats_label: "Сумма пожертвований",
     dashboard_widgets_recent: "Последние донаты",
     dashboard_widgets_supporters: "Топ донатеров",
     dashboard_widgets_donations: "Топ донаты",
@@ -606,6 +618,7 @@ const messages = {
     settings_avatar: "Аватар:",
     settings_username: "Имя пользователя:",
     settings_wallet: "Кошелек:",
+    settings_spam_filter: "Фильтр спама:",
     settings_change_button: "Изменить",
     settings_copy_button: "Копировать",
     settings_delete_account: "Удалить аккаунт",
@@ -621,6 +634,7 @@ const messages = {
     alerts_supporter_font: "Шрифт донатера:",
     alerts_donation_font: "Шрифт суммы доната:",
     alerts_sound: "Звук оповещения:",
+    alerts_sounds: "Звуки пожертвований",
     alerts_duration: "Длительность оповещения:",
     alerts_duration_value: "{duration} секунд",
     alerts_voice: "Голосовые оповещения:",
@@ -663,7 +677,7 @@ const messages = {
 
     // donat page
     donat_form_username: "Ваше имя пользователя",
-    donat_form_switch_label: "Включите, чтобы быть анонимным",
+    donat_form_switch_label: "Включите анонимность",
     donat_form_message: "Сообщение для {username}",
     donat_form_amount: "Сумма пожертвования",
     donat_form_equal_usd: "Эквивалент {convertedUsdSum} USD",
@@ -704,6 +718,7 @@ const messages = {
     upload_choose_banners: "Вы также можете использовать",
     upload_choose_or_banners: "или выберите",
     upload_label_image: "Загрузить изображение",
+    upload_sound_label: "Загрузить свой звук +",
 
     // switch
     switch_abled: "Включено",
@@ -711,6 +726,14 @@ const messages = {
 
     // notifications
     notifications_no: "Нет уведомлений",
+    notifications_title: "Уведомления",
+    notifications_clear: "Очистить все",
+    notifications_donat_title: "Новое пожертвование",
+    notifications_badge_title: "Новый значок",
+    notifications_donat_creator: "{user} отправил вам {sum} {blockchain}!",
+    notifications_donat_supporter: "Вы отправили {sum} {blockchain} {user}!",
+    notifications_add_badge_creator: "Вы отправили {title} {user}",
+    notifications_add_badge_supporter: "Вы получили {title} от {user}",
 
     // empty
     empty_data: "Нет данных",
@@ -743,8 +766,11 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} успешно скопировано",
     copy_message_error: "При копировании {copyObject} произошла ошибка",
-  },
 
+    // dates picker
+    dates_picker_placeholder_start: "Дата начала",
+    dates_picker_placeholder_end: "Дата окончания",
+  },
   [LOCALES.ES]: {
     // reset
     reset_title: "Restablecer la contraseña",
@@ -804,8 +830,8 @@ const messages = {
 
     // buttons
     create_new_form_button: "Crear nuevo",
-    create_export_button: "Exportar",
-    create_filter_button: "Filtrar",
+    export_button: "Exportar",
+    filter_button: "Filtrar",
     save_changes_button: "Guardar cambios",
     reset_changes_button: "Restablecer",
     form_cancel_button: "Cancelar",
@@ -922,6 +948,7 @@ const messages = {
 
     // dashboard
     dashboard_widgets_stats: "Estadísticas",
+    dashboard_widgets_stats_label: "Suma de donaciones",
     dashboard_widgets_recent: "Donaciones recientes",
     dashboard_widgets_supporters: "Principales seguidores",
     dashboard_widgets_donations: "Principales donaciones",
@@ -981,6 +1008,7 @@ const messages = {
     settings_avatar: "Avatar:",
     settings_username: "Nombre de usuario:",
     settings_wallet: "Cartera:",
+    settings_spam_filter: "Filtro de spam:",
     settings_change_button: "Cambiar",
     settings_copy_button: "Copiar",
     settings_delete_account: "Eliminar cuenta",
@@ -996,6 +1024,7 @@ const messages = {
     alerts_supporter_font: "Fuente del seguidor:",
     alerts_donation_font: "Fuente de la suma de la donación:",
     alerts_sound: "Sonido de alerta:",
+    alerts_sounds: "Sonidos de donaciones",
     alerts_duration: "Duración de la alerta:",
     alerts_duration_value: "{duration} seg",
     alerts_voice: "Alertas de voz:",
@@ -1082,6 +1111,7 @@ const messages = {
     upload_choose_banners: "También puedes elegir",
     upload_choose_or_banners: "O elegir",
     upload_label_image: "Subir imagen",
+    upload_sound_label: "Subir sonido personalizado +",
 
     // switch
     switch_abled: "Habilitado",
@@ -1089,6 +1119,14 @@ const messages = {
 
     // notifications
     notifications_no: "No hay notificaciones",
+    notifications_title: "Notificaciones",
+    notifications_clear: "Borrar todo",
+    notifications_donat_title: "Nueva donación",
+    notifications_badge_title: "Nuevo distintivo",
+    notifications_donat_creator: "¡{user} te ha enviado {sum} {blockchain}!",
+    notifications_donat_supporter: "¡Has enviado {sum} {blockchain} a {user}!",
+    notifications_add_badge_creator: "Has enviado {title} a {user}",
+    notifications_add_badge_supporter: "Has recibido {title} de {user}",
 
     // empty
     empty_data: "No hay datos",
@@ -1122,6 +1160,10 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} se copió correctamente",
     copy_message_error: "Se produjo un error al copiar {copyObject}",
+
+    // dates picker
+    dates_picker_placeholder_start: "Fecha de inicio",
+    dates_picker_placeholder_end: "Fecha de finalización",
   },
   [LOCALES.TH]: {
     // reset
@@ -1180,8 +1222,8 @@ const messages = {
 
     // buttons
     create_new_form_button: "สร้างใหม่",
-    create_export_button: "ส่งออก",
-    create_filter_button: "กรอง",
+    export_button: "ส่งออก",
+    filter_button: "กรอง",
     save_changes_button: "บันทึกการเปลี่ยนแปลง",
     reset_changes_button: "รีเซ็ต",
     form_cancel_button: "ยกเลิก",
@@ -1296,6 +1338,7 @@ const messages = {
 
     // dashboard
     dashboard_widgets_stats: "สถิติ",
+    dashboard_widgets_stats_label: "รวมยอดการบริจาค",
     dashboard_widgets_recent: "การบริจาคล่าสุด",
     dashboard_widgets_supporters: "ผู้สนับสนุนที่ประสบความสำเร็จ",
     dashboard_widgets_donations: "การบริจาคที่ประสบความสำเร็จ",
@@ -1350,6 +1393,7 @@ const messages = {
     settings_avatar: "อวาตาร์:",
     settings_username: "ชื่อผู้ใช้:",
     settings_wallet: "กระเป๋าเงิน:",
+    settings_spam_filter: "กรองสแปม:",
     settings_change_button: "เปลี่ยน",
     settings_copy_button: "คัดลอก",
     settings_delete_account: "ลบบัญชีผู้ใช้งาน",
@@ -1365,6 +1409,7 @@ const messages = {
     alerts_supporter_font: "แบบอักษรผู้สนับสนุน:",
     alerts_donation_font: "แบบอักษรยอดบริจาค:",
     alerts_sound: "เสียงเตือน:",
+    alerts_sounds: "เสียงการบริจาค",
     alerts_duration: "ระยะเวลาเตือน:",
     alerts_duration_value: "{duration} วินาที",
     alerts_voice: "การแจ้งเตือนด้วยเสียง:",
@@ -1450,6 +1495,7 @@ const messages = {
     upload_choose_banners: "คุณยังสามารถเลือก",
     upload_choose_or_banners: "หรือเลือก",
     upload_label_image: "อัปโหลดรูปภาพ",
+    upload_sound_label: "อัปโหลดเสียงที่กำหนดเอง +",
 
     // switch
     switch_abled: "เปิดใช้งาน",
@@ -1457,6 +1503,14 @@ const messages = {
 
     // notifications
     notifications_no: "ไม่มีการแจ้งเตือน",
+    notifications_title: "การแจ้งเตือน",
+    notifications_clear: "ล้างทั้งหมด",
+    notifications_donat_title: "ขนมโดนัทใหม่",
+    notifications_badge_title: "เหรียญตราใหม่",
+    notifications_donat_creator: "{user} ส่ง {sum} {blockchain} ถึงคุณ!",
+    notifications_donat_supporter: "คุณส่ง {sum} {blockchain} ไปยัง {user}!",
+    notifications_add_badge_creator: "คุณส่ง {title} ถึง {user}",
+    notifications_add_badge_supporter: "คุณได้รับ {title} จาก {user}",
 
     // empty
     empty_data: "ไม่มีข้อมูล",
@@ -1489,8 +1543,11 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} ถูกคัดลอกเรียบร้อยแล้ว",
     copy_message_error: "เกิดข้อผิดพลาดขณะคัดลอก {copyObject}",
-  },
 
+    // dates picker
+    dates_picker_placeholder_start: "วันที่เริ่มต้น",
+    dates_picker_placeholder_end: "วันที่สิ้นสุด",
+  },
   [LOCALES.PT]: {
     // reset
     reset_title: "Redefinir senha",
@@ -1550,8 +1607,8 @@ const messages = {
 
     // buttons
     create_new_form_button: "Criar novo",
-    create_export_button: "Exportar",
-    create_filter_button: "Filtrar",
+    export_button: "Exportar",
+    filter_button: "Filtrar",
     save_changes_button: "Salvar alterações",
     reset_changes_button: "Redefinir",
     form_cancel_button: "Cancelar",
@@ -1668,6 +1725,7 @@ const messages = {
 
     // painel
     dashboard_widgets_stats: "Estatísticas",
+    dashboard_widgets_stats_label: "Soma das doações",
     dashboard_widgets_recent: "Doações recentes",
     dashboard_widgets_supporters: "Principais apoiadores",
     dashboard_widgets_donations: "Maiores doações",
@@ -1725,6 +1783,7 @@ const messages = {
     settings_avatar: "Avatar:",
     settings_username: "Nome de usuário:",
     settings_wallet: "Carteira:",
+    settings_spam_filter: "Filtro de spam:",
     settings_change_button: "Alterar",
     settings_copy_button: "Copiar",
     settings_delete_account: "Excluir conta",
@@ -1740,6 +1799,7 @@ const messages = {
     alerts_supporter_font: "Fonte do apoiador:",
     alerts_donation_font: "Fonte do valor da doação:",
     alerts_sound: "Som de alerta:",
+    alerts_sounds: "Sons de doação",
     alerts_duration: "Duração do alerta:",
     alerts_duration_value: "{duration} seg",
     alerts_voice: "Alertas de voz:",
@@ -1826,6 +1886,7 @@ const messages = {
     upload_choose_banners: "Você também pode escolher",
     upload_choose_or_banners: "Ou escolha",
     upload_label_image: "Enviar imagem",
+    upload_sound_label: "Carregar som personalizado +",
 
     // switch
     switch_abled: "Ativado",
@@ -1833,6 +1894,15 @@ const messages = {
 
     // notifications
     notifications_no: "Sem notificações",
+    notifications_title: "Notificações",
+    notifications_clear: "Limpar tudo",
+    notifications_donat_title: "Novo donut",
+    notifications_badge_title: "Novo distintivo",
+    notifications_donat_creator: "{user} enviou {sum} {blockchain} para você!",
+    notifications_donat_supporter:
+      "Você enviou {sum} {blockchain} para {user}!",
+    notifications_add_badge_creator: "Você enviou {title} para {user}",
+    notifications_add_badge_supporter: "Você recebeu {title} de {user}",
 
     // empty
     empty_data: "Sem dados",
@@ -1866,6 +1936,10 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} foi copiado com sucesso",
     copy_message_error: "Ocorreu um erro ao copiar {copyObject}",
+
+    // dates picker
+    dates_picker_placeholder_start: "Data de início",
+    dates_picker_placeholder_end: "Data final",
   },
 
   [LOCALES.KR]: {
@@ -1925,8 +1999,8 @@ const messages = {
 
     // buttons
     create_new_form_button: "새로 만들기",
-    create_export_button: "내보내기",
-    create_filter_button: "필터",
+    export_button: "내보내기",
+    filter_button: "필터",
     save_changes_button: "변경 사항 저장",
     reset_changes_button: "초기화",
     form_cancel_button: "취소",
@@ -2039,6 +2113,7 @@ const messages = {
 
     // 대시보드
     dashboard_widgets_stats: "통계",
+    dashboard_widgets_stats_label: "기부금액",
     dashboard_widgets_recent: "최근 기부",
     dashboard_widgets_supporters: "상위 후원자",
     dashboard_widgets_donations: "상위 기부",
@@ -2095,6 +2170,7 @@ const messages = {
     settings_avatar: "아바타:",
     settings_username: "사용자 이름:",
     settings_wallet: "지갑:",
+    settings_spam_filter: "스팸 필터:",
     settings_change_button: "변경",
     settings_copy_button: "복사",
     settings_delete_account: "계정 삭제하기",
@@ -2110,6 +2186,7 @@ const messages = {
     alerts_supporter_font: "지지자 글꼴:",
     alerts_donation_font: "기부 금액 글꼴:",
     alerts_sound: "알림 소리:",
+    alerts_sounds: "기부금 소리",
     alerts_duration: "알림 지속 시간:",
     alerts_duration_value: "{duration} 초",
     alerts_voice: "음성 알림:",
@@ -2192,6 +2269,7 @@ const messages = {
     upload_choose_banners: "또한 선택할 수 있습니다",
     upload_choose_or_banners: "또는 선택",
     upload_label_image: "이미지 업로드",
+    upload_sound_label: "사용자 정의 소리 업로드 +",
 
     // switch
     switch_abled: "활성화됨",
@@ -2199,6 +2277,15 @@ const messages = {
 
     // notifications
     notifications_no: "알림 없음",
+    notifications_title: "알림",
+    notifications_clear: "모두 지우기",
+    notifications_donat_title: "새로운 기부",
+    notifications_badge_title: "새로운 배지",
+    notifications_donat_creator: "{user}님이 {sum} {blockchain}을 보냈습니다!",
+    notifications_donat_supporter:
+      "{user}님에게 {sum} {blockchain}을 보냈습니다!",
+    notifications_add_badge_creator: "{user}님께 {title} 배지를 보냈습니다",
+    notifications_add_badge_supporter: "{user}님이 {title} 배지를 선물했습니다",
 
     // empty
     empty_data: "데이터 없음",
@@ -2232,6 +2319,10 @@ const messages = {
     copy_message_successfully:
       "{formatCopyObject}이(가) 성공적으로 복사되었습니다",
     copy_message_error: "{copyObject} 복사 중 오류가 발생했습니다",
+
+    // dates picker
+    dates_picker_placeholder_start: "시작 날짜",
+    dates_picker_placeholder_end: "종료 날짜",
   },
 };
 

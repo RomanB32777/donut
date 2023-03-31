@@ -46,16 +46,17 @@ const LandingContainer = () => {
   return (
     <div className="landing">
       <HeaderComponent
-        visibleLogo
         logoUrl={
           id ? `/${RoutePaths.admin}/${RoutePaths.dashboard}` : RoutePaths.main
         }
         modificator="landing-header landing-padding"
+        mobileContenCol={16}
+        visibleLogo
       >
-        <LocalesSwitcher blockModificator="localeModificator" />
+        <LocalesSwitcher modificator="localeModificator" />
         <LandingButton
           localeText={id ? "landing_launch_button" : "landing_connect_button"}
-          modificator="connect-btn"
+          modificator="connectBtn"
         />
       </HeaderComponent>
 

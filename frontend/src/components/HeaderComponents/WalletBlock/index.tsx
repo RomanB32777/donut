@@ -1,23 +1,12 @@
 import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
-import {
-  useAccount,
-  useBalance,
-  useDisconnect,
-  useNetwork,
-  useSwitchNetwork,
-} from "wagmi";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useAccount, useBalance, useNetwork, useSwitchNetwork } from "wagmi";
+import { useIntl } from "react-intl";
 import { CheckOutlined } from "@ant-design/icons";
 
 import Loader from "components/Loader";
 import { WalletsModal } from "components/ModalComponent/wallets-modal";
-import {
-  CopyIcon,
-  LogoutIcon,
-  ShareIcon,
-  SmallToggleListArrowIcon,
-} from "icons";
+import { CopyIcon, ShareIcon, SmallToggleListArrowIcon } from "icons";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
@@ -30,6 +19,7 @@ interface IWalletBlock {
   modificator?: string;
   isPropLoading?: boolean;
   popupModificator?: string;
+  children?: React.ReactNode;
   connectedWallet?: (walletAddress: string) => any;
 }
 
@@ -37,13 +27,13 @@ const WalletBlock: FC<IWalletBlock> = ({
   modificator,
   isPropLoading,
   popupModificator,
+  children,
   connectedWallet,
 }) => {
   const intl = useIntl();
   const { address, isConnected } = useAccount();
   const { chain: currentChain } = useNetwork();
   const { isLoading, switchNetwork } = useSwitchNetwork();
-  const { disconnect } = useDisconnect();
   const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
     address,
   });
@@ -74,10 +64,6 @@ const WalletBlock: FC<IWalletBlock> = ({
     closeWalletsModal();
   };
 
-  const disconnectHandler = () => {
-    isConnected && disconnect();
-  };
-
   useOnClickOutside(isOpenSelect, blockRef, handlerPopup);
 
   const currentChainInfo = useMemo(() => {
@@ -92,13 +78,6 @@ const WalletBlock: FC<IWalletBlock> = ({
       isOpenSelect && handlerPopup();
     }
   }, [isConnected, currentChainInfo, isOpenSelect]);
-
-  useEffect(() => {
-    // if (address) {
-    //   console.log("change ", isReconnecting, address);
-    //   openWalletsModal();
-    // }
-  }, [address]);
 
   return (
     <>
@@ -200,16 +179,7 @@ const WalletBlock: FC<IWalletBlock> = ({
                 )}
               </div>
             ))}
-            <div className="item">
-              <div className="content" onClick={disconnectHandler}>
-                <div className="img icon">
-                  <LogoutIcon />
-                </div>
-                <span className="title">
-                  <FormattedMessage id="sign_out_button" />
-                </span>
-              </div>
-            </div>
+            {children}
           </div>
         )}
       </div>

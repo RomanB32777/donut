@@ -76,12 +76,13 @@ export class SocketsGateway
         ({ room }) => room === recipient.user.username,
       );
 
-      recipientRoom &&
+      if (recipientRoom) {
         this.emitDataToClient({
           rooms: recipientRoom,
           event: 'newDonat',
           data: sendObj,
         });
+      }
     }
   }
 
@@ -112,12 +113,13 @@ export class SocketsGateway
         ({ room }) => room === recipient.user.username,
       );
 
-      recipientRoom &&
+      if (recipientRoom) {
         this.emitDataToClient({
           rooms: recipientRoom,
           event: 'newBadge',
           data: sendObj,
         });
+      }
     }
   }
 }

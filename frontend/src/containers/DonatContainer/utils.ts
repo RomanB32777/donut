@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { Socket } from "socket.io-client";
 import { RpcError, useAccount, useNetwork } from "wagmi";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { useIntl } from "react-intl";
 import { ISocketEmitObj, ISendDonat, IUser } from "types";
 
@@ -14,8 +15,15 @@ import useAuth from "hooks/useAuth";
 import { useActions } from "hooks/reduxHooks";
 import { useCreateDonationMutation } from "store/services/DonationsService";
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
-import { addNotification, removeAuthToken } from "utils";
+import {
+  addNotification,
+  BlockchainNetworks,
+  fullChainsInfo,
+  removeAuthToken,
+} from "utils";
 import { IError } from "appTypes";
+import { mainAbi } from "consts";
+import { utils } from "ethers";
 
 const usePayment = ({
   form,
@@ -46,6 +54,12 @@ const usePayment = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const currentChainNetwork = currentChain?.network;
+
+  const chainContract = currentChainNetwork
+    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks]?.contractAddress
+    : undefined;
+
   const registerSupporter = async () => {
     try {
       let newUsername = username;
@@ -64,6 +78,7 @@ const usePayment = ({
           username: newUsername,
           walletAddress: address,
           roleplay: "backers",
+          isVisibleNotification: false,
         }).unwrap();
         return userDadta;
       } else setIsSuccess(false);
@@ -73,56 +88,46 @@ const usePayment = ({
     }
   };
 
-  const sendDonation = async () => {
+  const sendDonation = async (userInfo: IUser, socket?: Socket | null) => {
     try {
-      let userInfo: IUser | undefined = supporterInfo;
-      let socketInfo: Socket | null = socket;
+      const donationData = await createDonation({
+        ...form,
+        creator: creatorInfo.id,
+        backer: userInfo.id,
+      }).unwrap();
 
-      if (!userInfo.id || userInfo.roleplay === "creators") {
-        userInfo = await registerSupporter();
-        // TODO можно ли без доп запроса ?
-        if (userInfo) await getUser({ id: userInfo.id });
-        socketInfo = connectSocket();
-      }
+      if (donationData) {
+        const emitObj: ISocketEmitObj = {
+          toSendUsername: userInfo.username,
+          id: donationData.id,
+        };
 
-      if (userInfo) {
-        const donationData = await createDonation({
-          ...form,
-          creator: creatorInfo.id,
-          backer: userInfo.id,
-        }).unwrap();
+        if (socket) socket.emit("newDonat", emitObj);
+        else console.log("not connected user");
 
-        if (donationData) {
-          const emitObj: ISocketEmitObj = {
-            toSendUsername: userInfo.username,
-            id: donationData.id,
-          };
+        await getNotifications({
+          username: userInfo.username,
+          shouldUpdateApp: true,
+        });
 
-          if (socketInfo) socketInfo.emit("newDonat", emitObj);
-          else console.log("not connected user");
-
-          await getNotifications({
-            username: userInfo.username,
-            shouldUpdateApp: true,
-          });
-
-          setIsSuccess(true);
-        } else setIsSuccess(false);
-      }
+        setIsSuccess(true);
+      } else setIsSuccess(false);
     } catch (error) {
       setIsSuccess(false);
     }
   };
 
-  const triggerContract = async (writeAsync?: () => Promise<any>) => {
+  const triggerContract = async () => {
     try {
       if (address) {
         const { walletAddress, id } = creatorInfo;
+        let userInfo: IUser | undefined = supporterInfo;
+        let socketInfo: Socket | null = socket;
 
-        if (address !== walletAddress && id !== supporterInfo.id) {
+        if (address !== walletAddress && id !== userInfo.id) {
           setIsLoading(true);
 
-          if (!supporterInfo.id) {
+          if (!userInfo.id) {
             const { data: isExistUser } = await checkIsExistUser(username);
 
             if (isExistUser) {
@@ -136,13 +141,42 @@ const usePayment = ({
             }
           }
           if (balance >= Number(sum)) {
-            console.log(writeAsync);
+            if (chainContract && currentChain) {
+              if (!userInfo.id || userInfo.roleplay === "creators") {
+                userInfo = await registerSupporter();
+                // TODO можно ли без доп запроса ?
+                if (userInfo) await getUser({ id: userInfo.id });
+                socketInfo = connectSocket();
+              }
 
-            if (currentChain && writeAsync) {
-              const wrireRes = await writeAsync();
-              const result = await wrireRes?.wait();
-              if (result) await sendDonation();
-            } else setIsLoading(false);
+              if (userInfo) {
+                const config = await prepareWriteContract({
+                  address: chainContract,
+                  abi: JSON.parse(mainAbi),
+                  chainId: currentChain.id,
+                  functionName: "transferMoney",
+                  args: [userInfo.walletAddress],
+                  overrides: {
+                    from: address,
+                    value: utils.parseEther(String(form.sum)),
+                    // gasLimit: BigNumber.from(100000),
+                  },
+                });
+
+                const wrireRes = await writeContract(config);
+                const result = await wrireRes?.wait();
+                if (result) await sendDonation(userInfo, socketInfo);
+              } else {
+                console.log("not userInfo", userInfo);
+                setIsLoading(false);
+              }
+            } else {
+              console.log(
+                "no chainContract/currentChain",
+                chainContract && currentChain
+              );
+              setIsLoading(false);
+            }
           } else {
             addNotification({
               type: "warning",

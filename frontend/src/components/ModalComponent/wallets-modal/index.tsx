@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "antd";
 import { Buffer } from "buffer";
-import { useConnect, useAccount, useSwitchNetwork } from "wagmi";
+import { useConnect, useAccount, useSwitchNetwork, RpcError } from "wagmi";
 import { FormattedMessage } from "react-intl";
 import clsx from "clsx";
 
@@ -25,19 +25,42 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
 }) => {
   const { id, roleplay } = useAppSelector(({ user }) => user);
   const { address } = useAccount();
-  const { connectors, connect, isSuccess, error } = useConnect();
+  const { connectors, connectAsync } = useConnect();
   const { switchNetwork } = useSwitchNetwork();
   const { checkWallet } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const defaultChain = fullChainsInfo["matic"] ?? fullChainsInfo["maticmum"];
 
+  const switchWalletHandler =
+    (...args: Parameters<typeof connectAsync>) =>
+    async () => {
+      try {
+        const [connectArgs] = args;
+        const { account } = await connectAsync(connectArgs);
+        await switchWallet(account);
+      } catch (error) {
+        const errInfo = error as RpcError;
+        if (errInfo.name === "ConnectorAlreadyConnectedError") {
+          if (address) {
+            await switchWallet(address);
+            switchNetwork?.(defaultChain?.id);
+          }
+        } else if (errInfo.name !== "UserRejectedRequestError") {
+          // ConnectorNotFoundError - TODO ?
+          addErrorNotification({ message: errInfo.message });
+        }
+      }
+    };
+
   const switchWallet = async (address: string) => {
     try {
+      console.log("switchWallet", address);
+
       setIsLoading(true);
       if (!id || roleplay === "backers") {
         removeWebToken();
-        await checkWallet();
+        await checkWallet(address);
       }
       connectedWallet?.(address);
     } catch (error) {
@@ -48,27 +71,11 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
   };
 
   useEffect(() => {
-    const errorHandler = async () => {
-      if (error) {
-        if (error.name === "ConnectorAlreadyConnectedError") {
-          if (address) {
-            await switchWallet(address);
-            switchNetwork?.(defaultChain?.id);
-          }
-        } else if (error.name !== "UserRejectedRequestError") {
-          addErrorNotification({ message: error.message });
-        }
-      }
-    };
-
-    errorHandler();
-  }, [error, address]);
-
-  useEffect(() => {
-    if (isSuccess && address) {
-      switchWallet(address);
-    }
-  }, [isSuccess, address]);
+    // if (isSuccess && address) {
+    //   switchWallet(address);
+    // }
+    // console.log(address);
+  }, [address]);
 
   return (
     <ModalComponent {...props}>
@@ -85,12 +92,10 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
                 <Col key={name}>
                   <div
                     className={clsx("wallet", { disabled: isLoading })}
-                    onClick={() =>
-                      connect({
-                        connector: connection,
-                        chainId: defaultChain?.id,
-                      })
-                    }
+                    onClick={switchWalletHandler({
+                      connector: connection,
+                      chainId: defaultChain?.id,
+                    })}
                   >
                     <div className="walletImageWrapper">
                       <div className="walletImage">

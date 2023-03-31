@@ -17,6 +17,7 @@ interface IHeaderComponent {
   backgroundColor?: string;
   collapsedSidebar?: boolean;
   children?: React.ReactNode;
+  mobileContenCol?: number;
   setCollapsedSidebar?: (status: boolean) => void;
   onClick?: () => void;
 }
@@ -32,6 +33,7 @@ const HeaderComponent = ({
   backgroundColor,
   collapsedSidebar,
   children,
+  mobileContenCol = 14,
   setCollapsedSidebar,
   onClick,
 }: IHeaderComponent) => {
@@ -69,7 +71,7 @@ const HeaderComponent = ({
             </div>
           </Col>
         )}
-        <Col xs={!visibleLogo ? 24 : 14}>
+        <Col xs={!visibleLogo ? 24 : mobileContenCol}>
           <div className="header__right">{children}</div>
         </Col>
       </Row>
