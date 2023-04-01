@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createSelector } from "@reduxjs/toolkit";
 import { Checkbox, Col, Row } from "antd";
-import FileSaver from "file-saver";
-import { utils, write } from "xlsx";
 import { SearchOutlined } from "@ant-design/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
-import { periodItemsTypes } from "types";
+import { FormattedMessage, useIntl } from "react-intl";
+import { donationsQueryData, periodItemsTypes, userRoles } from "types";
 
 import PageTitle from "components/PageTitle";
 import FormInput from "components/FormInput";
@@ -15,36 +14,32 @@ import TableComponent from "components/TableComponent";
 import BaseButton from "components/BaseButton";
 import { CalendarIcon, DownloadIcon } from "icons";
 
-import { useAppSelector } from "hooks/reduxHooks";
+import { useActions, useAppSelector } from "hooks/reduxHooks";
+import { useGetDonationsPageQuery } from "store/services/DonationsService";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import axiosClient from "modules/axiosClient";
-import { setUpdateAppNotifications } from "store/types/Notifications";
-import { initTableDataItem, ITableData, tableColumns } from "./tableData";
+import { ITableData, tableColumns } from "./tableData";
 import { formatNumber } from "utils";
+import { exportToExcel } from "./utils";
 import { filterPeriodItems } from "consts";
+import { IDonationWidgetInfo, LOCALES } from "appTypes";
 
 import "./styles.sass";
-
-interface IQueryForm {
-  timePeriod: string;
-  searchStr?: string;
-  groupByName?: boolean;
-  startDate?: string;
-  endDate?: string;
-}
 
 const LIMIT_DONATS = 15;
 
 const DonationsContainer = () => {
-  const dispatch = useDispatch();
-  const { user, notifications } = useAppSelector((state) => state);
-  const { isMobile, isLaptop } = useWindowDimensions();
-
-  const { id } = user;
-  const { list, shouldUpdateApp } = notifications;
+  const intl = useIntl();
+  const { setUpdatedFlag } = useActions();
+  const { id, roleplay, creator } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
+  const { isLaptop } = useWindowDimensions();
 
   const [visibleDatesPicker, setVisibleDatesPicker] = useState(false);
-  const [queryForm, setQueryForm] = useState<IQueryForm>({
+  const [queryForm, setQueryForm] = useState<
+    donationsQueryData<periodItemsTypes>
+  >({
     timePeriod: "7days",
     searchStr: "",
     groupByName: false,
@@ -52,137 +47,121 @@ const DonationsContainer = () => {
     endDate: "",
   });
 
-  const [tableData, setTableData] = useState<ITableData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { locale } = intl;
+  const { timePeriod, searchStr, groupByName } = queryForm;
 
-  const filterBtnClick = () => setVisibleDatesPicker(!visibleDatesPicker);
+  const rightBtnsXlCol = useMemo(() => {
+    if (locale === LOCALES.RU) return 8;
+    if (locale === LOCALES.KR) return 7;
+    return 6;
+  }, [locale]);
 
-  const getDonationsData = async () => {
-    try {
-      setLoading(true);
-      const queryFormString = Object.keys(queryForm).reduce(
-        (acc, key) =>
-          queryForm[key as keyof IQueryForm]
-            ? acc + `&${key}=${queryForm[key as keyof IQueryForm]}`
-            : acc,
-        ""
-      );
-      const { id, roleplay, spam_filter } = user;
-      const { data } = await axiosClient.get(
-        `/api/donation/page/data/${id}?roleplay=${roleplay}${queryFormString}&spam_filter=${spam_filter}`
-      ); // &limit=${LIMIT_DONATS}&offset=${0}
+  const selectTableData = useMemo(
+    () =>
+      createSelector(
+        (res: IDonationWidgetInfo[] | undefined) => res,
+        (res: IDonationWidgetInfo[] | undefined, roleplay: userRoles) =>
+          roleplay,
+        (data, roleplay) => {
+          if (data) {
+            const forTableData = data.reduce<ITableData[]>(
+              (
+                data,
+                {
+                  id,
+                  creator,
+                  backer,
+                  blockchainSum,
+                  sum,
+                  blockchain,
+                  message,
+                  createdAt,
+                  username,
+                }
+              ) => {
+                let name =
+                  roleplay === "backers" ? creator?.username : backer?.username;
+                data.push({
+                  key: id,
+                  name: name ?? username,
+                  donationToken: blockchainSum
+                    ? +formatNumber(blockchainSum)
+                    : 0,
+                  donationUSD: +formatNumber(sum),
+                  blockchain: blockchain,
+                  date: createdAt || "-",
+                  role: roleplay,
+                  message: message,
+                });
+                return data;
+              },
+              []
+            );
+            return forTableData;
+          }
+          return [];
+        }
+      ),
+    []
+  );
 
-      if (data && data.length) {
-        const forTableData: ITableData[] = data.map(
-          (donat: any, key: number) => ({
-            key: donat.id || key,
-            name: donat.username,
-            donationToken: formatNumber(donat.sum_donation),
-            donationUSD: formatNumber(donat.sum_usd_donation),
-            blockchain: donat.blockchain,
-            date: donat.created_at || "-",
-            role: user.roleplay,
-            message: donat.donation_message,
-          })
-        );
-        setTableData(forTableData);
-      } else {
-        setTableData([]);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const {
+    tableData,
+    isLoading,
+    refetch: sendQuery,
+  } = useGetDonationsPageQuery(
+    {
+      userId: id,
+      query: {
+        roleplay,
+        spamFilter: creator?.spamFilter,
+        ...queryForm,
+      },
+    },
+    {
+      skip: !id,
+      selectFromResult: (result) => ({
+        ...result,
+        tableData: selectTableData(result.data, roleplay),
+      }),
     }
-  };
+  );
 
-  const sendQuery = async () => {
-    await getDonationsData();
-  };
-  const exportToExel = () => {
-    const heading = Object.keys(initTableDataItem).reduce((acc, curr) => {
-      const fromTableColumns = tableColumns.find((c) => c.key === curr);
-      return {
-        ...acc,
-        [curr]: fromTableColumns ? fromTableColumns.title : curr,
-      };
-    }, {});
+  const filterBtnClick = useCallback(
+    () => setVisibleDatesPicker(!visibleDatesPicker),
+    [visibleDatesPicker]
+  );
 
-    const exelData: ITableData[] = tableData.map((d) =>
-      Object.keys(d)
-        .filter((d) => !["role", "key"].includes(d))
-        .reduce(
-          (acc, key) => ({ ...acc, [key]: d[key as keyof ITableData] }),
-          initTableDataItem
-        )
-    );
-
-    const wsColsData = Object.keys(heading)
-      .filter((col) => col !== "role")
-      .map((col) => ({
-        wch: Math.max(
-          ...exelData.map((d) => String(d[col as keyof ITableData]).length + 2)
-        ),
-      }));
-
-    const wsColsHeader = Object.keys(heading)
-      .filter((col) => col !== "role")
-      .map((col) => ({ wch: col.length + 2 }));
-
-    const wscols = wsColsData.map(({ wch }, key) =>
-      wch >= wsColsHeader[key].wch ? { wch } : { wch: wsColsHeader[key].wch }
-    );
-
-    const ws = utils.json_to_sheet([heading], {
-      header: tableColumns.map(({ key }) => key) as string[],
-      skipHeader: true,
-      // origin: 0, //ok
-    });
-    ws["!cols"] = wscols;
-    utils.sheet_add_json(ws, exelData, {
-      header: tableColumns.map(({ key }) => key) as string[],
-      skipHeader: true,
-      origin: -1, //ok
-    });
-    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-    const excelBuffer = write(wb, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-    });
-    FileSaver.saveAs(data, "donations.xlsx");
-  };
+  const exportExcelHandler = useCallback(
+    () => tableData.length && exportToExcel(tableData),
+    [tableData]
+  );
 
   const allAmountUSD = useMemo(
     () => tableData.reduce((acc, donat) => acc + Number(donat.donationUSD), 0),
     [tableData]
   );
 
+  const isCreator = useMemo(
+    () => roleplay && roleplay === "creators",
+    [roleplay]
+  );
+
   useEffect(() => {
-    dispatch(setUpdateAppNotifications(true));
+    setUpdatedFlag(true);
   }, []);
 
   useEffect(() => {
-    id && getDonationsData();
-  }, [id]);
-
-  useEffect(() => {
-    list.length && shouldUpdateApp && getDonationsData();
+    list.length && shouldUpdateApp && sendQuery();
   }, [list, shouldUpdateApp]);
-
-  const isCreator = useMemo(
-    () => user.roleplay && user.roleplay === "creators",
-    [user]
-  );
-
-  const { timePeriod, searchStr, groupByName } = queryForm;
 
   return (
     <div className="donations-container fadeIn">
       <PageTitle formatId="page_title_donations" />
-      <div className="donations-header">
+      <div className="header">
         <Row justify="space-between">
           <Col xl={12} md={14} xs={24}>
-            <div className="donations-header__left">
+            <div className="left">
               <Row justify="space-between">
                 {isCreator && (
                   <Col md={13} xs={12}>
@@ -192,8 +171,8 @@ const DonationsContainer = () => {
                       setValue={(value) =>
                         setQueryForm({ ...queryForm, searchStr: value })
                       }
-                      placeholder="Search by name"
-                      modificator={"donations-header__left_input"}
+                      placeholder="donations_search_placeholder"
+                      modificator="input"
                       addonsModificator="search-icon"
                       addonBefore={<SearchOutlined />}
                     />
@@ -201,16 +180,24 @@ const DonationsContainer = () => {
                 )}
                 <Col md={10} xs={11}>
                   <SelectInput
-                    value={timePeriod}
+                    value={{
+                      value: timePeriod,
+                      label: intl.formatMessage({
+                        id: filterPeriodItems[timePeriod || "7days"],
+                      }),
+                    }}
                     list={Object.keys(filterPeriodItems).map((key) => ({
                       key,
                       value: filterPeriodItems[key as periodItemsTypes],
                     }))}
-                    modificator={"donations-header__left_select"}
+                    renderOption={(item) =>
+                      intl.formatMessage({ id: item.value })
+                    }
+                    modificator="select"
                     onChange={(selected) =>
                       setQueryForm({
                         ...queryForm,
-                        timePeriod: selected as string,
+                        timePeriod: selected,
                       })
                     }
                     disabled={visibleDatesPicker}
@@ -219,9 +206,9 @@ const DonationsContainer = () => {
                 {!isCreator && (
                   <Col md={12} xs={11}>
                     <BaseButton
-                      formatId="create_filter_button"
+                      formatId="filter_button"
                       onClick={filterBtnClick}
-                      modificator={"donations-header__left_btn"}
+                      modificator="btn"
                       icon={<CalendarIcon />}
                       isMain={visibleDatesPicker}
                     />
@@ -231,24 +218,25 @@ const DonationsContainer = () => {
             </div>
           </Col>
           {isCreator && (
-            <Col xl={6} md={13} xs={24}>
-              <div className="donations-header__right">
+            <Col xl={rightBtnsXlCol} md={13} xs={24}>
+              <div className="right">
                 <Row justify={isLaptop ? "start" : "end"}>
                   <Col xl={12}>
                     <BaseButton
-                      formatId="create_filter_button"
+                      formatId="filter_button"
                       onClick={filterBtnClick}
-                      modificator="donations-header__right_btn"
+                      modificator="btn"
                       icon={<CalendarIcon />}
                       isMain={visibleDatesPicker}
                     />
                   </Col>
                   <Col xl={12}>
                     <BaseButton
-                      formatId="create_export_button"
-                      onClick={exportToExel}
-                      modificator="donations-header__right_btn"
+                      formatId="export_button"
+                      onClick={exportExcelHandler}
+                      modificator="btn"
                       icon={<DownloadIcon />}
+                      disabled={!tableData.length}
                     />
                   </Col>
                 </Row>
@@ -258,8 +246,10 @@ const DonationsContainer = () => {
         </Row>
       </div>
       {visibleDatesPicker && (
-        <div className="donations-selectDates fadeIn">
-          <p>Choose the exact time period</p>
+        <div className="selectDates fadeIn">
+          <p>
+            <FormattedMessage id="donations_select_dates" />
+          </p>
           <DatesPicker
             setValue={(startDate, endDate) =>
               setQueryForm({ ...queryForm, startDate, endDate })
@@ -269,18 +259,18 @@ const DonationsContainer = () => {
       )}
 
       {isCreator && (
-        <div className="donations-checkbox">
+        <div className="checkbox">
           <Checkbox
             onChange={(e: CheckboxChangeEvent) =>
               setQueryForm({ ...queryForm, groupByName: e.target.checked })
             }
             checked={groupByName}
           >
-            Group donations with the same sender name
+            <FormattedMessage id="donations_group_checkbox" />
           </Checkbox>
         </div>
       )}
-      <div>
+      {/* <div>
         <BaseButton
           title="Show data"
           onClick={sendQuery}
@@ -288,18 +278,23 @@ const DonationsContainer = () => {
           fontSize={isMobile ? "15px" : "18px"}
           isMain
         />
-      </div>
-      <div className="donations-results">
+      </div> */}
+      <div className="results">
         {isCreator && (
-          <div className="donations-results__title">
+          <div className="title">
             <p>
-              Found {tableData.length} result for the amount of&nbsp;
-              {formatNumber(allAmountUSD)} USD
+              <FormattedMessage
+                id="donations_found_txt"
+                values={{
+                  num: tableData.length,
+                  amount: formatNumber(allAmountUSD),
+                }}
+              />
             </p>
           </div>
         )}
         <TableComponent
-          loading={loading}
+          loading={isLoading}
           dataSource={tableData}
           columns={tableColumns}
           scroll={{

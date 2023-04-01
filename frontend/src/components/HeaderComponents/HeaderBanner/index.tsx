@@ -1,26 +1,33 @@
-import { useContext, useEffect, useState } from "react";
-import { WalletContext } from "contexts/Wallet";
+import clsx from "clsx";
+import { createPortal } from "react-dom";
 import "./styles.sass";
 
-export const HeaderBanner = () => {
-  const [currBlockchain, setCurrBlockchain] = useState<string>("");
+export const HeaderBanner = ({
+  children,
+  isVisible,
+}: {
+  children: React.ReactNode;
+  isVisible: boolean;
+}) => {
+  const bannerRoot = document.getElementById("banner-root");
 
-  const walletConf = useContext(WalletContext);
+  if (bannerRoot) {
+    return (
+      <div>
+        {createPortal(
+          <div
+            className={clsx("navbar-banner", {
+              fadeInDown: isVisible,
+              fadeInUp: !isVisible,
+            })}
+          >
+            {children}
+          </div>,
+          bannerRoot
+        )}
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    const getCurrentBlockchain = async () => {
-      const currBlockchain = await walletConf.getCurrentBlockchain();
-      currBlockchain && setCurrBlockchain(currBlockchain.chainName);
-    };
-
-    getCurrentBlockchain();
-  }, [walletConf]);
-
-  if (!currBlockchain) return null;
-
-  return (
-    <div className="navbar-banner">
-      Currently working on {currBlockchain} network only
-    </div>
-  );
+  return null;
 };

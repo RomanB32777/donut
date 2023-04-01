@@ -1,6 +1,4 @@
-interface IFileInfo {
+export interface IFileInfo {
   preview: string;
   file: File | null;
 }
-
-export type { IFileInfo };

@@ -1,80 +1,79 @@
-import { useEffect, useState } from "react";
-import { Empty } from "antd";
-import { stringFormatTypes } from "types";
+import { useEffect, useMemo, useState } from "react";
+import { FormattedMessage } from "react-intl";
 
+import EmptyComponent from "components/EmptyComponent";
 import WidgetItem from "../WidgetItem";
-import SelectComponent from "components/SelectComponent";
 import WidgetLoader from "../WidgetLoader";
+import FilterSelect from "../FilterSelect";
 
 import { useAppSelector } from "hooks/reduxHooks";
+import { useGetWidgetDonationsQuery } from "store/services/DonationsService";
 import { getTimePeriodQuery } from "utils";
-import axiosClient from "modules/axiosClient";
-import { filterPeriodItems, widgetApiUrl } from "consts";
+import { filterPeriodItems } from "consts";
 
 const LIMIT_LATEST = 6;
 
 const WidgetLatestDonat = () => {
-  const { user, notifications } = useAppSelector((state) => state);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { id, creator } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
+
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
-  const [latestDonations, setLatestDonations] = useState<any[]>([]);
 
-  const { id } = user;
-  const { list, shouldUpdateApp } = notifications;
+  const timePeriod = useMemo(
+    () => getTimePeriodQuery(activeFilterItem),
+    [activeFilterItem]
+  );
 
-  const getLatestDonations = async (timePeriod: string) => {
-    try {
-      const { id, spam_filter } = user;
-      const { data, status } = await axiosClient.get(
-        `${widgetApiUrl}/latest-donations/${id}?limit=${LIMIT_LATEST}&timePeriod=${timePeriod}&spam_filter=${spam_filter}`
-      );
-      status === 200 && setLatestDonations(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const {
+    data: latestDonations,
+    isLoading,
+    refetch,
+  } = useGetWidgetDonationsQuery(
+    {
+      userId: id,
+      dataType: "latest-donations",
+      query: {
+        limit: LIMIT_LATEST,
+        timePeriod,
+        spamFilter: creator?.spamFilter,
+      },
+    },
+    {
+      skip: !id,
     }
-  };
+  );
 
   useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    id && getLatestDonations(timePeriod);
-  }, [id, activeFilterItem]);
-
-  useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    list.length && shouldUpdateApp && getLatestDonations(timePeriod);
+    list.length && shouldUpdateApp && refetch();
   }, [list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-latestDonat">
-      {loading ? (
+      {isLoading ? (
         <WidgetLoader />
       ) : (
         <>
           <div className="header">
-            <span className="widget-title">Recent donations</span>
-            <div className="filter">
-              <SelectComponent
-                title={activeFilterItem}
-                list={Object.values(filterPeriodItems)}
-                selectItem={(selected) =>
-                  setActiveFilterItem(selected as stringFormatTypes)
-                }
-                listWrapperModificator="filter-list"
-              />
-            </div>
+            <span className="widget-title">
+              <FormattedMessage id="dashboard_widgets_recent" />
+            </span>
+            <FilterSelect
+              selectedItem={activeFilterItem}
+              selectItem={setActiveFilterItem}
+            />
           </div>
-          {Boolean(latestDonations.length) ? (
+          {latestDonations && Boolean(latestDonations.length) ? (
             <div className="items">
-              {latestDonations.map((donat: any) => (
+              {latestDonations.map((donat) => (
                 <WidgetItem key={donat.id} donat={donat} />
               ))}
             </div>
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <EmptyComponent />
           )}
         </>
       )}

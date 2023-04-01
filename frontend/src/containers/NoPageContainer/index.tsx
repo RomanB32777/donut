@@ -1,7 +1,9 @@
 import { Result } from "antd";
 import { useNavigate } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
+
 import BaseButton from "components/BaseButton";
-import { RoutePaths } from "routes";
+import { RoutePaths } from "consts";
 import "./styles.sass";
 
 const NoPageContainer = () => {
@@ -11,12 +13,12 @@ const NoPageContainer = () => {
       <Result
         status="404"
         title="404"
-        subTitle="Sorry, the page you visited does not exist."
+        subTitle={<FormattedMessage id="not_found_title" />}
         extra={
           <BaseButton
-            title="Back to Dashboard"
+            formatId="not_found_button"
             onClick={() =>
-              navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`, {
+              navigate(`${RoutePaths.main}`, {
                 replace: true,
               })
             }

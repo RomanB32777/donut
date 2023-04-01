@@ -2,12 +2,19 @@
   "name": "types",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
-  "types": "module",
+  "scripts": {
+    "dev": "npx tsc --watch",
+    "build": "rimraf ./build && npx tsc"
+  },
+  "main": "./build/index.js",
+  "types": "index.d.ts",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "rimraf": "^4.4.1"
   }
 }

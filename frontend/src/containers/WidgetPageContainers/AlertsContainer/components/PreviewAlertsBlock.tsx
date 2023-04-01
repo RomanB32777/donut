@@ -1,17 +1,24 @@
+import { FC, memo } from "react";
 import { Col } from "antd";
+import { FormattedMessage } from "react-intl";
+
 import { getFontColorStyles } from "utils";
 import { dummyImg } from "consts";
 import { IAlert } from "appTypes";
 
-const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
+interface IPreviewAlertsBlock {
+  formData: IAlert;
+}
+
+const PreviewAlertsBlock: FC<IPreviewAlertsBlock> = ({ formData }) => {
   const {
     banner,
-    message_color,
-    message_font,
-    name_color,
-    name_font,
-    sum_color,
-    sum_font,
+    messageColor,
+    messageFont,
+    nameColor,
+    nameFont,
+    sumColor,
+    sumFont,
   } = formData;
 
   return (
@@ -29,16 +36,14 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
 
         <div className="preview-block_title">
           <p>
-            <span style={getFontColorStyles(name_color, name_font)}>
-              MrBeast
-            </span>
+            <span style={getFontColorStyles(nameColor, nameFont)}>MrBeast</span>
             &nbsp;-&nbsp;
-            <span style={getFontColorStyles(sum_color, sum_font)}>10 USD</span>
+            <span style={getFontColorStyles(sumColor, sumFont)}>10 USD</span>
           </p>
         </div>
         <p className="preview-block_message">
-          <span style={getFontColorStyles(message_color, message_font)}>
-            Thank you for your stream!
+          <span style={getFontColorStyles(messageColor, messageFont)}>
+            <FormattedMessage id="alerts_preview_message" />
           </span>
         </p>
       </div>
@@ -46,4 +51,4 @@ const PreviewAlertsBlock = ({ formData }: { formData: IAlert }) => {
   );
 };
 
-export default PreviewAlertsBlock;
+export default memo(PreviewAlertsBlock);

@@ -1,5 +1,7 @@
-import { useMemo } from "react";
+import { FC } from "react";
 import { Col } from "antd";
+import { useIntl } from "react-intl";
+
 import useWindowDimensions from "hooks/useWindowDimensions";
 import {
   getCurrentTimePeriodQuery,
@@ -10,35 +12,39 @@ import {
 import { alignFlextItemsList, alignItemsList } from "consts";
 import { AlignText, IWidgetStatData } from "appTypes";
 
-const PreviewStatBlock = ({
-  children,
-  editStatData,
-}: {
+interface IPreviewStatBlock {
   children?: React.ReactNode;
   editStatData: IWidgetStatData;
+}
+
+const PreviewStatBlock: FC<IPreviewStatBlock> = ({
+  children,
+  editStatData,
 }) => {
+  const intl = useIntl();
   const { isLaptop } = useWindowDimensions();
   const {
     template,
-    data_type,
-    time_period,
-    title_color,
-    bar_color,
-    content_color,
-    aligment,
-    title_font,
-    content_font,
+    dataType,
+    timePeriod,
+    titleColor,
+    barColor,
+    contentColor,
+    textAligment,
+    titleFont,
+    contentFont,
+    customTimePeriod,
   } = editStatData;
 
-  const timePeriodName = useMemo(
-    () => getCurrentTimePeriodQuery(time_period),
-    [time_period]
-  );
+  const timePeriodName =
+    customTimePeriod ??
+    intl.formatMessage({
+      id: getCurrentTimePeriodQuery(timePeriod),
+    });
 
-  const typeStatData = useMemo(
-    () => getStatsDataTypeQuery(data_type),
-    [data_type]
-  );
+  const typeStatData = intl.formatMessage({
+    id: getStatsDataTypeQuery(dataType),
+  });
 
   return (
     <Col
@@ -52,43 +58,49 @@ const PreviewStatBlock = ({
         <span
           className="title"
           style={{
-            ...getFontColorStyles(title_color, title_font),
-            background: bar_color,
+            ...getFontColorStyles(titleColor, titleFont),
+            background: barColor,
           }}
         >
-          {timePeriodName} {typeStatData.toLowerCase()}
+          {typeStatData} {timePeriodName.toLowerCase()}
         </span>
         <div
           className="stat"
           style={{
-            justifyContent: alignFlextItemsList[aligment],
+            justifyContent: alignFlextItemsList[textAligment],
           }}
         >
           <div className="list">
             <p
               className="item"
               style={{
-                ...getFontColorStyles(content_color, content_font),
-                textAlign: (alignItemsList[aligment] as AlignText) || "center",
+                ...getFontColorStyles(contentColor, contentFont),
+                textAlign:
+                  (alignItemsList[textAligment] as AlignText) || "center",
               }}
             >
               {renderStatItem(template, {
                 username: "Jordan",
-                sum_donation: 30,
-                donation_message: "Hello! This is test message",
+                sum: 30,
+                message: intl.formatMessage({
+                  id: "stats_widget_preview_message",
+                }),
               })}
             </p>
             <p
               className="item"
               style={{
-                ...getFontColorStyles(content_color, content_font),
-                textAlign: (alignItemsList[aligment] as AlignText) || "center",
+                ...getFontColorStyles(contentColor, contentFont),
+                textAlign:
+                  (alignItemsList[textAligment] as AlignText) || "center",
               }}
             >
               {renderStatItem(template, {
                 username: "Nate",
-                sum_donation: 50,
-                donation_message: "How are you ?",
+                sum: 50,
+                message: intl.formatMessage({
+                  id: "stats_widget_preview_message_2",
+                }),
               })}
             </p>
           </div>

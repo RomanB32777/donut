@@ -1,41 +1,39 @@
-# Numerous always-ignore extensions
-*.bak
-*.diff
-*.err
-*.exe
+# compiled output
+/dist
+/node_modules
+/types
+
+# Logs
+logs
 *.log
-*.orig
-*.rej
-*.sass-cache
-*.swo
-*.swp
-*.vi
-*.zip
-*.dump
-*.env
-serviceaccount.json
-*~
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
-# OS or Editor folders
-*.sublime-grunt.cache
-*.sublime-project
-*.sublime-workspace
-._*
-.cache
+# OS
 .DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+/.idea
 .project
-.settings
-.tmproj
-Thumbs.db
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# Folders to ignore
-.CVS
-.git
-.hg
-.idea
-.svn
-bower_components
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
-# Node.JS
-node_modules
-npm-debug.log
+# files
+serviceaccount.json

@@ -13,11 +13,11 @@ const PreviewGoalBlock = ({
   const { isLaptop } = useWindowDimensions();
   const {
     title,
-    title_color,
-    progress_color,
-    background_color,
-    title_font,
-    progress_font,
+    titleColor,
+    progressColor,
+    backgroundColor,
+    titleFont,
+    progressFont,
   } = editGoalData;
 
   return (
@@ -31,7 +31,7 @@ const PreviewGoalBlock = ({
       <div className="preview-block">
         <div className="title">
           <p>
-            <span style={getFontColorStyles(title_color, title_font)}>
+            <span style={getFontColorStyles(titleColor, titleFont)}>
               {title}
             </span>
           </p>
@@ -39,14 +39,14 @@ const PreviewGoalBlock = ({
         <div
           className="goal"
           style={{
-            background: background_color,
+            background: backgroundColor,
           }}
         >
           <Progress
             type="circle"
             percent={75}
             width={46}
-            strokeColor={progress_color}
+            strokeColor={progressColor}
             format={(percent) => (
               <span
                 style={{
@@ -57,7 +57,7 @@ const PreviewGoalBlock = ({
               </span>
             )}
           />
-          <p style={getFontColorStyles("#fff", progress_font)}>75 / 100 USD</p>
+          <p style={getFontColorStyles("#fff", progressFont)}>75 / 100 USD</p>
         </div>
       </div>
       {isLaptop && children}

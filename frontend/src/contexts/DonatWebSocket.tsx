@@ -1,59 +1,64 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
-import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { io, Socket } from "socket.io-client";
 
-import { useAppSelector } from "hooks/reduxHooks";
-import { getNotifications } from "store/types/Notifications";
-import { baseURL, isProduction, socketsBaseUrl } from "consts";
+import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
+import { useGetCreatorInfoQuery } from "store/services/UserService";
+import { addNotFoundUserNotification } from "utils";
+import { baseURL } from "consts";
 
 export const DonatWebSocketContext = createContext<Socket | null>(null);
 
 const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
   const { name } = useParams();
-  const dispatch = useDispatch();
-  const { id, spam_filter } = useAppSelector(({ personInfo }) => personInfo);
+  const [getNotifications] = useLazyGetNotificationsQuery({
+    refetchOnFocus: false,
+  });
+
+  const { data: personInfo, isError } = useGetCreatorInfoQuery(name as string, {
+    skip: !name,
+  });
+
   const [valueContext, setValueContext] = useState<null | Socket>(null);
 
-  const setUnloginUserSocket = ({
-    username,
-    spam_filter,
-  }: {
-    username: string;
-    spam_filter: boolean;
-  }) => {
-    const socket = io(isProduction ? baseURL : socketsBaseUrl, {
-      path: "/sockt/",
-      query: {
-        userName: username,
-      },
-    });
-
-    socket.on("new_donat_notification", () => {
-      dispatch(
-        getNotifications({
-          user: username,
-          limit: 1,
-          spam_filter,
-          roleplay: "recipient",
-        })
-      );
-    });
-    return socket;
-  };
-
   useEffect(() => {
-    if (name) {
+    const setUnloginUserSocket = ({
+      username,
+      spamFilter,
+    }: {
+      username: string;
+      spamFilter: boolean;
+    }) => {
+      const socket = io(baseURL, {
+        path: "/sockt/",
+        query: {
+          username,
+        },
+      });
+
+      socket.on("newDonat", async () => {
+        getNotifications({
+          username,
+          limit: 1,
+          spamFilter,
+        });
+      });
+      return socket;
+    };
+
+    if (name && personInfo?.creator) {
       const socketUnlogin = setUnloginUserSocket({
         username: name,
-        spam_filter,
+        spamFilter: personInfo.creator?.spamFilter,
       });
       setValueContext(socketUnlogin);
       return () => {
         socketUnlogin.disconnect();
       };
     }
-  }, [id, name, spam_filter]);
+  }, [name, personInfo]);
+
+  if (isError) addNotFoundUserNotification();
 
   return (
     <DonatWebSocketContext.Provider value={valueContext}>

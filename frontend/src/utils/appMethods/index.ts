@@ -1,12 +1,6 @@
-import { AnyAction, Dispatch } from "redux";
-import { NavigateFunction } from "react-router-dom";
+import { initAuthToken, initWebToken } from "consts";
 
-import { setUser } from "store/types/User";
-import { setSelectedBlockchain } from "store/types/Wallet";
-import { RoutePaths } from "routes";
-import { initUser, storageWalletKey } from "consts";
-
-const scrollToPosition = (top = 0) => {
+export const scrollToPosition = (top = 0) => {
   try {
     window.scroll({
       top: top,
@@ -18,23 +12,10 @@ const scrollToPosition = (top = 0) => {
   }
 };
 
-const logoutUser = ({
-  dispatch,
-  navigate,
-}: {
-  dispatch: Dispatch<AnyAction>;
-  navigate: NavigateFunction;
-}) => {
-  dispatch(setUser(initUser));
-  localStorage.removeItem(storageWalletKey);
-  dispatch(setSelectedBlockchain(null));
-  navigate(RoutePaths.main);
-};
-
-const isValidateFilledForm = (valuesArray: any[]) =>
+export const isValidateFilledForm = (valuesArray: any[]) =>
   valuesArray.every((val) => Boolean(val));
 
-const delay = ({ ms, cb }: { ms: number; cb: (params?: any) => any }) =>
+export const delay = ({ ms, cb }: { ms: number; cb: (params?: any) => any }) =>
   new Promise<void>((resolve) => {
     setTimeout(() => {
       cb();
@@ -42,17 +23,36 @@ const delay = ({ ms, cb }: { ms: number; cb: (params?: any) => any }) =>
     }, ms);
   });
 
-const formatNumber = (num: string | number, fraction: number = 2) => {
+export const formatNumber = (num: string | number, fraction: number = 2) => {
   const inNumberType = +num;
   return Number.isInteger(inNumberType)
     ? inNumberType
     : inNumberType.toFixed(fraction);
 };
 
-export {
-  scrollToPosition,
-  logoutUser,
-  isValidateFilledForm,
-  delay,
-  formatNumber,
+export const getKeyFromObject = <T, K extends keyof T>(obj: T, key: K): K =>
+  key;
+
+// auth token
+export const getAuthTokenKey = () => {
+  return getKeyFromObject(initAuthToken, "access_token");
 };
+
+export const setAuthToken = (token: string) => {
+  return localStorage.setItem(getAuthTokenKey(), token);
+};
+
+export const getAuthToken = () => localStorage.getItem(getAuthTokenKey());
+
+export const removeAuthToken = () => localStorage.removeItem(getAuthTokenKey());
+
+// web token
+export const getWebTokenKey = () => getKeyFromObject(initWebToken, "web_token");
+
+export const getWebToken = () => localStorage.getItem(getWebTokenKey());
+
+export const setWebToken = (token: string) => {
+  return localStorage.setItem(getWebTokenKey(), token);
+};
+
+export const removeWebToken = () => localStorage.removeItem(getWebTokenKey());

@@ -1,6 +1,7 @@
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { Col, Row } from "antd";
-import { useContext, useEffect, useState } from "react";
-import { IBadgeInfo, ISocketEmitObj, IShortUserData } from "types";
+import { FormattedMessage } from "react-intl";
+import { ISocketEmitObj, IShortUserData } from "types";
 
 import { WebSocketContext } from "contexts/Websocket";
 import PageTitle from "components/PageTitle";
@@ -9,95 +10,77 @@ import BadgeHolders from "./components/BadgeHolders";
 import BadgeAssignBlock from "./components/BadgeAssignBlock";
 import { LeftArrowIcon } from "icons";
 
-import axiosClient from "modules/axiosClient";
-import { useAppSelector } from "hooks/reduxHooks";
+import {
+  useGetBadgeQuery,
+  useGetHoldersQuery,
+} from "store/services/BadgesService";
+import { IBadgePage } from "appTypes";
 import "./styles.sass";
 
+const initState: IBadgePage = {
+  image: "",
+  id: "",
+  title: "",
+  description: "",
+  blockchain: "Polygon",
+  creator: "",
+};
+
 const BadgePage = ({
-  activeBadge,
+  badgeId,
   backBtn,
 }: {
-  activeBadge: IBadgeInfo;
+  badgeId: string;
   backBtn: (updateList?: boolean) => () => void;
-  deleteBadge: (badge: IBadgeInfo) => Promise<void>;
 }) => {
   const socket = useContext(WebSocketContext);
-  const {
-    id: userID,
-    username,
-    wallet_address,
-  } = useAppSelector(({ user }) => user);
+  // const user = useAppSelector(({ user }) => user);
 
-  const [badgeInfo, setBadgeInfo] = useState<IBadgeInfo>(activeBadge);
-  const [supporters, setSupporters] = useState<IShortUserData[]>([]);
-  const [holders, setHolders] = useState<IShortUserData[]>([]);
+  const [badgeInfo, setBadgeInfo] = useState<IBadgePage>({
+    ...initState,
+    id: badgeId,
+  });
   const [updateList, setUpdateList] = useState(false);
 
-  const { id, image, title, is_creator, token_id } = badgeInfo;
+  const { id, image, title, isCreator, tokenId } = badgeInfo;
 
-  const updateBadgeData = async () => {
-    try {
-      const { data, status } = await axiosClient.get(
-        `/api/badge/${id}/${wallet_address}`
-      );
-      !token_id && setUpdateList(true);
-      status === 200 && setBadgeInfo((prev) => ({ ...prev, ...data }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { data: badgeData, isLoading: isBadgeInfoLoading } =
+    useGetBadgeQuery(id);
 
-  const getHolders = async () => {
-    try {
-      const { data, status } = await axiosClient.get(
-        `/api/badge/holders/${id}`
-      );
-      status === 200 && setHolders(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {
+    data: holders,
+    isLoading: isHoldersLoading,
+    refetch: getHolders,
+  } = useGetHoldersQuery(id, {
+    skip: !isCreator,
+  });
 
-  const getSupporters = async () => {
-    try {
-      const { data, status } = await axiosClient.get(
-        `/api/donation/supporters/${userID}`
-      );
-      status === 200 && setSupporters(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const sendAssignedBadge = async (selectedUser: IShortUserData) => {
-    if (socket) {
-      const sendData: ISocketEmitObj = {
-        supporter: {
-          username: selectedUser.username,
-          id: selectedUser.id,
-        },
-        creator: {
-          id: userID,
-          username,
-        },
-        id,
-      };
-      socket.emit("new_badge", sendData);
-    }
-    await updateBadgeData();
-    await getHolders();
-  };
+  const sendAssignedBadge = useCallback(
+    async (selectedUser: IShortUserData) => {
+      if (socket) {
+        const sendData: ISocketEmitObj = {
+          id,
+          toSendUsername: selectedUser.username,
+        };
+        socket.emit("newBadge", sendData);
+      }
+      getHolders();
+    },
+    [id, socket, getHolders]
+  );
 
   useEffect(() => {
-    const initPage = async () => {
-      if (is_creator) {
-        await getHolders();
-        await getSupporters();
-      }
-    };
+    !tokenId && setUpdateList(true);
+  }, [tokenId]);
 
-    initPage();
-  }, [is_creator]);
+  useEffect(() => {
+    if (badgeData) {
+      setBadgeInfo((prev) => ({
+        ...prev,
+        ...badgeData,
+      }));
+    }
+  }, [badgeData]);
 
   return (
     <div className="badge-page fadeIn">
@@ -110,7 +93,9 @@ const BadgePage = ({
 
       <Row gutter={[4, 16]} className="form" justify="space-between">
         <Col lg={10} md={8} xs={18}>
-          <p className="image-title">Badge Image</p>
+          <p className="image-title">
+            <FormattedMessage id="badge_image" />
+          </p>
           <div className="image-block">
             <div className="content">
               <img src={image} alt={title} />
@@ -118,22 +103,20 @@ const BadgePage = ({
           </div>
         </Col>
         <Col lg={13} md={15} xs={24}>
-          <BadgeDetails
-            badgeInfo={badgeInfo}
-            updateBadgeData={updateBadgeData}
-          />
-          {is_creator && (
+          <BadgeDetails badgeInfo={badgeInfo} isLoading={isBadgeInfoLoading} />
+          {isCreator && (
             <Row gutter={[0, 24]}>
-              {Boolean(holders.length) && (
+              {holders && Boolean(holders.length) && (
                 <Col span={24}>
-                  <BadgeHolders holders={holders} getHolders={getHolders} />
+                  <BadgeHolders
+                    holders={holders}
+                    isLoading={isHoldersLoading}
+                  />
                 </Col>
               )}
               <Col span={24}>
                 <BadgeAssignBlock
-                  badgeInfo={activeBadge}
-                  supporters={supporters}
-                  getSupporters={getSupporters}
+                  badgeInfo={badgeInfo}
                   sendAssignedBadge={sendAssignedBadge}
                 />
               </Col>
@@ -145,4 +128,4 @@ const BadgePage = ({
   );
 };
 
-export default BadgePage;
+export default memo(BadgePage);

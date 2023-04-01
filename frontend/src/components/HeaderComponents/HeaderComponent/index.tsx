@@ -13,23 +13,27 @@ interface IHeaderComponent {
   hidden?: boolean;
   contentModificator?: string;
   modificator?: string;
+  styles?: React.CSSProperties;
   backgroundColor?: string;
   collapsedSidebar?: boolean;
   children?: React.ReactNode;
+  mobileContenCol?: number;
   setCollapsedSidebar?: (status: boolean) => void;
   onClick?: () => void;
 }
 
-export const HeaderComponent = ({
+const HeaderComponent = ({
   hidden,
   visibleLogo,
   visibleGamburger,
   logoUrl,
   contentModificator,
   modificator,
+  styles,
   backgroundColor,
   collapsedSidebar,
   children,
+  mobileContenCol = 14,
   setCollapsedSidebar,
   onClick,
 }: IHeaderComponent) => {
@@ -40,6 +44,7 @@ export const HeaderComponent = ({
       onClick={onClick}
       style={{
         background: backgroundColor,
+        ...styles,
       }}
     >
       <Row
@@ -66,10 +71,12 @@ export const HeaderComponent = ({
             </div>
           </Col>
         )}
-        <Col xs={!visibleLogo ? 24 : 14}>
+        <Col xs={!visibleLogo ? 24 : mobileContenCol}>
           <div className="header__right">{children}</div>
         </Col>
       </Row>
     </Header>
   );
 };
+
+export default HeaderComponent;

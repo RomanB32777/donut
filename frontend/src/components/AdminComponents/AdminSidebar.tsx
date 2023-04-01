@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { FormattedMessage } from "react-intl";
 
 import WalletBlock from "components/HeaderComponents/WalletBlock";
 import Sidebar from "components/Sidebar";
@@ -17,16 +18,22 @@ interface IGetItemParams {
   children?: any;
 }
 
-const AdminSidebar = ({
-  collapsed,
-  setCollapsed,
-}: {
+interface IAdminSidebar {
   collapsed: boolean;
+  sidebarStyles?: React.CSSProperties;
   setCollapsed: (state: boolean) => any;
+}
+
+const AdminSidebar: FC<IAdminSidebar> = ({
+  collapsed,
+  sidebarStyles,
+  setCollapsed,
 }) => {
   const { id, roleplay } = useAppSelector(({ user }) => user);
   const { pathname } = useLocation();
   const { isMobile } = useWindowDimensions();
+
+  const isSupporter = roleplay === "backers";
 
   const getItem = ({ label, path, icon, children }: IGetItemParams) => ({
     key: path,
@@ -82,19 +89,19 @@ const AdminSidebar = ({
       : pathElements[0];
   }, [pathname]);
 
-  return (
-    <Sidebar
-      items={menuItems.map(({ name, icon, menu, path, children }) => {
+  const menuSidebarItems = useMemo(
+    () =>
+      menuItems.map(({ name, icon, menu, path, children }) => {
         return menu
           ? getItem({
-              label: name,
+              label: <FormattedMessage id={name} />,
               path,
               icon,
               children: children
                 ? children.map((el) =>
                     el.menu
                       ? getItem({
-                          label: el.name,
+                          label: <FormattedMessage id={el.name} />,
                           path: path + (`/${el.path}` || ""),
                           icon: el.icon,
                         })
@@ -103,12 +110,19 @@ const AdminSidebar = ({
                 : null,
             })
           : null;
-      })}
+      }),
+    [menuItems]
+  );
+
+  return (
+    <Sidebar
+      items={menuSidebarItems}
       activeItem={activeRoute}
       defaultOpenKeys={[pathname.includes("widgets") ? "widgets" : ""]}
       collapsed={collapsed}
       setCollapsed={setCollapsed}
       width={{ mobile: 325, desktop: 250 }}
+      styles={sidebarStyles}
       bottomEl={
         <div className="sidebar-btmEl">
           <a
@@ -118,16 +132,18 @@ const AdminSidebar = ({
             className="sidebar-link"
           >
             <QuestionCircleOutlined />
-            <span className="link-text">Help center</span>
+            <span className="link-text">
+              <FormattedMessage id="sidebar_help" />
+            </span>
           </a>
           <a href="mailto:info@cryptodonutz.xyz" className="sidebar-link">
             <EmailIcon />
-            <span className="link-text"> info@cryptodonutz.xyz</span>
+            <span className="link-text">info@cryptodonutz.xyz</span>
           </a>
         </div>
       }
     >
-      {isMobile && (
+      {isSupporter && isMobile && (
         <WalletBlock
           modificator="sidebar-wallet"
           popupModificator="wallet-popup"

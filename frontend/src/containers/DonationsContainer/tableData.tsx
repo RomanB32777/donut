@@ -1,10 +1,13 @@
 import type { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 import { userRoles } from "types";
-import { DateFormatter, DateTimezoneFormatter } from "utils";
-import { RoutePaths } from "routes";
+
+import { DateFormatter } from "utils";
+import { RoutePaths } from "consts";
 
 interface ITableData {
+  key: string;
   name: string;
   donationToken: number;
   donationUSD: number;
@@ -14,7 +17,8 @@ interface ITableData {
   role?: userRoles;
 }
 
-export const initTableDataItem: ITableData = {
+const initTableDataItem: ITableData = {
+  key: "",
   name: "",
   donationToken: 0,
   donationUSD: 0,
@@ -23,9 +27,9 @@ export const initTableDataItem: ITableData = {
   blockchain: "",
 };
 
-export const tableColumns: ColumnsType<ITableData> = [
+const tableColumns: ColumnsType<ITableData> = [
   {
-    title: "Username",
+    title: <FormattedMessage id="table_col_username" />,
     dataIndex: "name",
     key: "name",
     width: "15%",
@@ -37,16 +41,16 @@ export const tableColumns: ColumnsType<ITableData> = [
     },
   },
   {
-    title: "Donation, Token",
+    title: <FormattedMessage id="table_col_donation_token" />,
     dataIndex: "donationToken",
     key: "donationToken",
     width: "15%",
     align: "center",
     render: (num, { blockchain }) =>
-      num && blockchain ? num + ` ${blockchain}` : "-",
+      num !== undefined && blockchain ? num + ` ${blockchain}` : "-",
   },
   {
-    title: "Donation, USD",
+    title: <FormattedMessage id="table_col_donation_usd" />,
     dataIndex: "donationUSD",
     key: "donationUSD",
     align: "center",
@@ -55,14 +59,14 @@ export const tableColumns: ColumnsType<ITableData> = [
     width: "15%",
   },
   {
-    title: "Message",
+    title: <FormattedMessage id="table_col_message" />,
     dataIndex: "message",
     key: "message",
     width: "30%",
     render: (message) => message || "-",
   },
   {
-    title: "Date and Time, UTM",
+    title: <FormattedMessage id="table_col_date" />,
     dataIndex: "date",
     key: "date",
     width: "25%",
@@ -74,4 +78,5 @@ export const tableColumns: ColumnsType<ITableData> = [
   },
 ];
 
+export { initTableDataItem, tableColumns };
 export type { ITableData };

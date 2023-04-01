@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { memo, useMemo, useState } from "react";
 import { StepProps } from "antd";
-import { IBadgeInfo, IShortUserData } from "types";
+import { FormattedMessage } from "react-intl";
+import { RpcError } from "wagmi";
+import { IShortUserData } from "types";
 
 import BaseButton from "components/BaseButton";
 import SelectInput from "components/SelectInput";
@@ -11,12 +12,13 @@ import {
 } from "components/ModalComponent";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
-import { getNotifications } from "store/types/Notifications";
-import axiosClient from "modules/axiosClient";
-import { addNotification } from "utils";
-import { ProviderRpcError } from "appTypes";
 import { useAppSelector } from "hooks/reduxHooks";
+import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
+import { useGetSupportersQuery } from "store/services/DonationsService";
+import { useAssignBadgeMutation } from "store/services/BadgesService";
+import { addNotification } from "utils";
 import { shortUserInfo } from "consts";
+import { IBadgePage, IError } from "appTypes";
 
 const initLoadingSteps: StepProps[] = [
   // {
@@ -63,31 +65,22 @@ const initLoadingSteps: StepProps[] = [
 
 const BadgeAssignBlock = ({
   badgeInfo,
-  supporters,
-  getSupporters,
   sendAssignedBadge,
 }: {
-  badgeInfo: IBadgeInfo;
-  supporters: IShortUserData[];
-  getSupporters: () => Promise<void>;
+  badgeInfo: IBadgePage;
   sendAssignedBadge: (selectedUser: IShortUserData) => Promise<void>;
 }) => {
-  const dispatch = useDispatch();
-  const { id: userID } = useAppSelector(({ user }) => user);
+  const { username } = useAppSelector(({ user }) => user);
+  const [getNotifications] = useLazyGetNotificationsQuery();
+  const [assignBadge] = useAssignBadgeMutation();
+  // const [getAssignPrice] = useLazyGetAssignPriceQuery();
+  const { data: supporters, isLoading } = useGetSupportersQuery();
   const { isTablet } = useWindowDimensions();
 
-  const [loading, setLoading] = useState(false);
   const [loadingSteps, setLoadingSteps] =
     useState<StepProps[]>(initLoadingSteps);
-
   const [selectedUser, setSelectedUser] = useState<IShortUserData | null>(null);
   const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
-
-  const loadHolders = async () => {
-    setLoading(true);
-    await getSupporters();
-    setLoading(false);
-  };
 
   const setLoadingCurrStep = ({
     loadingStep,
@@ -113,43 +106,42 @@ const BadgeAssignBlock = ({
   const selectHandler = (selected: string, option: any) => {
     setSelectedUser({
       ...shortUserInfo,
-      wallet_address: selected,
+      walletAddress: selected,
       username: option.title,
     });
   };
 
-  const assignBadge = async () => {
+  const assignCurrentBadge = async () => {
     if (!selectedUser) return;
     try {
       setLoadingCurrStep({ loadingStep: 0 });
-      const { id, token_id } = badgeInfo;
+      const { id, tokenId } = badgeInfo;
 
-      const selectedUserObj = supporters.find(
-        (s) => s.wallet_address === selectedUser.wallet_address
+      const selectedUserObj = supporters?.find(
+        (s) => s.walletAddress === selectedUser.walletAddress
       );
 
       if (selectedUserObj) {
-        // const priceRes = await axiosClient.get(
-        //   `/api/badge/price?address=${selectedUserObj.wallet_address}&token_id=${
-        //     token_id || null
-        //   }`
-        // );
-        // if (priceRes.status === 200) {
-        // const { price } = priceRes.data;
-        // const paymentRes =
-        //   await walletConf.commission_contract_methods.payForBadgeCreation(
-        //     price
-        //   );
+        // const { data: priceRes } = await getAssignPrice({
+        //   walletAddress: selectedUserObj.walletAddress,
+        //   token_id,
+        // });
 
+        // if (priceRes) {
+        //   const paymentRes =
+        //     await walletConf.commission_contract_methods.payForBadgeCreation(
+        //       priceRes
+        //     );
         // if (paymentRes && paymentRes?.status === 1) {
         // setLoadingCurrStep({ finishedStep: 0, loadingStep: 1 });
-        const { status } = await axiosClient.post("/api/badge/assign-badge", {
-          id,
-          supporter: selectedUserObj.wallet_address,
-          token_id: token_id || null,
-        });
 
-        if (status === 200) {
+        const assignData = await assignBadge({
+          id,
+          userAddress: selectedUserObj.walletAddress,
+          tokenId,
+        }).unwrap();
+
+        if (assignData) {
           // setLoadingCurrStep({ finishedStep: 1, loadingStep: 2 });
           // await delay({
           //   ms: 2000,
@@ -158,25 +150,24 @@ const BadgeAssignBlock = ({
           await sendAssignedBadge(selectedUserObj);
 
           setLoadingCurrStep({ finishedStep: 0 });
-          dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
+          await getNotifications({ username, shouldUpdateApp: false });
           setIsOpenSuccessModal(true);
         }
         // }
         // }
       }
     } catch (error) {
-      const errorMessage = error as ProviderRpcError;
-
-      errorMessage.code !== "ACTION_REJECTED" &&
+      const errInfo = error as RpcError<IError>;
+      if (errInfo.code !== 4001 && errInfo?.data?.statusCode !== 500) {
         addNotification({
           type: "danger",
           title: "Error",
           message:
-            errorMessage.reason ||
-            (error as any)?.response?.data?.message ||
-            (error as Error).message ||
-            `An error occurred while sending data`,
+            errInfo.message ||
+            errInfo?.data?.message ||
+            "An error occurred while sending data",
         });
+      }
     } finally {
       setLoadingSteps(initLoadingSteps);
     }
@@ -187,35 +178,33 @@ const BadgeAssignBlock = ({
     [loadingSteps]
   );
 
-  useEffect(() => {
-    loadHolders();
-  }, []);
+  if (!supporters) return null;
 
   return (
     <>
       <div className="form-element">
         <SelectInput
-          label="Assign badge"
+          label={<FormattedMessage id="badge_assign_label" />}
           list={supporters.map((s) => ({
-            key: s.wallet_address,
+            key: s.walletAddress,
             value: s.username,
           }))}
-          value={selectedUser?.wallet_address}
+          value={selectedUser?.walletAddress || ""}
           onChange={selectHandler}
           labelCol={24}
           selectCol={24}
-          placeholder="Choose supporter"
+          placeholder={<FormattedMessage id="badge_assign_placeholder" />}
           labelModificator="select_label"
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
       <div className="btn-bottom">
         <BaseButton
-          title="Assign"
+          formatId="badge_assign_button"
           padding="7px 30px"
-          onClick={assignBadge}
+          onClick={assignCurrentBadge}
           fontSize={isTablet ? "14px" : "20px"}
-          disabled={loading || !selectedUser}
+          disabled={isLoading || !selectedUser}
           isMain
         />
       </div>
@@ -243,16 +232,26 @@ const BadgeAssignBlock = ({
       </ModalComponent> */}
       <LoadingModalComponent
         open={isAssignLoading}
-        message={`Wait for the badge to be minted on ${selectedUser?.username} address`}
+        message={
+          <FormattedMessage
+            id="badge_assign_loading"
+            values={{ username: selectedUser?.username }}
+          />
+        }
         centered
       />
       <SuccessModalComponent
         open={isOpenSuccessModal}
         onClose={closeSuccessModal}
-        message={`Congratulations! You've successfully assigned the badge to ${selectedUser?.username}`}
+        message={
+          <FormattedMessage
+            id="badge_assign_success"
+            values={{ username: selectedUser?.username }}
+          />
+        }
       />
     </>
   );
 };
 
-export default BadgeAssignBlock;
+export default memo(BadgeAssignBlock);

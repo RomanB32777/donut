@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { Col, Row, RowProps } from "antd";
 import clsx from "clsx";
+
 import { UploadIcon, TrashBinIcon } from "icons";
 import { addNotification } from "utils";
 import { IFileInfo } from "appTypes";
@@ -9,21 +11,23 @@ import "./styles.sass";
 export const UploadAfterEl = ({
   size,
   mdCol = 8,
-  alsoText = "Or choose",
+  alsoText,
   openBanners,
 }: {
   size: string;
   mdCol?: number;
-  alsoText?: string;
+  alsoText: React.ReactNode;
   openBanners: () => void;
 }) => (
   <Col md={mdCol} xs={24}>
     <div className="upload-afterEl">
-      <p>Recommended size: {size} px</p>
+      <p>
+        <FormattedMessage id="upload_recommended_size" values={{ size }} />
+      </p>
       <p>
         {alsoText}&nbsp;
         <span className="link" onClick={() => openBanners()}>
-          default banners
+          <FormattedMessage id="upload_default_banners" />
         </span>
       </p>
     </div>
@@ -48,7 +52,7 @@ const UploadImage = ({
   isWithClearIcon,
 }: {
   imgName?: string;
-  label: string;
+  label: React.ReactNode;
   formats?: string[];
   disabled?: boolean;
   filePreview?: string;
@@ -119,8 +123,18 @@ const UploadImage = ({
                   maxWidth: maxFileSize && "none",
                 }}
               >
-                You can use formats: {formats.join(", ")}
-                {maxFileSize && <span>. Max size: {maxFileSize} MB</span>}
+                <FormattedMessage
+                  id="upload_formats"
+                  values={{ formats: formats.join(", ") }}
+                />
+                {maxFileSize && (
+                  <span>
+                    <FormattedMessage
+                      id="upload_max_size"
+                      values={{ maxFileSize }}
+                    />
+                  </span>
+                )}
               </p>
             )}
           </div>
@@ -138,7 +152,7 @@ const UploadImage = ({
             <div className="image">
               {imgExist && (
                 <div className="content">
-                  <img src={filePreview || imgName} alt={label} />
+                  <img src={filePreview || imgName} alt={imgName} />
                 </div>
               )}
             </div>

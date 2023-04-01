@@ -37,8 +37,14 @@ bower_components
 uploads/
 subdomain/
 build/
+trash/
+frontend-next/
+backend_old/
+sockets_old/
 
 # Node.JS
 node_modules
 npm-debug.log
-# package-lock.json
+.env
+
+docker-compose.old.yml

@@ -1,90 +1,90 @@
 import { typeAligmnet } from "types";
 import { IAlert, IWidgetGoalData, IWidgetStatData } from "appTypes";
 
-const alignItemsList: { [key in typeAligmnet]: string } = {
+export const maxSoundDuration = 5; // s
+
+export const alignItemsList: { [key in typeAligmnet]: string } = {
   Left: "start",
   Center: "center",
   Right: "end",
 };
 
-const alignFlextItemsList: { [key in typeAligmnet]: string } = {
+export const alignFlextItemsList: { [key in typeAligmnet]: string } = {
   Left: "flex-start",
   Center: "center",
   Right: "flex-end",
 };
 
-const initAlertData: IAlert = {
+export const initAlertData: IAlert = {
+  id: "",
   banner: {
     preview: "",
     file: null,
   },
-  message_color: "#ffffff",
-  message_font: {
+  messageColor: "#ffffff",
+  messageFont: {
     name: "",
     link: "",
   },
-  name_color: "#ffffff",
-  name_font: {
+  nameColor: "#ffffff",
+  nameFont: {
     name: "",
     link: "",
   },
-  sum_color: "#ffffff",
-  sum_font: {
+  sumColor: "#ffffff",
+  sumFont: {
     name: "",
     link: "",
   },
   duration: 15,
-  sound: "",
+  sound: {
+    name: "",
+    path: "",
+  },
   voice: false,
-  gender_voice: "MAN",
+  genderVoice: "MALE",
+  creator: "",
 };
 
-const initWidgetGoalData: IWidgetGoalData = {
-  amount_goal: 0,
+export const initWidgetGoalData: IWidgetGoalData = {
+  amountGoal: 0,
   id: "",
   title: "",
-  amount_raised: 0,
-  is_archive: false,
-  creator_id: "",
-  title_color: "",
-  title_font: {
+  amountRaised: 0,
+  isArchive: false,
+  creator: "",
+  titleColor: "",
+  titleFont: {
     name: "",
     link: "",
   },
-  progress_color: "",
-  progress_font: {
+  progressColor: "",
+  progressFont: {
     name: "",
     link: "",
   },
-  background_color: "",
+  backgroundColor: "",
 };
 
-const initWidgetStatData: IWidgetStatData = {
+export const initWidgetStatData: IWidgetStatData = {
   id: "",
   title: "",
-  stat_description: "",
+  description: "",
   template: [],
-  data_type: "top-donations",
-  time_period: "today",
-  custom_period: "",
-  title_color: "",
-  title_font: {
+  dataType: "top-donations",
+  timePeriod: "today",
+  customTimePeriod: "",
+  titleColor: "",
+  titleFont: {
     name: "",
     link: "",
   },
-  bar_color: "",
-  content_color: "",
-  content_font: {
+  barColor: "",
+  contentColor: "",
+  contentFont: {
     name: "",
     link: "",
   },
-  aligment: "Left",
-};
-
-export {
-  alignItemsList,
-  alignFlextItemsList,
-  initAlertData,
-  initWidgetGoalData,
-  initWidgetStatData,
+  textAligment: "Left",
+  creator: "",
 };

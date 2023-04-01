@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Col, Empty, Row } from "antd";
+import { Col, Row } from "antd";
 import { FormattedMessage } from "react-intl";
-import { useDispatch } from "react-redux";
 import { IBadgeInfo } from "types";
 
 import PageTitle from "components/PageTitle";
@@ -11,102 +10,93 @@ import BaseButton from "components/BaseButton";
 import BadgePage from "./BadgePage";
 import CreateBadgeForm from "./CreateBadge";
 import Loader from "components/Loader";
+import EmptyComponent from "components/EmptyComponent";
 
-import { useAppSelector } from "hooks/reduxHooks";
-import axiosClient from "modules/axiosClient";
-import { setUpdateAppNotifications } from "store/types/Notifications";
+import { useAppSelector, useActions } from "hooks/reduxHooks";
+import {
+  useDeleteBadgeMutation,
+  useGetBadgesQuery,
+} from "store/services/BadgesService";
 import { scrollToPosition } from "utils";
 
 import "./styles.sass";
 
 const BadgesContainer = () => {
-  const dispatch = useDispatch();
-  const { user, notifications } = useAppSelector((state) => state);
+  const { setUpdatedFlag } = useActions();
+
+  const { id, roleplay } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
+
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { id, wallet_address } = user;
-  const { list, shouldUpdateApp } = notifications;
-
-  const [badgesList, setBadgesList] = useState<IBadgeInfo[]>([]);
-  const [activeBadge, setActiveBadge] = useState<IBadgeInfo | null>(null);
+  const [activeBadge, setActiveBadge] = useState<string | null>(null);
   const [isOpenCreateForm, setIsOpenCreateForm] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const queryID = searchParams.get("id");
 
-  const removeQueryParams = () => {
+  const {
+    data: badgesList,
+    isLoading,
+    refetch: getBadges,
+  } = useGetBadgesQuery();
+  const [deleteBadge] = useDeleteBadgeMutation();
+
+  const removeQueryParams = useCallback(() => {
     searchParams.delete("id");
     setSearchParams(searchParams);
-  };
+  }, [searchParams, setSearchParams]);
 
-  const toBadgePage = (badgeData: IBadgeInfo) => {
-    setSearchParams(`id=${badgeData.id}`);
-    setActiveBadge({ ...badgeData });
-    scrollToPosition();
-  };
+  const toBadgePage = useCallback(
+    (id: string) => {
+      setSearchParams(`id=${id}`);
+      setActiveBadge(id);
+      scrollToPosition();
+    },
+    [setSearchParams]
+  );
 
   const toCreationForm = () => {
     setIsOpenCreateForm(true);
     scrollToPosition();
   };
 
-  const backToMainPage = (updateList: boolean = false) => () => {
-    setActiveBadge(null);
-    setIsOpenCreateForm(false);
-    removeQueryParams();
-    updateList && getBadges();
-  };
+  const backToMainPage = useCallback(
+    (updateList: boolean = false) =>
+      () => {
+        setActiveBadge(null);
+        setIsOpenCreateForm(false);
+        removeQueryParams();
+        updateList && getBadges();
+      },
+    [getBadges, removeQueryParams]
+  );
 
-  const getBadges = async () => {
-    try {
-      setLoading(true);
-      const { data, status } = await axiosClient.get(
-        `/api/badge/${wallet_address}`
-      );
-      if (status === 200) setBadgesList(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteBadge = async (badge: IBadgeInfo) => {
-    try {
-      const { id } = badge;
-      const { status } = await axiosClient.delete(`/api/badge/${id}`);
-      if (status === 200) await getBadges();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const deleteSelectedBadge = useCallback(
+    async (badgeId: string) => await deleteBadge(badgeId),
+    [deleteBadge]
+  );
 
   useEffect(() => {
     if (queryID) {
-      const findActiveBadge = badgesList.find((badge) => badge.id === +queryID);
-      if (findActiveBadge) setActiveBadge(findActiveBadge);
-      // removeQueryParams();
+      const findActiveBadge = badgesList?.find((badge) => badge.id === queryID);
+      if (findActiveBadge) setActiveBadge(findActiveBadge.id);
     }
   }, [queryID, badgesList]);
 
   useEffect(() => {
-    if (id && shouldUpdateApp) getBadges();
-  }, [id, list, shouldUpdateApp]);
+    if (list.length && shouldUpdateApp) getBadges();
+  }, [list, shouldUpdateApp, getBadges]);
 
   useEffect(() => {
-    dispatch(setUpdateAppNotifications(true));
+    setUpdatedFlag(true);
   }, []);
 
-  if (loading) return <Loader size="big" />;
+  if (isLoading) return <Loader size="big" />;
 
   if (activeBadge)
-    return (
-      <BadgePage
-        activeBadge={activeBadge}
-        deleteBadge={deleteBadge}
-        backBtn={backToMainPage}
-      />
-    );
+    return <BadgePage badgeId={activeBadge} backBtn={backToMainPage} />;
 
   if (isOpenCreateForm) return <CreateBadgeForm backBtn={backToMainPage} />;
 
@@ -114,10 +104,10 @@ const BadgesContainer = () => {
     <div className="badges-container fadeIn">
       <PageTitle formatId="page_title_badges" />
 
-      {user && user.id && user.roleplay && user.roleplay === "creators" && (
+      {id && roleplay === "creators" && (
         <div className="new-badge-wrapper">
           <span>
-            <FormattedMessage id="badges_page_new_title" />
+            <FormattedMessage id="badges_new_title" />
           </span>
           <BaseButton
             formatId="create_badge_form_button"
@@ -131,20 +121,20 @@ const BadgesContainer = () => {
 
       <div className="list">
         <Row gutter={[36, 36]}>
-          {Boolean(badgesList.length) ? (
+          {badgesList && Boolean(badgesList.length) ? (
             badgesList.map((badge) => (
               <Col xl={6} md={8} sm={12} xs={24} key={"badge-panel" + badge.id}>
                 <div className="badge-panel">
                   <ContentCard
                     data={badge}
                     onClick={toBadgePage}
-                    deleteBadge={deleteBadge}
+                    deleteBadge={deleteSelectedBadge}
                   />
                 </div>
               </Col>
             ))
           ) : (
-            <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <EmptyComponent />
           )}
         </Row>
       </div>

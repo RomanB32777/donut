@@ -1,35 +1,25 @@
+import { memo } from "react";
 import { Avatar, Col, Row, Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { IShortUserData } from "types";
 
 import Loader from "components/Loader";
 
 const BadgeHolders = ({
   holders,
-  getHolders,
+  isLoading,
 }: {
   holders: IShortUserData[];
-  getHolders: () => Promise<void>;
+  isLoading: boolean;
 }) => {
-  const [loading, setLoading] = useState(false);
-
-  const loadHolders = async () => {
-    setLoading(true);
-    await getHolders();
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadHolders();
-  }, []);
-
-  if (loading) return <Loader size="big" />;
-
+  if (isLoading) return <Loader size="big" />;
   return (
     <div className="holders">
       <Row justify="space-between" align="middle">
         <Col span={8}>
-          <p className="title">Badge holders</p>
+          <p className="title">
+            <FormattedMessage id="badge_holders" />
+          </p>
         </Col>
         <Col span={15}>
           <div className="users">
@@ -69,4 +59,4 @@ const BadgeHolders = ({
   );
 };
 
-export default BadgeHolders;
+export default memo(BadgeHolders);

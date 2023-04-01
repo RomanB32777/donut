@@ -1,5 +1,6 @@
 import { Store } from "react-notifications-component";
 import { Link } from "react-router-dom";
+import { IntlShape } from "react-intl";
 import { IBadgeBase, IDonationShortInfo } from "types";
 import {
   INotification,
@@ -7,7 +8,7 @@ import {
   INotificationWithoutType,
 } from "./types";
 import { formatNumber } from "utils/appMethods";
-import { RoutePaths } from "routes";
+import { RoutePaths } from "consts";
 
 const addNotification = ({ type, title, message, id }: INotification) => {
   Store.addNotification({
@@ -48,11 +49,16 @@ const addErrorNotification = ({ message, title }: INotificationWithoutType) =>
     type: "danger",
   });
 
-const addSuccessNotification = ({ message, title }: INotificationWithoutType) =>
+const addSuccessNotification = ({
+  message,
+  title,
+  id,
+}: INotificationWithoutType) =>
   addNotification({
     title: title || "Success",
     message,
     type: "success",
+    id: id || "success",
   });
 
 const addNotFoundUserNotification = (
@@ -61,6 +67,7 @@ const addNotFoundUserNotification = (
   addNotification({
     type: "danger",
     title,
+    id: "notFound",
   });
 
 const addInstallWalletNotification = (
@@ -89,33 +96,29 @@ const addInstallWalletNotification = (
     });
 };
 
-// interface INotificationDataBase {
-//   id: number;
-// }
-
-// const mapNotificationData = <T extends INotificationDataBase>(arg: T) => ({
-//   ...arg,
-// });
-
-// const { sum_donation, blockchain } = mapNotificationData({
-//   ...data,
-// });
-
 const getDonatNotificationMessage = (
-  args: INotificationMessage<IDonationShortInfo>
+  args: INotificationMessage<IDonationShortInfo>,
+  intl: IntlShape
 ): React.ReactNode => {
   const { type, user, data } = args;
-  const { sum_donation, blockchain } = data;
+  const { sum, blockchain } = data;
   switch (type) {
     case "donat_creator":
-      return `${user} sent you ${formatNumber(sum_donation)} ${blockchain}!`;
+      return intl.formatMessage(
+        { id: "notifications_donat_creator" },
+        { user, sum: formatNumber(sum), blockchain }
+      );
 
     case "donat_supporter":
-      const { sum_donation: supporterSum, blockchain: supporterBlockchain } =
-        args.data;
-      return `You sent ${formatNumber(
-        supporterSum
-      )} ${supporterBlockchain} to ${user}!`;
+      const { sum: supporterSum, blockchain: supporterBlockchain } = args.data;
+      return intl.formatMessage(
+        { id: "notifications_donat_supporter" },
+        {
+          user,
+          sum: formatNumber(supporterSum),
+          blockchain: supporterBlockchain,
+        }
+      );
 
     default:
       return `notification`;
@@ -123,38 +126,43 @@ const getDonatNotificationMessage = (
 };
 
 const getBadgeNotificationMessage = (
-  args: INotificationMessage<IBadgeBase>
+  args: INotificationMessage<IBadgeBase>,
+  intl: IntlShape
 ): React.ReactNode => {
   const { type, user, data } = args;
   const { id, title } = data;
 
   switch (type) {
     case "add_badge_creator":
-      return (
-        <span>
-          You sent&nbsp;
-          <Link
-            to={`/${RoutePaths.admin}/${RoutePaths.badges}?id=${id}`}
-            style={{ color: "#fff", textDecoration: "underline" }}
-          >
-            {title}
-          </Link>
-          &nbsp;to {user}
-        </span>
+      return intl.formatMessage(
+        { id: "notifications_add_badge_creator" },
+        {
+          user,
+          title: (
+            <Link
+              to={`/${RoutePaths.admin}/${RoutePaths.badges}?id=${id}`}
+              style={{ color: "#fff", textDecoration: "underline" }}
+            >
+              {title}
+            </Link>
+          ),
+        }
       );
 
     case "add_badge_supporter":
-      return (
-        <span>
-          You received&nbsp;
-          <Link
-            to={`/${RoutePaths.admin}/${RoutePaths.badges}?id=${id}`}
-            style={{ color: "#fff", textDecoration: "underline" }}
-          >
-            {title}
-          </Link>
-          &nbsp;from {user}
-        </span>
+      return intl.formatMessage(
+        { id: "notifications_add_badge_supporter" },
+        {
+          user,
+          title: (
+            <Link
+              to={`/${RoutePaths.admin}/${RoutePaths.badges}?id=${id}`}
+              style={{ color: "#fff", textDecoration: "underline" }}
+            >
+              {title}
+            </Link>
+          ),
+        }
       );
 
     default:

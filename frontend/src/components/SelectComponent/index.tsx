@@ -21,7 +21,7 @@ interface ISelectComponent<T> {
   renderOption?: (item: T) => React.ReactNode;
 }
 
-const SelectComponent = <T extends unknown>({
+const SelectComponent = <T,>({
   title,
   list,
   styles,
@@ -96,7 +96,7 @@ const SelectComponent = <T extends unknown>({
                   <div
                     className={clsx("list-item", {
                       [listItemModificator as string]: listItemModificator,
-                      active: item === title || item === selected,
+                      active: [title, selected].includes(item),
                     })}
                     key={key}
                     onClick={() => itemHandler(item)}

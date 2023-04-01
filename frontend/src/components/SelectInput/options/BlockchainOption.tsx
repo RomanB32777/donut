@@ -1,16 +1,10 @@
-import { WalletContext } from "contexts/Wallet";
-import { useContext, useMemo } from "react";
+import { fullChainsInfo } from "utils/wallets/wagmi";
 import { ISelectItem } from "..";
 
-const BlockchainOption = ({ value, key }: ISelectItem) => {
-  const walletConf = useContext(WalletContext);
-
-  const info = useMemo(
-    () =>
-      walletConf.main_contract.blockchains.find(
-        (b) => b.name === key || b.nativeCurrency.symbol === value
-      ),
-    [walletConf, key, value]
+// const BlockchainOption = ({ value, key }: ISelectItem<BlockchainNetworks>) => {
+const BlockchainOption = ({ value: chainSymbol, key }: ISelectItem<string>) => {
+  const info = Object.values(fullChainsInfo).find(
+    ({ nativeCurrency }) => nativeCurrency.symbol === chainSymbol
   );
 
   if (info) {
@@ -28,4 +22,4 @@ const BlockchainOption = ({ value, key }: ISelectItem) => {
   return null;
 };
 
-export { BlockchainOption };
+export default BlockchainOption;

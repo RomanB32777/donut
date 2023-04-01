@@ -1,94 +1,62 @@
-import { useContext, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Carousel, Col, Row } from "antd";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { FormattedMessage } from "react-intl";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import { WalletContext } from "contexts/Wallet";
-import { HeaderComponent } from "components/HeaderComponents/HeaderComponent";
-import BaseButton from "components/BaseButton";
+import HeaderComponent from "components/HeaderComponents/HeaderComponent";
 import Logo from "components/HeaderComponents/LogoComponent";
+import LocalesSwitcher from "components/HeaderComponents/LocalesSwitcher";
+import LandingButton from "./components/landing-button";
+import Loader from "components/Loader";
 
-import { checkWallet, scrollToPosition } from "utils";
-import { RoutePaths } from "routes";
-import { storageWalletKey } from "consts";
+import useAuth from "hooks/useAuth";
+import { RoutePaths } from "consts";
+import { fullChainsInfo } from "utils/wallets/wagmi";
 import { cryptoSteps, features, help, images, socialNetworks } from "./const";
 import { IFeature } from "./types";
 import "./styles.sass";
 
-const LandingBtn = ({
-  id,
-  signUp,
-}: {
-  id: number;
-  signUp: () => Promise<void>;
-}) => (
-  <BaseButton
-    formatId={id ? "mainpage_main_button_logged" : "mainpage_main_button"}
-    onClick={signUp}
-    modificator="landing-btn center-btn"
-    isMain
-  />
-);
+const mobileFeaturesSteps = features.reduce((acc, curr, index) => {
+  const step = Math.floor(index / 3);
+  return { ...acc, [step]: acc[step] ? [...acc[step], curr] : [curr] };
+}, {} as Record<string, IFeature[]>);
 
 const LandingContainer = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const { id } = useAppSelector(({ user }) => user);
-  const walletConf = useContext(WalletContext);
+  const { checkAuth, isAuthLoading } = useAuth();
 
-  const redirectToDashboard = async () => {
-    const isExist = await checkWallet({ walletConf, dispatch, navigate });
-    if (isExist) {
-      scrollToPosition();
-      navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
-      return true;
-    }
-    return false;
-  };
-
-  const signUp = async () => {
-    if (id) navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
-    else {
-      const isRedirect = await redirectToDashboard();
-      if (!isRedirect) {
-        const isUnlockedWallet = await walletConf.requestAccounts();
-        if (isUnlockedWallet) await redirectToDashboard();
-      }
-    }
-  };
-
-  const blockchains = useMemo(
-    () => walletConf.main_contract.blockchains,
-    [walletConf]
-  );
-
-  const mobileFeaturesSteps = features.reduce((acc, curr, index) => {
-    const step = Math.floor(index / 3);
-    return { ...acc, [step]: acc[step] ? [...acc[step], curr] : [curr] };
-  }, {} as Record<string, IFeature[]>);
-
-  useEffect(() => {
-    localStorage.getItem(storageWalletKey) &&
-      checkWallet({ walletConf, dispatch });
-  }, [walletConf]);
+  const blockchains = Object.values(fullChainsInfo);
 
   const { rocketImg, moneyImg, listImg } = images;
+
+  useEffect(() => {
+    if (!id) checkAuth(false);
+  }, [id]);
+
+  if (isAuthLoading) {
+    return (
+      <div className="appLoader">
+        <Loader size="big" />
+      </div>
+    );
+  }
 
   return (
     <div className="landing">
       <HeaderComponent
-        visibleLogo
-        logoUrl={`/${RoutePaths.admin}/${RoutePaths.dashboard}`}
+        logoUrl={
+          id ? `/${RoutePaths.admin}/${RoutePaths.dashboard}` : RoutePaths.main
+        }
         modificator="landing-header landing-padding"
+        mobileContenCol={16}
+        visibleLogo
       >
-        <BaseButton
-          title={id ? "Launch app" : "Connect wallet"}
-          onClick={signUp}
-          modificator="connect-btn"
-          isMain
+        <LocalesSwitcher modificator="localeModificator" />
+        <LandingButton
+          localeText={id ? "landing_launch_button" : "landing_connect_button"}
+          modificator="connectBtn"
         />
       </HeaderComponent>
 
@@ -97,13 +65,17 @@ const LandingContainer = () => {
           <div className="gradient-red-bg" />
           <div className="banner-content">
             <h1 className="title">
-              Let's revolutionize the way crypto donations work
+              <FormattedMessage id="landing_banner_title" />
             </h1>
             <p className="subtitle">
-              It's time to display crypto donations on a stream, mint NFTs for
-              your supporters and have fun!
+              <FormattedMessage id="landing_banner_subtitle" />
             </p>
-            <LandingBtn id={id} signUp={signUp} />
+            <LandingButton
+              localeText={
+                id ? "landing_main_button_logged" : "landing_main_button"
+              }
+              modificator="center-btn"
+            />
           </div>
         </div>
 
@@ -117,20 +89,21 @@ const LandingContainer = () => {
                 </div>
               </Col>
               <Col xs={23} md={12} order={0}>
-                <p className="subtitle">What is Crypto Donutz?</p>
+                <p className="subtitle">
+                  <FormattedMessage id="landing_whatIs_subtitle" />
+                </p>
                 <h1 className="title">
-                  Crypto donation platform for streamers
+                  <FormattedMessage id="landing_whatIs_title" />
                 </h1>
                 <p className="description">
-                  Our product is aimed to increase streamer’s revenue and
-                  interaction with crypto supporters. It’s also extremely easy
-                  to set up.
+                  <FormattedMessage id="landing_whatIs_description" />
                 </p>
-                <BaseButton
-                  title={id ? "Launch app" : "Create account"}
-                  onClick={signUp}
-                  modificator="landing-btn"
-                  isMain
+                <LandingButton
+                  localeText={
+                    id
+                      ? "landing_launch_button"
+                      : "landing_create_account_button"
+                  }
                 />
               </Col>
             </Row>
@@ -140,8 +113,12 @@ const LandingContainer = () => {
         <div className="features block">
           <div className="gradient-blue-bg" />
           <div className="content">
-            <p className="subtitle">What's so special about us?</p>
-            <h2 className="title">Our features</h2>
+            <p className="subtitle">
+              <FormattedMessage id="landing_features_subtitle" />
+            </p>
+            <h2 className="title">
+              <FormattedMessage id="landing_features_title" />
+            </h2>
             <Row
               gutter={[32, 32]}
               justify="space-between"
@@ -152,9 +129,11 @@ const LandingContainer = () => {
                   <div className="card feature">
                     <div className="title">
                       <span className="icon">{icon}</span>
-                      {title}
+                      <FormattedMessage id={title} />
                     </div>
-                    <p className="description">{description}</p>
+                    <p className="description">
+                      <FormattedMessage id={description} />
+                    </p>
                   </div>
                 </Col>
               ))}
@@ -179,9 +158,11 @@ const LandingContainer = () => {
                             <div className="card feature">
                               <div className="title">
                                 <span className="icon">{icon}</span>
-                                {title}
+                                <FormattedMessage id={title} />
                               </div>
-                              <p className="description">{description}</p>
+                              <p className="description">
+                                <FormattedMessage id={description} />
+                              </p>
                             </div>
                           </Col>
                         )
@@ -200,10 +181,11 @@ const LandingContainer = () => {
                 </Col>
                 <Col xs={{ span: 23, order: 0 }} md={{ span: 12, order: 1 }}>
                   <div className="content">
-                    <h2 className="title">0% commission</h2>
+                    <h2 className="title">
+                      <FormattedMessage id="landing_commission_title" />
+                    </h2>
                     <div className="description">
-                      Right now the service is completely free to use for
-                      everyone
+                      <FormattedMessage id="landing_commission_description" />
                     </div>
                   </div>
                 </Col>
@@ -222,15 +204,23 @@ const LandingContainer = () => {
             </Col>
             <Col xs={23} md={16} order={0}>
               <div className="content">
-                <p className="subtitle">How it all works?</p>
-                <h2 className="title">Three steps process</h2>
+                <p className="subtitle">
+                  <FormattedMessage id="landing_howWork_subtitle" />
+                </p>
+                <h2 className="title">
+                  <FormattedMessage id="landing_howWork_title" />
+                </h2>
                 <div className="steps">
                   {cryptoSteps.map(({ title, description }, index) => (
                     <div className="step" key={index}>
                       <div className="title number">{index + 1}.</div>
                       <div className="text">
-                        <h3 className="title">{title}</h3>
-                        <p className="description">{description}</p>
+                        <h3 className="title">
+                          <FormattedMessage id={title} />
+                        </h3>
+                        <p className="description">
+                          <FormattedMessage id={description} />
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -241,8 +231,12 @@ const LandingContainer = () => {
         </div>
 
         <div className="blockchains block">
-          <p className="subtitle">Integrations</p>
-          <h2 className="title">Supported crypto</h2>
+          <p className="subtitle">
+            <FormattedMessage id="landing_blockchains_subtitle" />
+          </p>
+          <h2 className="title">
+            <FormattedMessage id="landing_blockchains_title" />
+          </h2>
           <div className="list">
             <Carousel
               autoplay
@@ -277,7 +271,9 @@ const LandingContainer = () => {
 
         {!isMobile && (
           <div className="help block">
-            <h2 className="title">Need help?</h2>
+            <h2 className="title">
+              <FormattedMessage id="landing_help_title" />
+            </h2>
             <div className="list">
               {help.map(({ title, icon, description, link }, index) => (
                 <a key={index} href={link} target="_blank" rel="noreferrer">
@@ -288,8 +284,12 @@ const LandingContainer = () => {
                       </Col>
                       <Col span={18}>
                         <div className="text">
-                          <p className="title">{title}</p>
-                          <p className="description">{description}</p>
+                          <p className="title">
+                            <FormattedMessage id={title} />
+                          </p>
+                          <p className="description">
+                            <FormattedMessage id={description} />
+                          </p>
                         </div>
                       </Col>
                     </Row>
@@ -303,9 +303,15 @@ const LandingContainer = () => {
         <div className="footer">
           <div className="gradient-blue-bg" />
           <div className="content">
-            <h4 className="title">Are you ready to grab your Crypto donutz?</h4>
-            <LandingBtn id={id} signUp={signUp} />
-
+            <h4 className="title">
+              <FormattedMessage id="landing_footer_title" />
+            </h4>
+            <LandingButton
+              localeText={
+                id ? "landing_main_button_logged" : "landing_main_button"
+              }
+              modificator="center-btn"
+            />
             <div className="contacts">
               <Logo />
               <div className="social-networks">

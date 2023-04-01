@@ -1,74 +1,79 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Badge } from "antd";
-import { useDispatch } from "react-redux";
 import { CloseOutlined } from "@ant-design/icons";
 import { InView } from "react-intersection-observer";
 import dayjsModule from "modules/dayjsModule";
+import { useIntl } from "react-intl";
 import { INotification } from "types";
 
-import axiosClient from "modules/axiosClient";
+import {
+  useDeleteNotificationMutation,
+  useSetStatusNotificationMutation,
+} from "store/services/NotificationsService";
 import {
   getBadgeNotificationMessage,
   getDonatNotificationMessage,
 } from "utils";
-import { getNotifications } from "store/types/Notifications";
 import { typeNotification } from "utils/notifications/types";
-import { useAppSelector } from "hooks/reduxHooks";
 
 const NotificationItem = ({
+  username,
   notification,
   handlerNotificationPopup,
 }: {
+  username: string;
   notification: INotification;
   handlerNotificationPopup: () => void;
 }) => {
-  const dispatch = useDispatch();
-  const { id: userID } = useAppSelector(({ user }) => user);
+  const intl = useIntl();
+  const [setStatusNotification] = useSetStatusNotificationMutation();
+  const [deleteNotification] = useDeleteNotificationMutation();
 
-  const { id, read, donation, badge, sender, recipient, created_at } =
-    notification;
+  const { id, users, donation, badge, createdAt } = notification;
+
+  const userNotification = users.find(({ user }) => user.username === username);
 
   const messageClick = () => handlerNotificationPopup();
 
   const handleChange = async (status: boolean) => {
-    if (!status) return;
-    if (status && !read) {
-      const { data, status: codeStatus } = await axiosClient.put(
-        "/api/notification/status",
-        {
-          id,
-          read: status,
-          userID,
-        }
-      );
-      if (codeStatus === 200 && data)
-        dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
+    if (userNotification) {
+      const { read } = userNotification;
+      if (!status) return;
+      if (status && !read) {
+        await setStatusNotification(id);
+      }
     }
   };
 
-  const deleteItem = async () => {
-    const { data, status } = await axiosClient.delete(
-      `/api/notification/${id}/${userID}`
-    );
-    if (status === 200 && data)
-      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-  };
+  const deleteItem = async () => await deleteNotification(id);
 
   const notificationType = useMemo((): typeNotification => {
-    const { donation, badge, sender, recipient } = notification;
-    if (donation) {
-      if (sender) return "donat_creator";
-      else if (recipient) return "donat_supporter";
-    }
+    if (userNotification) {
+      const { roleplay } = userNotification;
+      const { donation, badge } = notification;
+      const isRecipient = roleplay === "recipient";
+      if (donation) {
+        if (isRecipient) return "donat_creator";
+        else return "donat_supporter";
+      }
 
-    if (badge) {
-      if (sender)
-        return "add_badge_supporter"; // render for supporter (sender = creator)
-      else if (recipient) return "add_badge_creator"; // render for creator (recipient = supporter)
+      if (badge) {
+        if (isRecipient) {
+          return "add_badge_supporter";
+        } else return "add_badge_creator";
+      }
     }
 
     return "none";
-  }, [notification]);
+  }, [notification, userNotification]);
+
+  if (!userNotification) return null;
+
+  const otherUserNotification = users.find(
+    ({ user }) => user.username !== username
+  );
+
+  const { read } = userNotification;
 
   return (
     <InView onChange={handleChange} key={id}>
@@ -78,30 +83,36 @@ const NotificationItem = ({
             <div className="content">
               <div className="message" onClick={messageClick}>
                 {donation &&
-                  getDonatNotificationMessage({
-                    type: notificationType,
-                    user: sender || recipient || "",
-                    data: {
-                      sum_donation: donation.sum_donation,
-                      blockchain: donation.blockchain,
-                      donation_message: donation.donation_message,
+                  getDonatNotificationMessage(
+                    {
+                      type: notificationType,
+                      user: otherUserNotification?.user.username || "@user",
+                      data: {
+                        sum: donation.sum,
+                        blockchain: donation.blockchain,
+                        message: donation.message,
+                      },
                     },
-                  })}
+                    intl
+                  )}
 
                 {badge &&
-                  getBadgeNotificationMessage({
-                    type: notificationType,
-                    user: sender || recipient || "",
-                    data: {
-                      id: badge.id,
-                      title: badge.title,
+                  getBadgeNotificationMessage(
+                    {
+                      type: notificationType,
+                      user: otherUserNotification?.user.username || "@user",
+                      data: {
+                        id: badge.id,
+                        title: badge.title,
+                      },
                     },
-                  })}
+                    intl
+                  )}
               </div>
               <CloseOutlined onClick={deleteItem} />
             </div>
             <p className="date">
-              {dayjsModule(created_at).startOf("minutes").fromNow()}
+              {dayjsModule(createdAt).startOf("minutes").fromNow()}
             </p>
           </Badge>
         </div>
@@ -110,4 +121,4 @@ const NotificationItem = ({
   );
 };
 
-export { NotificationItem };
+export default memo(NotificationItem);

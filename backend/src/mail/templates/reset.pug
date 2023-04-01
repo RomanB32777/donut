@@ -1,0 +1,51 @@
+extends ../templates/layout/layout
+
+block main 
+  center(style='width:100%; table-layout: fixed; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;')
+    div(style='max-width: 600px; min-width: 450px;')
+      table(style='margin: 0 auto; padding: 0; width: 100%; max-width: 600px; min-width: 450px; border-collapse: collapse; border-spacing: 0; background-color: #25264e;' align='center')
+        tbody
+          +header()
+          tr
+            td
+              table(style='margin: 0 auto; padding: 0; width: 100%; max-width: 600px; min-width: 450px; border-collapse: collapse; border-spacing: 0; background-color: #25264e;' align='center')
+                tbody
+                  tr
+                    td(width='40' style='width: 40px; min-width: 40px; background-color: #25264e;')
+                    td
+                      table(style='margin: 0 auto; padding: 0; width: 100%; max-width: 520px; min-width: 370px; border-spacing: 0; background-color: #25264e; font-family: \'Manrope\', \'Arial\', sans-serif; color: #ffffff;' align='center')
+                        tbody
+                          +space(20, '#25264e')
+                          tr
+                            td
+                              table(style=`margin: 0; padding: 0; width: 100%; border-collapse: collapse; border-spacing: 0; color: #ffffff; font-weight: 400; font-size: 16px; line-height: 20px;`, align='center')
+                                tbody
+                                  tr
+                                    td(align='center' style='background-color: #1a1b36; font-size: 18px; line-height: 22px; padding: 20px; margin: 0; border-bottom: 0; border-radius: 10px 10px 0 0;')
+                                      b
+                                        | Forgot you password? Not a problem!
+
+                                  tr
+                                    td(align='center' style='background-color: #1a1b36; padding: 10px; margin: 0;')
+                                      img(src='https://cryptodonutz.xyz/assets/email/email-reset.png' width='310' alt='reset-img')
+
+                                  tr
+                                    td(align='left' style='background-color: #1a1b36; padding: 20px; margin: 0;')
+                                      | We’ve received a request to reset the password for Crypto Donutz account associated with #{user.email}. 
+                                      br
+                                      br
+                                      | You can reset your password by clicking the link below:
+
+                                  tr
+                                    td(align='left', style='background-color: #1a1b36; padding: 0 20px 20px; margin: 0;')
+                                      +button(link, 'Reset password', '#e94560', 200, '16px')
+
+                                  tr
+                                    td(align='left' style='background-color: #1a1b36; padding: 0 20px 20px; margin: 0;')
+                                      | If you didn’t request a new password,  just ignore this message.                             
+
+                                  +footer()
+
+                          +space(20, '#25264e')
+
+                    td(width='40' style='width: 40px; min-width: 40px; background-color: #25264e;')

@@ -1,96 +1,102 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
-import { useDispatch } from "react-redux";
-import { AnyAction, Dispatch } from "redux";
 import { io, Socket } from "socket.io-client";
 import { IBadgeBase, ISocketNotification } from "types";
+import { useIntl } from "react-intl";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import { getNotifications } from "store/types/Notifications";
+import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
 import {
   addNotification,
   getBadgeNotificationMessage,
   getDonatNotificationMessage,
 } from "utils";
-import { baseURL, isProduction, socketsBaseUrl } from "consts";
+import { baseURL } from "consts";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
-export { WebSocketContext };
+const useSocketConnection = (username: string) => {
+  const intl = useIntl();
+  const [getNotifications] = useLazyGetNotificationsQuery();
 
-export const connectSocket = (
-  username: string,
-  dispatch: Dispatch<AnyAction>
-) => {
-  const socket = io(isProduction ? baseURL : socketsBaseUrl, {
-    path: "/sockt/",
-    query: {
-      userName: username,
-    },
-  });
-
-  socket.on("connect", () => {
-    console.log("connect");
-  });
-
-  socket.on("connect_error", () => {
-    console.log("connect_error");
-  });
-
-  socket.on("disconnect", () => {
-    console.log("disconnect");
-  });
-
-  socket.on("new_donat_notification", (data: ISocketNotification) => {
-    addNotification({
-      type: "info",
-      title: "New donut",
-      message: getDonatNotificationMessage({
-        type: "donat_creator",
-        user: data.supporter,
-        data: data.additional,
-      }),
+  const connectSocket = () => {
+    const socket = io(baseURL, {
+      path: "/sockt/",
+      query: {
+        username,
+      },
     });
-    dispatch(getNotifications({ user: username }));
-  });
 
-  socket.on(
-    "new_badge_notification",
-    (data: ISocketNotification<IBadgeBase>) => {
+    socket.on("connect", () => {
+      console.log("connect");
+    });
+
+    socket.on("connect_error", () => {
+      console.log("connect_error");
+    });
+
+    socket.on("disconnect", () => {
+      console.log("disconnect");
+    });
+
+    socket.on("newDonat", (data: ISocketNotification) => {
       addNotification({
         type: "info",
-        title: "New badge",
-        message: getBadgeNotificationMessage({
-          type: "add_badge_supporter",
-          user: data.supporter,
-          data: data.additional,
-        }),
+        title: intl.formatMessage({ id: "notifications_donat_title" }),
+        message: getDonatNotificationMessage(
+          {
+            type: "donat_creator",
+            user: data.supporter,
+            data: data.additional,
+          },
+          intl
+        ),
       });
-      dispatch(getNotifications({ user: username }));
-    }
-  );
-  return socket;
+      getNotifications({ username });
+    });
+
+    socket.on("newBadge", (data: ISocketNotification<IBadgeBase>) => {
+      addNotification({
+        type: "info",
+        title: intl.formatMessage({ id: "notifications_badge_title" }),
+        message: getBadgeNotificationMessage(
+          {
+            type: "add_badge_supporter",
+            user: data.supporter,
+            data: data.additional,
+          },
+          intl
+        ),
+      });
+      getNotifications({ username });
+    });
+
+    return socket;
+  };
+
+  return { connectSocket };
 };
 
-export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
-  const [valueContext, setValueContext] = useState<null | Socket>(null);
-  const { username } = useAppSelector(({ user }) => user);
-
-  const dispatch = useDispatch();
+const WebSocketProvider = ({ children }: { children: ReactNode }) => {
+  const user = useAppSelector(({ user }) => user);
+  const [socketContext, setSocketContext] = useState<null | Socket>(null);
+  const { connectSocket } = useSocketConnection(user?.username);
 
   useEffect(() => {
-    if (username) {
-      const socket = connectSocket(username, dispatch);
-      setValueContext(socket);
+    if (user?.username) {
+      const socket = connectSocket();
+      setSocketContext(socket);
 
       return () => {
         socket.disconnect();
       };
     }
-  }, [username]);
+  }, [user]);
 
   return (
-    <WebSocketContext.Provider value={valueContext}>
+    <WebSocketContext.Provider value={socketContext}>
       {children}
     </WebSocketContext.Provider>
   );
 };
+
+export { WebSocketContext, useSocketConnection, WebSocketProvider };

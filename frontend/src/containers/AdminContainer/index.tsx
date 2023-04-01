@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
+
 import AdminSidebar from "components/AdminComponents/AdminSidebar";
 import AdminHeader from "components/AdminComponents/AdminHeader";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
-
 import "./styles.sass";
 
-const AdminContainer = ({ children }: { children?: React.ReactNode }) => {
+interface IAdminContainer {
+  children?: React.ReactNode;
+}
+
+const AdminContainer: FC<IAdminContainer> = ({ children }) => {
   const { isTablet } = useWindowDimensions();
+
   const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
@@ -16,10 +21,7 @@ const AdminContainer = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <>
-      <AdminSidebar
-        collapsed={collapsed}
-        setCollapsed={setCollapsed}
-      />
+      <AdminSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <AdminHeader
         collapsedSidebar={collapsed}
         setCollapsedSidebar={setCollapsed}

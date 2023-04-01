@@ -3,7 +3,7 @@ echo "update donut app"
 
 project_dir=$(dirname "$0")
 types_dir="types"
-modulesWithTypes=('backend' 'frontend' 'sockets')
+modulesWithTypes=('backend' 'frontend')
 
 cd $project_dir
 

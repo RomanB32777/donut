@@ -1,16 +1,14 @@
-import { ILoadingAction } from "appTypes";
-import { SET_LOADING } from "store/types/Loading";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = true;
-
-const LoadingReducer = (state = initialState, action: ILoadingAction) => {
-  switch (action.type) {
-    case SET_LOADING:
-      return action.payload;
-
-    default:
+export const loadingSlice = createSlice({
+  name: "loading",
+  initialState: true,
+  reducers: {
+    setLoading(state, { payload }: PayloadAction<boolean>) {
+      state = payload;
       return state;
-  }
-};
+    },
+  },
+});
 
-export default LoadingReducer;
+export default loadingSlice.reducer;

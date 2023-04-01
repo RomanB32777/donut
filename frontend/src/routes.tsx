@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { Navigate, useRoutes, Outlet, useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { Navigate, useRoutes, Outlet } from "react-router";
 import { DonationPageIcon, PeopleIcon, ShieldMenuIcon } from "icons";
 import {
   PieChartOutlined,
@@ -9,8 +8,6 @@ import {
 } from "@ant-design/icons";
 import { userRoles } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
-import { WalletContext } from "contexts/Wallet";
 import MainPage from "pages/MainPage";
 import BadgesPage from "pages/BadgesPage";
 import DonatPage from "pages/DonatPage";
@@ -21,7 +18,9 @@ import DonationPage from "pages/DonationPage";
 import StreamStatsPage from "pages/StreamStatsPage";
 import DonationGoalsPage from "pages/DonationGoalsPage";
 import SettingsPage from "pages/SettingsPage";
-import RegistrationContainer from "containers/RegistrationContainer";
+import ResetPasswordContainer from "containers/ResetPasswordContainer";
+import ChangePasswordContainer from "containers/ChangePasswordContainer";
+import ResendConfirmContainer from "containers/ResendConfirmContainer";
 import AdminContainer from "containers/AdminContainer";
 import Loader from "components/Loader";
 import DonatAlertPage from "pages/DonatAlertPage";
@@ -29,26 +28,10 @@ import DonatGoalPage from "pages/DonatGoalPage";
 import DonatStatPage from "pages/DonatStatPage";
 import LandingPage from "pages/LandingPage";
 import NoPage from "pages/NoPage";
-import { checkWallet } from "utils";
 
-enum RoutePaths {
-  main = "/",
-  admin = "admin",
-  dashboard = "dashboard",
-  donat = "donat",
-  widgets = "widgets",
-  alerts = "alerts",
-  stats = "stats",
-  goals = "goals",
-  donations = "donations",
-  badges = "badges",
-  settings = "settings",
-  register = "register",
-  support = "support",
-  donatMessage = "donat-message",
-  donatGoal = "donat-goal",
-  donatStat = "donat-stat",
-}
+import { useAppSelector } from "hooks/reduxHooks";
+import useAuth from "hooks/useAuth";
+import { RoutePaths } from "consts";
 
 interface IRoute {
   path?: string;
@@ -72,19 +55,17 @@ type ProtectedRouteType = {
 };
 
 const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const walletConf = useContext(WalletContext);
-  const { user, loading } = useAppSelector((state) => state);
-  const { id, roleplay } = user;
+  const { id, roleplay } = useAppSelector(({ user }) => user);
+  const loading = useAppSelector(({ loading }) => loading);
+  const { checkAuth } = useAuth();
 
   useEffect(() => {
-    checkWallet({ walletConf, dispatch, navigate });
-  }, [id, walletConf]);
+    !id && checkAuth();
+  }, [id]);
 
   if (!id && loading) return <Loader size="big" />;
 
-  //if the role required is there or not
+  // if the role required is there or not
   if (roleRequired)
     return id ? (
       roleRequired === roleplay ? (
@@ -93,9 +74,9 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
         <Navigate to={`/${RoutePaths.admin}/${RoutePaths.donations}`} />
       )
     ) : (
-      <Navigate to={`/${RoutePaths.register}`} />
+      <Navigate to={RoutePaths.main} />
     );
-  return id ? <Outlet /> : <Navigate to={`/${RoutePaths.register}`} />;
+  return id ? <Outlet /> : <Navigate to={RoutePaths.main} />;
 };
 
 export const routers: IRoute[] = [
@@ -123,7 +104,7 @@ export const routers: IRoute[] = [
           {
             path: RoutePaths.dashboard,
             element: <MainPage />,
-            name: "Dashboard",
+            name: "sidebar_dashboard",
             icon: <PieChartOutlined />,
             menu: true,
             menuOrder: 1,
@@ -131,7 +112,7 @@ export const routers: IRoute[] = [
           {
             path: RoutePaths.donat,
             element: <DonationPage />,
-            name: "Donation page",
+            name: "sidebar_donation_page",
             icon: <DonationPageIcon />,
             menu: true,
             menuOrder: 4,
@@ -139,26 +120,26 @@ export const routers: IRoute[] = [
           {
             path: RoutePaths.widgets,
             element: <WidgetsPage />,
-            name: "Widgets",
+            name: "sidebar_widgets",
             icon: <AppstoreOutlined />,
             menu: true,
             menuOrder: 6,
             children: [
               {
                 path: RoutePaths.alerts,
-                name: "Alerts",
+                name: "sidebar_widgets_alerts",
                 element: <AlertsPage />,
                 menu: true,
               },
               {
                 path: RoutePaths.stats,
-                name: "In-stream stats",
+                name: "sidebar_widgets_stats",
                 element: <StreamStatsPage />,
                 menu: true,
               },
               {
                 path: RoutePaths.goals,
-                name: "Donation goals",
+                name: "sidebar_widgets_goals",
                 element: <DonationGoalsPage />,
                 menu: true,
               },
@@ -169,7 +150,7 @@ export const routers: IRoute[] = [
       {
         path: RoutePaths.donations,
         element: <DonationsPage />,
-        name: "Donations",
+        name: "sidebar_donations",
         icon: <PeopleIcon />,
         menu: true,
         menuOrder: 2,
@@ -177,7 +158,7 @@ export const routers: IRoute[] = [
       {
         path: RoutePaths.badges,
         element: <BadgesPage />,
-        name: "Badges",
+        name: "sidebar_badges",
         icon: <ShieldMenuIcon />,
         menu: true,
         menuOrder: 3,
@@ -185,7 +166,7 @@ export const routers: IRoute[] = [
       {
         path: RoutePaths.settings,
         element: <SettingsPage />,
-        name: "Settings",
+        name: "sidebar_settings",
         icon: <SettingOutlined />,
         menu: true,
         menuOrder: 5,
@@ -193,51 +174,48 @@ export const routers: IRoute[] = [
     ],
   },
   {
-    path: RoutePaths.register,
-    name: "Registration",
-    element: <RegistrationContainer />,
+    path: RoutePaths.reset,
+    name: "title_reset_page",
+    element: <ResetPasswordContainer />,
+  },
+  {
+    path: RoutePaths.change,
+    name: "title_change_password_page",
+    element: <ChangePasswordContainer />,
+  },
+  {
+    path: RoutePaths.resend,
+    name: "title_resend_page",
+    element: <ResendConfirmContainer />,
   },
   {
     path: `${RoutePaths.support}/:name`,
-    name: "Donat page",
+    name: "title_donat_page",
     element: <DonatPage />,
     hiddenLayoutElements: true,
     noPaddingMainConteiner: true,
   },
   {
-    path: `${RoutePaths.donatMessage}/:name/:security_string`,
-    name: "Donat alert page",
+    path: `${RoutePaths.donatMessage}/:name/:id`,
+    name: "title_alert_page",
     element: <DonatAlertPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
   {
     path: `${RoutePaths.donatGoal}/:name/:id`,
-    name: "Donat goal page",
+    name: "title_goal_page",
     element: <DonatGoalPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
   {
     path: `${RoutePaths.donatStat}/:name/:id`,
-    name: "Donat stat page",
+    name: "title_stat_page",
     element: <DonatStatPage />,
     hiddenLayoutElements: true,
     transparet: true,
   },
-  // {
-  //   path: RoutePaths.help,
-  //   name: "Help center",
-  //   element: <ProtectedRoutes />,
-  //   children: [
-  //     {
-  //       path: `${RoutePaths.center}?/:theme`,
-  //       element: <HelpCenter />,
-  //       hiddenLayoutElements: true,
-  //       noPaddingMainConteiner: true,
-  //     },
-  //   ],
-  // },
   {
     path: "*",
     element: <NoPage />,

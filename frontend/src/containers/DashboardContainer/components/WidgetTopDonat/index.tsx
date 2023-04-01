@@ -1,96 +1,114 @@
-import { useEffect, useState } from "react";
-import { Empty } from "antd";
-import { stringFormatTypes } from "types";
-import axiosClient from "modules/axiosClient";
+import { useEffect, useMemo, useState } from "react";
+import { createSelector } from "@reduxjs/toolkit";
+import { FormattedMessage } from "react-intl";
 
-import SelectComponent from "components/SelectComponent";
 import TableComponent from "components/TableComponent";
+import EmptyComponent from "components/EmptyComponent";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import WidgetItem from "../WidgetItem";
+import FilterSelect from "../FilterSelect";
 
 import { useAppSelector } from "hooks/reduxHooks";
+import { useGetWidgetDonationsQuery } from "store/services/DonationsService";
 import { ITableData, tableColums } from "./tableData";
 import { formatNumber, getTimePeriodQuery } from "utils";
-import { filterPeriodItems, widgetApiUrl } from "consts";
+import { filterPeriodItems } from "consts";
+import { IDonationWidgetInfo } from "appTypes";
 
 const LIMIT_DONATS = 6;
 
 const WidgetTopDonat = () => {
   const { isTablet } = useWindowDimensions();
-  const { user, notifications } = useAppSelector((state) => state);
+  const { id, creator } = useAppSelector(({ user }) => user);
+  const { list, shouldUpdateApp } = useAppSelector(
+    ({ notifications }) => notifications
+  );
 
-  const { id, spam_filter } = user;
-  const { list, shouldUpdateApp } = notifications;
-
-  const [topDonations, setTopDonations] = useState<ITableData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [activeFilterItem, setActiveFilterItem] = useState(
     filterPeriodItems["7days"]
   );
 
-  const getTopDonations = async (timePeriod: string) => {
-    try {
-      setLoading(true);
-      const { data, status } = await axiosClient.get(
-        `${widgetApiUrl}/top-donations/${id}?limit=${LIMIT_DONATS}&timePeriod=${timePeriod}&spam_filter=${spam_filter}`
-      );
-      if (status === 200) {
-        const forTableData: ITableData[] = data.map((donat: any) => ({
-          ...donat,
-          sum_donation: formatNumber(donat.sum_donation),
-          key: donat.id,
-        }));
-        setTopDonations(forTableData);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const timePeriod = useMemo(
+    () => getTimePeriodQuery(activeFilterItem),
+    [activeFilterItem]
+  );
+
+  const selectDonationsData = useMemo(
+    () =>
+      createSelector(
+        (res: any) => res.data,
+        (data) => {
+          const forTableData: ITableData[] = data?.map(
+            ({ backer, ...donat }: IDonationWidgetInfo) => ({
+              ...donat,
+              username: backer.username,
+              sum: formatNumber(donat.sum),
+              key: donat.id,
+            })
+          );
+
+          return forTableData ?? [];
+        }
+      ),
+    []
+  );
+
+  const { topDonations, isLoading, refetch } = useGetWidgetDonationsQuery(
+    {
+      userId: id,
+      dataType: "top-donations",
+      query: {
+        limit: LIMIT_DONATS,
+        timePeriod,
+        spamFilter: creator?.spamFilter,
+      },
+    },
+    {
+      skip: !id,
+      selectFromResult: (result) => ({
+        ...result,
+        topDonations: selectDonationsData(result),
+      }),
     }
-  };
+  );
 
   useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    id && getTopDonations(timePeriod);
-  }, [id, activeFilterItem]);
-
-  useEffect(() => {
-    const timePeriod = getTimePeriodQuery(activeFilterItem);
-    list.length && shouldUpdateApp && getTopDonations(timePeriod);
+    list.length && shouldUpdateApp && refetch();
   }, [list, shouldUpdateApp]);
 
   return (
     <div className="widget widget-topDonat">
       <div className="header">
-        <span className="widget-title">Top donations</span>
-        <div className="filter">
-          <SelectComponent
-            title={activeFilterItem}
-            list={Object.values(filterPeriodItems)}
-            selectItem={(selected) =>
-              setActiveFilterItem(selected as stringFormatTypes)
-            }
-            listWrapperModificator="filter-list"
-          />
-        </div>
+        <span className="widget-title">
+          <FormattedMessage id="dashboard_widgets_donations" />
+        </span>
+        <FilterSelect
+          selectedItem={activeFilterItem}
+          selectItem={setActiveFilterItem}
+        />
       </div>
       <div className="items">
         {!isTablet && (
           <TableComponent
             dataSource={topDonations}
             columns={tableColums}
-            loading={loading}
+            loading={isLoading}
             pagination={false}
           />
         )}
         {isTablet &&
           Boolean(topDonations.length) &&
+          // TODO - remove any
           topDonations.map((donat: any) => {
-            return <WidgetItem key={donat.key} donat={donat} />;
+            return (
+              <WidgetItem
+                key={donat.key}
+                donat={donat}
+                symbol={donat.blockchain}
+              />
+            );
           })}
-        {isTablet && !Boolean(topDonations.length) && (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-        )}
+        {isTablet && !Boolean(topDonations.length) && <EmptyComponent />}
       </div>
     </div>
   );

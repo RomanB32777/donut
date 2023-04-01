@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useEffect, useMemo, memo, FC } from "react";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
+import { FormattedMessage, useIntl } from "react-intl";
 import { goalDataKeys, IGoalData } from "types";
 
 import LinkCopy from "components/LinkCopy";
@@ -14,69 +14,64 @@ import FormBtnsBlock from "components/FormBtnsBlock";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import axiosClient from "modules/axiosClient";
-import { getGoals } from "store/types/Goals";
 import {
-  addNotification,
-  addSuccessNotification,
-  copyStr,
-  loadFonts,
-} from "utils";
+  useDeleteGoalMutation,
+  useEditGoalMutation,
+} from "store/services/GoalsService";
+import { copyStr, loadFonts } from "utils";
 import { ISelectItem } from "components/SelectInput";
-import { RoutePaths } from "routes";
-import { baseURL } from "consts";
+import { RoutePaths, baseURL } from "consts";
 import { IWidgetGoalData } from "appTypes";
 
-const GoalItem = ({
-  fonts,
-  goalData,
-  openEditModal,
-}: {
+interface IGoalItem {
   fonts: ISelectItem[];
   goalData: IGoalData;
   openEditModal?: (data: IWidgetGoalData) => void;
-}) => {
-  const dispatch = useDispatch();
-  const user = useAppSelector(({ user }) => user);
+}
+
+const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
+  const intl = useIntl();
+  const { username } = useAppSelector(({ user }) => user);
   const { isLaptop, isTablet } = useWindowDimensions();
+  const [editGoal, { isLoading: isEditLoading }] = useEditGoalMutation();
+  const [deleteGoal, { isLoading: isDeleteLoading }] = useDeleteGoalMutation();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [editGoalData, setEditGoalData] = useState<IWidgetGoalData>({
     ...goalData,
-    title_font: {
-      name: goalData.title_font,
+    titleFont: {
+      name: goalData.titleFont,
       link: "",
     },
-    progress_font: {
-      name: goalData.progress_font,
+    progressFont: {
+      name: goalData.progressFont,
       link: "",
     },
   });
 
-  const { id, title, amount_goal, amount_raised, is_archive, progress_color } =
+  const { id, title, amountGoal, amountRaised, isArchive, progressColor } =
     editGoalData;
 
   const handleActiveDetails = () =>
-    !is_archive && setisActiveDetails(!isActiveDetails);
+    !isArchive && setisActiveDetails(!isActiveDetails);
 
-  const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
+  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     openEditModal && openEditModal(editGoalData);
   };
 
-  const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
-    copyStr(linkForCopy);
+  const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    copyStr({ str: linkForCopy, intl });
   };
 
   const initGoalItem = async () => {
     if (fonts) {
-      const { title_font, progress_font } = goalData;
+      const { titleFont, progressFont } = goalData;
 
       const loadedFonts = await loadFonts({
         fonts,
-        fields: { title_font, progress_font },
+        fields: { titleFont, progressFont },
       });
 
       // convert IGoalData -> IWidgetGoalData
@@ -91,34 +86,20 @@ const GoalItem = ({
     }
   };
 
-  // useCallback(}, [dispatch, editGoalData, goalData, user]  ???
   const editWidgetData = (isReset?: boolean) => async () => {
     try {
-      setLoading(true);
       const { id } = goalData;
-      const { title_font, progress_font } = editGoalData;
-      await axiosClient.put("/api/widget/goals-widget/", {
-        goalData: {
-          ...editGoalData,
-          title_font: title_font.name,
-          progress_font: progress_font.name,
-        },
-        creator_id: user.id,
+      const { titleFont, progressFont } = editGoalData;
+
+      await editGoal({
+        ...editGoalData,
+        titleFont: titleFont.name,
+        progressFont: progressFont.name,
         isReset,
         id,
       });
-      dispatch(getGoals(user.id));
-      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while saving data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -126,27 +107,16 @@ const GoalItem = ({
 
   const deleteGoalWidget = async () => {
     try {
-      setLoading(true);
       const { id } = goalData;
-      await axiosClient.delete("/api/widget/goals-widget/" + id);
-      dispatch(getGoals(user.id));
-      addSuccessNotification({ message: "Widget deleted successfully" });
+      await deleteGoal(id);
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while deleting data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
   const linkForCopy = useMemo(
-    () => `${baseURL}/${RoutePaths.donatGoal}/${user.username}/${id}`,
-    [user, id]
+    () => `${baseURL}/${RoutePaths.donatGoal}/${username}/${id}`,
+    [username, id]
   );
 
   const renderLinkForCopy = useMemo(
@@ -154,8 +124,13 @@ const GoalItem = ({
     [linkForCopy, id]
   );
 
+  const isLoading = useMemo(
+    () => isEditLoading || isDeleteLoading,
+    [isEditLoading, isDeleteLoading]
+  );
+
   useEffect(() => {
-    fonts && fonts.length && initGoalItem();
+    fonts.length && initGoalItem();
   }, [fonts, goalData]);
 
   return (
@@ -163,7 +138,7 @@ const GoalItem = ({
       <div
         className={clsx("item", {
           active: isActiveDetails,
-          archived: is_archive,
+          archived: isArchive,
         })}
         onClick={handleActiveDetails}
       >
@@ -171,9 +146,9 @@ const GoalItem = ({
           <Col xs={3}>
             <Progress
               type="circle"
-              percent={Math.round((amount_raised / amount_goal) * 100)}
+              percent={Math.round((amountRaised / amountGoal) * 100)}
               width={83}
-              strokeColor={progress_color}
+              strokeColor={progressColor}
               format={(percent) => (
                 <span
                   style={{
@@ -200,15 +175,22 @@ const GoalItem = ({
                 <div className="mainInfo">
                   <p className="title">{title}</p>
                   <p className="description">
-                    Raised: {amount_raised}/{amount_goal} USD
+                    <FormattedMessage
+                      id="goals_widget_card_raised"
+                      values={{ amountRaised, amountGoal }}
+                    />
                   </p>
                 </div>
               </Col>
               {!isLaptop && (
                 <Col span={13}>
-                  {!is_archive && (
+                  {!isArchive && (
                     <div className="link">
-                      <LinkCopy link={linkForCopy} title={renderLinkForCopy} isSimple />
+                      <LinkCopy
+                        link={linkForCopy}
+                        title={renderLinkForCopy}
+                        isSimple
+                      />
                     </div>
                   )}
                 </Col>
@@ -216,12 +198,12 @@ const GoalItem = ({
             </Row>
           </Col>
           <div className="btns">
-            {isLaptop && !is_archive && (
+            {isLaptop && !isArchive && (
               <div className="btn-item" onClick={clickCopyBtn}>
                 <CopyIcon />
               </div>
             )}
-            {!is_archive && (
+            {!isArchive && (
               <div
                 className="btn-item"
                 onClick={clickEditBtn}
@@ -253,7 +235,7 @@ const GoalItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </PreviewGoalBlock>
             }
@@ -266,7 +248,7 @@ const GoalItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </SettingsGoalBlock>
             }
@@ -277,4 +259,4 @@ const GoalItem = ({
   );
 };
 
-export default GoalItem;
+export default memo(GoalItem);

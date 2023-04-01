@@ -1,0 +1,19 @@
+block vars
+
+include ./mixins/header
+include ./mixins/button
+include ./mixins/space
+include ./mixins/footer
+
+doctype html
+html(xmlns='http://www.w3.org/1999/xhtml', lang="en")
+    head
+        meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+        // [if !mso]><!
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        // <![endif]
+        meta(name='viewport', content='width=device-width,initial-scale=1')
+        title
+        
+        body(style='margin: 0; padding: 0; min-width: 100%;')
+            block main

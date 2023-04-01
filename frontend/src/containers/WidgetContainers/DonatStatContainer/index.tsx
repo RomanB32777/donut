@@ -1,153 +1,205 @@
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
-import { INotification } from "types";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useIntl } from "react-intl";
+import { donationsQueryData, IStatData, statsDataKeys } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
-import axiosClient from "modules/axiosClient";
+import { useGetCreatorInfoQuery } from "store/services/UserService";
+import { useGetStatsWidgetDataQuery } from "store/services/StatsService";
+import { useLazyGetWidgetDonationsQuery } from "store/services/DonationsService";
+
 import {
+  addNotFoundUserNotification,
   getCurrentTimePeriodQuery,
   getFontColorStyles,
   getFontsList,
+  getRandomStr,
   getStatsDataTypeQuery,
   loadFonts,
   renderStatItem,
 } from "utils";
-import { tryToGetPersonInfo } from "store/types/PersonInfo";
-import { alignFlextItemsList, alignItemsList, widgetApiUrl } from "consts";
-import { AlignText, IWidgetStatData } from "appTypes";
+import {
+  alignFlextItemsList,
+  alignItemsList,
+  initWidgetStatData,
+} from "consts";
+import { ISelectItem } from "components/SelectInput";
+import { AlignText, IFont, IWidgetStatData } from "appTypes";
 import "./styles.sass";
 
 const LIMIT = 3;
+const fontsFields: statsDataKeys[] = ["titleFont", "contentFont"];
 
 const DonatStatContainer = () => {
-  const dispatch = useDispatch();
+  const intl = useIntl();
   const { id, name } = useParams();
-  const { personInfo, notifications } = useAppSelector((state) => state);
-  const { list } = notifications;
+  const { list } = useAppSelector(({ notifications }) => notifications);
 
-  const [lastNotif, setLastNotif] = useState<any>({});
-  const [renderList, setRenderList] = useState<any[]>([]);
+  const { data: personInfo, isError } = useGetCreatorInfoQuery(name as string, {
+    skip: !name,
+  });
+
+  const { data: widgetData } = useGetStatsWidgetDataQuery(id ?? skipToken);
+  const [getWidgetDonations] = useLazyGetWidgetDonationsQuery();
+
+  const [fonts, setFonts] = useState<ISelectItem[]>([]);
+  const [renderList, setRenderList] = useState<any[]>([]); // TODO - remove any
   const [statData, setStatData] = useState<IWidgetStatData | null>(null);
 
-  const getDonations = async () => {
-    if (statData) {
-      try {
-        const { time_period, data_type } = statData;
-        const customPeriod = time_period.split("-");
-
-        const { data } = await axiosClient.get(
-          `${widgetApiUrl}/${data_type}/${personInfo.id}?limit=${LIMIT}&${
-            Boolean(customPeriod.length > 1)
-              ? `timePeriod=custom&startDate=${customPeriod[0]}&endDate=${customPeriod[1]}`
-              : `timePeriod=${time_period}&spam_filter=${personInfo.spam_filter}`
-          }&isStatPage=true`
-        );
-        data && data.length && setRenderList(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  const getStatData = async (id: string) => {
-    const { data, status } = await axiosClient.get(
-      `/api/widget/stats-widget/${id}`
-    );
-
-    if (status === 200) {
-      const fonts = await getFontsList();
-
-      const { title_font, content_font } = data;
-
-      const loadedFonts = await loadFonts({
-        fonts,
-        fields: { title_font, content_font },
-      });
-
-      const widgetData: IWidgetStatData = {
-        ...data,
-        ...loadedFonts,
+  const getWidgetStatData = (
+    widgetData: IStatData,
+    fontObj?: Record<string, IFont>
+  ) =>
+    // convert IStatData -> IWidgetStatData
+    Object.keys(widgetData).reduce((values, key) => {
+      const keyField = key as statsDataKeys;
+      if (fontsFields.includes(keyField))
+        return {
+          ...values,
+          [keyField]: {
+            name: fontObj ? fontObj[keyField] : widgetData[keyField],
+          },
+        };
+      return {
+        ...values,
+        [keyField]: widgetData[keyField],
       };
+    }, initWidgetStatData);
 
-      setStatData(widgetData);
+  useEffect(() => {
+    const getStatWidgetData = async () => {
+      if (widgetData) {
+        let widgetDataInfo = getWidgetStatData(widgetData);
+
+        if (!fonts.length) {
+          const fontsInfo = await getFontsList();
+
+          const { titleFont, contentFont } = widgetData;
+
+          const loadedFonts = await loadFonts({
+            fonts: fontsInfo,
+            fields: { titleFont, contentFont },
+          });
+
+          setFonts(fontsInfo);
+          widgetDataInfo = getWidgetStatData(widgetData, loadedFonts);
+        }
+
+        setStatData(widgetDataInfo);
+      }
+    };
+
+    getStatWidgetData();
+  }, [widgetData, fonts]);
+
+  useEffect(() => {
+    const getDonations = async () => {
+      if (statData && personInfo) {
+        try {
+          const { id: userId, creator } = personInfo;
+          const { timePeriod, dataType, customTimePeriod } = statData;
+
+          const query: donationsQueryData = {
+            limit: LIMIT,
+            timePeriod: timePeriod,
+            spamFilter: creator?.spamFilter,
+          };
+
+          const [params]: Parameters<typeof getWidgetDonations> = [
+            {
+              userId,
+              dataType,
+              query,
+            },
+          ];
+
+          if (customTimePeriod && params.query) {
+            const customPeriod = customTimePeriod.split("-");
+            params.query = {
+              ...params.query,
+              startDate: customPeriod[0],
+              endDate: customPeriod[1],
+            };
+          }
+          const { data } = await getWidgetDonations(params);
+          data && setRenderList(data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
+    getDonations();
+  }, [list, statData, personInfo]);
+
+  const timePeriodName = useMemo(() => {
+    if (statData) {
+      const { timePeriod, customTimePeriod } = statData;
+
+      if (customTimePeriod) return customTimePeriod;
+      return intl.formatMessage({
+        id: getCurrentTimePeriodQuery(timePeriod),
+      });
     }
-  };
-
-  useEffect(() => {
-    name && dispatch(tryToGetPersonInfo(name));
-  }, [name]);
-
-  useEffect(() => {
-    statData && personInfo.id && getDonations();
-  }, [personInfo, statData, lastNotif]);
-
-  useEffect(() => {
-    id && getStatData(id);
-  }, [id]);
-
-  useEffect(() => {
-    list.length && setLastNotif(list[0]);
-  }, [list]);
-
-  const timePeriodName = useMemo(
-    () =>
-      statData &&
-      statData.time_period &&
-      getCurrentTimePeriodQuery(statData.time_period),
-    [statData]
-  );
+  }, [statData]);
 
   const typeStatData = useMemo(
     () =>
       statData &&
-      statData.data_type &&
-      getStatsDataTypeQuery(statData.data_type),
+      intl.formatMessage({
+        id: getStatsDataTypeQuery(statData.dataType),
+      }),
     [statData]
   );
 
+  if (!personInfo) {
+    isError && addNotFoundUserNotification();
+    return null;
+  }
+
   if (statData) {
     const {
-      title_color,
-      title_font,
-      bar_color,
-      content_color,
-      content_font,
-      aligment,
+      titleColor,
+      titleFont,
+      barColor,
+      contentColor,
+      contentFont,
+      textAligment,
       template,
     } = statData;
 
     return (
       <div className="donat-stat">
-        <div className="donat-stat_container">
+        <div className="widget-container">
           <span
-            className="donat-stat_title"
+            className="title"
             style={{
-              background: bar_color,
-              ...getFontColorStyles(title_color, title_font),
+              background: barColor,
+              ...getFontColorStyles(titleColor, titleFont),
             }}
           >
             {typeStatData} {timePeriodName && timePeriodName.toLowerCase()}
           </span>
           <div
-            className="donat-stat_list__wrapper"
+            className="list__wrapper"
             style={{
-              justifyContent: alignFlextItemsList[aligment],
+              justifyContent: alignFlextItemsList[textAligment],
             }}
           >
-            <div className="donat-stat_list">
-              {Boolean(renderList) &&
+            <div className="list">
+              {Boolean(renderList.length) &&
                 renderList.map((item) => {
                   const renderStr = renderStatItem(template, item);
                   return (
                     <p
-                      key={renderStr}
-                      className="donat-stat_list-item"
+                      key={getRandomStr(5)}
+                      className="item"
                       style={{
-                        ...getFontColorStyles(content_color, content_font),
+                        ...getFontColorStyles(contentColor, contentFont),
                         textAlign:
-                          (alignItemsList[aligment] as AlignText) || "center",
-                        // aligment.toLowerCase()
+                          (alignItemsList[textAligment] as AlignText) ||
+                          "center",
                       }}
                     >
                       {renderStr}
@@ -161,7 +213,7 @@ const DonatStatContainer = () => {
     );
   }
 
-  return <></>;
+  return null;
 };
 
 export default DonatStatContainer;

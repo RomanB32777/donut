@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Empty } from "antd";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { IGoalData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
@@ -8,8 +7,9 @@ import BaseButton from "components/BaseButton";
 import PageTitle from "components/PageTitle";
 import GoalItem from "./components/GoalItem";
 import GoalsModal from "./components/GoalsModal";
+import EmptyComponent from "components/EmptyComponent";
 
-import { getGoals } from "store/types/Goals";
+import { useGetGoalsQuery } from "store/services/GoalsService";
 import { getFontsList } from "utils";
 import { initWidgetGoalData } from "consts";
 import { ISelectItem } from "components/SelectInput";
@@ -17,27 +17,32 @@ import { IWidgetGoalData } from "appTypes";
 import "./styles.sass";
 
 const DonationGoalsContainer = () => {
-  const dispatch = useDispatch();
-  const { user, goals, notifications } = useAppSelector((state) => state);
-  const { list } = notifications;
+  const { id } = useAppSelector(({ user }) => user);
+  const { list } = useAppSelector(({ notifications }) => notifications);
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [formData, setFormData] = useState<IWidgetGoalData>({
-    ...initWidgetGoalData,
-  });
+  const [formData, setFormData] = useState<IWidgetGoalData>(initWidgetGoalData);
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
-  const openEditModal = (widget: IWidgetGoalData) => {
+  const { data: goals, refetch } = useGetGoalsQuery(id, { skip: !id });
+
+  const openEditModal = useCallback((widget: IWidgetGoalData) => {
     setFormData(widget);
     setIsOpenModal(true);
-  };
+  }, []);
+
+  const openCreateModal = useCallback(() => {
+    setFormData(initWidgetGoalData);
+    setIsOpenModal(true);
+  }, []);
 
   const activeGoals = useMemo(
-    () => goals.filter((goal: IGoalData) => !goal.is_archive) || [],
+    () => (goals ? goals.filter((goal: IGoalData) => !goal.isArchive) : []),
     [goals]
   );
+
   const archivedGoals = useMemo(
-    () => goals.filter((goal: IGoalData) => goal.is_archive),
+    () => (goals ? goals.filter((goal: IGoalData) => goal.isArchive) : []),
     [goals]
   );
 
@@ -47,42 +52,41 @@ const DonationGoalsContainer = () => {
       setFonts(fonts);
     };
 
-    if (user.id) {
-      dispatch(getGoals(user.id));
-      initFonts();
-    }
-  }, [user, list]);
+    initFonts();
+  }, []);
+
+  useEffect(() => {
+    // list.length &&
+    refetch();
+  }, [list]);
 
   return (
     <div className="goals fadeIn">
       <PageTitle formatId="page_title_donation_goals" />
       <div className="headerPage">
         <p className="subtitle">
-          Start fundraising for a specific purchase or goal.
+          <FormattedMessage id="goals_subtitle" />
         </p>
         <BaseButton
           formatId="create_new_form_button"
           padding="6px 35px"
-          onClick={() => setIsOpenModal(true)}
+          onClick={openCreateModal}
           fontSize="18px"
           isMain
         />
       </div>
       <div className="wrapper">
-        {Boolean(activeGoals.length) &&
-        Boolean(activeGoals.filter((goal) => !goal.is_archive).length) ? (
-          goals
-            .filter((goal) => !goal.is_archive)
-            .map((goal) => (
-              <GoalItem
-                key={goal.id}
-                fonts={fonts}
-                goalData={goal}
-                openEditModal={openEditModal}
-              />
-            ))
+        {Boolean(activeGoals.length) ? (
+          activeGoals.map((goal) => (
+            <GoalItem
+              key={goal.id}
+              fonts={fonts}
+              goalData={goal}
+              openEditModal={openEditModal}
+            />
+          ))
         ) : (
-          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <EmptyComponent />
         )}
       </div>
       <PageTitle formatId="page_title_donation_history" />
@@ -92,7 +96,7 @@ const DonationGoalsContainer = () => {
             <GoalItem key={goal.id} goalData={goal} fonts={[]} />
           ))
         ) : (
-          <Empty className="empty-el" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <EmptyComponent />
         )}
       </div>
       <GoalsModal

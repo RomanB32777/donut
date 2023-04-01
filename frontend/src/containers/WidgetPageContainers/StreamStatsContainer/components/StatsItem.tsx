@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useMemo, useEffect, memo, FC } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
+import { FormattedMessage, useIntl } from "react-intl";
 import { IStatData } from "types";
 
 import LinkCopy from "components/LinkCopy";
@@ -14,69 +14,74 @@ import FormBtnsBlock from "components/FormBtnsBlock";
 
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { useAppSelector } from "hooks/reduxHooks";
-import { getStats } from "store/types/Stats";
-import axiosClient from "modules/axiosClient";
 import {
-  addNotification,
-  addSuccessNotification,
+  useDeleteStatMutation,
+  useEditStatMutation,
+} from "store/services/StatsService";
+import {
   copyStr,
   getCurrentTimePeriodQuery,
   getStatsDataTypeQuery,
   loadFonts,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
-import { RoutePaths } from "routes";
-import { baseURL } from "consts";
+import { RoutePaths, baseURL } from "consts";
 import { IWidgetStatData } from "appTypes";
 
-const StatsItem = ({
-  fonts,
-  statData,
-  openEditModal,
-}: {
+interface IStatsItem {
   fonts: ISelectItem[];
   statData: IStatData;
   openEditModal?: (data: IWidgetStatData) => void;
-}) => {
-  const dispatch = useDispatch();
-  const user = useAppSelector(({ user }) => user);
+}
+
+const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
+  const intl = useIntl();
+  const { username } = useAppSelector(({ user }) => user);
   const { isTablet } = useWindowDimensions();
+  const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
+  const [deleteStat, { isLoading: isDeleteLoading }] = useDeleteStatMutation();
 
   const [isActiveDetails, setisActiveDetails] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [editStatData, setEditStatData] = useState<IWidgetStatData>({
     ...statData,
-    title_font: {
-      name: statData.title_font,
+    titleFont: {
+      name: statData.titleFont,
       link: "",
     },
-    content_font: {
-      name: statData.content_font,
+    contentFont: {
+      name: statData.contentFont,
       link: "",
     },
   });
 
-  const { id, title, stat_description, template, data_type, time_period } =
-    editStatData;
+  const {
+    id,
+    title,
+    description,
+    template,
+    dataType,
+    timePeriod,
+    customTimePeriod,
+  } = editStatData;
 
   const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
 
-  const clickEditBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
+  const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     openEditModal && openEditModal(editStatData);
   };
 
-  const clickCopyBtn = (event?: React.MouseEvent<HTMLDivElement>) => {
-    event && event.stopPropagation();
-    copyStr(linkForCopy);
+  const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    copyStr({ str: linkForCopy, intl });
   };
 
   const initStatsItem = async () => {
-    const { title_font, content_font } = statData;
+    const { titleFont, contentFont } = statData;
 
     const loadedFonts = await loadFonts({
       fonts,
-      fields: { title_font, content_font },
+      fields: { titleFont, contentFont },
     });
 
     // convert statData:IStatData to statsItemValues:IWidgetStatData
@@ -90,37 +95,23 @@ const StatsItem = ({
 
   const editWidgetData = (isReset?: boolean) => async () => {
     try {
-      setLoading(true);
       const { id } = statData;
-      const { title_font, content_font } = editStatData;
+      const { titleFont, contentFont } = editStatData;
 
       const forSentStatData = Object.keys(editStatData).reduce((obj, key) => {
         const dataKey = key as keyof IWidgetStatData;
-        if (dataKey === "custom_period") return obj;
         return { ...obj, [dataKey]: editStatData[dataKey] };
-      }, {});
+      }, {} as IWidgetStatData);
 
-      await axiosClient.put("/api/widget/stats-widget/", {
-        statData: {
-          ...forSentStatData,
-          title_font: title_font.name,
-          content_font: content_font.name,
-        },
+      await editStat({
+        ...forSentStatData,
+        titleFont: titleFont.name,
+        contentFont: contentFont.name,
         isReset,
         id,
       });
-      dispatch(getStats(user.id));
-      addSuccessNotification({ message: "Data saved successfully" });
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while saving data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -128,27 +119,16 @@ const StatsItem = ({
 
   const deleteStatWidget = async () => {
     try {
-      setLoading(true);
       const { id } = statData;
-      await axiosClient.delete("/api/widget/stats-widget/" + id);
-      dispatch(getStats(user.id));
-      addSuccessNotification({ message: "Widget deleted successfully" });
+      await deleteStat(id);
     } catch (error) {
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          (error as any)?.response?.data?.message ||
-          `An error occurred while deleting data`,
-      });
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
   const linkForCopy = useMemo(
-    () => `${baseURL}/${RoutePaths.donatStat}/${user.username}/${id}`,
-    [user, id]
+    () => `${baseURL}/${RoutePaths.donatStat}/${username}/${id}`,
+    [username, id]
   );
 
   const renderLinkForCopy = useMemo(
@@ -156,14 +136,19 @@ const StatsItem = ({
     [linkForCopy, id]
   );
 
-  const timePeriodName = useMemo(
-    () => getCurrentTimePeriodQuery(time_period),
-    [time_period]
-  );
+  const timePeriodName =
+    customTimePeriod ??
+    intl.formatMessage({
+      id: getCurrentTimePeriodQuery(timePeriod),
+    });
 
-  const typeStatData = useMemo(
-    () => getStatsDataTypeQuery(data_type),
-    [data_type]
+  const typeStatData = intl.formatMessage({
+    id: getStatsDataTypeQuery(dataType),
+  });
+
+  const isLoading = useMemo(
+    () => isEditLoading || isDeleteLoading,
+    [isEditLoading, isDeleteLoading]
   );
 
   useEffect(() => {
@@ -182,17 +167,36 @@ const StatsItem = ({
           <Col sm={11} xs={24}>
             <div className="mainInfo">
               <p className="title">{title}</p>
-              <p className="description">
-                {stat_description}
-              </p>
+              <p className="description">{description}</p>
             </div>
           </Col>
           <Col sm={11} xs={24}>
             <div className="parameters">
-              <p>Date period: {timePeriodName} </p>
-              <p>Date type: {typeStatData}</p>
-              <p>Template: {template}</p>
-              {!isTablet && <LinkCopy link={linkForCopy} title={renderLinkForCopy} isSimple />}
+              <p>
+                <FormattedMessage
+                  id="stats_widget_card_period"
+                  values={{ timePeriodName }}
+                />
+              </p>
+              <p>
+                <FormattedMessage
+                  id="stats_widget_card_type"
+                  values={{ typeStatData }}
+                />
+              </p>
+              <p>
+                <FormattedMessage
+                  id="stats_widget_card_template"
+                  values={{ template }}
+                />
+              </p>
+              {!isTablet && (
+                <LinkCopy
+                  link={linkForCopy}
+                  title={renderLinkForCopy}
+                  isSimple
+                />
+              )}
             </div>
           </Col>
         </Row>
@@ -227,7 +231,7 @@ const StatsItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </PreviewStatBlock>
             }
@@ -240,7 +244,7 @@ const StatsItem = ({
                 <FormBtnsBlock
                   saveMethod={editWidgetData()}
                   resetMethod={resetData}
-                  disabled={loading}
+                  disabled={isLoading}
                 />
               </SettingsStatBlock>
             }
@@ -251,4 +255,4 @@ const StatsItem = ({
   );
 };
 
-export default StatsItem;
+export default memo(StatsItem);

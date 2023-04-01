@@ -11,7 +11,7 @@ export enum breakPointWidth {
 const useWindowDimensions = () => {
   const hasWindow = typeof window !== "undefined";
 
-  function getWindowDimensions() {
+  const getWindowDimensions = () => {
     const width = hasWindow ? window.innerWidth : null;
     const height = hasWindow ? window.innerHeight : null;
     const isMobile = width && width <= breakPointWidth.mobile;
@@ -25,7 +25,7 @@ const useWindowDimensions = () => {
       isTablet,
       isLaptop,
     };
-  }
+  };
 
   const [windowDimensions, setWindowDimensions] = useState(
     getWindowDimensions()

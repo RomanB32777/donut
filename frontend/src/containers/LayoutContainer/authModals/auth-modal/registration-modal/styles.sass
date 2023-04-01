@@ -1,0 +1,69 @@
+@use 'commonStyles/variables'
+
+.registrationModal
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+
+    .registrationModalContent
+        width: 100%
+        margin-top: 30px
+
+    .registrationInputs
+        transition: opacity .3s ease-in-out
+        display: flex
+        flex-direction: column
+        align-items: center
+        max-width: 80%
+        margin: 0 auto
+
+        @media (max-width: 576px)
+            max-width: 96%
+
+        .registrationInputWrapper
+            margin: 0 auto
+            width: 100%
+            display: flex
+            align-items: center
+            justify-content: center
+            margin-bottom: 10px
+
+            .registrationInput
+                &.isNotValid
+                    border-radius: variables.$border-radius
+                    border: 1px solid variables.$main-color
+
+            .notValidMessage
+                color: variables.$main-color
+
+    .btnWrapper
+        margin: 0 auto
+
+        .registrationBtn
+            padding: 11px 45px
+            font-size: 25px
+            line-height: 28px
+            margin-top: 20px
+
+        @media (max-width: 768px)
+            margin: 0 auto 20px
+
+            &.noMargin
+                margin: 0
+
+            .registrationBtn
+                margin-top: 10px
+
+    .loginLink
+        font-family: variables.$pt-font
+        color: variables.$grey-color
+        font-weight: 400
+        font-size: 14px
+        line-height: 18px
+        margin-top: 25px
+
+        span
+            color: variables.$main-color
+            cursor: pointer

@@ -1,31 +1,33 @@
+import { memo } from "react";
 import { IBadgeInfo } from "types";
 import ConfirmPopup from "components/ConfirmPopup";
 import { TrashBinIcon } from "icons";
 import "./styles.sass";
+
+interface IBadgeCard
+  extends Pick<
+    IBadgeInfo,
+    "id" | "title" | "image" | "description" | "tokenId" | "isCreator"
+  > {}
 
 const ContentCard = ({
   data,
   onClick,
   deleteBadge,
 }: {
-  data: IBadgeInfo;
-  onClick: (badge: IBadgeInfo) => void;
-  deleteBadge: (badge: IBadgeInfo) => void;
+  data: IBadgeCard;
+  onClick: (badgeId: string) => void;
+  deleteBadge: (badgeId: string) => void;
 }) => {
-  const { image, title, description, is_creator, token_id } = data;
+  const { id, image, title, description, isCreator, tokenId } = data;
 
-  const openBadgePape = () => onClick(data);
-  const deleteBadgePape = () => deleteBadge(data);
+  const openBadgePape = () => onClick(id);
+  const deleteBadgePape = () => deleteBadge(id);
 
   return (
     <div className="badge" onClick={openBadgePape}>
       <div className="link">
-        <div
-          className="image"
-          style={{
-            height: image ? 220 : 256,
-          }}
-        >
+        <div className="image">
           <img src={image} alt={title} />
         </div>
         <div className="info">
@@ -33,7 +35,7 @@ const ContentCard = ({
           <span className="subtitle">{description}</span>
         </div>
       </div>
-      {is_creator && !token_id && (
+      {isCreator && !tokenId && (
         <div
           className="delete-icon"
           onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
@@ -49,4 +51,4 @@ const ContentCard = ({
   );
 };
 
-export default ContentCard;
+export default memo(ContentCard);

@@ -1,88 +1,96 @@
 import { useEffect, useState } from "react";
-import { Progress } from "antd";
-import { goalDataKeys, INotification } from "types";
-
 import { useParams } from "react-router";
+import { Progress } from "antd";
+import { goalDataKeys, IGoalData } from "types";
 
-import axiosClient from "modules/axiosClient";
 import { useAppSelector } from "hooks/reduxHooks";
+import { useGetGoalsWidgetDataQuery } from "store/services/GoalsService";
 import { getFontColorStyles, getFontsList, loadFonts } from "utils";
 import { initWidgetGoalData } from "consts";
-import { IWidgetGoalData } from "appTypes";
+import { ISelectItem } from "components/SelectInput";
+import { IFont, IWidgetGoalData } from "appTypes";
 import "./styles.sass";
 
-const fontsFields: goalDataKeys[] = ["title_font", "progress_font"];
+const fontsFields: goalDataKeys[] = ["titleFont", "progressFont"];
 
 const DonatGoalContainer = () => {
   const { id, name } = useParams();
   const { list } = useAppSelector(({ notifications }) => notifications);
 
   const [goalData, setGoalData] = useState<IWidgetGoalData | null>(null);
+  const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
-  const getGoalData = async (cb: (data: IWidgetGoalData) => any) => {
-    const { data, status } = await axiosClient.get(
-      `/api/widget/goals-widget/${name}/${id}`
-    );
-    if (status === 200) {
-      // convert IGoalData -> IWidgetGoalData
-      const widgetData = Object.keys(data).reduce((values, key) => {
-        const keyField = key as goalDataKeys;
-        if (fontsFields.includes(keyField))
-          return {
-            ...values,
-            [keyField]: {
-              name: data[keyField],
-            },
-          };
+  const { data: widgetData, refetch } = useGetGoalsWidgetDataQuery(
+    {
+      username: name as string,
+      id: id as string,
+    },
+    { skip: !name || !id }
+  );
+
+  const getWidgetGoalData = (
+    widgetData: IGoalData,
+    fontObj?: Record<string, IFont>
+  ) =>
+    // convert IGoalData -> IWidgetGoalData
+    Object.keys(widgetData).reduce((values, key) => {
+      const keyField = key as goalDataKeys;
+      if (fontsFields.includes(keyField))
         return {
           ...values,
-          [keyField]: data[keyField],
+          [keyField]: {
+            name: fontObj ? fontObj[keyField] : widgetData[keyField],
+          },
         };
-      }, initWidgetGoalData);
-      cb(widgetData);
-    }
-  };
+      return {
+        ...values,
+        [keyField]: widgetData[keyField],
+      };
+    }, initWidgetGoalData);
 
-  const getGoalWidgetData = async (widgetData: IWidgetGoalData) => {
-    console.log("init");
+  useEffect(() => {
+    const getGoalWidgetData = async (widgetData: IGoalData) => {
+      let loadedFonts;
 
-    const fonts = await getFontsList();
+      if (!fonts.length) {
+        const fontsInfo = await getFontsList();
 
-    const { title_font, progress_font } = widgetData;
+        const { titleFont, progressFont } = widgetData;
 
-    const loadedFonts = await loadFonts({
-      fonts,
-      fields: {
-        title_font: title_font.name,
-        progress_font: progress_font.name,
-      },
-    });
+        loadedFonts = await loadFonts({
+          fonts: fontsInfo,
+          fields: {
+            titleFont: titleFont,
+            progressFont: progressFont,
+          },
+        });
 
-    setGoalData({ ...widgetData, ...loadedFonts });
-  };
+        setFonts(fontsInfo);
+      }
+      const widgetDataInfo = getWidgetGoalData(widgetData, loadedFonts);
+      setGoalData((prev) => ({ ...prev, ...widgetDataInfo }));
+    };
+
+    widgetData && getGoalWidgetData(widgetData);
+  }, [widgetData, fonts]);
 
   useEffect(() => {
     if (list.length && id) {
       const { donation } = list[0];
-      if (donation && donation.goal_id === id)
-        getGoalData((data) => setGoalData((prev) => ({ ...prev, ...data })));
+      if (donation && donation.goal === id) refetch();
     }
   }, [list, id]);
-
-  useEffect(() => {
-    id && name && getGoalData(getGoalWidgetData);
-  }, [id, name]);
 
   if (goalData) {
     const {
       title,
-      title_color,
-      title_font,
-      progress_color,
-      progress_font,
-      background_color,
-      amount_goal,
-      amount_raised,
+      titleColor,
+      titleFont,
+      progressColor,
+      progressFont,
+      backgroundColor,
+      amountGoal,
+      amountRaised,
     } = goalData;
 
     return (
@@ -90,7 +98,7 @@ const DonatGoalContainer = () => {
         <div className="donat-goal_container">
           <div className="donat-goal_title">
             <p>
-              <span style={getFontColorStyles(title_color, title_font)}>
+              <span style={getFontColorStyles(titleColor, titleFont)}>
                 {title}
               </span>
             </p>
@@ -98,14 +106,14 @@ const DonatGoalContainer = () => {
           <div
             className="donat-goal_progress"
             style={{
-              background: background_color,
+              background: backgroundColor,
             }}
           >
             <Progress
               type="circle"
-              percent={Math.round((amount_raised / amount_goal) * 100)}
+              percent={Math.round((amountRaised / amountGoal) * 100)}
               width={150}
-              strokeColor={progress_color}
+              strokeColor={progressColor}
               format={(percent) => (
                 <span
                   style={{
@@ -116,8 +124,8 @@ const DonatGoalContainer = () => {
                 </span>
               )}
             />
-            <p style={getFontColorStyles("#fff", progress_font)}>
-              {amount_raised} / {amount_goal} USD
+            <p style={getFontColorStyles("#fff", progressFont)}>
+              {amountRaised} / {amountGoal} USD
             </p>
           </div>
         </div>

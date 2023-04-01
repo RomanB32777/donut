@@ -18,6 +18,7 @@ const Sidebar = ({
   collapsed,
   children,
   bottomEl,
+  styles,
   defaultOpenKeys,
   logoNavigateUrl = "/",
   setCollapsed,
@@ -31,6 +32,7 @@ const Sidebar = ({
   logoNavigateUrl?: string;
   children?: React.ReactNode;
   bottomEl?: React.ReactNode;
+  styles?: React.CSSProperties;
   setCollapsed: (state: boolean) => any;
 }) => {
   const navigate = useNavigate();
@@ -69,6 +71,7 @@ const Sidebar = ({
         collapsed={collapsed}
         collapsedWidth="0"
         className={clsx("layout-sidebar", { isBlur: isVisibleContent })}
+        style={styles}
         trigger={null}
       >
         {!collapsed && <Logo navigateUrl={logoNavigateUrl} />}

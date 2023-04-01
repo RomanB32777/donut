@@ -158,6 +158,7 @@
 
                     .switch-label
                         margin: 0
+                        margin-left: auto
                         font-size: 14px
                         line-height: 18px
                         color: variables.$grey-color
@@ -184,7 +185,7 @@
                     .blockchains-list
                         width: 100%
 
-                .selected-blockchain
+                .selectedBlockchain
                     display: flex
                     align-items: center
 
@@ -198,6 +199,10 @@
                         img
                             width: 100%
                             height: 100%
+
+                    .blockchainLoading
+                        width: 37px
+                        height: 37px
 
                 .count-modificator
                     display: flex
@@ -229,8 +234,11 @@
             margin: 0 auto
             max-width: 720px
 
+            .donut-wallet
+                margin-left: 10px
+
         @media (max-width: 768px)
-            padding-inline: 25px
+            padding-inline: 12px
 
             .donut-wallet
                 .wallet-block

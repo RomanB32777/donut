@@ -1,10 +1,15 @@
-import { IFont } from "appTypes";
+import { FC, memo } from "react";
 import { InView } from "react-intersection-observer";
+import { IFont } from "appTypes";
 
 import { loadFont } from "utils";
 import { ISelectItem } from "..";
 
-const FontStyleElement = ({ fontName }: { fontName: string }) => (
+interface IFontStyleElement {
+  fontName: string;
+}
+
+const FontStyleElement: FC<IFontStyleElement> = memo(({ fontName }) => (
   <span
     style={{
       fontFamily: `"${fontName}", sans-serif`,
@@ -12,9 +17,9 @@ const FontStyleElement = ({ fontName }: { fontName: string }) => (
   >
     {fontName}
   </span>
-);
+));
 
-const FontSelectOption = ({ value, key }: ISelectItem) => {
+const FontSelectOption: FC<ISelectItem> = ({ value, key }) => {
   const handleChange = (font: IFont) => async (status: boolean) => {
     if (!status) return;
     await loadFont(font);

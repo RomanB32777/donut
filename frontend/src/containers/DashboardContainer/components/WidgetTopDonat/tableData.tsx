@@ -1,40 +1,41 @@
 import type { ColumnsType } from "antd/es/table";
+import { FormattedMessage } from "react-intl";
 import { DateFormatter } from "utils";
 
 interface ITableData {
   key: string;
-  name: string;
-  donationToken: number;
+  username: string;
   message: string;
   date: string;
   blockchain: string;
 }
 
-export const tableColums: ColumnsType<ITableData> = [
+const tableColums: ColumnsType<ITableData> = [
   {
-    title: "Name",
+    title: <FormattedMessage id="table_col_username" />,
     dataIndex: "username",
     width: "15%",
     align: "center",
   },
   {
-    title: "Donation, Token",
-    dataIndex: "sum_donation",
+    title: <FormattedMessage id="table_col_donation_token" />,
+    dataIndex: "sum",
     width: "20%",
     align: "center",
     render: (text, { blockchain }) => text + ` ${blockchain}`,
   },
   {
-    title: "Message",
-    dataIndex: "donation_message",
+    title: <FormattedMessage id="table_col_message" />,
+    dataIndex: "message",
     width: "40%",
   },
   {
-    title: "Date and Time, UTM",
-    dataIndex: "created_at",
+    title: <FormattedMessage id="table_col_date" />,
+    dataIndex: "createdAt",
     width: "25%",
     render: (date) => DateFormatter(date),
   },
 ];
 
 export type { ITableData };
+export { tableColums };

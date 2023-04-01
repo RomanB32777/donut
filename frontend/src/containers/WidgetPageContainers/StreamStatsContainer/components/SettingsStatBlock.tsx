@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { SliderMarks } from "antd/lib/slider";
+import { FormattedMessage } from "react-intl";
 import { typeAligmnet } from "types";
 
 import ColorPicker from "components/ColorPicker";
@@ -20,39 +21,44 @@ const marksSlider: { [key: number]: typeAligmnet } = {
   2: "Right",
 };
 
-const SettingsStatBlock = ({
-  fonts,
-  children,
-  editStatData,
-  setEditStatData,
-}: {
+interface ISettingsStatBlock {
   fonts: ISelectItem[];
   children?: React.ReactNode;
   editStatData: IWidgetStatData;
   setEditStatData: (editStatData: IWidgetStatData) => void;
+}
+
+const SettingsStatBlock: FC<ISettingsStatBlock> = ({
+  fonts,
+  children,
+  editStatData,
+  setEditStatData,
 }) => {
   const [fontList, setFontList] = useState<ISelectItem[]>(
     fonts.slice(0, notVisibleFontsCount)
   );
 
   const {
-    title_color,
-    bar_color,
-    content_color,
-    aligment,
-    title_font,
-    content_font,
+    titleColor,
+    barColor,
+    contentColor,
+    textAligment,
+    titleFont,
+    contentFont,
   } = editStatData;
 
-  const onOpenFontSelect = (isOpen: boolean) =>
+  const onOpenFontSelect = (isOpen: boolean) => {
     isOpen
       ? setFontList(fonts)
       : setFontList(fonts.slice(0, notVisibleFontsCount));
+  };
 
   const valueSlider = useMemo(
     () =>
-      Object.keys(marksSlider).find((key) => marksSlider[+key] === aligment),
-    [aligment]
+      Object.keys(marksSlider).find(
+        (key) => marksSlider[+key] === textAligment
+      ),
+    [textAligment]
   );
 
   return (
@@ -61,11 +67,12 @@ const SettingsStatBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="stats_widget_settings_title"
               setColor={(color) =>
-                setEditStatData({ ...editStatData, title_color: color })
+                setEditStatData({ ...editStatData, titleColor: color })
               }
-              color={title_color}
-              label="Goal title color:"
+              color={titleColor}
+              label={<FormattedMessage id="stats_widget_settings_title" />}
               labelCol={10}
               gutter={[0, 18]}
             />
@@ -74,11 +81,12 @@ const SettingsStatBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name="stats_widget_settings_bar_color"
               setColor={(color) =>
-                setEditStatData({ ...editStatData, bar_color: color })
+                setEditStatData({ ...editStatData, barColor: color })
               }
-              color={bar_color}
-              label="Goal bar color:"
+              color={barColor}
+              label={<FormattedMessage id="stats_widget_settings_bar_color" />}
               labelCol={10}
               gutter={[0, 18]}
             />
@@ -87,14 +95,17 @@ const SettingsStatBlock = ({
         <Col span={24}>
           <div className="form-element">
             <ColorPicker
+              name=""
               setColor={(color) =>
                 setEditStatData({
                   ...editStatData,
-                  content_color: color,
+                  contentColor: color,
                 })
               }
-              color={content_color}
-              label="Content color:"
+              color={contentColor}
+              label={
+                <FormattedMessage id="stats_widget_settings_сontent_color" />
+              }
               labelCol={10}
               gutter={[0, 18]}
             />
@@ -103,17 +114,17 @@ const SettingsStatBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Goal title font:"
+              label={<FormattedMessage id="stats_widget_settings_title_font" />}
               value={{
-                value: title_font.name,
-                label: <FontStyleElement fontName={title_font.name} />,
+                value: titleFont.name,
+                label: <FontStyleElement fontName={titleFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setEditStatData({
                   ...editStatData,
-                  title_font: {
+                  titleFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },
@@ -131,17 +142,19 @@ const SettingsStatBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SelectInput
-              label="Content font:"
+              label={
+                <FormattedMessage id="stats_widget_settings_сontent_font" />
+              }
               value={{
-                value: content_font.name,
-                label: <FontStyleElement fontName={content_font.name} />,
+                value: contentFont.name,
+                label: <FontStyleElement fontName={contentFont.name} />,
               }}
               list={fontList}
               modificator="form-select"
               onChange={({ value }, option) =>
                 setEditStatData({
                   ...editStatData,
-                  content_font: {
+                  contentFont: {
                     name: !Array.isArray(option) && option.title,
                     link: value,
                   },
@@ -159,7 +172,9 @@ const SettingsStatBlock = ({
         <Col span={24}>
           <div className="form-element">
             <SliderForm
-              label="Content alignment:"
+              label={
+                <FormattedMessage id="stats_widget_settings_сontent_alignment" />
+              }
               marks={marksSlider as SliderMarks}
               modificator="aligment-slider"
               min={0}
@@ -168,7 +183,7 @@ const SettingsStatBlock = ({
               setValue={(value) =>
                 setEditStatData({
                   ...editStatData,
-                  aligment: marksSlider[value],
+                  textAligment: marksSlider[value],
                 })
               }
               defaultValue={valueSlider ? +valueSlider : 1}

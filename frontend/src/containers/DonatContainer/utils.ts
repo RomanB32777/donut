@@ -1,244 +1,240 @@
-import { AnyAction, Dispatch } from "redux";
+import { useContext, useState } from "react";
 import { Socket } from "socket.io-client";
-import request from "axios";
+import { RpcError, useAccount, useNetwork } from "wagmi";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
+import { useIntl } from "react-intl";
+import { ISocketEmitObj, ISendDonat, IUser } from "types";
+
+import { useSocketConnection, WebSocketContext } from "contexts/Websocket";
 import {
-  IFullSendDonat,
-  ISocketEmitObj,
-  ISendDonat,
-  IShortUserData,
-  IUser,
-} from "types";
+  useLazyCheckIsExistUserQuery,
+  useCreateUserMutation,
+  useLazyGetUserQuery,
+} from "store/services/UserService";
+import useAuth from "hooks/useAuth";
+import { useActions } from "hooks/reduxHooks";
+import { useCreateDonationMutation } from "store/services/DonationsService";
+import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
+import {
+  addErrorNotification,
+  addNotification,
+  BlockchainNetworks,
+  fullChainsInfo,
+  removeAuthToken,
+} from "utils";
+import { IError } from "appTypes";
+import { mainAbi } from "consts";
+import { utils } from "ethers";
 
-import { connectSocket } from "contexts/Websocket";
-import axiosClient from "modules/axiosClient";
-import { tryToGetUser } from "store/types/User";
-import { getNotifications } from "store/types/Notifications";
-import { addNotification, addErrorNotification, checkIsExistUser } from "utils";
-import { IWalletConf, ProviderRpcError } from "appTypes";
-
-const registerSupporter = async ({
-  username,
-  wallet_address, // sender address
-  dispatch,
-}: {
-  username: string;
-  wallet_address: string;
-  dispatch: Dispatch<AnyAction>;
-}): Promise<IUser | null> => {
-  try {
-    const { data, status } = await axiosClient.post("/api/user/", {
-      username,
-      roleplay: "backers",
-      wallet_address,
-    } as IShortUserData);
-
-    if (status === 200) {
-      dispatch(tryToGetUser(wallet_address));
-      return data;
-    }
-    return null;
-  } catch (error) {
-    if (request.isAxiosError(error)) {
-      const { response } = error;
-      if (response) {
-        const { data } = response;
-        addErrorNotification({
-          title: "Registration error",
-          message: (data as any).message,
-        });
-      }
-    }
-    return null;
-  }
-};
-
-const sendDonation = async ({
+const usePayment = ({
   form,
-  user,
-  socket,
-  usdtKoef,
-  personInfo,
-  wallet_address,
-  dispatch,
-  setIsOpenSuccessModal,
-}: {
-  form: ISendDonat;
-  user: IUser;
-  socket: Socket | null;
-  usdtKoef: number;
-  personInfo: IUser;
-  wallet_address: string; // sender address
-  dispatch: Dispatch<AnyAction>;
-  setIsOpenSuccessModal: (state: boolean) => void;
-}) => {
-  const {
-    username,
-    selectedBlockchain,
-    amount,
-    message,
-    selectedGoal,
-    is_anonymous,
-  } = form;
-
-  let userInfo: IUser | null = user;
-  let newSocket: Socket | null = null;
-
-  if (!userInfo.id) {
-    userInfo = await registerSupporter({
-      username,
-      wallet_address, // sender address
-      dispatch,
-    });
-    newSocket = userInfo && connectSocket(userInfo.username, dispatch);
-  }
-
-  if (selectedBlockchain && userInfo) {
-    const { data, status } = await axiosClient.post("/api/donation/", {
-      creator: personInfo.id,
-      backer: userInfo.id,
-      amount,
-      selectedBlockchain,
-      message,
-      selectedGoal: selectedGoal || null,
-      is_anonymous,
-    } as IFullSendDonat);
-
-    if (status === 200 && data) {
-      const emitObj: ISocketEmitObj = {
-        supporter: {
-          username: userInfo.username,
-          id: userInfo.id,
-        },
-        creator: {
-          username: personInfo.username,
-          id: data.creator_id,
-        },
-        id: data.id,
-      };
-
-      if (socket) socket.emit("new_donat", emitObj);
-      else if (newSocket) newSocket.emit("new_donat", emitObj);
-      else console.log("not connected user");
-
-      selectedGoal &&
-        (await axiosClient.put("/api/widget/goals-widget/", {
-          goalData: {
-            donat: amount * usdtKoef,
-          },
-          creator_id: data.creator_id,
-          id: selectedGoal,
-        }));
-
-      dispatch(getNotifications({ user: userInfo.username }));
-      setIsOpenSuccessModal(true);
-    }
-  }
-};
-
-const triggerContract = async ({
-  form,
-  user,
-  socket,
-  userID,
-  usdtKoef,
+  supporterInfo,
+  creatorInfo,
   balance,
-  personInfo,
-  walletConf,
-  dispatch,
-  setLoading,
-  setIsOpenSuccessModal,
 }: {
   form: ISendDonat;
-  user: IUser;
-  userID: number;
-  socket: Socket | null;
-  usdtKoef: number;
+  supporterInfo: IUser;
+  creatorInfo: IUser;
   balance: number;
-  personInfo: IUser;
-  walletConf: IWalletConf;
-  dispatch: Dispatch<AnyAction>;
-  setLoading: (state: boolean) => void;
-  setIsOpenSuccessModal: (state: boolean) => void;
 }) => {
-  try {
-    const { amount, username } = form;
-    const walletData = await walletConf.getWalletData();
+  const { sum, username } = form;
 
-    if (walletData && walletData.address) {
-      const { signer, address } = walletData;
-      const { wallet_address } = personInfo;
+  const intl = useIntl();
+  const socket = useContext(WebSocketContext);
+  const { address } = useAccount();
+  const { chain: currentChain } = useNetwork();
+  const { checkWebToken, checkWallet } = useAuth();
+  const { logoutUser } = useActions();
+  const { connectSocket } = useSocketConnection(username);
+  const [createDonation] = useCreateDonationMutation();
+  const [registerUser] = useCreateUserMutation();
+  const [getNotifications] = useLazyGetNotificationsQuery();
+  const [checkIsExistUser] = useLazyCheckIsExistUserQuery();
+  const [getUser] = useLazyGetUserQuery();
 
-      if (address !== wallet_address) {
-        setLoading(true);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-        if (!userID) {
-          const isExistUser = await checkIsExistUser(username);
-          if (isExistUser) {
-            addNotification({
-              type: "warning",
-              title:
-                "Unfortunately, this username is already busy. Enter another one",
-            });
-            return;
+  const currentChainNetwork = currentChain?.network;
+
+  const chainContract = currentChainNetwork
+    ? fullChainsInfo[currentChainNetwork as BlockchainNetworks]?.contractAddress
+    : undefined;
+
+  const registerSupporter = async () => {
+    try {
+      let newUsername = username;
+      if (address) {
+        if (supporterInfo.id) {
+          removeAuthToken();
+          const isExistSupporter = await checkWallet();
+
+          if (!isExistSupporter) {
+            newUsername = `${username}Supporter`;
+            logoutUser();
           }
         }
 
-        if (balance >= Number(amount)) {
-          const currentBlockchain = await walletConf.getCurrentBlockchain();
+        // TODO - оптимизировать проверку на существование юзера с адрессом кошелька
+        const { data: isExist } = await checkIsExistUser(address);
+        if (!isExist) {
+          await checkWebToken();
+          const userDadta = await registerUser({
+            username: newUsername,
+            walletAddress: address,
+            roleplay: "backers",
+            isVisibleNotification: false,
+          }).unwrap();
+          return userDadta;
+        } else {
+          addErrorNotification({
+            message: "User with this address already exists",
+          });
+          setIsSuccess(false);
+        }
+      } else setIsSuccess(false);
+    } catch (error) {
+      console.log(error);
+      setIsSuccess(false);
+    }
+  };
 
-          if (currentBlockchain) {
-            const res =
-              await walletConf.transfer_contract_methods.paymentMethod({
-                contract: currentBlockchain.address,
-                addressTo: wallet_address,
-                sum: String(amount),
-                signer,
-              });
+  const sendDonation = async (userInfo: IUser, socket?: Socket | null) => {
+    try {
+      const donationData = await createDonation({
+        ...form,
+        creator: creatorInfo.id,
+        backer: userInfo.id,
+      }).unwrap();
 
-            if (res)
-              await sendDonation({
-                form,
-                user,
-                socket,
-                usdtKoef,
-                personInfo,
-                wallet_address: address, // sender address
-                dispatch,
-                setIsOpenSuccessModal,
+      if (donationData) {
+        const emitObj: ISocketEmitObj = {
+          toSendUsername: userInfo.username,
+          id: donationData.id,
+        };
+
+        if (socket) socket.emit("newDonat", emitObj);
+        else console.log("not connected user");
+
+        await getNotifications({
+          username: userInfo.username,
+          shouldUpdateApp: true,
+        });
+
+        setIsSuccess(true);
+      } else setIsSuccess(false);
+    } catch (error) {
+      setIsSuccess(false);
+    }
+  };
+
+  const triggerContract = async () => {
+    try {
+      if (address) {
+        const { walletAddress, id } = creatorInfo;
+        let userInfo: IUser | undefined = supporterInfo;
+        let socketInfo: Socket | null = socket;
+
+        if (address !== walletAddress && id !== userInfo.id) {
+          setIsLoading(true);
+
+          if (!userInfo.id) {
+            const { data: isExistUser } = await checkIsExistUser(username);
+
+            if (isExistUser) {
+              addNotification({
+                type: "warning",
+                title: intl.formatMessage({
+                  id: "donat_warning_message_username_description",
+                }),
               });
+              return;
+            }
+          }
+          if (balance >= Number(sum)) {
+            if (chainContract && currentChain) {
+              if (!userInfo.id || userInfo.roleplay === "creators") {
+                userInfo = await registerSupporter();
+                // TODO можно ли без доп запроса ?
+                if (userInfo) await getUser({ id: userInfo.id });
+                socketInfo = connectSocket();
+              }
+
+              if (userInfo) {
+                const config = await prepareWriteContract({
+                  address: chainContract,
+                  abi: JSON.parse(mainAbi),
+                  chainId: currentChain.id,
+                  functionName: "transferMoney",
+                  args: [userInfo.walletAddress],
+                  overrides: {
+                    from: address,
+                    value: utils.parseEther(String(form.sum)),
+                    // gasLimit: BigNumber.from(100000),
+                  },
+                });
+
+                const wrireRes = await writeContract(config);
+                const result = await wrireRes?.wait();
+                if (result) await sendDonation(userInfo, socketInfo);
+              } else {
+                console.log("not userInfo", userInfo);
+                setIsLoading(false);
+              }
+            } else {
+              console.log(
+                "no chainContract/currentChain",
+                chainContract && currentChain
+              );
+              setIsLoading(false);
+            }
+          } else {
+            addNotification({
+              type: "warning",
+              title: intl.formatMessage({
+                id: "donat_warning_message_balance_title",
+              }),
+              message: intl.formatMessage({
+                id: "donat_warning_message_balance_description",
+              }),
+            });
           }
         } else {
           addNotification({
             type: "warning",
-            title: "Insufficient balance",
-            message:
-              "Unfortunately, there are not enough funds on your balance to carry out the operation",
+            title: intl.formatMessage({
+              id: "donat_warning_message_himself_title",
+            }),
+            message: intl.formatMessage({
+              id: "donat_warning_message_himself_description",
+            }),
           });
         }
-      } else {
+      }
+    } catch (error) {
+      const errInfo = error as RpcError<IError>;
+      if (errInfo.code !== 4001 && errInfo?.data?.statusCode !== 500) {
         addNotification({
-          type: "warning",
-          title: "Seriously ?)",
-          message: "You are trying to send a donation to yourself",
+          type: "danger",
+          title: "Error",
+          message:
+            errInfo.message ||
+            errInfo?.data?.message ||
+            "An error occurred while sending data",
         });
       }
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    const errInfo = error as ProviderRpcError;
+  };
 
-    errInfo.code !== "ACTION_REJECTED" &&
-      addNotification({
-        type: "danger",
-        title: "Error",
-        message:
-          errInfo.reason ||
-          (error as any)?.response?.data?.message ||
-          (error as Error).message ||
-          `An error occurred while sending data`,
-      });
-  } finally {
-    setLoading(false);
-  }
+  return {
+    registerSupporter,
+    sendDonation,
+    triggerContract,
+    isSuccess,
+    isLoading,
+  };
 };
 
-export { registerSupporter, sendDonation, triggerContract };
+export { usePayment };

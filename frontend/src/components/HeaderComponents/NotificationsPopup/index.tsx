@@ -1,21 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "antd";
-import { useDispatch } from "react-redux";
 
-import { useAppSelector } from "hooks/reduxHooks";
+import { useActions, useAppSelector } from "hooks/reduxHooks";
+import { FormattedMessage } from "react-intl";
+
 import useOnClickOutside from "hooks/useClickOutside";
-import { NotificationItem } from "./components/NotificationItem";
+import NotificationItem from "./components/NotificationItem";
 import { AlertIcon } from "icons";
 
-import axiosClient from "modules/axiosClient";
-import { getNotifications, setNotifications } from "store/types/Notifications";
+import {
+  useGetNotificationsQuery,
+  useDeleteAllMutation,
+} from "store/services/NotificationsService";
 import "./styles.sass";
 
 const NotificationsPopup = () => {
-  const dispatch = useDispatch();
-  const { notifications: notificationsApp, user } = useAppSelector(
-    (state) => state
-  );
+  const { setNotifications } = useActions();
+  const { list } = useAppSelector(({ notifications }) => notifications);
+  const { username, creator } = useAppSelector(({ user }) => user);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef(null);
@@ -23,25 +25,22 @@ const NotificationsPopup = () => {
   const [isNotificationPopupOpened, setNotificationPopupOpened] =
     useState(false);
 
-  const { list } = notificationsApp;
-  const { id: userID } = user;
+  const { refetch } = useGetNotificationsQuery(
+    {
+      username,
+      shouldUpdateApp: false,
+      spamFilter: creator?.spamFilter,
+    },
+    { skip: !username }
+  );
+  const [deleteAll, { isSuccess }] = useDeleteAllMutation();
 
-  const handlerNotificationPopup = () =>
-    setNotificationPopupOpened((prev) => !prev);
+  const handlerNotificationPopup = useCallback(
+    () => setNotificationPopupOpened((prev) => !prev),
+    []
+  );
 
-  const clearAll = async () => {
-    const { data, status } = await axiosClient.delete(
-      `/api/notification/${userID}`
-    );
-    if (status === 200 && data) {
-      dispatch(
-        setNotifications({
-          list: [],
-          shouldUpdateApp: false,
-        })
-      );
-    }
-  };
+  const clearAll = async () => await deleteAll();
 
   useOnClickOutside(
     isNotificationPopupOpened,
@@ -49,20 +48,30 @@ const NotificationsPopup = () => {
     handlerNotificationPopup
   );
 
+  // const unreadedNotificationsCount = useMemo(
+  //   () => list.filter(({ read }) => !read).length,
+  //   [list]
+  // );
+
   const unreadedNotificationsCount = useMemo(
-    () => list.filter(({ read }) => !read).length,
-    [list]
+    () =>
+      list.filter(({ users }) =>
+        users.some(({ user, read }) => user.username === username && !read)
+      ).length,
+    [list, username]
   );
 
   useEffect(() => {
-    isNotificationPopupOpened &&
-      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
+    isNotificationPopupOpened && refetch();
   }, [isNotificationPopupOpened]);
 
   useEffect(() => {
-    userID &&
-      dispatch(getNotifications({ user: userID, shouldUpdateApp: false }));
-  }, [userID]);
+    isSuccess &&
+      setNotifications({
+        list: [],
+        shouldUpdateApp: false,
+      });
+  }, [isSuccess]);
 
   return (
     <div className="notifications" ref={blockRef}>
@@ -80,9 +89,12 @@ const NotificationsPopup = () => {
           <div className="wrapper fadeIn">
             {Boolean(list.length) && (
               <div className="popup-header">
-                <p>Notifications</p>
+                <p>
+                  {" "}
+                  <FormattedMessage id="notifications_title" />
+                </p>
                 <p className="all-read" onClick={clearAll}>
-                  Clear all
+                  <FormattedMessage id="notifications_clear" />
                 </p>
               </div>
             )}
@@ -97,6 +109,7 @@ const NotificationsPopup = () => {
                 {list.map((n) => (
                   <NotificationItem
                     key={n.id}
+                    username={username}
                     notification={n}
                     handlerNotificationPopup={handlerNotificationPopup}
                   />
@@ -109,7 +122,7 @@ const NotificationsPopup = () => {
                     }}
                   >
                     <Badge dot={false} className="dot">
-                      No notifications
+                      <FormattedMessage id="notifications_no" />
                     </Badge>
                   </div>
                 )}
@@ -122,4 +135,4 @@ const NotificationsPopup = () => {
   );
 };
 
-export default NotificationsPopup;
+export default memo(NotificationsPopup);

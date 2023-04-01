@@ -1,168 +1,186 @@
-import { CheckOutlined } from "@ant-design/icons";
+import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
-import { useContext, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { blockchainsType } from "types";
+import { useAccount, useBalance, useNetwork, useSwitchNetwork } from "wagmi";
+import { useIntl } from "react-intl";
+import { CheckOutlined } from "@ant-design/icons";
 
-import { WalletContext } from "contexts/Wallet";
 import Loader from "components/Loader";
+import { WalletsModal } from "components/ModalComponent/wallets-modal";
 import { CopyIcon, ShareIcon, SmallToggleListArrowIcon } from "icons";
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
 
-import { setSelectedBlockchain } from "store/types/Wallet";
+import useAuth from "hooks/useAuth";
+import { BlockchainNetworks, fullChainsInfo } from "utils/wallets/wagmi";
 import { copyStr, formatNumber, shortStr } from "utils";
-import { initBlockchainData } from "consts";
-import { IBlockchain } from "appTypes";
 import "./styles.sass";
 
-const WalletBlock = ({
-  modificator,
-  popupModificator,
-}: {
+interface IWalletBlock {
   modificator?: string;
+  isPropLoading?: boolean;
   popupModificator?: string;
+  children?: React.ReactNode;
+  isLogoutOnChangeAcc?: boolean;
+  connectedWallet?: (walletAddress: string) => any;
+}
+
+const WalletBlock: FC<IWalletBlock> = ({
+  children,
+  modificator,
+  isPropLoading,
+  popupModificator,
+  isLogoutOnChangeAcc,
+  connectedWallet,
 }) => {
-  const dispatch = useDispatch();
-  const walletConf = useContext(WalletContext);
-  const { blockchain, user, notifications } = useAppSelector((store) => store);
+  const intl = useIntl();
+  const { address, isConnected } = useAccount();
+  const { chain: currentChain } = useNetwork();
+  const { isLoading, switchNetwork } = useSwitchNetwork();
+  const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
+    address,
+  });
+  const { logout } = useAuth();
+
+  const { username, avatarLink, walletAddress } = useAppSelector(
+    ({ user }) => user
+  );
   const blockRef = useRef(null);
   const { isMobile } = useWindowDimensions();
 
-  const [walletData, setWalletData] = useState<IBlockchain>(initBlockchainData);
-  const [balance, setBalance] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [isOpenSelect, setOpenSelect] = useState(false);
+  const [isOpenWalletsModal, setIsOpenWalletsModal] = useState(false);
 
-  const { username, avatar } = user;
-  const { list, shouldUpdateApp } = notifications;
+  const chains = Object.values(fullChainsInfo);
 
-  const copyAddress = () => copyStr(address, "Wallet address");
+  const copyAddress = () => {
+    address && copyStr({ str: address, copyObject: "Wallet address", intl });
+  };
   const handlerPopup = () => setOpenSelect((prev) => !prev);
+  const openWalletsModal = () => setIsOpenWalletsModal(true);
+  const closeWalletsModal = () => setIsOpenWalletsModal(false);
 
-  const blockchainHandler =
-    (selectedBlockchain: blockchainsType) => async () => {
-      setLoading(true);
-      handlerPopup();
-      const newBlockchaind = await walletConf.changeBlockchain(
-        selectedBlockchain
-      );
-      newBlockchaind && dispatch(setSelectedBlockchain(selectedBlockchain));
-      setLoading(false);
-    };
+  const blockchainHandler = (chainId: number) => () => {
+    handlerPopup();
+    switchNetwork?.(chainId);
+  };
+
+  const connectedMethod = async (walletAddress: string) => {
+    await connectedWallet?.(walletAddress);
+    closeWalletsModal();
+  };
 
   useOnClickOutside(isOpenSelect, blockRef, handlerPopup);
 
-  useEffect(() => {
-    const getWalletData = async () => {
-      setLoading(true);
-      const data = await walletConf.getWalletData();
-      const blockchain = await walletConf.getCurrentBlockchain();
-      await walletConf.getBalance(setBalance);
-
-      if (data && blockchain) {
-        setWalletData((initData) => ({
-          ...initData,
-          ...blockchain,
-          address: data.address,
-        }));
-      }
-
-      setLoading(false);
-    };
-    getWalletData();
-  }, [blockchain]);
+  const currentChainInfo = useMemo(() => {
+    return (
+      currentChain && fullChainsInfo[currentChain.network as BlockchainNetworks]
+    );
+  }, [currentChain]);
 
   useEffect(() => {
-    shouldUpdateApp && walletConf.getBalance(setBalance);
-  }, [walletConf, list, shouldUpdateApp]);
+    if (!isConnected) {
+      openWalletsModal();
+      isOpenSelect && handlerPopup();
+    }
+  }, [isConnected, currentChainInfo, isOpenSelect]);
 
-  const { address, nativeCurrency, icon, color, blockExplorerUrls } =
-    walletData;
-  const { symbol } = nativeCurrency;
+  useEffect(() => {
+    if (walletAddress && walletAddress !== address) {
+      logout(isLogoutOnChangeAcc);
+    }
+  }, [address, walletAddress]);
 
   return (
-    <div className={clsx("wallet-wrapper", modificator)}>
-      {loading ? (
-        <Loader size="small" />
-      ) : (
-        <div
-          ref={blockRef}
-          className={clsx("wallet-block", {
-            loaded: !loading,
-          })}
-          onClick={handlerPopup}
-        >
-          <div className="wallet-icon">
-            <img src={icon} alt="wallet-icon" style={{ background: color }} />
-          </div>
-          <p className="balance">
-            {formatNumber(balance, 1)} {symbol}
-          </p>
-          {address && (
-            <div className="address">
-              <p>{shortStr(address, 3)}</p>
-            </div>
-          )}
+    <>
+      <div className={clsx("wallet-wrapper", modificator)}>
+        {isLoading || isPropLoading || !isConnected ? (
+          <Loader size="small" />
+        ) : (
           <div
-            className={clsx("icon", {
-              rotated: isOpenSelect,
+            ref={blockRef}
+            className={clsx("wallet-block", {
+              loaded: !isLoading,
             })}
+            onClick={handlerPopup}
           >
-            <SmallToggleListArrowIcon />
-          </div>
-        </div>
-      )}
-      {Boolean(isOpenSelect) && (
-        <div className={clsx("popup fadeIn", popupModificator)}>
-          <div className="item">
-            <div className="content">
-              <div className="image">
-                {avatar && <img src={avatar} alt={`avatar_${username}`} />}
+            {currentChainInfo && (
+              <div className="wallet-icon">
+                <img
+                  src={currentChainInfo.icon}
+                  alt="wallet-icon"
+                  style={{ background: currentChainInfo.color }}
+                />
               </div>
-              <span className="title">
-                {shortStr(address, isMobile ? 2 : 8)}
-              </span>
-            </div>
+            )}
+            {isBalanceLoading ? (
+              <Loader size="small" />
+            ) : (
+              <p className="balance">
+                {balanceData && formatNumber(balanceData.formatted, 1)}{" "}
+                {balanceData?.symbol}
+              </p>
+            )}
+
+            {address && (
+              <div className="address">
+                <p>{shortStr(address, 3)}</p>
+              </div>
+            )}
             <div
-              className="icons"
-              onClick={(e: React.MouseEvent<HTMLDivElement>) =>
-                e.stopPropagation()
-              }
+              className={clsx("icon", {
+                rotated: isOpenSelect,
+              })}
             >
-              <div className="copy" onClick={copyAddress}>
-                <CopyIcon />
-              </div>
-              {blockExplorerUrls && Boolean(blockExplorerUrls.length) && (
-                <div className="share">
-                  <a
-                    href={`${blockExplorerUrls[0]}/address/${address}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ShareIcon />
-                  </a>
-                </div>
-              )}
+              <SmallToggleListArrowIcon />
             </div>
           </div>
-          {walletConf.main_contract.blockchains.map(
-            ({ nativeCurrency, name, icon, color }) => (
+        )}
+        {isOpenSelect && (
+          <div className={clsx("popup fadeIn", popupModificator)}>
+            <div className="item">
+              <div className="content">
+                <div className="image">
+                  {avatarLink && (
+                    <img src={avatarLink} alt={`avatar_${username}`} />
+                  )}
+                </div>
+                <span className="title">
+                  {address && shortStr(address, isMobile ? 2 : 8)}
+                </span>
+              </div>
               <div
-                key={name}
-                className="item"
-                data-blockchain={name}
-                onClick={blockchainHandler(name)}
+                className="icons"
+                onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                  e.stopPropagation()
+                }
               >
+                <div className="copy" onClick={copyAddress}>
+                  <CopyIcon />
+                </div>
+                {currentChain?.blockExplorers &&
+                  Boolean(currentChain.blockExplorers.length) && (
+                    <div className="share">
+                      <a
+                        href={`${currentChain.blockExplorers[0]}/address/${address}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <ShareIcon />
+                      </a>
+                    </div>
+                  )}
+              </div>
+            </div>
+            {chains.map(({ id, name, nativeCurrency, icon, color }) => (
+              <div key={id} className="item" onClick={blockchainHandler(id)}>
                 <div className="content">
                   <div className="image" style={{ background: color }}>
                     <img src={icon} alt={`icon_${name}`} />
                   </div>
                   <span className="title">{nativeCurrency.symbol}</span>
                 </div>
-
-                {symbol === nativeCurrency.symbol && (
+                {currentChain?.name === name && (
                   <div className="icons">
                     <CheckOutlined
                       style={{
@@ -172,12 +190,20 @@ const WalletBlock = ({
                   </div>
                 )}
               </div>
-            )
-          )}
-        </div>
-      )}
-    </div>
+            ))}
+            {children}
+          </div>
+        )}
+      </div>
+      <WalletsModal
+        open={isOpenWalletsModal}
+        connectedWallet={connectedMethod}
+        onCancel={closeWalletsModal}
+        closable={false}
+        maskClosable={false}
+      />
+    </>
   );
 };
 
-export default WalletBlock;
+export default memo(WalletBlock);

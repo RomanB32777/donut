@@ -33,28 +33,28 @@
         @media (min-width: 768px) and (max-width: 992px)
             padding: 0 48px
 
+    &-link
+        display: flex
+        align-items: center
+        margin-bottom: 10px
+
+        &:last-child
+            margin-bottom: 0
+
         svg
             width: 24px
             height: 24px
 
-        .sidebar-link
-            display: flex
-            align-items: center
-            margin-bottom: 10px
+        svg, .link-text
+            transition: .3s
+            color: variables.$grey-color
 
-            &:last-child
-                margin-bottom: 0
+        .link-text
+            font-weight: 400
+            font-family: variables.$inter-font
+            font-size: 14px
+            margin-left: 5px
 
+        &:hover
             svg, .link-text
-                transition: .3s
-                color: variables.$grey-color
-
-            .link-text
-                font-weight: 400
-                font-family: variables.$inter-font
-                font-size: 14px
-                margin-left: 5px
-
-            &:hover
-                svg, .link-text
-                    color: variables.$white-color
+                color: variables.$white-color

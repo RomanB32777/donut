@@ -1,48 +1,18 @@
-import {
-  IAlertData,
-  ICurrentPeriodItemsTypes,
-  IGoalData,
-  IStatData,
-} from "types";
+import { IAlertData, IGoalData, IStatData, IStaticFile } from "types";
 import { IFileInfo } from "./files";
 
-type AlignText = "left" | "center" | "right";
+export type AlignText = "left" | "center" | "right";
 
-interface IFont {
+export interface IFont {
   name: string;
   link: string;
 }
 
 // goals
-interface IGoalAction {
-  type: string;
-  payload: IGoalData[];
-}
+export interface IWidgetGoalData extends IGoalData<IFont> {}
 
-interface IWidgetGoalData extends IGoalData<IFont> {}
-
-// stats
-interface IStatAction {
-  type: string;
-  payload: IStatData[];
-}
-
-type keyPeriodItems = keyof ICurrentPeriodItemsTypes;
-
-interface IWidgetStatData extends IStatData<IFont> {
-  custom_period?: string;
-}
+// // stats
+export interface IWidgetStatData extends IStatData<IFont> {}
 
 // alert
-interface IAlert extends IAlertData<IFont, IFileInfo> {}
-
-export type {
-  AlignText,
-  IFont,
-  keyPeriodItems,
-  IGoalAction,
-  IWidgetGoalData,
-  IStatAction,
-  IWidgetStatData,
-  IAlert,
-};
+export interface IAlert extends IAlertData<IFont, IFileInfo, IStaticFile> {}

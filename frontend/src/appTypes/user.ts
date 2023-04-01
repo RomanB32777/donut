@@ -1,14 +1,20 @@
-import { IDonatPage, IUser } from "types";
+import { IDonatPage, IUser, IUserTokenPayload } from "types";
 import { IFileInfo } from "./files";
 
-interface IUserAction {
-  type: string;
-  payload: IUser;
+export interface IDonatPageWithFiles extends IDonatPage<IFileInfo> {}
+
+export type DonatPageFiellds = keyof IDonatPageWithFiles;
+
+export interface IUserWithFiles extends IUser<IFileInfo> {}
+
+export interface IAuthToken {
+  access_token: string;
 }
 
-interface IDonatPageWithFiles extends IDonatPage<IFileInfo> {}
+export interface IWebToken {
+  web_token: string;
+}
 
-interface IUserWithFiles extends IUser<IFileInfo>{}
+export interface IUserWithToken extends IUserTokenPayload, IAuthToken {}
 
-
-export type { IUserAction, IDonatPageWithFiles, IUserWithFiles };
+export interface IFullUserWithToken extends IUser, IAuthToken {}

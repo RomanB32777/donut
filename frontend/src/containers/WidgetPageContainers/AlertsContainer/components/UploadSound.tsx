@@ -1,12 +1,13 @@
+import { FC } from "react";
+import { FormattedMessage } from "react-intl";
 import { addNotification } from "utils";
+import { maxSoundDuration } from "consts";
 
-const maxDuration = 5;
-
-const UploadSound = ({
-  sendFile,
-}: {
+interface IUploadSound {
   sendFile: (file: File) => Promise<void>;
-}) => {
+}
+
+const UploadSound: FC<IUploadSound> = ({ sendFile }) => {
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     const target = e.currentTarget;
@@ -23,8 +24,9 @@ const UploadSound = ({
             "loadedmetadata",
             async () => {
               const duration = Math.round(audio.duration);
-              if (duration <= maxDuration) await sendFile(file);
-              else reject(`File size limit exceeded (max - ${maxDuration}s)`);
+              if (duration <= maxSoundDuration) await sendFile(file);
+              else
+                reject(`File size limit exceeded (max - ${maxSoundDuration}s)`);
             },
             false
           );
@@ -43,7 +45,9 @@ const UploadSound = ({
 
   return (
     <div className="sound-upload">
-      <label htmlFor="sound-upload">Upload custom sound +</label>
+      <label htmlFor="sound-upload">
+        <FormattedMessage id="upload_sound_label" />
+      </label>
       <input
         id="sound-upload"
         type="file"
