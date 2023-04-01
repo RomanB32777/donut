@@ -16,6 +16,7 @@ import { useActions } from "hooks/reduxHooks";
 import { useCreateDonationMutation } from "store/services/DonationsService";
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
 import {
+  addErrorNotification,
   addNotification,
   BlockchainNetworks,
   fullChainsInfo,
@@ -73,14 +74,24 @@ const usePayment = ({
             logoutUser();
           }
         }
-        await checkWebToken();
-        const userDadta = await registerUser({
-          username: newUsername,
-          walletAddress: address,
-          roleplay: "backers",
-          isVisibleNotification: false,
-        }).unwrap();
-        return userDadta;
+
+        // TODO - оптимизировать проверку на существование юзера с адрессом кошелька
+        const { data: isExist } = await checkIsExistUser(address);
+        if (!isExist) {
+          await checkWebToken();
+          const userDadta = await registerUser({
+            username: newUsername,
+            walletAddress: address,
+            roleplay: "backers",
+            isVisibleNotification: false,
+          }).unwrap();
+          return userDadta;
+        } else {
+          addErrorNotification({
+            message: "User with this address already exists",
+          });
+          setIsSuccess(false);
+        }
       } else setIsSuccess(false);
     } catch (error) {
       console.log(error);

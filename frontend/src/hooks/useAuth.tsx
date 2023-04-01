@@ -32,7 +32,7 @@ const useAuth = () => {
   const navigate = useNavigate();
   const { logoutUser } = useActions();
   const { activeAuthModal, setActiveAuthModal } = useContext(AppContext);
-  const { isConnected, address, connector } = useAccount();
+  const { isConnected, address } = useAccount();
   const { chain: currentChain } = useNetwork();
   const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
@@ -174,12 +174,12 @@ const useAuth = () => {
     }
   };
 
-  const logout = () => {
+  const logout = (isRedirectToMain = true) => {
     removeWebToken();
     removeAuthToken();
     logoutUser();
     isConnected && disconnect();
-    return navigate(RoutePaths.main);
+    if (isRedirectToMain) navigate(RoutePaths.main);
   };
 
   return {

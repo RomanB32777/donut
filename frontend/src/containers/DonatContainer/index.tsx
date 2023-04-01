@@ -218,6 +218,7 @@ const DonatContainer = () => {
           modificator="donut-wallet"
           isPropLoading={isSwitchLoading}
           connectedWallet={checkConnectedWallet}
+          isLogoutOnChangeAcc={false}
         >
           <div className="item">
             <div className="content" onClick={disconnectHandler}>

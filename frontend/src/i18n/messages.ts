@@ -395,8 +395,8 @@ const messages = {
       "Инструкции по сбросу пароля отправлены на вашу электронную почту. Проверьте свою почту!",
 
     // change
-    change_title: "Change your password",
-    change_button: "Поменять",
+    change_title: "Измените свой пароль",
+    change_button: "Изменить",
     change_success: "Успешно!",
 
     // registration
@@ -418,7 +418,7 @@ const messages = {
     // roles
     roles_title: "Кто вы?",
     roles_creator: "Создатель контента",
-    roles_supporter: "Поддержка",
+    roles_supporter: "Донатер",
     roles_button: "Продолжить",
 
     // wallets modal
@@ -450,7 +450,7 @@ const messages = {
     form_cancel_button: "Отменить",
     form_save_widget_button: "Сохранить",
     form_save_goal_button: "Сохранить",
-    create_badge_form_button: "Создать бейдж",
+    create_badge_form_button: "Создать",
     sign_out_button: "Выйти",
 
     // not found
@@ -460,8 +460,8 @@ const messages = {
     // landing
     landing_main_button: "Зарегистрироваться",
     landing_main_button_logged: "Перейти в профиль",
-    landing_connect_button: "Подсоединить кошелек",
-    landing_launch_button: "Запустить приложение",
+    landing_connect_button: "Зарегистрироваться",
+    landing_launch_button: "Перейти в профиль",
     landing_create_account_button: "Создать аккаунт",
 
     landing_banner_title: "Революционное решение для получения крипто донатов.",
@@ -574,7 +574,7 @@ const messages = {
 
     // donation page
     donation_subtitle:
-      "Через ссылку ниже ваша аудитория может отправить вам крипто донаты",
+      "Через эту ссылку ваша аудитория может отправить вам крипто донаты",
     donation_generate_button: "Создать QR код",
     donation_download_button: "Скачать PNG",
     donation_header_banner: "Изображение над формой:",

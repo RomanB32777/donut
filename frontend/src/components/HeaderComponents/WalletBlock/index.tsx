@@ -11,6 +11,7 @@ import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import useOnClickOutside from "hooks/useClickOutside";
 
+import useAuth from "hooks/useAuth";
 import { BlockchainNetworks, fullChainsInfo } from "utils/wallets/wagmi";
 import { copyStr, formatNumber, shortStr } from "utils";
 import "./styles.sass";
@@ -20,14 +21,16 @@ interface IWalletBlock {
   isPropLoading?: boolean;
   popupModificator?: string;
   children?: React.ReactNode;
+  isLogoutOnChangeAcc?: boolean;
   connectedWallet?: (walletAddress: string) => any;
 }
 
 const WalletBlock: FC<IWalletBlock> = ({
+  children,
   modificator,
   isPropLoading,
   popupModificator,
-  children,
+  isLogoutOnChangeAcc,
   connectedWallet,
 }) => {
   const intl = useIntl();
@@ -37,8 +40,11 @@ const WalletBlock: FC<IWalletBlock> = ({
   const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
     address,
   });
+  const { logout } = useAuth();
 
-  const { username, avatarLink } = useAppSelector(({ user }) => user);
+  const { username, avatarLink, walletAddress } = useAppSelector(
+    ({ user }) => user
+  );
   const blockRef = useRef(null);
   const { isMobile } = useWindowDimensions();
 
@@ -73,12 +79,17 @@ const WalletBlock: FC<IWalletBlock> = ({
   }, [currentChain]);
 
   useEffect(() => {
-    // || !currentChainInfo
     if (!isConnected) {
       openWalletsModal();
       isOpenSelect && handlerPopup();
     }
   }, [isConnected, currentChainInfo, isOpenSelect]);
+
+  useEffect(() => {
+    if (walletAddress && walletAddress !== address) {
+      logout(isLogoutOnChangeAcc);
+    }
+  }, [address, walletAddress]);
 
   return (
     <>

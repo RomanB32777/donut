@@ -13,10 +13,16 @@ import { HeaderBanner } from "components/HeaderComponents/HeaderBanner";
 import {
   useCreateUserMutation,
   useLazyGetUserQuery,
+  useLazyCheckIsExistUserQuery,
 } from "store/services/UserService";
 import { useRegisterUserMutation } from "store/services/AuthService";
 import useAuth from "hooks/useAuth";
-import { delay, isValidateFilledForm, scrollToPosition } from "utils";
+import {
+  addErrorNotification,
+  delay,
+  isValidateFilledForm,
+  scrollToPosition,
+} from "utils";
 import { dashboardPath, delayNotVisibleBanner } from "consts";
 import { IAuthTypeModal } from "appTypes";
 import "./styles.sass";
@@ -54,6 +60,7 @@ const RegistrationCreatorModal: React.FC<IRegistrationModal> = ({
     { data, isSuccess: isCreateSuccess, error: creatingUser },
   ] = useCreateUserMutation();
   const [getUser] = useLazyGetUserQuery();
+  const [checkIsExistUser] = useLazyCheckIsExistUserQuery();
 
   const [form, setForm] = useState<IRegisterUser>({ ...initState, roleplay });
   const [isNotValidFields, setIsNotValidFields] = useState(initValidState);
@@ -87,12 +94,19 @@ const RegistrationCreatorModal: React.FC<IRegistrationModal> = ({
         },
       });
     } else if (address) {
-      await checkWebToken();
-      await createUser({
-        username,
-        roleplay,
-        walletAddress: address,
-      });
+      const { data: isExist } = await checkIsExistUser(address);
+      if (!isExist) {
+        await checkWebToken();
+        await createUser({
+          username,
+          roleplay,
+          walletAddress: address,
+        });
+      } else {
+        addErrorNotification({
+          message: "User with this address already exists",
+        });
+      }
     }
   };
 
