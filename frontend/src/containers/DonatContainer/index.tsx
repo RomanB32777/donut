@@ -6,7 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { ISendDonat, sendDonatFieldsKeys } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
+import { useActions, useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
 
 import WalletBlock from "components/HeaderComponents/WalletBlock";
@@ -51,24 +51,24 @@ const DonatContainer = () => {
     isLoading: isGetCreatorLoading,
   } = useGetCreatorInfoQuery(name ?? skipToken);
 
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const { switchNetwork, isLoading: isSwitchLoading } = useSwitchNetwork();
   const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
     address,
   });
 
+  const { logoutUser } = useActions();
   const user = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
 
   const [usdtKoef, setUsdtKoef] = useState(0);
   const [form, setForm] = useState<ISendDonat>(initSendDonatData);
-  // const [isOpenErrorModal, setIsOpenErrorModal] = useState(false);
   const [notValidFields, setNotValidFields] = useState<sendDonatFieldsKeys[]>(
     []
   );
 
-  const { id, username: usernameState } = user;
+  const { id, username: usernameState, roleplay } = user;
   const {
     username,
     message,
@@ -84,9 +84,7 @@ const DonatContainer = () => {
     balance: balanceData ? +balanceData.formatted : 0,
   });
 
-  const disconnectHandler = () => {
-    isConnected && disconnect();
-  };
+  const disconnectHandler = () => disconnect();
 
   const formHandler = useCallback(({ field, value }: IFormHandler) => {
     setNotValidFields((prev) => prev.filter((f) => f !== field));
@@ -124,8 +122,11 @@ const DonatContainer = () => {
     navigate(`/${RoutePaths.admin}/${RoutePaths.donations}`);
   };
 
-  const checkConnectedWallet = async () => {
-    await checkWallet();
+  const checkConnectedWallet = async (address: string, chain?: any) => {
+    if (!id || roleplay === "backers") {
+      logoutUser();
+      await checkWallet(address, chain);
+    }
   };
 
   const sendBtnHandler = useCallback(async () => {
@@ -156,7 +157,7 @@ const DonatContainer = () => {
       setForm(initSendDonatData);
       checkAuth(false);
     }
-  }, [id, usernameState]);
+  }, [id, usernameState, address]);
 
   if (!personInfo) {
     if (!isGetCreatorLoading || isError) addNotFoundUserNotification();
@@ -170,7 +171,6 @@ const DonatContainer = () => {
     username: personUsername,
   } = personInfo;
 
-  // !blockchain ||
   if (!creator) {
     return (
       <div className="loader-page">
@@ -181,10 +181,10 @@ const DonatContainer = () => {
 
   if (!walletAddress) {
     return (
-      <>
-        Этот еблан с именем {personUsername} не подключил еще кошелек, так что
-        иди-ка ты нахуй отсюда - тебе тут пока не рады!
-      </>
+      <h3 style={{ textAlign: "center" }}>
+        Creator {personUsername} has not connected the wallet yet, come back
+        later !
+      </h3>
     );
   }
 
@@ -196,22 +196,6 @@ const DonatContainer = () => {
     welcomeText,
     btnText,
   } = creator;
-
-  // if (isOpenErrorModal)
-  //   return (
-  //     <ErrorModalComponent
-  //       open={true}
-  //       centered={true}
-  //       // href="${walletConf.main_contract.linkInstall}"
-  //       message={`
-  //         It seems that you don't have a Metamask wallet in your browser. To download it <a
-  //             target="_blank"
-  //             rel="noreferrer"
-  //         >
-  //           click here
-  //         </a>!`}
-  //     />
-  //   );
 
   return (
     <div

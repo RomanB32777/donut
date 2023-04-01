@@ -28,6 +28,7 @@ const AuthModals = () => {
         open={activeAuthModal === "wallets"}
         connectedWallet={selectAuthWallet}
         onCancel={closeAuthModal}
+        isRegistration
       />
     </>
   );

@@ -32,7 +32,7 @@ const useAuth = () => {
   const navigate = useNavigate();
   const { logoutUser } = useActions();
   const { activeAuthModal, setActiveAuthModal } = useContext(AppContext);
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, connector } = useAccount();
   const { chain: currentChain } = useNetwork();
   const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
@@ -61,8 +61,8 @@ const useAuth = () => {
     }
   };
 
-  const selectAuthWallet = async (address: string) => {
-    const isExist = await checkWallet();
+  const selectAuthWallet = async (address: string, propChain?: any) => {
+    const isExist = await checkWallet(address, propChain);
     if (isExist) {
       scrollToPosition();
       navigate(`/${RoutePaths.admin}/${RoutePaths.dashboard}`);
@@ -75,12 +75,11 @@ const useAuth = () => {
   // const selectWallet = (cb: (address: string) => void) => (address: string) =>
   //   cb(address);
 
-  const checkWallet = async (propAddress?: string) => {
+  const checkWallet = async (propAddress?: string, propChain?: any) => {
     try {
       const walletAddress = address ?? propAddress;
-
       if (walletAddress) {
-        if (currentChain) {
+        if (currentChain ?? propChain) {
           const { data: isExistBacker } = await checkIsExistUser({
             field: walletAddress,
             role: "backers",
@@ -92,7 +91,6 @@ const useAuth = () => {
               walletAddress: walletAddress,
               roleplay: "backers",
             });
-
             return true;
             // not registered user - to registration page
           } else {
@@ -143,7 +141,7 @@ const useAuth = () => {
   const checkWebToken = async () => {
     try {
       const localToken = getWebToken();
-      if (!localToken && isConnected) {
+      if (!localToken) {
         const token = await Web3Token.sign(
           async (msg: any) => await signMessageAsync({ message: msg }),
           process.env.REACT_APP_ACCESS_TOKEN_EXPIRATION || "7d"

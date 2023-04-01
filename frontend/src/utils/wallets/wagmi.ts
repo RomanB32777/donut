@@ -78,7 +78,7 @@ export const blockchainsInfo: BlockchainsInfo = {
   },
   evmos: {
     icon: evmosIcon,
-    color: "rgba(130, 71, 229, 0.8)",
+    color: "#009393",
     exchangeName: ExchangeNames.EVMOS,
     contractAddress: "0xeb9bab732b7C24428CC21DDB5Aed8F43209bDB37", // TODO
   },
@@ -103,8 +103,8 @@ export const blockchainsInfo: BlockchainsInfo = {
     contractAddress: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
   },
   bsc: {
-    icon: maticIcon,
-    color: "rgba(130, 71, 229, 0.8)",
+    icon: bnbIcon,
+    color: "rgba(240, 185, 11, 0.8)",
     exchangeName: ExchangeNames.EVMOS,
     contractAddress: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
   },

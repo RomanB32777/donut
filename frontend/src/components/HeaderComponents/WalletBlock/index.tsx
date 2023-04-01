@@ -73,7 +73,8 @@ const WalletBlock: FC<IWalletBlock> = ({
   }, [currentChain]);
 
   useEffect(() => {
-    if (!isConnected || !currentChainInfo) {
+    // || !currentChainInfo
+    if (!isConnected) {
       openWalletsModal();
       isOpenSelect && handlerPopup();
     }
