@@ -50,7 +50,6 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
             //   switchNetwork?.(defaultChain?.id);
           }
         } else if (errInfo.name !== "UserRejectedRequestError") {
-          // ConnectorNotFoundError - TODO ?
           addErrorNotification({ message: errInfo.message });
         }
       } finally {
@@ -59,7 +58,7 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
     };
 
   return (
-    <ModalComponent {...props}>
+    <ModalComponent {...props} width={700}>
       <div className="walletsModal">
         <h1 className="modalTitle">
           <FormattedMessage id="wallets_connect_title" />
@@ -67,7 +66,7 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
         <div className="wallets">
           <Row justify="space-around">
             {connectors.map((connection) => {
-              const walletName = connection.name as walletNames;
+              const walletName = connection.id as walletNames;
               const { name, image } = walletsInfo[walletName];
               return (
                 <Col key={name}>

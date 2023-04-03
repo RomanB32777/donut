@@ -66,7 +66,7 @@ const CreateBadgeForm = ({
     } else {
       addNotification({
         type: "danger",
-        title: "Not all fields are filled",
+        title: <FormattedMessage id="notification_not_filled" />,
       });
     }
   };

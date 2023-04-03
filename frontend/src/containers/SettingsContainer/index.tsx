@@ -73,7 +73,10 @@ const SettingsContainer = () => {
   };
 
   const copyWalletAddress = () => {
-    copyStr({ str: walletAddress, copyObject: "Wallet address", intl });
+    copyStr({
+      str: walletAddress,
+      copyObject: intl.formatMessage({ id: "copy_message_wallet" }),
+    });
   };
 
   const changeUserData = async (

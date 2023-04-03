@@ -8,4 +8,10 @@ export interface IDonationWidgetInfo
   backer: Omit<IUserBase, "id">;
   blockchainSum?: number;
   username?: string;
+  sumUsd?: number;
+}
+
+export interface IRenderStatItemData
+  extends Pick<IDonationWidgetInfo, "username" | "sumUsd" | "sum" | "message"> {
+  backer?: Omit<IUserBase, "id">;
 }

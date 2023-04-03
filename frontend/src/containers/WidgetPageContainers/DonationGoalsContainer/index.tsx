@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { IGoalData } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import BaseButton from "components/BaseButton";
@@ -24,7 +23,10 @@ const DonationGoalsContainer = () => {
   const [formData, setFormData] = useState<IWidgetGoalData>(initWidgetGoalData);
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
-  const { data: goals, refetch } = useGetGoalsQuery(id, { skip: !id });
+  const { data: goals, refetch } = useGetGoalsQuery(
+    { userId: id },
+    { skip: !id }
+  );
 
   const openEditModal = useCallback((widget: IWidgetGoalData) => {
     setFormData(widget);
@@ -37,12 +39,12 @@ const DonationGoalsContainer = () => {
   }, []);
 
   const activeGoals = useMemo(
-    () => (goals ? goals.filter((goal: IGoalData) => !goal.isArchive) : []),
+    () => (goals ? goals.filter((goal) => !goal.isArchive) : []),
     [goals]
   );
 
   const archivedGoals = useMemo(
-    () => (goals ? goals.filter((goal: IGoalData) => goal.isArchive) : []),
+    () => (goals ? goals.filter((goal) => goal.isArchive) : []),
     [goals]
   );
 
@@ -92,7 +94,7 @@ const DonationGoalsContainer = () => {
       <PageTitle formatId="page_title_donation_history" />
       <div className="archiveWrapper">
         {Boolean(archivedGoals.length) ? (
-          archivedGoals.map((goal: IGoalData) => (
+          archivedGoals.map((goal) => (
             <GoalItem key={goal.id} goalData={goal} fonts={[]} />
           ))
         ) : (

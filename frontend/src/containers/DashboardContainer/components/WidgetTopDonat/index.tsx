@@ -39,9 +39,9 @@ const WidgetTopDonat = () => {
         (res: any) => res.data,
         (data) => {
           const forTableData: ITableData[] = data?.map(
-            ({ backer, ...donat }: IDonationWidgetInfo) => ({
+            ({ backer, username, ...donat }: IDonationWidgetInfo) => ({
               ...donat,
-              username: backer.username,
+              username: username ?? backer?.username,
               sum: formatNumber(donat.sum),
               key: donat.id,
             })

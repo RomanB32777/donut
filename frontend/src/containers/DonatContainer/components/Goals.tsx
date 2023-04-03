@@ -19,7 +19,10 @@ const Goals = ({
 }) => {
   const { creator, id } = personInfo;
 
-  const { data: goals, isLoading } = useGetGoalsQuery(id, { skip: !id });
+  const { data: goals, isLoading } = useGetGoalsQuery(
+    { userId: id, isArchive: false },
+    { skip: !id }
+  );
   const [isOpenSelectGoal, setIsOpenSelectGoal] = useState<boolean>(true);
 
   const onChangeRadio = useCallback(

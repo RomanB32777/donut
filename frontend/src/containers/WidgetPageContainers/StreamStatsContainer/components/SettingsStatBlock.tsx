@@ -1,7 +1,6 @@
 import { FC, useMemo, useState } from "react";
 import { Col, Row } from "antd";
-import { SliderMarks } from "antd/lib/slider";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { typeAligmnet } from "types";
 
 import ColorPicker from "components/ColorPicker";
@@ -15,7 +14,7 @@ import {
 import { notVisibleFontsCount } from "consts";
 import { IWidgetStatData } from "appTypes";
 
-const marksSlider: { [key: number]: typeAligmnet } = {
+const marksSlider: Record<number, typeAligmnet> = {
   0: "Left",
   1: "Center",
   2: "Right",
@@ -34,6 +33,7 @@ const SettingsStatBlock: FC<ISettingsStatBlock> = ({
   editStatData,
   setEditStatData,
 }) => {
+  const intl = useIntl();
   const [fontList, setFontList] = useState<ISelectItem[]>(
     fonts.slice(0, notVisibleFontsCount)
   );
@@ -175,7 +175,15 @@ const SettingsStatBlock: FC<ISettingsStatBlock> = ({
               label={
                 <FormattedMessage id="stats_widget_settings_сontent_alignment" />
               }
-              marks={marksSlider as SliderMarks}
+              marks={Object.entries(marksSlider).reduce(
+                (acc, [key, value]) => ({
+                  ...acc,
+                  [key]: intl.formatMessage({
+                    id: `stats_widget_settings_сontent_alignment_${value.toLowerCase()}`,
+                  }),
+                }),
+                {}
+              )}
               modificator="aligment-slider"
               min={0}
               max={2}

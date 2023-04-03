@@ -274,6 +274,9 @@ const messages = {
     stats_widget_settings_title_font: "Goal title font:",
     stats_widget_settings_сontent_font: "Content font:",
     stats_widget_settings_сontent_alignment: "Content alignment:",
+    stats_widget_settings_сontent_alignment_left: "Left",
+    stats_widget_settings_сontent_alignment_center: "Center",
+    stats_widget_settings_сontent_alignment_right: "Right",
     stats_widget_preview_message: "Hello! This is test message",
     stats_widget_preview_message_2: "How are you ?",
 
@@ -349,6 +352,16 @@ const messages = {
     notifications_add_badge_creator: "You sent {title} to {user}",
     notifications_add_badge_supporter: "You received {title} from {user}",
 
+    // notification component
+    notification_successfully_created: "Data created successfully",
+    notification_successfully_saved: "Data saved successfully",
+    notification_successfully_deleted: "Deleted successfully",
+    notification_successfully_title: "Success",
+    notification_user_not_found: "User with this username not found!",
+    notification_file_limit_exceeded:
+      "File size limit exceeded (max - {maxFileSize}MB)",
+    notification_not_filled: "Not all fields are filled",
+
     // empty
     empty_data: "No data",
 
@@ -380,6 +393,8 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} is successfully copied",
     copy_message_error: "An error occurred while copying the {copyObject}",
+    copy_message_wallet: "Wallet address",
+    copy_message_link: "Link",
 
     // dates picker
     dates_picker_placeholder_start: "Start date",
@@ -660,6 +675,9 @@ const messages = {
     stats_widget_settings_title_font: "Шрифт заголовка цели:",
     stats_widget_settings_сontent_font: "Шрифт контента:",
     stats_widget_settings_сontent_alignment: "Выравнивание контента:",
+    stats_widget_settings_сontent_alignment_left: "Слева",
+    stats_widget_settings_сontent_alignment_center: "По центру",
+    stats_widget_settings_сontent_alignment_right: "Справа",
     stats_widget_preview_message: "Привет! Это тестовое сообщение",
     stats_widget_preview_message_2: "Как дела?",
 
@@ -735,6 +753,17 @@ const messages = {
     notifications_add_badge_creator: "Вы отправили {title} {user}",
     notifications_add_badge_supporter: "Вы получили {title} от {user}",
 
+    // notification component
+    notification_successfully_created: "Данные успешно созданы",
+    notification_successfully_saved: "Данные успешно сохранены",
+    notification_successfully_deleted: "Успешно удалено",
+    notification_successfully_title: "Успех",
+    notification_user_not_found:
+      "Пользователь с таким именем пользователя не найден!",
+    notification_file_limit_exceeded:
+      "Превышен лимит размера файла (макс. - {maxFileSize}МБ)",
+    notification_not_filled: "Не все поля заполнены",
+
     // empty
     empty_data: "Нет данных",
 
@@ -766,6 +795,8 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} успешно скопировано",
     copy_message_error: "При копировании {copyObject} произошла ошибка",
+    copy_message_wallet: "Адрес кошелька",
+    copy_message_link: "Ссылка",
 
     // dates picker
     dates_picker_placeholder_start: "Дата начала",
@@ -1051,6 +1082,9 @@ const messages = {
     stats_widget_settings_title_font: "Fuente del título de la meta:",
     stats_widget_settings_сontent_font: "Fuente del contenido:",
     stats_widget_settings_сontent_alignment: "Alineación del contenido:",
+    stats_widget_settings_сontent_alignment_left: "Izquierda",
+    stats_widget_settings_сontent_alignment_center: "Centro",
+    stats_widget_settings_сontent_alignment_right: "Derecha",
     stats_widget_preview_message: "¡Hola! Este es un mensaje de prueba",
     stats_widget_preview_message_2: "¿Cómo estás?",
 
@@ -1128,6 +1162,17 @@ const messages = {
     notifications_add_badge_creator: "Has enviado {title} a {user}",
     notifications_add_badge_supporter: "Has recibido {title} de {user}",
 
+    // notification component
+    notification_successfully_created: "Datos creados exitosamente",
+    notification_successfully_saved: "Datos guardados exitosamente",
+    notification_successfully_deleted: "Eliminado exitosamente",
+    notification_successfully_title: "Éxito",
+    notification_user_not_found:
+      "¡No se encontró usuario con este nombre de usuario!",
+    notification_file_limit_exceeded:
+      "Se superó el límite de tamaño de archivo (máx. - {maxFileSize}MB)",
+    notification_not_filled: "No se han completado todos los campos",
+
     // empty
     empty_data: "No hay datos",
 
@@ -1160,6 +1205,8 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} se copió correctamente",
     copy_message_error: "Se produjo un error al copiar {copyObject}",
+    copy_message_wallet: "Dirección de la cartera",
+    copy_message_link: "Enlace",
 
     // dates picker
     dates_picker_placeholder_start: "Fecha de inicio",
@@ -1436,6 +1483,9 @@ const messages = {
     stats_widget_settings_title_font: "แบบอักษรชื่อเป้าหมาย:",
     stats_widget_settings_сontent_font: "แบบอักษรเนื้อหา:",
     stats_widget_settings_сontent_alignment: "การจัดเนื้อหา:",
+    stats_widget_settings_сontent_alignment_left: "ชิดซ้าย",
+    stats_widget_settings_сontent_alignment_center: "กึ่งกลาง",
+    stats_widget_settings_сontent_alignment_right: "ชิดขวา",
     stats_widget_preview_message: "สวัสดี! นี่เป็นข้อความทดสอบ",
     stats_widget_preview_message_2: "สบายดีไหม?",
 
@@ -1512,6 +1562,16 @@ const messages = {
     notifications_add_badge_creator: "คุณส่ง {title} ถึง {user}",
     notifications_add_badge_supporter: "คุณได้รับ {title} จาก {user}",
 
+    // notification component
+    notification_successfully_created: "สร้างข้อมูลสำเร็จแล้ว",
+    notification_successfully_saved: "บันทึกข้อมูลสำเร็จแล้ว",
+    notification_successfully_deleted: "ลบสำเร็จแล้ว",
+    notification_successfully_title: "สำเร็จ",
+    notification_user_not_found: "ไม่พบผู้ใช้ที่มีชื่อผู้ใช้นี้!",
+    notification_file_limit_exceeded:
+      "เกินขนาดไฟล์ที่กำหนด (สูงสุด - {maxFileSize}MB)",
+    notification_not_filled: "ไม่ได้กรอกทุกช่อง",
+
     // empty
     empty_data: "ไม่มีข้อมูล",
 
@@ -1543,6 +1603,8 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} ถูกคัดลอกเรียบร้อยแล้ว",
     copy_message_error: "เกิดข้อผิดพลาดขณะคัดลอก {copyObject}",
+    copy_message_wallet: "ที่อยู่กระเป๋าเงิน",
+    copy_message_link: "ลิงก์",
 
     // dates picker
     dates_picker_placeholder_start: "วันที่เริ่มต้น",
@@ -1826,6 +1888,9 @@ const messages = {
     stats_widget_settings_title_font: "Fonte do título do objetivo:",
     stats_widget_settings_сontent_font: "Fonte do conteúdo:",
     stats_widget_settings_сontent_alignment: "Alinhamento do conteúdo:",
+    stats_widget_settings_сontent_alignment_left: "Esquerda",
+    stats_widget_settings_сontent_alignment_center: "Centro",
+    stats_widget_settings_сontent_alignment_right: "Direita",
     stats_widget_preview_message: "Olá! Esta é uma mensagem de teste",
     stats_widget_preview_message_2: "Como você está?",
 
@@ -1904,6 +1969,17 @@ const messages = {
     notifications_add_badge_creator: "Você enviou {title} para {user}",
     notifications_add_badge_supporter: "Você recebeu {title} de {user}",
 
+    // notification component
+    notification_successfully_created: "Dados criados com sucesso",
+    notification_successfully_saved: "Dados salvos com sucesso",
+    notification_successfully_deleted: "Excluído com sucesso",
+    notification_successfully_title: "Sucesso",
+    notification_user_not_found:
+      "Usuário com esse nome de usuário não encontrado!",
+    notification_file_limit_exceeded:
+      "Limite de tamanho do arquivo excedido (máx. - {maxFileSize}MB)",
+    notification_not_filled: "Nem todos os campos foram preenchidos",
+
     // empty
     empty_data: "Sem dados",
 
@@ -1936,6 +2012,8 @@ const messages = {
     // copy
     copy_message_successfully: "{formatCopyObject} foi copiado com sucesso",
     copy_message_error: "Ocorreu um erro ao copiar {copyObject}",
+    copy_message_wallet: "Endereço da carteira",
+    copy_message_link: "Link",
 
     // dates picker
     dates_picker_placeholder_start: "Data de início",
@@ -2212,6 +2290,9 @@ const messages = {
     stats_widget_settings_title_font: "목표 제목 글꼴:",
     stats_widget_settings_сontent_font: "콘텐츠 글꼴:",
     stats_widget_settings_сontent_alignment: "콘텐츠 정렬:",
+    stats_widget_settings_сontent_alignment_left: "왼쪽",
+    stats_widget_settings_сontent_alignment_center: "중앙",
+    stats_widget_settings_сontent_alignment_right: "오른쪽",
     stats_widget_preview_message: "안녕하세요! 이것은 테스트 메시지입니다.",
     stats_widget_preview_message_2: "어떻게 지내시나요?",
 
@@ -2287,6 +2368,16 @@ const messages = {
     notifications_add_badge_creator: "{user}님께 {title} 배지를 보냈습니다",
     notifications_add_badge_supporter: "{user}님이 {title} 배지를 선물했습니다",
 
+    // notification component
+    notification_successfully_created: "데이터가 성공적으로 생성되었습니다",
+    notification_successfully_saved: "데이터가 성공적으로 저장되었습니다",
+    notification_successfully_deleted: "삭제되었습니다",
+    notification_successfully_title: "성공",
+    notification_user_not_found: "해당 사용자를 찾을 수 없습니다!",
+    notification_file_limit_exceeded:
+      "파일 크기 제한 초과 (최대 - {maxFileSize}MB)",
+    notification_not_filled: "모든 필드를 채우지 않았습니다",
+
     // empty
     empty_data: "데이터 없음",
 
@@ -2319,6 +2410,8 @@ const messages = {
     copy_message_successfully:
       "{formatCopyObject}이(가) 성공적으로 복사되었습니다",
     copy_message_error: "{copyObject} 복사 중 오류가 발생했습니다",
+    copy_message_wallet: "지갑 주소",
+    copy_message_link: "링크",
 
     // dates picker
     dates_picker_placeholder_start: "시작 날짜",

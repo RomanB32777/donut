@@ -54,7 +54,11 @@ const WalletBlock: FC<IWalletBlock> = ({
   const chains = Object.values(fullChainsInfo);
 
   const copyAddress = () => {
-    address && copyStr({ str: address, copyObject: "Wallet address", intl });
+    address &&
+      copyStr({
+        str: address,
+        copyObject: intl.formatMessage({ id: "copy_message_wallet" }),
+      });
   };
   const handlerPopup = () => setOpenSelect((prev) => !prev);
   const openWalletsModal = () => setIsOpenWalletsModal(true);

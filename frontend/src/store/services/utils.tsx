@@ -10,6 +10,7 @@ import {
   removeWebToken,
 } from "utils";
 import { baseURL } from "consts";
+import { FormattedMessage } from "react-intl";
 
 const getQueryArgs = ({
   args,
@@ -83,7 +84,9 @@ const baseQuery = ({
             case "POST":
               isVisibleNotification &&
                 addSuccessNotification({
-                  message: "Data created successfully",
+                  message: (
+                    <FormattedMessage id="notification_successfully_created" />
+                  ),
                   id: "success-post",
                 });
               break;
@@ -91,7 +94,9 @@ const baseQuery = ({
             case "PATCH":
               isVisibleNotification &&
                 addSuccessNotification({
-                  message: "Data saved successfully",
+                  message: (
+                    <FormattedMessage id="notification_successfully_saved" />
+                  ),
                   id: "success-put",
                 });
               break;
@@ -99,7 +104,9 @@ const baseQuery = ({
             case "DELETE":
               isVisibleNotification &&
                 addSuccessNotification({
-                  message: "Deleted successfully",
+                  message: (
+                    <FormattedMessage id="notification_successfully_deleted" />
+                  ),
                   id: "success-delete",
                 });
               break;

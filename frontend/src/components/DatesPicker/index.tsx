@@ -1,11 +1,10 @@
-import { DatePicker } from "antd";
-import { LOCALES } from "appTypes";
-import { antdLocales } from "consts";
-import dayjsModule from "modules/dayjsModule";
 import { useEffect, useState } from "react";
+import { DatePicker } from "antd";
 import { useIntl } from "react-intl";
-// import "dayjs/locale/zh-cn";
-// import localeTest from "antd/es/date-picker/locale/zh_CN";
+
+import dayjsModule from "modules/dayjsModule";
+import { antdLocales } from "consts";
+import { LOCALES } from "appTypes";
 import "./styles.sass";
 
 const { RangePicker } = DatePicker;
@@ -20,18 +19,16 @@ const DatesPicker = ({
   setValue: (startDate: string, endDate: string) => void;
 }) => {
   const intl = useIntl();
-  // const { locale } = useContext(AppContext);
   const [pickerLocale, setPickerLocale] = useState<any>(null);
 
-  // useEffect(() => {
-  // TODO
-  // console.log(locale);
-  // const settedLocale = locale as LOCALES;
-  // antdLocales[settedLocale]().then((importedLocale: any) => {
-  //   console.log(importedLocale);
-  //   setPickerLocale(importedLocale);
-  // });
-  // }, [locale]);
+  const { locale } = intl;
+
+  useEffect(() => {
+    const settedLocale = locale as LOCALES;
+    antdLocales[settedLocale]().then((importedLocale: any) => {
+      setPickerLocale(importedLocale.default);
+    });
+  }, [locale]);
 
   return (
     <div className="datesPicker">

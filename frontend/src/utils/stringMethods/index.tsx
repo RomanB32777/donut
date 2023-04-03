@@ -1,8 +1,9 @@
 import { Buffer } from "buffer";
-import { IntlShape } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { addNotification } from "../notifications";
 import { formatNumber } from "utils/appMethods";
 import { IReplaceObj } from "./types";
+import { IRenderStatItemData } from "appTypes";
 
 export const getRandomStr = (length: number) => {
   let result = "";
@@ -23,29 +24,31 @@ export const shortStr = (str: string, length: number) => {
 
 export const copyStr = ({
   str,
-  copyObject = "link",
-  intl,
+  copyObject,
 }: {
   str: string;
-  copyObject?: string;
-  intl: IntlShape;
+  copyObject: string;
 }) => {
   try {
     navigator.clipboard.writeText(str);
     const formatCopyObject = copyObject[0].toUpperCase() + copyObject.slice(1);
     addNotification({
       type: "success",
-      title: intl.formatMessage(
-        { id: "copy_message_successfully" },
-        { formatCopyObject }
+      title: (
+        <FormattedMessage
+          id="copy_message_successfully"
+          values={{ formatCopyObject }}
+        />
       ),
     });
   } catch (error) {
     addNotification({
       type: "warning",
-      title: intl.formatMessage(
-        { id: "copy_message_error" },
-        { copyObject: copyObject.toLowerCase() }
+      title: (
+        <FormattedMessage
+          id="copy_message_error"
+          values={{ copyObject: copyObject.toLowerCase() }}
+        />
       ),
     });
   }
@@ -63,20 +66,20 @@ export const renderStrWithTokens = (
 
 export const renderStatItem = (
   template: string | string[],
-  objToRender: any // TODO
+  objToRender: IRenderStatItemData
 ) => {
   return renderStrWithTokens(template, [
     {
       re: /{username}/gi,
-      to: objToRender?.username || objToRender?.backer?.username,
+      to: objToRender?.username ?? objToRender?.backer?.username ?? "",
     },
     {
       re: /{sum}/gi,
-      to: `${formatNumber(objToRender.sum)} USD`,
+      to: `${formatNumber(objToRender?.sumUsd ?? objToRender?.sum)} USD`,
     },
     {
       re: /{message}/gi,
-      to: objToRender.message || "",
+      to: objToRender?.message ?? "",
     },
   ]);
 };

@@ -38,7 +38,10 @@ const LinkCopy: FC<ILinkCopy> = ({
           className="icon"
           onClick={(event: React.MouseEvent<HTMLDivElement>) => {
             event.stopPropagation();
-            copyStr({ str: link, intl });
+            copyStr({
+              str: link,
+              copyObject: intl.formatMessage({ id: "copy_message_link" }),
+            });
           }}
         >
           <CopyIcon />

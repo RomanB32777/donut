@@ -6,7 +6,7 @@ export type relationUserType = 'creator' | 'backer';
 
 export class ParamsWithoutQueryBuilderDto {
   findUser: { userId: string; type: relationUserType };
-  relationUser: relationUserType;
+  relationUser?: relationUserType; // TODO - нужно ли ?
   queryParams: QueryParamsDto;
   additionalWhereFilter?: FindOptionsWhere<Donation>;
 }
