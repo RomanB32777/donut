@@ -47,9 +47,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "types:install": "npm ci --prefix types",
-    "types:build": "npm run build --prefix types"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

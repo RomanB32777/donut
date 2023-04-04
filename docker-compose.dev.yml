@@ -29,6 +29,7 @@ services:
     volumes:
       - ./backend/dist/mail:/app/dist/mail
       - ./backend/dist/static:/app/dist/static
+      - ./types:/types
     env_file: ./.env
 
   frontend:
@@ -48,6 +49,8 @@ services:
       - backend
     ports:
       - "8095:80"
+    volumes:
+      - ./types:/types
     restart: unless-stopped
 
   # nginx:

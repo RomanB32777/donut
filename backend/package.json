@@ -22,9 +22,7 @@
     "migration:create": "npm run typeorm migration:create",
     "migration:generate": "npm run typeorm migration:generate -- -n",
     "migration:run": "npm run typeorm migration:run",
-    "migration:down": "npm run typeorm migration:revert",
-    "types:install": "npm ci --prefix types",
-    "types:build": "npm run build --prefix types"
+    "migration:down": "npm run typeorm migration:revert"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^4.2.1",
@@ -63,8 +61,8 @@
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.6.1",
     "typeorm": "^0.3.12",
-    "types": "file:../types",
-    "web3-token": "^1.0.4"
+    "web3-token": "^1.0.4",
+    "types": "file:../types"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
