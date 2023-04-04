@@ -11,27 +11,20 @@ export interface INotification {
   id?: string;
 }
 
-export interface INotificationWithoutType {
-  title?: string;
+export interface INotificationWithoutType
+  extends Partial<Omit<INotification, "type">> {
   message: NotificationTitleMessage;
-  id?: string;
 }
 
-declare type typeNotification =
+export type typeNotification =
   | "donat_creator"
   | "donat_supporter"
   | "add_badge_creator"
   | "add_badge_supporter"
   | "none";
 
-interface INotificationMessage<T = IDonationShortInfo> {
+export interface INotificationMessage<T = IDonationShortInfo> {
   type: typeNotification;
   user: string;
   data: T;
 }
-
-interface IGetNotificationMessage {
-  <T>(arg: INotificationMessage<T>): void;
-}
-
-export type { INotificationMessage, IGetNotificationMessage, typeNotification };

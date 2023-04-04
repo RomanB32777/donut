@@ -65,8 +65,11 @@ export class GoalsService {
     });
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string, isArchive?: boolean) {
     const goalsQuery = await this.getSelectQuery({ id: userId });
+    if (isArchive !== undefined) {
+      goalsQuery.andWhere('goal.isArchive = :isArchive', { isArchive });
+    }
     return await goalsQuery.getRawMany();
   }
 

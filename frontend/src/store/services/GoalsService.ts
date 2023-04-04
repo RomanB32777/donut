@@ -17,8 +17,14 @@ const goalsApi = createApi({
   }),
   tagTypes: ["goals"],
   endpoints: (build) => ({
-    getGoals: build.query<IGoalData[], string>({
-      query: (user) => `/${user}`,
+    getGoals: build.query<
+      IGoalData[],
+      { userId: string } & Partial<Pick<IGoalData, "isArchive">>
+    >({
+      query: ({ userId, isArchive }) => ({
+        url: `/${userId}`,
+        params: { isArchive },
+      }),
       providesTags: ["goals"],
     }),
 

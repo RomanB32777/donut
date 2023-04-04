@@ -41,6 +41,7 @@ trash/
 frontend-next/
 backend_old/
 sockets_old/
+backendTest/
 
 # Node.JS
 node_modules

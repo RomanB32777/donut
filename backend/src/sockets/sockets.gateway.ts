@@ -64,7 +64,7 @@ export class SocketsGateway
 
       const sendObj: ISocketNotification = {
         type: 'donat',
-        supporter: isAnonymous ? 'anonymous' : sender.user.username, // TODO
+        supporter: isAnonymous ? 'anonymous' : sender.user.username,
         additional: {
           sum,
           blockchain,

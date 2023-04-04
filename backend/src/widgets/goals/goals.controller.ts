@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -34,9 +35,11 @@ export class GoalsController {
   }
 
   @Get(':userId')
-  // TODO - select query by goals fields
-  findAll(@Param('userId') userId: string) {
-    return this.goalsService.findAll(userId);
+  findAll(
+    @Param('userId') userId: string,
+    @Query() { isArchive }: Pick<CreateGoalDto, 'isArchive'>,
+  ) {
+    return this.goalsService.findAll(userId, isArchive);
   }
 
   @Get(':username/:id')

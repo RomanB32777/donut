@@ -112,15 +112,27 @@ export class ExchangeService {
     return exchanges[blockchain];
   }
 
-  async sumQuerySelect(sumColumn = 'd.sum', blockchainColumn = 'd.blockchain') {
+  async sumQuerySelect(
+    isSum = true,
+    sumColumn = 'd.sum',
+    blockchainColumn = 'd.blockchain',
+  ) {
     const exchanges = await this.getExchange();
-
-    return `COALESCE(SUM(${sumColumn} * CASE ${blockchainColumn} ${Object.keys(
+    const condition = `${sumColumn} * CASE ${blockchainColumn} ${Object.keys(
       BlockchainsSymbols,
     )
       .map((c) => `WHEN '${c}' THEN ${exchanges[c] || 0}`)
       .join(' ')}
       ELSE 1
-      END), 0)`;
+      END`;
+    return `COALESCE(${isSum ? `SUM(${condition})` : condition}, 0)`;
+
+    // return `COALESCE(SUM(${sumColumn} * CASE ${blockchainColumn} ${Object.keys(
+    //   BlockchainsSymbols,
+    // )
+    //   .map((c) => `WHEN '${c}' THEN ${exchanges[c] || 0}`)
+    //   .join(' ')}
+    //   ELSE 1
+    //   END), 0)`;
   }
 }

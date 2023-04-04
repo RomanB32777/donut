@@ -42,14 +42,11 @@ const useSocketConnection = (username: string) => {
       addNotification({
         type: "info",
         title: intl.formatMessage({ id: "notifications_donat_title" }),
-        message: getDonatNotificationMessage(
-          {
-            type: "donat_creator",
-            user: data.supporter,
-            data: data.additional,
-          },
-          intl
-        ),
+        message: getDonatNotificationMessage({
+          type: "donat_creator",
+          user: data.supporter,
+          data: data.additional,
+        }),
       });
       getNotifications({ username });
     });
@@ -58,14 +55,11 @@ const useSocketConnection = (username: string) => {
       addNotification({
         type: "info",
         title: intl.formatMessage({ id: "notifications_badge_title" }),
-        message: getBadgeNotificationMessage(
-          {
-            type: "add_badge_supporter",
-            user: data.supporter,
-            data: data.additional,
-          },
-          intl
-        ),
+        message: getBadgeNotificationMessage({
+          type: "add_badge_supporter",
+          user: data.supporter,
+          data: data.additional,
+        }),
       });
       getNotifications({ username });
     });

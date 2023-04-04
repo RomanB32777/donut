@@ -1,12 +1,12 @@
 import { configureChains, createClient } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectLegacyConnector } from "wagmi/connectors/walletConnectLegacy";
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { publicProvider } from "wagmi/providers/public";
 import {
   Chain,
   mainnet,
   avalanche,
-  evmos,
   bsc,
   polygon,
   evmosTestnet,
@@ -19,6 +19,7 @@ import { ExchangeNames } from "types";
 
 import metamaskIcon from "assets/metamask.png";
 import walletConnectIcon from "assets/walletConnect.png";
+import coinbaseWalletIcon from "assets/coinbaseWallet.png";
 
 import evmosIcon from "assets/blockchains/evmos.png";
 import ethIcon from "assets/blockchains/eth.png";
@@ -26,7 +27,7 @@ import maticIcon from "assets/blockchains/matic.png";
 import bnbIcon from "assets/blockchains/bnb.png";
 import avaxIcon from "assets/blockchains/avax.png";
 
-const prodChains = [mainnet, bsc, avalanche, evmos, polygon];
+const prodChains = [mainnet, bsc, avalanche, polygon];
 const testChains = [
   evmosTestnet,
   arbitrumGoerli,
@@ -40,7 +41,21 @@ const { chains, provider, webSocketProvider } = configureChains(
   [publicProvider()]
 );
 
-export type walletNames = "MetaMask" | "WalletConnectLegacy";
+const connectors = [
+  new MetaMaskConnector({ chains }),
+  new WalletConnectLegacyConnector({
+    chains,
+    options: {
+      qrcode: true,
+    },
+  }),
+  new CoinbaseWalletConnector({
+    chains,
+    options: {
+      appName: "Crypto Donutz",
+    },
+  }),
+];
 
 interface IBlockchainInfo {
   icon: string;
@@ -49,16 +64,7 @@ interface IBlockchainInfo {
   contractAddress: `0x${string}`;
 }
 
-// type TestChain = Chain & Required<Pick<Chain, "testnet">>;
-
-// function isTestChain(argument: TestChain | Chain): argument is TestChain {
-//   return !!argument.testnet;
-// }
-// const isTestChain = (chain: Chain): chain is TestChain => !!chain.testnet;
-
-export const chainNetworks = chains
-  // .filter(isTestChain)
-  .map(({ network }) => network);
+export const chainNetworks = chains.map(({ network }) => network);
 
 export const chainNames = chains.map(({ name }) => name);
 
@@ -75,12 +81,6 @@ export const blockchainsInfo: BlockchainsInfo = {
     color: "#009393",
     exchangeName: ExchangeNames.EVMOS,
     contractAddress: "0xeb9bab732b7C24428CC21DDB5Aed8F43209bDB37",
-  },
-  evmos: {
-    icon: evmosIcon,
-    color: "#009393",
-    exchangeName: ExchangeNames.EVMOS,
-    contractAddress: "0xeb9bab732b7C24428CC21DDB5Aed8F43209bDB37", // TODO
   },
   "arbitrum-goerli": {
     // testnet
@@ -154,26 +154,20 @@ export const fullChainsInfo = chainNetworks.reduce((acc, name) => {
   };
 }, {} as FullBlockchainsInfo);
 
+const connectorNames = connectors.map((connector) => connector.id);
+
+export type walletNames = typeof connectorNames[number];
+
 export const walletsInfo: Record<walletNames, { image: string; name: string }> =
   {
-    MetaMask: { image: metamaskIcon, name: "Metamask" },
-    WalletConnectLegacy: { image: walletConnectIcon, name: "WalletConnect" },
+    metaMask: { image: metamaskIcon, name: "Metamask" },
+    walletConnectLegacy: { image: walletConnectIcon, name: "WalletConnect" },
+    coinbaseWallet: { image: coinbaseWalletIcon, name: "Coinbase Wallet" },
   };
 
 export const client = createClient({
   autoConnect: true,
-  connectors: [
-    new MetaMaskConnector({ chains }),
-    new WalletConnectLegacyConnector({
-      chains,
-      options: {
-        qrcode: true,
-      },
-    }),
-  ],
+  connectors,
   provider,
   webSocketProvider,
 });
-
-// const connectors = client.connectors.map((c) => c.name);
-// type ValueOf<T> = T[keyof T];

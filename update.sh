@@ -9,19 +9,22 @@ cd $project_dir
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 echo $branch
-
 git stash
-
 git pull origin $branch
-
 git stash pop
+
+cd $types_dir
+npm ci --omit=dev
+npm run build
+rm -rf ./node_modules
+cd ..
 
 for i in ${modulesWithTypes[@]}
 do
    cp -r ./$types_dir ./$i
 done
 
-docker compose up -d --build
+docker-compose up -d --build
 
 for i in ${modulesWithTypes[@]}
 do

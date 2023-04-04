@@ -139,8 +139,8 @@ const DonatContainer = () => {
     if (notValidFields.length) {
       setNotValidFields(notValidFields);
       addNotification({
-        type: "warning",
-        title: "Not all fields are filled",
+        type: "danger",
+        title: <FormattedMessage id="notification_not_filled" />,
       });
     } else if (personInfo) await triggerContract();
   }, [form, personInfo]);

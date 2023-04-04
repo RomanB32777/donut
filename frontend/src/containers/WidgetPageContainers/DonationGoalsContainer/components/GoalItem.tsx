@@ -62,7 +62,10 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
 
   const clickCopyBtn = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    copyStr({ str: linkForCopy, intl });
+    copyStr({
+      str: linkForCopy,
+      copyObject: intl.formatMessage({ id: "copy_message_link" }),
+    });
   };
 
   const initGoalItem = async () => {

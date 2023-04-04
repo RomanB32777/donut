@@ -178,8 +178,7 @@ export class BadgesService {
 
     let tokenID = tokenId;
 
-    // TODO - parce undefined
-    if (!tokenID) {
+    if (tokenID === undefined) {
       const badgeCount = await contract.getTotalBadgeCount();
       tokenID = badgeCount.toNumber() + 1;
     }
@@ -189,7 +188,7 @@ export class BadgesService {
       tokenID,
       1,
       [],
-    ); // Number(quantity)
+    );
 
     if (gasPrice && mintGasCount) {
       const price = (gasPrice.toNumber() * mintGasCount.toNumber()) / 1e18;

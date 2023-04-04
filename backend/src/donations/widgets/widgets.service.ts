@@ -10,6 +10,8 @@ import {
 import { clean } from 'src/utils/badWords';
 import { getTimePeriod, dateTruncParams } from 'src/utils/dates';
 import { QueryParamsDto } from 'src/common/dto/query-params.dto';
+import { getRepositoryFields } from 'src/utils';
+
 import { Donation } from '../entities/donation.entity';
 import { ExchangeService } from '../exchange/exchange.service';
 import { ParamsWithoutQueryBuilderDto } from './dto/donations-widgets.dto';
@@ -26,7 +28,7 @@ export class WidgetsService {
   ) {}
 
   async findDonationsWithoutQueryBuilder({
-    relationUser,
+    // relationUser,
     findUser,
     queryParams,
     additionalWhereFilter,
@@ -47,7 +49,6 @@ export class WidgetsService {
         blockchain: true,
         createdAt: true,
         isAnonymous: true,
-        // [relationUser]: {
         creator: {
           username: true,
         },
@@ -58,7 +59,6 @@ export class WidgetsService {
       relations: {
         creator: true,
         backer: true,
-        // [relationUser]: true,
       },
       where,
       order: { createdAt: 'DESC' },
@@ -108,44 +108,48 @@ export class WidgetsService {
   async getTopDonations(userId: string, queryParams: QueryParamsDto) {
     const { limit, timePeriod, startDate, endDate, spamFilter } = queryParams;
 
-    const filter: FindManyOptions<Donation> = {
-      select: {
-        id: true,
-        sum: true,
-        message: true,
-        blockchain: true,
-        createdAt: true,
-        backer: {
-          username: true,
-        },
-      },
-      relations: {
-        backer: true,
-      },
-      where: { creator: { id: userId } },
-      order: { sum: 'DESC' },
-      take: limit,
-    };
+    const sumSelect = await this.exchangeService.sumQuerySelect(false);
+
+    const selectFields = getRepositoryFields(this.donationsRepository, [
+      'updatedAt',
+      'deletedAt',
+      'goal',
+    ]);
+
+    const query = this.donationsRepository
+      .createQueryBuilder('d')
+      .select(sumSelect, 'sumUsd')
+      .addSelect('backer.username', 'username')
+      .leftJoin('d.backer', 'backer')
+      .leftJoin('d.creator', 'creator')
+      .where('creator.id = :userId', { userId })
+      .orderBy('"sumUsd"', 'DESC')
+      .limit(limit);
+
+    selectFields.forEach((field) => query.addSelect(`d.${field}`, field));
 
     if (timePeriod) {
-      filter.where = {
-        ...filter.where,
-        createdAt: getTimePeriod({
-          timePeriod,
-          startDate,
-          endDate,
-        }),
-      };
+      query.andWhere('d.createdAt >= :filterDate', {
+        filterDate: getTimePeriod({ timePeriod, startDate, endDate }).value,
+      });
     }
 
-    const donations = await this.donationsRepository.find(filter);
+    const donations = await query.getRawMany<Donation & { username: string }>();
 
-    if (donations.length && spamFilter)
-      return donations.map((donation) => ({
-        ...donation,
-        // TODO - clean to AfterLoad
-        message: donation.message ? clean(donation.message) : '-',
+    if (donations.length) {
+      const filterDonations = donations.map((d) => ({
+        ...d,
+        username: d.isAnonymous ? 'anonymous' : d.username,
       }));
+      if (spamFilter) {
+        return filterDonations.map((donation) => ({
+          ...donation,
+          // TODO - clean to AfterLoad
+          message: donation.message ? clean(donation.message) : '-',
+        }));
+      }
+      return filterDonations;
+    }
 
     return donations;
   }

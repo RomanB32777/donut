@@ -44,13 +44,16 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
         await connectedWallet?.(account, chain);
       } catch (error) {
         const errInfo = error as RpcError;
+
         if (errInfo.name === "ConnectorAlreadyConnectedError") {
           if (address) {
             await connectedWallet?.(address);
             //   switchNetwork?.(defaultChain?.id);
           }
-        } else if (errInfo.name !== "UserRejectedRequestError") {
-          // ConnectorNotFoundError - TODO ?
+        } else if (
+          errInfo.name !== "UserRejectedRequestError" &&
+          errInfo.code !== 4001
+        ) {
           addErrorNotification({ message: errInfo.message });
         }
       } finally {
@@ -59,7 +62,7 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
     };
 
   return (
-    <ModalComponent {...props}>
+    <ModalComponent {...props} width={700}>
       <div className="walletsModal">
         <h1 className="modalTitle">
           <FormattedMessage id="wallets_connect_title" />
@@ -67,7 +70,7 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
         <div className="wallets">
           <Row justify="space-around">
             {connectors.map((connection) => {
-              const walletName = connection.name as walletNames;
+              const walletName = connection.id as walletNames;
               const { name, image } = walletsInfo[walletName];
               return (
                 <Col key={name}>

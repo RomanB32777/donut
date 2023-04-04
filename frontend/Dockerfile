@@ -1,18 +1,15 @@
 FROM node:16-alpine AS builder
 
-# COPY /types /types
-
 WORKDIR /frontend
+
+COPY /types ../types
 
 COPY . .
 
-RUN npm run types:install
-
-RUN npm run types:build
-
 # RUN rm -rf ./types
 
-RUN npm ci
+RUN npm ci 
+# --omit=dev
 
 ARG BACKEND_PORT
 

@@ -11,10 +11,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "typescript": "^4.9.3"
-  },
   "dependencies": {
-    "rimraf": "^4.4.1"
+    "rimraf": "^4.4.1",
+    "typescript": "^5.0.3"
   }
 }

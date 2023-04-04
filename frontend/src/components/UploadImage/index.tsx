@@ -88,7 +88,12 @@ const UploadImage = ({
     } else {
       addNotification({
         type: "danger",
-        title: `File size limit exceeded (max - ${maxFileSize} MB)`,
+        title: (
+          <FormattedMessage
+            id="notification_file_limit_exceeded"
+            values={{ maxFileSize }}
+          />
+        ),
       });
     }
   };
