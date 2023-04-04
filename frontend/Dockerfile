@@ -8,7 +8,8 @@ COPY . .
 
 # RUN rm -rf ./types
 
-RUN npm сi --omit=dev
+RUN npm ci 
+# --omit=dev
 
 ARG BACKEND_PORT
 
