@@ -2,9 +2,13 @@ FROM node:16-alpine AS builder
 
 WORKDIR /frontend
 
+COPY /types ../types
+
 COPY . .
 
-RUN npm ci --omit=dev
+# RUN rm -rf ./types
+
+RUN npm сi --omit=dev
 
 ARG BACKEND_PORT
 

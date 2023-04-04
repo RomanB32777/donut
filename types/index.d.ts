@@ -154,8 +154,6 @@ export type {
   creatorDataKeys,
 
   // wallet
-  ExchangeNames,
-  BlockchainsSymbols,
   blockchainNames,
   blockchainNetworks,
   blockchainsType,
