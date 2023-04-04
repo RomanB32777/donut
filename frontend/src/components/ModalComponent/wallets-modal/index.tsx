@@ -44,12 +44,16 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
         await connectedWallet?.(account, chain);
       } catch (error) {
         const errInfo = error as RpcError;
+
         if (errInfo.name === "ConnectorAlreadyConnectedError") {
           if (address) {
             await connectedWallet?.(address);
             //   switchNetwork?.(defaultChain?.id);
           }
-        } else if (errInfo.name !== "UserRejectedRequestError") {
+        } else if (
+          errInfo.name !== "UserRejectedRequestError" &&
+          errInfo.code !== 4001
+        ) {
           addErrorNotification({ message: errInfo.message });
         }
       } finally {

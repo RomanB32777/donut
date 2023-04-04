@@ -7,7 +7,6 @@ import {
   Chain,
   mainnet,
   avalanche,
-  evmos,
   bsc,
   polygon,
   evmosTestnet,
@@ -28,7 +27,7 @@ import maticIcon from "assets/blockchains/matic.png";
 import bnbIcon from "assets/blockchains/bnb.png";
 import avaxIcon from "assets/blockchains/avax.png";
 
-const prodChains = [mainnet, bsc, avalanche, evmos, polygon];
+const prodChains = [mainnet, bsc, avalanche, polygon];
 const testChains = [
   evmosTestnet,
   arbitrumGoerli,
@@ -42,7 +41,21 @@ const { chains, provider, webSocketProvider } = configureChains(
   [publicProvider()]
 );
 
-export type walletNames = "metaMask" | "walletConnectLegacy" | "coinbaseWallet";
+const connectors = [
+  new MetaMaskConnector({ chains }),
+  new WalletConnectLegacyConnector({
+    chains,
+    options: {
+      qrcode: true,
+    },
+  }),
+  new CoinbaseWalletConnector({
+    chains,
+    options: {
+      appName: "Crypto Donutz",
+    },
+  }),
+];
 
 interface IBlockchainInfo {
   icon: string;
@@ -68,12 +81,6 @@ export const blockchainsInfo: BlockchainsInfo = {
     color: "#009393",
     exchangeName: ExchangeNames.EVMOS,
     contractAddress: "0xeb9bab732b7C24428CC21DDB5Aed8F43209bDB37",
-  },
-  evmos: {
-    icon: evmosIcon,
-    color: "#009393",
-    exchangeName: ExchangeNames.EVMOS,
-    contractAddress: "0xeb9bab732b7C24428CC21DDB5Aed8F43209bDB37", // TODO
   },
   "arbitrum-goerli": {
     // testnet
@@ -147,48 +154,20 @@ export const fullChainsInfo = chainNetworks.reduce((acc, name) => {
   };
 }, {} as FullBlockchainsInfo);
 
-const connectorNames = [
-  new MetaMaskConnector({ chains }),
-  new WalletConnectLegacyConnector({
-    chains,
-    options: {
-      qrcode: true,
-    },
-  }),
-  new CoinbaseWalletConnector({
-    chains,
-    options: {
-      appName: "Crypto Donutz",
-    },
-  }),
-].map(({ id }) => id);
+const connectorNames = connectors.map((connector) => connector.id);
 
-export const walletsInfo: Record<
-  typeof connectorNames[number],
-  { image: string; name: string }
-> = {
-  metaMask: { image: metamaskIcon, name: "Metamask" },
-  walletConnectLegacy: { image: walletConnectIcon, name: "WalletConnect" },
-  coinbaseWallet: { image: coinbaseWalletIcon, name: "Coinbase Wallet" },
-};
+export type walletNames = typeof connectorNames[number];
+
+export const walletsInfo: Record<walletNames, { image: string; name: string }> =
+  {
+    metaMask: { image: metamaskIcon, name: "Metamask" },
+    walletConnectLegacy: { image: walletConnectIcon, name: "WalletConnect" },
+    coinbaseWallet: { image: coinbaseWalletIcon, name: "Coinbase Wallet" },
+  };
 
 export const client = createClient({
   autoConnect: true,
-  connectors: [
-    new MetaMaskConnector({ chains }),
-    new WalletConnectLegacyConnector({
-      chains,
-      options: {
-        qrcode: true,
-      },
-    }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: "Crypto Donutz",
-      },
-    }),
-  ],
+  connectors,
   provider,
   webSocketProvider,
 });
