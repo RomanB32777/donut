@@ -3,6 +3,7 @@ import { Socket } from "socket.io-client";
 import { RpcError, useAccount, useNetwork } from "wagmi";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { useIntl } from "react-intl";
+import { utils } from "ethers";
 import { ISocketEmitObj, ISendDonat, IUser } from "types";
 
 import { useSocketConnection, WebSocketContext } from "contexts/Websocket";
@@ -24,7 +25,6 @@ import {
 } from "utils";
 import { IError } from "appTypes";
 import { mainAbi } from "consts";
-import { utils } from "ethers";
 
 const usePayment = ({
   form,
@@ -166,7 +166,7 @@ const usePayment = ({
                   abi: JSON.parse(mainAbi),
                   chainId: currentChain.id,
                   functionName: "transferMoney",
-                  args: [userInfo.walletAddress],
+                  args: [creatorInfo.walletAddress],
                   overrides: {
                     from: address,
                     value: utils.parseEther(String(form.sum)),

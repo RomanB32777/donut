@@ -311,6 +311,8 @@ const SettingsContainer = () => {
         open={isOpenWalletsModal}
         onCancel={closeWalletsModal}
         connectedWallet={setWalletAddress}
+        width={500}
+        isSettings
       />
     </div>
   );

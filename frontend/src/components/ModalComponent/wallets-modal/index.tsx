@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { Buffer } from "buffer";
 import { useConnect, RpcError, useDisconnect, useAccount } from "wagmi";
@@ -14,11 +14,15 @@ Buffer.from("anything", "base64");
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 interface IWalletsModal extends IModalComponent {
+  // TODO - флаги как костыли тут
   isRegistration?: boolean;
+  isSettings?: boolean;
   connectedWallet?: (address: string, chain?: any) => any;
 }
 
 export const WalletsModal: React.FC<IWalletsModal> = ({
+  width,
+  isSettings,
   isRegistration,
   connectedWallet,
   ...props
@@ -61,15 +65,24 @@ export const WalletsModal: React.FC<IWalletsModal> = ({
       }
     };
 
+  const wallets = useMemo(() => {
+    if (isSettings)
+      return connectors.filter(
+        (connector) => (connector.id as walletNames) === "metaMask"
+      );
+
+    return connectors;
+  }, [connectors, isSettings]);
+
   return (
-    <ModalComponent {...props} width={700}>
+    <ModalComponent {...props} width={width || 700}>
       <div className="walletsModal">
         <h1 className="modalTitle">
           <FormattedMessage id="wallets_connect_title" />
         </h1>
         <div className="wallets">
           <Row justify="space-around">
-            {connectors.map((connection) => {
+            {wallets.map((connection) => {
               const walletName = connection.id as walletNames;
               const { name, image } = walletsInfo[walletName];
               return (
