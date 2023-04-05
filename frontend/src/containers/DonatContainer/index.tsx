@@ -182,8 +182,10 @@ const DonatContainer = () => {
   if (!walletAddress) {
     return (
       <h3 style={{ textAlign: "center" }}>
-        Creator {personUsername} has not connected the wallet yet, come back
-        later !
+        <FormattedMessage
+          id="donat_not_connected"
+          values={{ personUsername }}
+        />
       </h3>
     );
   }

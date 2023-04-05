@@ -204,7 +204,7 @@ const messages = {
     badges_create_information_title: "Badge information",
     badges_create_information_description:
       "Please fill in the required information",
-    badges_create_information_blockhain: "Blockhain",
+    badges_create_information_blockchain: "Blockchain",
     badges_create_information_input_name: "Badge name",
     badges_create_information_input_description: "Badge description",
     badges_success_modal_title: "Congratulations! You've created new badge!",
@@ -293,6 +293,8 @@ const messages = {
     goals_widget_settings_progress_font: "Goal progress font:",
 
     // donat page
+    donat_not_connected:
+      "Creator {personUsername} has not connected the wallet yet. Please come back later!",
     donat_form_username: "Your username",
     donat_form_switch_label: "Turn on to be anonymous",
     donat_form_message: "Message to {username}",
@@ -605,7 +607,7 @@ const messages = {
     badges_create_information_title: "Информация о бейдже",
     badges_create_information_description:
       "Пожалуйста, заполните необходимую информацию",
-    badges_create_information_blockhain: "Блокчейн",
+    badges_create_information_blockchain: "Блокчейн",
     badges_create_information_input_name: "Название бейджа",
     badges_create_information_input_description: "Описание бейджа",
     badges_success_modal_title: "Поздравляем! Вы создали новый бейдж!",
@@ -693,7 +695,8 @@ const messages = {
     goals_widget_settings_title_font: "Шрифт заголовка цели:",
     goals_widget_settings_progress_font: "Шрифт индикатора выполнения:",
 
-    // donat page
+    donat_not_connected:
+      "Создатель {personUsername} еще не подключил кошелек. Пожалуйста, вернитесь позже!",
     donat_form_username: "Ваше имя пользователя",
     donat_form_switch_label: "Включите анонимность",
     donat_form_message: "Сообщение для {username}",
@@ -1011,7 +1014,7 @@ const messages = {
     badges_create_information_title: "Información de la insignia",
     badges_create_information_description:
       "Por favor completa la información requerida",
-    badges_create_information_blockhain: "Blockchain",
+    badges_create_information_blockchain: "Blockchain",
     badges_create_information_input_name: "Nombre de la insignia",
     badges_create_information_input_description: "Descripción de la insignia",
     badges_success_modal_title: "¡Felicidades! ¡Has creado una nueva insignia!",
@@ -1102,6 +1105,8 @@ const messages = {
     goals_widget_settings_progress_font: "Fuente del progreso de la meta:",
 
     // donat page
+    donat_not_connected:
+      "El creador {personUsername} aún no ha conectado la billetera. ¡Por favor, vuelva más tarde!",
     donat_form_username: "Tu nombre de usuario",
     donat_form_switch_label: "Activa para ser anónimo",
     donat_form_message: "Mensaje para {username}",
@@ -1414,7 +1419,7 @@ const messages = {
     badges_new_title: "ปั้นและจัดการแบดจ์ให้กับผู้สนับสนุนของคุณ",
     badges_create_information_title: "ข้อมูลแบดจ์",
     badges_create_information_description: "กรุณากรอกข้อมูลที่ต้องการ",
-    badges_create_information_blockhain: "บล็อกเชน",
+    badges_create_information_blockchain: "บล็อกเชน",
     badges_create_information_input_name: "ชื่อแบดจ์",
     badges_create_information_input_description: "คำอธิบายแบดจ์",
     badges_success_modal_title: "ยินดีด้วย! คุณได้สร้างแบดจ์ใหม่แล้ว!",
@@ -1502,6 +1507,8 @@ const messages = {
     goals_widget_settings_progress_font: "แบบอักษรความคืบหน้าเป้าหมาย:",
 
     // donat page
+    donat_not_connected:
+      "ผู้สร้าง {personUsername} ยังไม่ได้เชื่อมต่อกระเป๋าเงินดิจิตอล โปรดกลับมาใหม่ในภายหลัง!",
     donat_form_username: "ชื่อผู้ใช้ของคุณ",
     donat_form_switch_label: "เปิดใช้งานเพื่อเป็นนิรนาม",
     donat_form_message: "ข้อความถึง {username}",
@@ -1817,7 +1824,7 @@ const messages = {
     badges_create_information_title: "Informação do distintivo",
     badges_create_information_description:
       "Por favor, preencha as informações necessárias",
-    badges_create_information_blockhain: "Blockchain",
+    badges_create_information_blockchain: "Blockchain",
     badges_create_information_input_name: "Nome do distintivo",
     badges_create_information_input_description: "Descrição do distintivo",
     badges_success_modal_title: "Parabéns! Você criou um novo distintivo!",
@@ -1908,6 +1915,8 @@ const messages = {
     goals_widget_settings_progress_font: "Fonte do progresso do objetivo:",
 
     // donat page
+    donat_not_connected:
+      "O criador {personUsername} ainda não conectou a carteira. Por favor, volte mais tarde!",
     donat_form_username: "Seu nome de usuário",
     donat_form_switch_label: "Ativar para ser anônimo",
     donat_form_message: "Mensagem para {username}",
@@ -2220,7 +2229,7 @@ const messages = {
     badges_new_title: "지지자들을 위한 배지를 만들고 관리하십시오",
     badges_create_information_title: "배지 정보",
     badges_create_information_description: "필요한 정보를 입력하십시오",
-    badges_create_information_blockhain: "블록체인",
+    badges_create_information_blockchain: "블록체인",
     badges_create_information_input_name: "배지 이름",
     badges_create_information_input_description: "배지 설명",
     badges_success_modal_title: "축하합니다! 새로운 배지를 만들었습니다!",
@@ -2309,6 +2318,8 @@ const messages = {
     goals_widget_settings_progress_font: "목표 진행률 글꼴:",
 
     // donat page
+    donat_not_connected:
+      "크리에이터 {personUsername} 님은 지갑 연동을 하지 않았습니다. 나중에 다시 방문해주세요!",
     donat_form_username: "사용자 이름",
     donat_form_switch_label: "익명으로 기부하기",
     donat_form_message: "{username} 님에게 메시지 보내기",

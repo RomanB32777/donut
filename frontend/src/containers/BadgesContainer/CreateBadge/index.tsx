@@ -144,9 +144,8 @@ const CreateBadgeForm = ({
               <div className="form-element">
                 <div className="selected-blockchain">
                   <p className="placeholder">
-                    <FormattedMessage id="badges_create_information_blockhain" />
+                    <FormattedMessage id="badges_create_information_blockchain" />
                   </p>
-                  {/* process.env.NODE_ENV === "production" */}
                   <SelectedBlockchain
                     blockchainInfo={
                       fullChainsInfo["matic"] ?? fullChainsInfo["maticmum"]
