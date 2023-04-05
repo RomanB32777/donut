@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthenticationGuard } from 'src/auth/guards/auth.guard';
@@ -28,7 +29,14 @@ import { AuthJwtToken } from './decorators/token.decorator';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  private readonly clientUrl: string;
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {
+    this.clientUrl = configService.get<string>('FRONT_HOST');
+  }
 
   @Post('login')
   @ApiOperation({ summary: 'Login' })
@@ -50,10 +58,9 @@ export class AuthController {
   })
   registration(@Req() req: Request, @Body() createUserDto: CreateUserDto) {
     // TODO - req.get('Host') = nginx server name ???
-    const confirmLink = `${req.get('Origin')}${req.originalUrl.replace(
-      'registration',
-      'confirm',
-    )}`;
+    const confirmLink = `${
+      req.get('Origin') || this.clientUrl
+    }${req.originalUrl.replace('registration', 'confirm')}`;
     return this.authService.registration(createUserDto, confirmLink);
   }
 

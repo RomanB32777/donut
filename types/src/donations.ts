@@ -13,7 +13,9 @@ interface IDonation extends IDonationShortInfo {
   backer: string;
   creator: string;
   isAnonymous: boolean;
-  goal?: string;
+  goal?: {
+    id: string;
+  };
 }
 
 type socketNotificationTypes = "donat" | "add_badge";

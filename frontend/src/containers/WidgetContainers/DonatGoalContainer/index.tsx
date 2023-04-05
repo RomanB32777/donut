@@ -77,7 +77,7 @@ const DonatGoalContainer = () => {
   useEffect(() => {
     if (list.length && id) {
       const { donation } = list[0];
-      if (donation && donation.goal === id) refetch();
+      if (donation && donation?.goal?.id === id) refetch();
     }
   }, [list, id]);
 

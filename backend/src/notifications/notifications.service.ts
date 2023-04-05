@@ -91,7 +91,9 @@ export class NotificationsService {
           },
         },
         relations: {
-          donation: true,
+          donation: {
+            goal: true,
+          },
           badge: true,
           users: {
             user: true,
