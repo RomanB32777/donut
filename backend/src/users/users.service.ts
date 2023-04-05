@@ -23,7 +23,7 @@ import {
   UserFiles,
 } from './dto/update-user.dto';
 import { getDefaultValues } from 'src/utils';
-import { QueryRole } from './types/users';
+import { QueryUserDto, QueryRole } from './dto/query-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -74,6 +74,10 @@ export class UsersService {
     return user;
   }
 
+  async checkUserExistById(id: string) {
+    return await this.usersRepository.exist({ where: { id } });
+  }
+
   async checkUserRoleExist(roleplay: userRoles, field: string) {
     return await this.usersRepository.exist({
       where: [
@@ -84,8 +88,9 @@ export class UsersService {
     });
   }
 
-  async getUsers(): Promise<User[]> {
+  async getUsers(queryParams?: QueryUserDto): Promise<User[]> {
     return await this.usersRepository.find({
+      where: { ...queryParams },
       relations: {
         creatorDonations: true,
         backerDonations: true,

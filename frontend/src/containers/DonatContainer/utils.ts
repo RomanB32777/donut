@@ -166,7 +166,7 @@ const usePayment = ({
                   abi: JSON.parse(mainAbi),
                   chainId: currentChain.id,
                   functionName: "transferMoney",
-                  args: [creatorInfo.walletAddress],
+                  args: [walletAddress],
                   overrides: {
                     from: address,
                     value: utils.parseEther(String(form.sum)),

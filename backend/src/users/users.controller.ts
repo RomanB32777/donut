@@ -44,7 +44,7 @@ import {
   UserFiles,
 } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { QueryRole } from './types/users';
+import { QueryUserDto, QueryRole } from './dto/query-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -56,8 +56,8 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @UseGuards(AuthenticationGuard)
   @ApiOperation({ summary: 'Get all users' })
-  async getUsers() {
-    return await this.usersService.getUsers();
+  async getUsers(@Query() queryParams: QueryUserDto) {
+    return await this.usersService.getUsers(queryParams);
   }
 
   @Get('exist/:field')

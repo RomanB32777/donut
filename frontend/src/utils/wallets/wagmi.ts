@@ -93,7 +93,7 @@ export const blockchainsInfo: BlockchainsInfo = {
     icon: ethIcon,
     color: "rgba(242, 244, 247, 0.8)",
     exchangeName: ExchangeNames.ETH,
-    contractAddress: "0xE15B011f681632AFcC7F4a732D4b356da0fAC86A", // TODO
+    contractAddress: "0x2d6036bCd363bf720442455dd2FB942b70Ca6717",
   },
   "bsc-testnet": {
     // testnet

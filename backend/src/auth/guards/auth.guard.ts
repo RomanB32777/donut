@@ -7,6 +7,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import Web3Token from 'web3-token';
 import { UsersService } from 'src/users/users.service';
+import { UserTokenPayloadDto } from '../dto/user-payload.dto';
 
 @Injectable()
 export class AuthenticationGuard extends AuthGuard('jwt') {
@@ -23,8 +24,12 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
     try {
       const canActivate = await super.canActivate(context);
       const { request, authorization } = this.getAuthorization(context);
+      const requestUser = request?.user;
 
-      if (request.user) return true;
+      if (requestUser) {
+        const userInfo = requestUser as UserTokenPayloadDto;
+        return await this.usersService.checkUserExistById(userInfo.id);
+      }
       if (!canActivate || !authorization) {
         throw new UnauthorizedException('Missing auth token');
       }
