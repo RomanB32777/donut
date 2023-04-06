@@ -88,8 +88,8 @@ export class UsersService {
     });
   }
 
-  async getUsers(queryParams?: QueryUserDto): Promise<User[]> {
-    return await this.usersRepository.find({
+  async getUsers(queryParams?: QueryUserDto) {
+    const [users, count] = await this.usersRepository.findAndCount({
       where: { ...queryParams },
       relations: {
         creatorDonations: true,
@@ -101,6 +101,7 @@ export class UsersService {
         stats: true,
       },
     });
+    return { count, users };
   }
 
   async getUserById(id: string) {

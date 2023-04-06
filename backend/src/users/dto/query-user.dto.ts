@@ -6,12 +6,17 @@ import { User } from 'src/users/entities/user.entity';
 import { userValidationMessages } from 'src/common/const';
 
 export class QueryUserDto extends PickType(User, [
+  'id',
   'walletAddress',
   'username',
   'email',
   'status',
   'roleplay',
 ]) {
+  @IsString()
+  @IsOptional()
+  id: string;
+
   @IsString()
   @IsOptional()
   walletAddress: string;

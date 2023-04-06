@@ -11,7 +11,7 @@
     "backend:install": "npm install --prefix backend",
     "types:install": "npm install --prefix types",
     "install": "concurrently \"npm install\" \"npm run frontend:install\" \"npm run backend:install\" \"npm run types:install\"",
-    "dev": "concurrently \"npm run types\" \"npm run frontend\" \"npm run backend\"",
+    "dev": "concurrently \"npm run types\" \"npm run backend\" \"npm run frontend\"",
     "dumpSql": "docker exec -i donut_db_1 pg_dump --username user -d dbname > /home/deploy/donut-folder/dump.sql",
     "exexSql": "docker exec -it donut_db_1 psql  -U user -d dbname",
     "dockerUp": "docker-compose up -d --build",
