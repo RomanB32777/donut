@@ -1,15 +1,15 @@
-import { typeAligmnet } from "types";
+import { typeAlignment } from "types";
 import { IAlert, IWidgetGoalData, IWidgetStatData } from "appTypes";
 
 export const maxSoundDuration = 5; // s
 
-export const alignItemsList: { [key in typeAligmnet]: string } = {
+export const alignItemsList: { [key in typeAlignment]: string } = {
   Left: "start",
   Center: "center",
   Right: "end",
 };
 
-export const alignFlextItemsList: { [key in typeAligmnet]: string } = {
+export const alignFlexItemsList: { [key in typeAlignment]: string } = {
   Left: "flex-start",
   Center: "center",
   Right: "flex-end",
@@ -85,6 +85,6 @@ export const initWidgetStatData: IWidgetStatData = {
     name: "",
     link: "",
   },
-  textAligment: "Left",
+  textAlignment: "Left",
   creator: "",
 };

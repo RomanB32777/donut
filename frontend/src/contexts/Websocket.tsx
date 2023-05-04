@@ -8,7 +8,7 @@ import { useLazyGetNotificationsQuery } from "store/services/NotificationsServic
 import {
   addNotification,
   getBadgeNotificationMessage,
-  getDonatNotificationMessage,
+  getDonateNotificationMessage,
 } from "utils";
 import { baseURL } from "consts";
 
@@ -38,12 +38,12 @@ const useSocketConnection = (username: string) => {
       console.log("disconnect");
     });
 
-    socket.on("newDonat", (data: ISocketNotification) => {
+    socket.on("newDonate", (data: ISocketNotification) => {
       addNotification({
         type: "info",
-        title: intl.formatMessage({ id: "notifications_donat_title" }),
-        message: getDonatNotificationMessage({
-          type: "donat_creator",
+        title: intl.formatMessage({ id: "notifications_donate_title" }),
+        message: getDonateNotificationMessage({
+          type: "donate_creator",
           user: data.supporter,
           data: data.additional,
         }),

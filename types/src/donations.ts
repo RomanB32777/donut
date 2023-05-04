@@ -18,7 +18,12 @@ interface IDonation extends IDonationShortInfo {
   };
 }
 
-type socketNotificationTypes = "donat" | "add_badge";
+type socketNotificationTypes =
+  | "donate"
+  | "add_badge"
+  | "change_alert"
+  | "change_goal"
+  | "change_stat";
 
 interface ISocketNotification<T = IDonationShortInfo> {
   type: socketNotificationTypes;

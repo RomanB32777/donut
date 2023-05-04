@@ -9,7 +9,7 @@ import {
   getStatsDataTypeQuery,
   renderStatItem,
 } from "utils";
-import { alignFlextItemsList, alignItemsList } from "consts";
+import { alignFlexItemsList, alignItemsList } from "consts";
 import { AlignText, IWidgetStatData } from "appTypes";
 
 interface IPreviewStatBlock {
@@ -30,7 +30,7 @@ const PreviewStatBlock: FC<IPreviewStatBlock> = ({
     titleColor,
     barColor,
     contentColor,
-    textAligment,
+    textAlignment,
     titleFont,
     contentFont,
     customTimePeriod,
@@ -67,7 +67,7 @@ const PreviewStatBlock: FC<IPreviewStatBlock> = ({
         <div
           className="stat"
           style={{
-            justifyContent: alignFlextItemsList[textAligment],
+            justifyContent: alignFlexItemsList[textAlignment],
           }}
         >
           <div className="list">
@@ -76,7 +76,7 @@ const PreviewStatBlock: FC<IPreviewStatBlock> = ({
               style={{
                 ...getFontColorStyles(contentColor, contentFont),
                 textAlign:
-                  (alignItemsList[textAligment] as AlignText) || "center",
+                  (alignItemsList[textAlignment] as AlignText) || "center",
               }}
             >
               {renderStatItem(template, {
@@ -92,7 +92,7 @@ const PreviewStatBlock: FC<IPreviewStatBlock> = ({
               style={{
                 ...getFontColorStyles(contentColor, contentFont),
                 textAlign:
-                  (alignItemsList[textAligment] as AlignText) || "center",
+                  (alignItemsList[textAlignment] as AlignText) || "center",
               }}
             >
               {renderStatItem(template, {

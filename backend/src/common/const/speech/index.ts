@@ -1,4 +1,4 @@
-import languageCodes from './codes.json';
-import languageVoices from './voices.json';
+import languageCodes from './codes.json'
+import languageVoices from './voices.json'
 
-export { languageCodes, languageVoices };
+export { languageCodes, languageVoices }

@@ -44,9 +44,9 @@ interface IRoute {
   roleRequired?: string;
   protected?: boolean;
   menuOrder?: number;
-  transparet?: boolean;
+  transparent?: boolean;
   hiddenLayoutElements?: boolean;
-  noPaddingMainConteiner?: boolean;
+  noPaddingMainContainer?: boolean;
 }
 
 //protected Route state
@@ -66,7 +66,7 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
   if (!id && loading) return <Loader size="big" />;
 
   // if the role required is there or not
-  if (roleRequired)
+  if (roleRequired) {
     return id ? (
       roleRequired === roleplay ? (
         <Outlet />
@@ -76,6 +76,7 @@ const ProtectedRoutes = ({ roleRequired }: ProtectedRouteType) => {
     ) : (
       <Navigate to={RoutePaths.main} />
     );
+  }
   return id ? <Outlet /> : <Navigate to={RoutePaths.main} />;
 };
 
@@ -84,7 +85,7 @@ export const routers: IRoute[] = [
     path: RoutePaths.main,
     element: <LandingPage />,
     hiddenLayoutElements: true,
-    noPaddingMainConteiner: true,
+    noPaddingMainContainer: true,
   },
   {
     path: RoutePaths.admin,
@@ -193,28 +194,28 @@ export const routers: IRoute[] = [
     name: "title_donat_page",
     element: <DonatPage />,
     hiddenLayoutElements: true,
-    noPaddingMainConteiner: true,
+    noPaddingMainContainer: true,
   },
   {
     path: `${RoutePaths.donatMessage}/:name/:id`,
     name: "title_alert_page",
     element: <DonatAlertPage />,
     hiddenLayoutElements: true,
-    transparet: true,
+    transparent: true,
   },
   {
     path: `${RoutePaths.donatGoal}/:name/:id`,
     name: "title_goal_page",
     element: <DonatGoalPage />,
     hiddenLayoutElements: true,
-    transparet: true,
+    transparent: true,
   },
   {
     path: `${RoutePaths.donatStat}/:name/:id`,
     name: "title_stat_page",
     element: <DonatStatPage />,
     hiddenLayoutElements: true,
-    transparet: true,
+    transparent: true,
   },
   {
     path: "*",

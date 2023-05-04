@@ -1,5 +1,4 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { IDonationWidgetInfo } from "appTypes";
 import {
   IDonation,
   donationsQueryData,
@@ -8,6 +7,7 @@ import {
   statsDataTypes,
 } from "types";
 import { baseQuery } from "./utils";
+import { IDonationWidgetInfo } from "appTypes";
 
 interface IDonationsGetParams {
   userId?: string;

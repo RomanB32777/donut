@@ -60,25 +60,25 @@ export const addNotFoundUserNotification = () =>
     id: "notFound",
   });
 
-export const getDonatNotificationMessage = (
+export const getDonateNotificationMessage = (
   args: INotificationMessage<IDonationShortInfo>
 ): React.ReactNode => {
   const { type, user, data } = args;
   const { sum, blockchain } = data;
   switch (type) {
-    case "donat_creator":
+    case "donate_creator":
       return (
         <FormattedMessage
-          id="notifications_donat_creator"
+          id="notifications_donate_creator"
           values={{ user, sum: formatNumber(sum), blockchain }}
         />
       );
 
-    case "donat_supporter":
+    case "donate_supporter":
       const { sum: supporterSum, blockchain: supporterBlockchain } = args.data;
       return (
         <FormattedMessage
-          id="notifications_donat_supporter"
+          id="notifications_donate_supporter"
           values={{
             user,
             sum: formatNumber(supporterSum),

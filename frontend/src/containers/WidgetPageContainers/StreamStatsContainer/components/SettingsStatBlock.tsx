@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import { FormattedMessage, useIntl } from "react-intl";
-import { typeAligmnet } from "types";
+import { typeAlignment } from "types";
 
 import ColorPicker from "components/ColorPicker";
 import SliderForm from "components/SliderForm";
@@ -14,7 +14,7 @@ import {
 import { notVisibleFontsCount } from "consts";
 import { IWidgetStatData } from "appTypes";
 
-const marksSlider: Record<number, typeAligmnet> = {
+const marksSlider: Record<number, typeAlignment> = {
   0: "Left",
   1: "Center",
   2: "Right",
@@ -42,7 +42,7 @@ const SettingsStatBlock: FC<ISettingsStatBlock> = ({
     titleColor,
     barColor,
     contentColor,
-    textAligment,
+    textAlignment,
     titleFont,
     contentFont,
   } = editStatData;
@@ -56,9 +56,9 @@ const SettingsStatBlock: FC<ISettingsStatBlock> = ({
   const valueSlider = useMemo(
     () =>
       Object.keys(marksSlider).find(
-        (key) => marksSlider[+key] === textAligment
+        (key) => marksSlider[+key] === textAlignment
       ),
-    [textAligment]
+    [textAlignment]
   );
 
   return (
@@ -191,7 +191,7 @@ const SettingsStatBlock: FC<ISettingsStatBlock> = ({
               setValue={(value) =>
                 setEditStatData({
                   ...editStatData,
-                  textAligment: marksSlider[value],
+                  textAlignment: marksSlider[value],
                 })
               }
               defaultValue={valueSlider ? +valueSlider : 1}

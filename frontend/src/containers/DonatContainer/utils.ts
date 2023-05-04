@@ -75,17 +75,16 @@ const usePayment = ({
           }
         }
 
-        // TODO - оптимизировать проверку на существование юзера с адрессом кошелька
+        // TODO - оптимизировать проверку на существование юзера с адресом кошелька
         const { data: isExist } = await checkIsExistUser(address);
         if (!isExist) {
           await checkWebToken();
-          const userDadta = await registerUser({
+          return await registerUser({
             username: newUsername,
             walletAddress: address,
             roleplay: "backers",
             isVisibleNotification: false,
           }).unwrap();
-          return userDadta;
         } else {
           addErrorNotification({
             message: "User with this address already exists",
@@ -113,7 +112,7 @@ const usePayment = ({
           id: donationData.id,
         };
 
-        if (socket) socket.emit("newDonat", emitObj);
+        if (socket) socket.emit("newDonate", emitObj);
         else console.log("not connected user");
 
         await getNotifications({
@@ -174,8 +173,8 @@ const usePayment = ({
                   },
                 });
 
-                const wrireRes = await writeContract(config);
-                const result = await wrireRes?.wait();
+                const writeRes = await writeContract(config);
+                const result = await writeRes?.wait();
                 if (result) await sendDonation(userInfo, socketInfo);
               } else {
                 console.log("not userInfo", userInfo);

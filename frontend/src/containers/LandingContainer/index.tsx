@@ -50,7 +50,7 @@ const LandingContainer = () => {
           id ? `/${RoutePaths.admin}/${RoutePaths.dashboard}` : RoutePaths.main
         }
         modificator="landing-header landing-padding"
-        mobileContenCol={16}
+        mobileContentCol={16}
         visibleLogo
       >
         <LocalesSwitcher modificator="localeModificator" />
@@ -153,7 +153,7 @@ const LandingContainer = () => {
                             xs={24}
                             md={12}
                             key={`mobile-${index}`}
-                            className="moblie-col"
+                            className="mobile-col"
                           >
                             <div className="card feature">
                               <div className="title">

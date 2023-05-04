@@ -33,9 +33,9 @@ const LayoutApp = () => {
 
   const { data: tokenData, isError } = useCheckTokenQuery(tokenId ?? skipToken);
 
-  const isTransparentMainConteiner: boolean = useMemo(() => {
+  const isTransparentMainContainer: boolean = useMemo(() => {
     const pathsWithTransparentBgLayoutElements = routers.filter(
-      (route) => route.transparet
+      (route) => route.transparent
     );
 
     const isTransparent = pathsWithTransparentBgLayoutElements.some(
@@ -52,12 +52,12 @@ const LayoutApp = () => {
     return isTransparent;
   }, [pathname]);
 
-  const noPaddingMainConteiner: boolean = useMemo(() => {
-    const pathsWithoutPaddingMainConteiner = routers.filter(
-      (route) => route.noPaddingMainConteiner
+  const noPaddingMainContainer: boolean = useMemo(() => {
+    const pathsWithoutPaddingMainContainer = routers.filter(
+      (route) => route.noPaddingMainContainer
     );
 
-    return pathsWithoutPaddingMainConteiner.some(
+    return pathsWithoutPaddingMainContainer.some(
       (route) => pathname.split("/")[1] === route.path?.split("/")[0]
     );
   }, [pathname]);
@@ -114,23 +114,23 @@ const LayoutApp = () => {
     >
       <Layout
         className={clsx("layout-container", {
-          [transparentClass]: isTransparentMainConteiner,
+          [transparentClass]: isTransparentMainContainer,
         })}
       >
         <FloatButton.BackTop />
         <Layout
           className={clsx("site-layout", {
-            [transparentClass]: isTransparentMainConteiner,
+            [transparentClass]: isTransparentMainContainer,
           })}
         >
           <Content
             className={clsx("content-container", {
-              [transparentClass]: isTransparentMainConteiner,
+              [transparentClass]: isTransparentMainContainer,
             })}
           >
             <div
               className={clsx("main-container", {
-                noPadding: noPaddingMainConteiner,
+                noPadding: noPaddingMainContainer,
               })}
             >
               <Pages />

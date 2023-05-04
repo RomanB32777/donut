@@ -3,7 +3,7 @@ import FontFaceObserver from "fontfaceobserver";
 import { IFont } from "appTypes";
 import { ISelectItem } from "components/SelectInput";
 
-const getFontsList = async () => {
+export const getFontsList = async () => {
   try {
     const { data } = await axios.get(
       `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${process.env.REACT_APP_GOOGLE_API_KEY}`
@@ -25,7 +25,7 @@ const getFontsList = async () => {
   }
 };
 
-const checkFontObserver = async (name: string) => {
+export const checkFontObserver = async (name: string) => {
   try {
     const checkFontObserver = new FontFaceObserver(name);
     const loadedFont = await checkFontObserver.load(null, 1);
@@ -36,7 +36,7 @@ const checkFontObserver = async (name: string) => {
   }
 };
 
-const loadFont = async ({ name, link }: IFont) => {
+export const loadFont = async ({ name, link }: IFont) => {
   if (!link) return null;
   try {
     const isLoaded = await checkFontObserver(name);
@@ -56,7 +56,7 @@ const loadFont = async ({ name, link }: IFont) => {
   }
 };
 
-const loadFonts = async <T extends Record<string, string>>({
+export const loadFonts = async <T extends Record<string, string>>({
   fields,
   fonts,
 }: {
@@ -80,15 +80,7 @@ const loadFonts = async <T extends Record<string, string>>({
   );
 };
 
-const getFontColorStyles = (color: string, font: IFont) => ({
+export const getFontColorStyles = (color: string, font: IFont) => ({
   color,
   fontFamily: `"${font.name}", sans-serif`,
 });
-
-export {
-  getFontsList,
-  checkFontObserver,
-  loadFont,
-  loadFonts,
-  getFontColorStyles,
-};

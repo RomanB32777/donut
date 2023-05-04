@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect, memo, FC } from "react";
+import { useState, useMemo, useEffect, memo, FC, useContext } from "react";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import { FormattedMessage, useIntl } from "react-intl";
-import { IStatData } from "types";
+import { ISocketEmitObj, IStatData } from "types";
 
 import LinkCopy from "components/LinkCopy";
 import { CopyIcon, PencilIcon, TrashBinIcon } from "icons";
@@ -25,6 +25,7 @@ import {
   loadFonts,
 } from "utils";
 import { ISelectItem } from "components/SelectInput";
+import { WebSocketContext } from "contexts/Websocket";
 import { RoutePaths, baseURL } from "consts";
 import { IWidgetStatData } from "appTypes";
 
@@ -40,8 +41,9 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
   const { isTablet } = useWindowDimensions();
   const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
   const [deleteStat, { isLoading: isDeleteLoading }] = useDeleteStatMutation();
+  const socket = useContext(WebSocketContext);
 
-  const [isActiveDetails, setisActiveDetails] = useState(false);
+  const [isActiveDetails, setIsActiveDetails] = useState(false);
   const [editStatData, setEditStatData] = useState<IWidgetStatData>({
     ...statData,
     titleFont: {
@@ -64,7 +66,7 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
     customTimePeriod,
   } = editStatData;
 
-  const handleActiveDetails = () => setisActiveDetails(!isActiveDetails);
+  const handleActiveDetails = () => setIsActiveDetails(!isActiveDetails);
 
   const clickEditBtn = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -113,6 +115,15 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
         isReset,
         id,
       });
+
+      if (socket) {
+        const emitObj: ISocketEmitObj = {
+          id,
+          toSendUsername: username,
+          type: "change_stat",
+        };
+        socket.emit("widgetChange", emitObj);
+      }
     } catch (error) {
       console.log(error);
     }

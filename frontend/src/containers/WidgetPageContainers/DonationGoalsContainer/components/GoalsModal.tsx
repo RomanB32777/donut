@@ -1,6 +1,7 @@
-import { FC, memo } from "react";
+import { FC, memo, useContext } from "react";
 import { Col, Row } from "antd";
 import { FormattedMessage } from "react-intl";
+import { ISocketEmitObj } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import BaseButton from "components/BaseButton";
@@ -11,6 +12,7 @@ import {
   useCreateGoalMutation,
   useEditGoalMutation,
 } from "store/services/GoalsService";
+import { WebSocketContext } from "contexts/Websocket";
 import { initWidgetGoalData } from "consts";
 import { IWidgetGoalData } from "appTypes";
 
@@ -27,9 +29,10 @@ const GoalsModal: FC<IGoalsModal> = ({
   setFormData,
   setIsOpenModal,
 }) => {
-  const { id: userID } = useAppSelector(({ user }) => user);
+  const { id: userID, username } = useAppSelector(({ user }) => user);
   const [editGoal, { isLoading: isEditLoading }] = useEditGoalMutation();
   const [createGoal, { isLoading: isCreateLoading }] = useCreateGoalMutation();
+  const socket = useContext(WebSocketContext);
 
   const { id, amountGoal, title } = formData;
 
@@ -48,6 +51,15 @@ const GoalsModal: FC<IGoalsModal> = ({
           amountGoal,
           id,
         });
+
+        if (socket) {
+          const emitObj: ISocketEmitObj = {
+            id,
+            toSendUsername: username,
+            type: "change_goal",
+          };
+          socket.emit("widgetChange", emitObj);
+        }
       } else {
         await createGoal({ title, amountGoal, creator: userID });
       }

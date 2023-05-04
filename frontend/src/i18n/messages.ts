@@ -145,6 +145,10 @@ const messages = {
     landing_help_discord_description:
       "Create ticket on our discord server and talk to our support team",
 
+    landing_help_telegram_title: "Ask in Telegram",
+    landing_help_telegram_description:
+      "Send a request to our support team and get help right away",
+
     landing_help_center_title: "Check help center",
     landing_help_center_description:
       "We've collected all the FAQ in Help center. Check it out!",
@@ -347,10 +351,10 @@ const messages = {
     notifications_no: "No notifications",
     notifications_title: "Notifications",
     notifications_clear: "Clear all",
-    notifications_donat_title: "New donut",
+    notifications_donate_title: "New donut",
     notifications_badge_title: "New badge",
-    notifications_donat_creator: "{user} sent you {sum} {blockchain}!",
-    notifications_donat_supporter: "You sent {sum} {blockchain} to {user}!",
+    notifications_donate_creator: "{user} sent you {sum} {blockchain}!",
+    notifications_donate_supporter: "You sent {sum} {blockchain} to {user}!",
     notifications_add_badge_creator: "You sent {title} to {user}",
     notifications_add_badge_supporter: "You received {title} from {user}",
 
@@ -546,6 +550,10 @@ const messages = {
     landing_help_discord_title: "Спросите в дискорде",
     landing_help_discord_description:
       "Создайте тикет в дискорде и задайте любые вопросы нашей команде поддержки",
+
+    landing_help_telegram_title: "Задайте вопрос в Телеграм",
+    landing_help_telegram_description:
+      "Отправьте запрос нашей команде поддержки и получите помощь сразу же",
 
     landing_help_center_title: "Посетите справочный центр",
     landing_help_center_description:
@@ -749,10 +757,10 @@ const messages = {
     notifications_no: "Нет уведомлений",
     notifications_title: "Уведомления",
     notifications_clear: "Очистить все",
-    notifications_donat_title: "Новое пожертвование",
+    notifications_donate_title: "Новое пожертвование",
     notifications_badge_title: "Новый значок",
-    notifications_donat_creator: "{user} отправил вам {sum} {blockchain}!",
-    notifications_donat_supporter: "Вы отправили {sum} {blockchain} {user}!",
+    notifications_donate_creator: "{user} отправил вам {sum} {blockchain}!",
+    notifications_donate_supporter: "Вы отправили {sum} {blockchain} {user}!",
     notifications_add_badge_creator: "Вы отправили {title} {user}",
     notifications_add_badge_supporter: "Вы получили {title} от {user}",
 
@@ -952,6 +960,10 @@ const messages = {
     landing_help_discord_title: "Pregunta en Discord",
     landing_help_discord_description:
       "Crea un ticket en nuestro servidor de Discord y habla con nuestro equipo de soporte",
+
+    landing_help_telegram_title: "Pregunte en Telegram",
+    landing_help_telegram_description:
+      "Envíe una solicitud a nuestro equipo de soporte y obtenga ayuda de inmediato",
 
     landing_help_center_title: "Consulta el centro de ayuda",
     landing_help_center_description:
@@ -1160,10 +1172,10 @@ const messages = {
     notifications_no: "No hay notificaciones",
     notifications_title: "Notificaciones",
     notifications_clear: "Borrar todo",
-    notifications_donat_title: "Nueva donación",
+    notifications_donate_title: "Nueva donación",
     notifications_badge_title: "Nuevo distintivo",
-    notifications_donat_creator: "¡{user} te ha enviado {sum} {blockchain}!",
-    notifications_donat_supporter: "¡Has enviado {sum} {blockchain} a {user}!",
+    notifications_donate_creator: "¡{user} te ha enviado {sum} {blockchain}!",
+    notifications_donate_supporter: "¡Has enviado {sum} {blockchain} a {user}!",
     notifications_add_badge_creator: "Has enviado {title} a {user}",
     notifications_add_badge_supporter: "Has recibido {title} de {user}",
 
@@ -1360,6 +1372,10 @@ const messages = {
     landing_help_discord_title: "สอบถามในดิสคอร์ด",
     landing_help_discord_description:
       "สร้างตั๋วในเซิร์ฟเวอร์ดิสคอร์ดของเราและคุยกับทีมสนับสนุน",
+
+    landing_help_telegram_title: "ถามใน Telegram",
+    landing_help_telegram_description:
+      "ส่งคำขอให้ทีมสนับสนุนของเราและรับความช่วยเสริมทันที",
 
     landing_help_center_title: "ตรวจสอบศูนย์ช่วยเสริม",
     landing_help_center_description:
@@ -1562,10 +1578,10 @@ const messages = {
     notifications_no: "ไม่มีการแจ้งเตือน",
     notifications_title: "การแจ้งเตือน",
     notifications_clear: "ล้างทั้งหมด",
-    notifications_donat_title: "ขนมโดนัทใหม่",
+    notifications_donate_title: "ขนมโดนัทใหม่",
     notifications_badge_title: "เหรียญตราใหม่",
-    notifications_donat_creator: "{user} ส่ง {sum} {blockchain} ถึงคุณ!",
-    notifications_donat_supporter: "คุณส่ง {sum} {blockchain} ไปยัง {user}!",
+    notifications_donate_creator: "{user} ส่ง {sum} {blockchain} ถึงคุณ!",
+    notifications_donate_supporter: "คุณส่ง {sum} {blockchain} ไปยัง {user}!",
     notifications_add_badge_creator: "คุณส่ง {title} ถึง {user}",
     notifications_add_badge_supporter: "คุณได้รับ {title} จาก {user}",
 
@@ -1764,6 +1780,10 @@ const messages = {
     landing_help_discord_title: "Pergunte no Discord",
     landing_help_discord_description:
       "Crie um ticket no nosso servidor do Discord e fale com nossa equipe de suporte",
+
+    landing_help_telegram_title: "Pergunte no Telegram",
+    landing_help_telegram_description:
+      "Envie um pedido à nossa equipe de suporte e obtenha ajuda imediatamente",
 
     landing_help_center_title: "Consulte o centro de ajuda",
     landing_help_center_description:
@@ -1970,10 +1990,10 @@ const messages = {
     notifications_no: "Sem notificações",
     notifications_title: "Notificações",
     notifications_clear: "Limpar tudo",
-    notifications_donat_title: "Novo donut",
+    notifications_donate_title: "Novo donut",
     notifications_badge_title: "Novo distintivo",
-    notifications_donat_creator: "{user} enviou {sum} {blockchain} para você!",
-    notifications_donat_supporter:
+    notifications_donate_creator: "{user} enviou {sum} {blockchain} para você!",
+    notifications_donate_supporter:
       "Você enviou {sum} {blockchain} para {user}!",
     notifications_add_badge_creator: "Você enviou {title} para {user}",
     notifications_add_badge_supporter: "Você recebeu {title} de {user}",
@@ -2028,7 +2048,6 @@ const messages = {
     dates_picker_placeholder_start: "Data de início",
     dates_picker_placeholder_end: "Data final",
   },
-
   [LOCALES.KR]: {
     // reset
     reset_title: "비밀번호 초기화",
@@ -2170,6 +2189,10 @@ const messages = {
     landing_help_discord_title: "디스코드에서 물어보세요",
     landing_help_discord_description:
       "디스코드 서버에서 티켓을 생성하고 우리 지원 팀과 대화하세요",
+
+    landing_help_telegram_title: "텔레그램에서 물어보세요",
+    landing_help_telegram_description:
+      "지원 팀에 요청을 보내고 바로 도움을 받으세요",
 
     landing_help_center_title: "도움말 센터 확인",
     landing_help_center_description:
@@ -2371,10 +2394,10 @@ const messages = {
     notifications_no: "알림 없음",
     notifications_title: "알림",
     notifications_clear: "모두 지우기",
-    notifications_donat_title: "새로운 기부",
+    notifications_donate_title: "새로운 기부",
     notifications_badge_title: "새로운 배지",
-    notifications_donat_creator: "{user}님이 {sum} {blockchain}을 보냈습니다!",
-    notifications_donat_supporter:
+    notifications_donate_creator: "{user}님이 {sum} {blockchain}을 보냈습니다!",
+    notifications_donate_supporter:
       "{user}님에게 {sum} {blockchain}을 보냈습니다!",
     notifications_add_badge_creator: "{user}님께 {title} 배지를 보냈습니다",
     notifications_add_badge_supporter: "{user}님이 {title} 배지를 선물했습니다",

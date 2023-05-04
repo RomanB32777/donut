@@ -1,5 +1,4 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { IBadgePage } from "appTypes";
 import {
   FileUploadTypes,
   IBadgeCreatingInfo,
@@ -8,6 +7,7 @@ import {
 } from "types";
 import { setFormDataValues } from "utils";
 import { baseQuery } from "./utils";
+import { IBadgePage } from "appTypes";
 
 interface IBadgeCreate extends IBadgeCreatingInfo {
   [FileUploadTypes.badges]?: File | null;

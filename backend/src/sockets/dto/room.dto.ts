@@ -1,10 +1,10 @@
 export class RoomDto {
-  room: string;
-  sockets: string[];
+	room: string
+	sockets: string[]
 }
 
 export class EmitClientData {
-  rooms: RoomDto | RoomDto[];
-  event: string;
-  data: any;
+	rooms: RoomDto | RoomDto[]
+	event: string
+	data: any // TODO
 }

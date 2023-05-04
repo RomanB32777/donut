@@ -1,5 +1,3 @@
-import { User } from '../entities/user.entity';
+import { User } from '../entities/user.entity'
 
-export type ExistUserFiels = Partial<
-  Pick<User, 'walletAddress' | 'username' | 'email'>
->;
+export type ExistUserFiels = Partial<Pick<User, 'walletAddress' | 'username' | 'email'>>

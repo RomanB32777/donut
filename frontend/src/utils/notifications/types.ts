@@ -17,8 +17,8 @@ export interface INotificationWithoutType
 }
 
 export type typeNotification =
-  | "donat_creator"
-  | "donat_supporter"
+  | "donate_creator"
+  | "donate_supporter"
   | "add_badge_creator"
   | "add_badge_supporter"
   | "none";

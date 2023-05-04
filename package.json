@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "5.0.0",
+  "version": "5.0.6",
   "description": "",
   "scripts": {
     "frontend": "npm start --prefix frontend",
@@ -13,7 +13,7 @@
     "install": "concurrently \"npm install\" \"npm run frontend:install\" \"npm run backend:install\" \"npm run types:install\"",
     "dev": "concurrently \"npm run types\" \"npm run backend\" \"npm run frontend\"",
     "dumpSql": "docker exec -i donut_db_1 pg_dump --username user -d dbname > /home/deploy/donut-folder/dump.sql",
-    "exexSql": "docker exec -it donut_db_1 psql  -U user -d dbname",
+    "execSql": "docker exec -it donut_db_1 psql  -U user -d dbname",
     "dockerUp": "docker-compose up -d --build",
     "dockerStop": "docker-compose stop",
     "dockerDown": "docker-compose down",

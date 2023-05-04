@@ -1,5 +1,5 @@
-import { IsEnum } from 'class-validator';
-import { FileUploadTypes, defaultAssetsFolders } from 'types';
+import { IsEnum } from 'class-validator'
+import { FileUploadTypes, defaultAssetsFolders } from 'types'
 
 // export class File {
 //   filePath: string;
@@ -7,6 +7,6 @@ import { FileUploadTypes, defaultAssetsFolders } from 'types';
 // }
 
 export class DefaultTypeParam {
-  @IsEnum(FileUploadTypes)
-  type: defaultAssetsFolders;
+	@IsEnum(FileUploadTypes)
+	type: defaultAssetsFolders
 }

@@ -1,4 +1,4 @@
-const setFormDataValues = <T extends object>({
+export const setFormDataValues = <T extends object>({
   formData,
   dataValues,
 }: {
@@ -16,5 +16,3 @@ const setFormDataValues = <T extends object>({
 
   return formData;
 };
-
-export { setFormDataValues };

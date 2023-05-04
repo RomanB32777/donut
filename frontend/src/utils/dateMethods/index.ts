@@ -1,4 +1,3 @@
-import {} from "react-intl";
 import { allPeriodItemsTypes, periodItemsTypes, statsDataTypes } from "types";
 import dayjsModule from "modules/dayjsModule";
 import {

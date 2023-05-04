@@ -13,7 +13,7 @@ import "./styles.sass";
 
 const fontsFields: goalDataKeys[] = ["titleFont", "progressFont"];
 
-const DonatGoalContainer = () => {
+const DonateGoalContainer = () => {
   const { id, name } = useParams();
   const { list } = useAppSelector(({ notifications }) => notifications);
 
@@ -136,4 +136,4 @@ const DonatGoalContainer = () => {
   return <></>;
 };
 
-export default DonatGoalContainer;
+export default DonateGoalContainer;

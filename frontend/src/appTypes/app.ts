@@ -1,15 +1,5 @@
 import { IStaticFile } from "types";
 
-export interface IAnyAction<P = any> {
-  type: string;
-  payload: P;
-}
-
-export interface IFiltersDates {
-  start: number;
-  end: number;
-}
-
 export interface IDefaultImagesModal {
   images: IStaticFile[];
   isOpen: boolean;

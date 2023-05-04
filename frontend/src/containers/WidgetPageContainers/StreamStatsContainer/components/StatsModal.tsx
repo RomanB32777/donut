@@ -1,7 +1,7 @@
-import { FC, memo, useCallback, useMemo } from "react";
+import { FC, memo, useCallback, useContext, useMemo } from "react";
 import { Col, Row } from "antd";
 import { FormattedMessage, useIntl } from "react-intl";
-import { allPeriodItemsTypes, statsDataTypes } from "types";
+import { ISocketEmitObj, allPeriodItemsTypes, statsDataTypes } from "types";
 
 import BaseButton from "components/BaseButton";
 import FormInput from "components/FormInput";
@@ -15,6 +15,7 @@ import {
   useCreateStatMutation,
   useEditStatMutation,
 } from "store/services/StatsService";
+import { WebSocketContext } from "contexts/Websocket";
 import {
   initWidgetStatData,
   filterCurrentPeriodItems,
@@ -44,8 +45,9 @@ const StatsModal: FC<IStatsModal> = ({
   setIsOpenModal,
 }) => {
   const intl = useIntl();
-  const { id: userID } = useAppSelector(({ user }) => user);
+  const { id: userId, username } = useAppSelector(({ user }) => user);
   const { isMobile } = useWindowDimensions();
+  const socket = useContext(WebSocketContext);
 
   const [editStat, { isLoading: isEditLoading }] = useEditStatMutation();
   const [createStat, { isLoading: isCreateLoading }] = useCreateStatMutation();
@@ -110,6 +112,14 @@ const StatsModal: FC<IStatsModal> = ({
           timePeriod,
           customTimePeriod,
         });
+        if (socket) {
+          const emitObj: ISocketEmitObj = {
+            id,
+            toSendUsername: username,
+            type: "change_stat",
+          };
+          socket.emit("widgetChange", emitObj);
+        }
       } else {
         await createStat({
           title,
@@ -117,7 +127,7 @@ const StatsModal: FC<IStatsModal> = ({
           template: (template as string[]).join(" "),
           dataType,
           timePeriod,
-          creator: userID,
+          creator: userId,
           customTimePeriod,
         });
       }

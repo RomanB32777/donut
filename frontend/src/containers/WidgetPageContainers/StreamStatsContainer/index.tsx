@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FormattedMessage } from "react-intl";
 import { IStatData } from "types";
 
-import { useAppSelector } from "hooks/reduxHooks";
 import BaseButton from "components/BaseButton";
 import PageTitle from "components/PageTitle";
 import StatsModal from "./components/StatsModal";
@@ -19,8 +17,6 @@ import { IWidgetStatData } from "appTypes";
 import "./styles.sass";
 
 const StreamStatsContainer = () => {
-  const { id } = useAppSelector(({ user }) => user);
-
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [fonts, setFonts] = useState<ISelectItem[]>([]);
   const [formData, setFormData] = useState<IWidgetStatData>({

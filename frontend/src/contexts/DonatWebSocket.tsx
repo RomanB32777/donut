@@ -4,16 +4,23 @@ import { io, Socket } from "socket.io-client";
 
 import { useLazyGetNotificationsQuery } from "store/services/NotificationsService";
 import { useGetCreatorInfoQuery } from "store/services/UserService";
+import { useLazyGetAlertWidgetDataQuery } from "store/services/AlertsService";
+import { useLazyGetGoalsWidgetDataQuery } from "store/services/GoalsService";
+import { useLazyGetStatsWidgetDataQuery } from "store/services/StatsService";
 import { addNotFoundUserNotification } from "utils";
 import { baseURL } from "consts";
+import { ISocketNotification } from "types";
 
-export const DonatWebSocketContext = createContext<Socket | null>(null);
+export const DonateWebSocketContext = createContext<Socket | null>(null);
 
-const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
-  const { name } = useParams();
+const DonateWebSocketProvider = ({ children }: { children: ReactNode }) => {
+  const { name, id: widgetId } = useParams();
   const [getNotifications] = useLazyGetNotificationsQuery({
     refetchOnFocus: false,
   });
+  const [getGoalWidget] = useLazyGetGoalsWidgetDataQuery();
+  const [getAlertWidget] = useLazyGetAlertWidgetDataQuery();
+  const [getStatWidget] = useLazyGetStatsWidgetDataQuery();
 
   const { data: personInfo, isError } = useGetCreatorInfoQuery(name as string, {
     skip: !name,
@@ -36,13 +43,48 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
-      socket.on("newDonat", async () => {
+      socket.on("newDonate", async () => {
         getNotifications({
           username,
           limit: 1,
           spamFilter,
         });
       });
+
+      socket.on("widgetChange", async ({ type }: ISocketNotification) => {
+        if (!widgetId) return;
+
+        switch (type) {
+          case "change_alert":
+            getAlertWidget(widgetId);
+            break;
+
+          case "change_goal":
+            getGoalWidget({ username, id: widgetId });
+            break;
+
+          case "change_stat":
+            getStatWidget(widgetId);
+            break;
+
+          default:
+            break;
+        }
+      });
+
+      // socket.on("newDonate", (data: ISocketNotification) => {
+      //   addNotification({
+      //     type: "info",
+      //     title: intl.formatMessage({ id: "notifications_donate_title" }),
+      //     message: getDonateNotificationMessage({
+      //       type: "donate_creator",
+      //       user: data.supporter,
+      //       data: data.additional,
+      //     }),
+      //   });
+      //   getNotifications({ username });
+      // });
+
       return socket;
     };
 
@@ -61,10 +103,10 @@ const DonatWebSocketProvider = ({ children }: { children: ReactNode }) => {
   if (isError) addNotFoundUserNotification();
 
   return (
-    <DonatWebSocketContext.Provider value={valueContext}>
+    <DonateWebSocketContext.Provider value={valueContext}>
       {children}
-    </DonatWebSocketContext.Provider>
+    </DonateWebSocketContext.Provider>
   );
 };
 
-export default DonatWebSocketProvider;
+export default DonateWebSocketProvider;

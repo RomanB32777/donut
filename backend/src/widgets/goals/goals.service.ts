@@ -1,129 +1,119 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
-import { getDefaultValues, getRepositoryFields } from 'src/utils';
-import { User } from 'src/users/entities/user.entity';
-import { ExchangeService } from 'src/donations/exchange/exchange.service';
-import { CreateGoalDto } from './dto/create-goal.dto';
-import { UpdateGoalDto } from './dto/update-goal.dto';
-import { GoalWidget } from './entities/goal-widget.entity';
+import { getDefaultValues, getRepositoryFields } from 'src/utils'
+import { User } from 'src/users/entities/user.entity'
+import { ExchangeService } from 'src/donations/exchange/exchange.service'
+import { CreateGoalDto } from './dto/create-goal.dto'
+import { UpdateGoalDto } from './dto/update-goal.dto'
+import { GoalWidget } from './entities/goal-widget.entity'
 
 @Injectable()
 export class GoalsService {
-  constructor(
-    @InjectRepository(GoalWidget)
-    private goalsRepository: Repository<GoalWidget>,
+	constructor(
+		@InjectRepository(GoalWidget)
+		private goalsRepository: Repository<GoalWidget>,
 
-    private readonly exchangeService: ExchangeService,
-  ) {}
+		private readonly exchangeService: ExchangeService,
+	) {}
 
-  private async getSelectQuery(user: Partial<User>, widgetId?: string) {
-    const { id: userId, username } = user;
-    const sumSelect = await this.exchangeService.sumQuerySelect();
+	private async getSelectQuery(user: Partial<User>, widgetId?: string) {
+		const { id: userId, username } = user
+		const sumSelect = await this.exchangeService.sumQuerySelect()
 
-    const fields = getRepositoryFields(this.goalsRepository, [
-      'createdAt',
-      'updatedAt',
-      'deletedAt',
-      'creator',
-      'donations',
-    ]);
+		const fields = getRepositoryFields(this.goalsRepository, [
+			'createdAt',
+			'updatedAt',
+			'deletedAt',
+			'creator',
+			'donations',
+		])
 
-    const query = this.goalsRepository
-      .createQueryBuilder('goal')
-      .select('ROUND(sums.sum::numeric, 2)', 'amountRaised')
-      .leftJoin(
-        (subQ) =>
-          subQ
-            .select(sumSelect, 'sum')
-            .addSelect('subQ.id', 'id')
-            .from(GoalWidget, 'subQ')
-            .leftJoin('subQ.donations', 'd')
-            .groupBy('subQ.id'),
-        'sums',
-        'sums.id = goal.id',
-      )
-      .leftJoin('goal.creator', 'creator')
-      .orderBy('goal.createdAt', 'DESC');
+		const query = this.goalsRepository
+			.createQueryBuilder('goal')
+			.select('ROUND(sums.sum::numeric, 2)', 'amountRaised')
+			.leftJoin(
+				(subQ) =>
+					subQ
+						.select(sumSelect, 'sum')
+						.addSelect('subQ.id', 'id')
+						.from(GoalWidget, 'subQ')
+						.leftJoin('subQ.donations', 'd')
+						.groupBy('subQ.id'),
+				'sums',
+				'sums.id = goal.id',
+			)
+			.leftJoin('goal.creator', 'creator')
+			.orderBy('goal.createdAt', 'DESC')
 
-    if (userId) query.where('goal.creator = :userId', { userId });
-    else if (username) {
-      query.where('creator.username = :username', { username });
-    }
+		if (userId) query.where('goal.creator = :userId', { userId })
+		else if (username) {
+			query.where('creator.username = :username', { username })
+		}
 
-    fields.forEach((field) => query.addSelect(`goal.${field}`, field));
+		fields.forEach((field) => query.addSelect(`goal.${field}`, field))
 
-    if (widgetId) query.andWhere('goal.id = :widgetId', { widgetId });
-    return query;
-  }
+		if (widgetId) query.andWhere('goal.id = :widgetId', { widgetId })
+		return query
+	}
 
-  async create(creator: User, createGoalDto: CreateGoalDto) {
-    return await this.goalsRepository.save({
-      ...createGoalDto,
-      creator,
-    });
-  }
+	async create(creator: User, createGoalDto: CreateGoalDto) {
+		return await this.goalsRepository.save({
+			...createGoalDto,
+			creator,
+		})
+	}
 
-  async findAll(userId: string, isArchive?: boolean) {
-    const goalsQuery = await this.getSelectQuery({ id: userId });
-    if (isArchive !== undefined) {
-      goalsQuery.andWhere('goal.isArchive = :isArchive', { isArchive });
-    }
-    return await goalsQuery.getRawMany();
-  }
+	async findAll(userId: string, isArchive?: boolean) {
+		const goalsQuery = await this.getSelectQuery({ id: userId })
+		if (isArchive !== undefined) {
+			goalsQuery.andWhere('goal.isArchive = :isArchive', { isArchive })
+		}
+		return await goalsQuery.getRawMany()
+	}
 
-  async findOne(id: string, username?: string) {
-    if (!username) return await this.goalsRepository.findOneByOrFail({ id });
+	async findOne(id: string, username?: string) {
+		if (!username) return await this.goalsRepository.findOneByOrFail({ id })
 
-    const goalQuery = await this.getSelectQuery({ username }, id);
-    return await goalQuery.getRawOne();
-  }
+		const goalQuery = await this.getSelectQuery({ username }, id)
+		return await goalQuery.getRawOne()
+	}
 
-  async checkGoalRelevance(userId: string, id: string) {
-    const goalsQuery = await this.getSelectQuery({ id: userId }, id);
-    const goalSums = await goalsQuery.getRawOne<GoalWidget>();
+	async checkGoalRelevance(userId: string, id: string) {
+		const goalsQuery = await this.getSelectQuery({ id: userId }, id)
+		const goalSums = await goalsQuery.getRawOne<GoalWidget>()
 
-    if (goalSums) {
-      const { amountRaised, amountGoal } = goalSums;
+		if (goalSums) {
+			const { amountRaised, amountGoal } = goalSums
 
-      if (amountRaised >= amountGoal) {
-        await this.update(userId, id, { isArchive: true });
-      }
-    }
-  }
+			if (amountRaised >= amountGoal) {
+				await this.update(userId, id, { isArchive: true })
+			}
+		}
+	}
 
-  async update(userId: string, id: string, updateGoalDto: UpdateGoalDto) {
-    const { isReset, ...updateData } = updateGoalDto;
+	async update(userId: string, id: string, updateGoalDto: UpdateGoalDto) {
+		const { isReset, ...updateData } = updateGoalDto
 
-    if (isReset) {
-      const columns = getDefaultValues(this.goalsRepository, [
-        'title',
-        'amountGoal',
-        'isArchive',
-      ]);
-      await this.goalsRepository.update(
-        { id, creator: { id: userId } },
-        { ...columns },
-      );
-    } else {
-      await this.goalsRepository.update(
-        { id, creator: { id: userId } },
-        { ...updateData },
-      );
-    }
+		if (isReset) {
+			const columns = getDefaultValues(this.goalsRepository, ['title', 'amountGoal', 'isArchive'])
+			await this.goalsRepository.update({ id, creator: { id: userId } }, { ...columns })
+		} else {
+			await this.goalsRepository.update({ id, creator: { id: userId } }, { ...updateData })
+		}
 
-    return await this.findOne(id);
-  }
+		return await this.findOne(id)
+	}
 
-  async remove(userId: string, id: string) {
-    const { affected } = await this.goalsRepository.softDelete({
-      id,
-      creator: { id: userId },
-    });
-    if (!affected) {
-      throw new NotFoundException('Widget with this id was not found');
-    }
-    return { id };
-  }
+	async remove(userId: string, id: string) {
+		const { affected } = await this.goalsRepository.softDelete({
+			id,
+			creator: { id: userId },
+		})
+		if (!affected) {
+			throw new NotFoundException('Widget with this id was not found')
+		}
+		return { id }
+	}
 }

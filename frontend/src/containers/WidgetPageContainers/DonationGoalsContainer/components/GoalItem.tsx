@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo, memo, FC } from "react";
+import { useState, useEffect, useMemo, memo, FC, useContext } from "react";
 import { Col, Progress, Row } from "antd";
 import clsx from "clsx";
 import { FormattedMessage, useIntl } from "react-intl";
-import { goalDataKeys, IGoalData } from "types";
+import { goalDataKeys, IGoalData, ISocketEmitObj } from "types";
 
 import LinkCopy from "components/LinkCopy";
 import WidgetMobileWrapper from "components/WidgetMobileWrapper";
@@ -20,6 +20,7 @@ import {
 } from "store/services/GoalsService";
 import { copyStr, loadFonts } from "utils";
 import { ISelectItem } from "components/SelectInput";
+import { WebSocketContext } from "contexts/Websocket";
 import { RoutePaths, baseURL } from "consts";
 import { IWidgetGoalData } from "appTypes";
 
@@ -32,6 +33,7 @@ interface IGoalItem {
 const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
   const intl = useIntl();
   const { username } = useAppSelector(({ user }) => user);
+  const socket = useContext(WebSocketContext);
   const { isLaptop, isTablet } = useWindowDimensions();
   const [editGoal, { isLoading: isEditLoading }] = useEditGoalMutation();
   const [deleteGoal, { isLoading: isDeleteLoading }] = useDeleteGoalMutation();
@@ -101,6 +103,15 @@ const GoalItem: FC<IGoalItem> = ({ fonts, goalData, openEditModal }) => {
         isReset,
         id,
       });
+
+      if (socket) {
+        const emitObj: ISocketEmitObj = {
+          id,
+          toSendUsername: username,
+          type: "change_goal",
+        };
+        socket.emit("widgetChange", emitObj);
+      }
     } catch (error) {
       console.log(error);
     }

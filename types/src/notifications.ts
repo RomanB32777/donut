@@ -1,6 +1,5 @@
 import { IBadgeInfo } from "./badge";
-import { IDonation } from "./donations";
-import { IUserBase } from "./user";
+import { IDonation, socketNotificationTypes } from "./donations";
 
 enum NotificationRoles {
   sender = "sender",
@@ -30,6 +29,7 @@ interface INotification {
 interface ISocketEmitObj {
   toSendUsername: string;
   id: string;
+  type?: socketNotificationTypes;
 }
 
 type notificationKeys = keyof INotification;

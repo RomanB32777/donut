@@ -19,7 +19,7 @@ import "./styles.sass";
 
 const alertSound = new Audio();
 
-const DonatAlertContainer = () => {
+const DonateAlertContainer = () => {
   const { list } = useAppSelector(({ notifications }) => notifications);
   const { name, id } = useParams();
 
@@ -166,4 +166,4 @@ const DonatAlertContainer = () => {
   return <></>;
 };
 
-export default DonatAlertContainer;
+export default DonateAlertContainer;

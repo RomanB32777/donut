@@ -1,5 +1,5 @@
-import { userRoles } from 'types';
+import { userRoles } from 'types'
 
-const roles: userRoles[] = ['admin', 'creators', 'backers'];
+const roles: userRoles[] = ['admin', 'creators', 'backers']
 
-export { roles };
+export { roles }

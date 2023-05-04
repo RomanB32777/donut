@@ -68,12 +68,12 @@ interface IEditAlertData
 }
 
 // stats-data
-enum TextAligmnet {
+enum TextAlignment {
   Left = "Left",
   Center = "Center",
   Right = "Right",
 }
-type typeAligmnet = keyof typeof TextAligmnet;
+type typeAlignment = keyof typeof TextAlignment;
 
 enum StatsDataTypes {
   "top-donations" = "top-donations",
@@ -99,7 +99,7 @@ interface IStatWidgetData<FontType = string> {
   barColor: string;
   contentColor: string;
   contentFont: FontType;
-  textAligment: typeAligmnet;
+  textAlignment: typeAlignment;
 }
 
 interface IStatData<FontType = string>
@@ -116,7 +116,7 @@ interface IEditStatData
 
 type statsDataKeys = keyof IStatData;
 
-export { TextAligmnet, StatsDataTypes };
+export { TextAlignment, StatsDataTypes };
 
 export type {
   IWidgetQueryData,
@@ -134,7 +134,7 @@ export type {
   IEditAlertData,
 
   // stats
-  typeAligmnet,
+  typeAlignment,
   statsDataTypes,
   IStatDataBase,
   IStatWidgetData,

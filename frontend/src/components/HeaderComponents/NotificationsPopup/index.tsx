@@ -90,7 +90,6 @@ const NotificationsPopup = () => {
             {Boolean(list.length) && (
               <div className="popup-header">
                 <p>
-                  {" "}
                   <FormattedMessage id="notifications_title" />
                 </p>
                 <p className="all-read" onClick={clearAll}>

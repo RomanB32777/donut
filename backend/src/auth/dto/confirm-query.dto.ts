@@ -1,11 +1,11 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator'
 
 export class ConfirmQueryDto {
-  @IsEmail()
-  email: string;
+	@IsEmail()
+	email: string
 
-  @IsString()
-  token: string;
+	@IsString()
+	token: string
 }
 
-export type confirmQueryKeys = keyof ConfirmQueryDto;
+export type confirmQueryKeys = keyof ConfirmQueryDto

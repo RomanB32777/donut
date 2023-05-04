@@ -1,3 +1,4 @@
+import { IShortUserData, IUser } from "types";
 import {
   IAuthToken,
   IWebToken,
@@ -5,14 +6,13 @@ import {
   IFileInfo,
   IUserWithFiles,
 } from "appTypes";
-import { IShortUserData, IUser } from "types";
 
-const initFileInfo: IFileInfo = {
+export const initFileInfo: IFileInfo = {
   preview: "",
   file: null,
 };
 
-const initUser: IUser = {
+export const initUser: IUser = {
   id: "",
   username: "",
   roleplay: "creators",
@@ -23,7 +23,7 @@ const initUser: IUser = {
   status: "confirmation",
 };
 
-const initDonatPage: IDonatPageWithFiles = {
+export const initDonatPage: IDonatPageWithFiles = {
   headerBanner: initFileInfo,
   backgroundBanner: initFileInfo,
   welcomeText: "",
@@ -32,7 +32,7 @@ const initDonatPage: IDonatPageWithFiles = {
   backgroundColor: "",
 };
 
-const initUserWithFiles: IUserWithFiles = {
+export const initUserWithFiles: IUserWithFiles = {
   id: "",
   username: "",
   roleplay: "creators",
@@ -43,27 +43,17 @@ const initUserWithFiles: IUserWithFiles = {
   status: "confirmation",
 };
 
-const shortUserInfo: IShortUserData = {
+export const shortUserInfo: IShortUserData = {
   id: "",
   username: "",
   walletAddress: "",
   roleplay: "backers",
 };
 
-const initAuthToken: IAuthToken = {
+export const initAuthToken: IAuthToken = {
   access_token: "",
 };
 
-const initWebToken: IWebToken = {
+export const initWebToken: IWebToken = {
   web_token: "",
-};
-
-export {
-  initFileInfo,
-  initUser,
-  initDonatPage,
-  initUserWithFiles,
-  shortUserInfo,
-  initAuthToken,
-  initWebToken,
 };

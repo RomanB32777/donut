@@ -72,8 +72,8 @@ import {
   IAlertData,
   IGenerateSoundQuery,
   IEditAlertData,
-  TextAligmnet,
-  typeAligmnet,
+  TextAlignment,
+  typeAlignment,
   StatsDataTypes,
   statsDataTypes,
   IStatDataBase,
@@ -106,7 +106,7 @@ export {
   NotificationRoles,
 
   // widgets
-  TextAligmnet,
+  TextAlignment,
   StatsDataTypes,
 
   // wallet
@@ -187,7 +187,7 @@ export type {
   IAlertData,
   IGenerateSoundQuery,
   IEditAlertData,
-  typeAligmnet,
+  typeAlignment,
   statsDataTypes,
   IStatDataBase,
   IStatWidgetData,

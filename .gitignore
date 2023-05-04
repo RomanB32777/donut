@@ -39,9 +39,7 @@ subdomain/
 build/
 trash/
 frontend-next/
-backend_old/
-sockets_old/
-backendTest/
+frontend-next-no-app/
 
 # Node.JS
 node_modules

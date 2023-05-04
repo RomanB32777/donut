@@ -11,7 +11,7 @@ import {
 } from "store/services/NotificationsService";
 import {
   getBadgeNotificationMessage,
-  getDonatNotificationMessage,
+  getDonateNotificationMessage,
 } from "utils";
 import { typeNotification } from "utils/notifications/types";
 
@@ -51,8 +51,8 @@ const NotificationItem = ({
       const { donation, badge } = notification;
       const isRecipient = roleplay === "recipient";
       if (donation) {
-        if (isRecipient) return "donat_creator";
-        else return "donat_supporter";
+        if (isRecipient) return "donate_creator";
+        else return "donate_supporter";
       }
 
       if (badge) {
@@ -81,7 +81,7 @@ const NotificationItem = ({
             <div className="content">
               <div className="message" onClick={messageClick}>
                 {donation &&
-                  getDonatNotificationMessage({
+                  getDonateNotificationMessage({
                     type: notificationType,
                     user: otherUserNotification?.user.username || "@user",
                     data: {

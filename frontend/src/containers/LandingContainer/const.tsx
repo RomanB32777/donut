@@ -84,11 +84,17 @@ const cryptoSteps = [
 ];
 
 const help = [
+  // {
+  //   title: "landing_help_discord_title",
+  //   icon: <ChatIcon />,
+  //   description: "landing_help_discord_description",
+  //   link: "https://discord.gg/PHEQCjnY",
+  // },
   {
-    title: "landing_help_discord_title",
+    title: "landing_help_telegram_title",
     icon: <ChatIcon />,
-    description: "landing_help_discord_description",
-    link: "https://discord.gg/PHEQCjnY",
+    description: "landing_help_telegram_description",
+    link: "https://t.me/cryptodonutz_xyz",
   },
   {
     title: "landing_help_center_title",

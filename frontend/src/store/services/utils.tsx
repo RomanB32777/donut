@@ -12,7 +12,7 @@ import {
 import { baseURL } from "consts";
 import { FormattedMessage } from "react-intl";
 
-const getQueryArgs = ({
+export const getQueryArgs = ({
   args,
   isQuery,
 }: {
@@ -26,7 +26,7 @@ const getQueryArgs = ({
   return queryArgs;
 };
 
-const rtkQueryErrorLogger: Middleware =
+export const rtkQueryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
     if (isRejectedWithValue(action)) {
       const message = action.payload?.data?.message || "error";
@@ -39,7 +39,7 @@ const rtkQueryErrorLogger: Middleware =
     return next(action);
   };
 
-const baseQuery = ({
+export const baseQuery = ({
   apiURL,
   isVisibleAllNotification = true,
 }: {
@@ -136,5 +136,3 @@ const baseQuery = ({
       maxRetries: 5,
     }
   );
-
-export { getQueryArgs, rtkQueryErrorLogger, baseQuery };

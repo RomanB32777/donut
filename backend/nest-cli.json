@@ -1,10 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/nest-cli",
-  "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
-  "compilerOptions": {
-    "assets": ["**/*.pug", "static"],
-    "watchAssets": true,
-    "deleteOutDir": true
-  }
+	"$schema": "https://json.schemastore.org/nest-cli",
+	"collection": "@nestjs/schematics",
+	"sourceRoot": "src",
+	"compilerOptions": {
+		"assets": ["**/*.pug", "static"],
+		"watchAssets": true,
+		"deleteOutDir": true
+	}
 }

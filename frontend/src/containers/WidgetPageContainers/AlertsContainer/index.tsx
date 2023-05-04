@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { fileUploadTypes } from "types";
+import { ISocketEmitObj, fileUploadTypes } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import useWindowDimensions from "hooks/useWindowDimensions";
@@ -18,6 +18,7 @@ import {
   useGetAlertWidgetDataByCreatorQuery,
 } from "store/services/AlertsService";
 import { getFontsList, loadFonts } from "utils";
+import { WebSocketContext } from "contexts/Websocket";
 import { RoutePaths, initAlertData, baseURL } from "consts";
 import { ISelectItem } from "components/SelectInput";
 import { IAlert } from "appTypes";
@@ -27,6 +28,7 @@ const soundsFolderName: fileUploadTypes = "sound";
 
 const AlertsContainer = () => {
   const { id, username } = useAppSelector(({ user }) => user);
+  const socket = useContext(WebSocketContext);
   const { isLaptop } = useWindowDimensions();
 
   const [formData, setFormData] = useState<IAlert>(initAlertData);
@@ -68,6 +70,15 @@ const AlertsContainer = () => {
     }
 
     await editAlert(editArgs);
+
+    if (socket) {
+      const emitObj: ISocketEmitObj = {
+        toSendUsername: username,
+        id: widgetID,
+        type: "change_alert",
+      };
+      socket.emit("widgetChange", emitObj);
+    }
   };
 
   const linkForStream = `${baseURL}/${RoutePaths.donatMessage}/${username}/${widgetID}`;

@@ -19,11 +19,7 @@ import {
   loadFonts,
   renderStatItem,
 } from "utils";
-import {
-  alignFlextItemsList,
-  alignItemsList,
-  initWidgetStatData,
-} from "consts";
+import { alignFlexItemsList, alignItemsList, initWidgetStatData } from "consts";
 import { ISelectItem } from "components/SelectInput";
 import { AlignText, IFont, IWidgetStatData } from "appTypes";
 import "./styles.sass";
@@ -165,7 +161,7 @@ const DonatStatContainer = () => {
       barColor,
       contentColor,
       contentFont,
-      textAligment,
+      textAlignment,
       template,
     } = statData;
 
@@ -184,7 +180,7 @@ const DonatStatContainer = () => {
           <div
             className="list__wrapper"
             style={{
-              justifyContent: alignFlextItemsList[textAligment],
+              justifyContent: alignFlexItemsList[textAlignment],
             }}
           >
             <div className="list">
@@ -198,7 +194,7 @@ const DonatStatContainer = () => {
                       style={{
                         ...getFontColorStyles(contentColor, contentFont),
                         textAlign:
-                          (alignItemsList[textAligment] as AlignText) ||
+                          (alignItemsList[textAlignment] as AlignText) ||
                           "center",
                       }}
                     >

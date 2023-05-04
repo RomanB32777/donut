@@ -1,6 +1,6 @@
 import { IBadge } from "appTypes";
 
-const initBadgeData: IBadge = {
+export const initBadgeData: IBadge = {
   id: "",
   title: "",
   description: "",
@@ -11,5 +11,3 @@ const initBadgeData: IBadge = {
   blockchain: "Polygon",
   creator: "",
 };
-
-export { initBadgeData };
