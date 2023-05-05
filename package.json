@@ -7,13 +7,14 @@
     "backend": "npm run dev --prefix backend",
     "types": "npm run dev --prefix types",
     "frontend:install": "npm install --prefix frontend",
-    "frontend:build": "npm  run build --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
     "backend:install": "npm install --prefix backend",
     "types:install": "npm install --prefix types",
     "install": "concurrently \"npm install\" \"npm run frontend:install\" \"npm run backend:install\" \"npm run types:install\"",
     "dev": "concurrently \"npm run types\" \"npm run backend\" \"npm run frontend\"",
+    "prepare": "husky install",
     "dumpSql": "docker exec -i donut_db_1 pg_dump --username user -d dbname > /home/deploy/donut-folder/dump.sql",
-    "execSql": "docker exec -it donut_db_1 psql  -U user -d dbname",
+    "execSql": "docker exec -it donut_db_1 psql -U user -d dbname",
     "dockerUp": "docker-compose up -d --build",
     "dockerStop": "docker-compose stop",
     "dockerDown": "docker-compose down",
@@ -23,10 +24,17 @@
   },
   "author": "Roman <r.bogdanovskiy@onpoint.ru>",
   "license": "ISC",
+  "lint-staged": {
+    "**/src/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "concurrently": "^7.2.2"
   },
   "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
     "typescript": "^4.9.3"
   }
 }

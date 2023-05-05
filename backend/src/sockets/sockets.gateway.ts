@@ -124,10 +124,7 @@ export class SocketsGateway implements OnGatewayConnection, OnGatewayDisconnect 
 		const recipientRoom = rooms.find(({ room }) => room === toSendUsername)
 
 		if (recipientRoom) {
-			const sendObj: Pick<ISocketNotification, 'type'> = {
-				type,
-			}
-
+			const sendObj: Pick<ISocketNotification, 'type'> = { type }
 			this.emitDataToClient({
 				rooms: recipientRoom,
 				event: 'widgetChange',

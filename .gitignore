@@ -45,5 +45,3 @@ frontend-next-no-app/
 node_modules
 npm-debug.log
 .env
-
-docker-compose.old.yml
