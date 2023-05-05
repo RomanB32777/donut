@@ -1,5 +1,5 @@
 interface IResetField {
-  isReset?: boolean;
+	isReset?: boolean
 }
 
-export type { IResetField };
+export type { IResetField }

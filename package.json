@@ -24,11 +24,6 @@
   },
   "author": "Roman <r.bogdanovskiy@onpoint.ru>",
   "license": "ISC",
-  "lint-staged": {
-    "**/src/**/*.{js,jsx,ts,tsx}": [
-      "prettier --write"
-    ]
-  },
   "dependencies": {
     "concurrently": "^7.2.2"
   },
