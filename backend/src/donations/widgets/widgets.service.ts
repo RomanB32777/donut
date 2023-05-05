@@ -60,7 +60,7 @@ export class WidgetsService {
 			take: limit,
 		}
 
-		if (timePeriod) {
+		if (timePeriod && timePeriod !== 'all') {
 			filter.where = {
 				...filter.where,
 				createdAt: getTimePeriod({
@@ -123,10 +123,14 @@ export class WidgetsService {
 
 		selectFields.forEach((field) => query.addSelect(`d.${field}`, field))
 
-		if (timePeriod) {
-			query.andWhere('d.createdAt >= :filterDate', {
-				filterDate: getTimePeriod({ timePeriod, startDate, endDate }).value,
-			})
+		if (timePeriod && timePeriod !== 'all') {
+			const betweenPoints = getTimePeriod({ timePeriod, startDate, endDate }).value
+
+			if (Array.isArray(betweenPoints)) {
+				const [startPoint, endPoint] = betweenPoints
+				query.andWhere('d.createdAt >= :startPoint', { startPoint })
+				query.andWhere('d.createdAt <= :endPoint', { endPoint })
+			}
 		}
 
 		const donations = await query.getRawMany<Donation & { username: string }>()
@@ -158,7 +162,7 @@ export class WidgetsService {
 	}
 
 	async getTopSupporters(userId: string, queryParams: QueryParamsDto, isGetQueryFormat = false) {
-		const { timePeriod } = queryParams
+		const { timePeriod, startDate, endDate } = queryParams
 
 		const sumSelect = await this.exchangeService.sumQuerySelect()
 
@@ -179,13 +183,17 @@ export class WidgetsService {
 			.where('d.isAnonymous = true')
 			.andWhere('d.creator = :userId', { userId })
 
-		if (timePeriod !== 'all') {
-			notAnonymous.andWhere('d.createdAt >= :filterDate', {
-				filterDate: getTimePeriod({ timePeriod }).value,
-			})
-			anonymous.andWhere('d.createdAt >= :filterDate', {
-				filterDate: getTimePeriod({ timePeriod }).value,
-			})
+		if (timePeriod && timePeriod !== 'all') {
+			const betweenPoints = getTimePeriod({ timePeriod, startDate, endDate }).value
+			if (Array.isArray(betweenPoints)) {
+				const [startPoint, endPoint] = betweenPoints
+
+				notAnonymous.andWhere('d.createdAt >= :startPoint', { startPoint })
+				notAnonymous.andWhere('d.createdAt <= :endPoint', { endPoint })
+
+				anonymous.andWhere('d.createdAt >= :startPoint', { startPoint })
+				anonymous.andWhere('d.createdAt <= :endPoint', { endPoint })
+			}
 		}
 
 		const parameters = notAnonymous.getParameters()

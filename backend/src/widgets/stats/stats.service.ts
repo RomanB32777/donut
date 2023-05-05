@@ -7,6 +7,7 @@ import { CreateStatDto } from './dto/create-stat.dto'
 import { UpdateStatDto } from './dto/update-stat.dto'
 import { StatWidget } from './entities/stat-widget.entity'
 import { getDefaultValues } from 'src/utils'
+import { PeriodItemsAll } from 'types'
 
 @Injectable()
 export class StatsService {
@@ -31,13 +32,20 @@ export class StatsService {
 	}
 
 	async update(userId: string, id: string, updateStatDto: UpdateStatDto) {
-		const { isReset, ...updateData } = updateStatDto
+		const { isReset, customTimePeriod, ...updateData } = updateStatDto
 
 		if (isReset) {
 			const columns = getDefaultValues(this.statsRepository, ['title'])
 			await this.statsRepository.update({ id, creator: { id: userId } }, { ...columns })
 		} else {
-			await this.statsRepository.update({ id, creator: { id: userId } }, { ...updateData })
+			await this.statsRepository.update(
+				{ id, creator: { id: userId } },
+				{
+					...updateData,
+					customTimePeriod:
+						updateData.timePeriod === PeriodItemsAll.custom ? customTimePeriod : null,
+				},
+			)
 		}
 
 		return await this.findOne(id)

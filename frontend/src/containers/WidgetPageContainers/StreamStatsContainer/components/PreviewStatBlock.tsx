@@ -37,7 +37,7 @@ const PreviewStatBlock: FC<IPreviewStatBlock> = ({
   } = editStatData;
 
   const timePeriodName =
-    customTimePeriod ??
+    customTimePeriod ||
     intl.formatMessage({
       id: getCurrentTimePeriodQuery(timePeriod),
     });

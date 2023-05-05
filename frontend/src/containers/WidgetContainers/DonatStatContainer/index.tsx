@@ -27,7 +27,7 @@ import "./styles.sass";
 const LIMIT = 3;
 const fontsFields: statsDataKeys[] = ["titleFont", "contentFont"];
 
-const DonatStatContainer = () => {
+const DonateStatContainer = () => {
   const intl = useIntl();
   const { id, name } = useParams();
   const { list } = useAppSelector(({ notifications }) => notifications);
@@ -45,7 +45,7 @@ const DonatStatContainer = () => {
 
   const getWidgetStatData = (
     widgetData: IStatData,
-    fontObj?: Record<string, IFont>
+    fontObj: Record<string, IFont>
   ) =>
     // convert IStatData -> IWidgetStatData
     Object.keys(widgetData).reduce((values, key) => {
@@ -53,9 +53,7 @@ const DonatStatContainer = () => {
       if (fontsFields.includes(keyField))
         return {
           ...values,
-          [keyField]: {
-            name: fontObj ? fontObj[keyField] : widgetData[keyField],
-          },
+          [keyField]: fontObj[keyField],
         };
       return {
         ...values,
@@ -64,24 +62,25 @@ const DonatStatContainer = () => {
     }, initWidgetStatData);
 
   useEffect(() => {
+    const loadWidgetFonts = async (widgetData: IStatData) => {
+      let loadedFonts: ISelectItem<string>[] = [];
+
+      if (!fonts.length) {
+        loadedFonts = await getFontsList();
+        setFonts(loadedFonts);
+      }
+
+      const { titleFont, contentFont } = widgetData;
+      return await loadFonts({
+        fonts: fonts.length ? fonts : loadedFonts,
+        fields: { titleFont, contentFont },
+      });
+    };
+
     const getStatWidgetData = async () => {
       if (widgetData) {
-        let widgetDataInfo = getWidgetStatData(widgetData);
-
-        if (!fonts.length) {
-          const fontsInfo = await getFontsList();
-
-          const { titleFont, contentFont } = widgetData;
-
-          const loadedFonts = await loadFonts({
-            fonts: fontsInfo,
-            fields: { titleFont, contentFont },
-          });
-
-          setFonts(fontsInfo);
-          widgetDataInfo = getWidgetStatData(widgetData, loadedFonts);
-        }
-
+        const loadedFonts = await loadWidgetFonts(widgetData);
+        const widgetDataInfo = getWidgetStatData(widgetData, loadedFonts);
         setStatData(widgetDataInfo);
       }
     };
@@ -212,4 +211,4 @@ const DonatStatContainer = () => {
   return null;
 };
 
-export default DonatStatContainer;
+export default DonateStatContainer;

@@ -151,7 +151,7 @@ const StatsItem: FC<IStatsItem> = ({ fonts, statData, openEditModal }) => {
   );
 
   const timePeriodName =
-    customTimePeriod ??
+    customTimePeriod ||
     intl.formatMessage({
       id: getCurrentTimePeriodQuery(timePeriod),
     });

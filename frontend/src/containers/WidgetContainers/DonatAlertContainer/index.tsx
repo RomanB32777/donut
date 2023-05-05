@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useParams } from "react-router";
-import { IGenerateSoundQuery, INotification } from "types";
+import { IAlertData, IGenerateSoundQuery, INotification } from "types";
 
 import { useAppSelector } from "hooks/reduxHooks";
 import { useGetAlertWidgetDataQuery } from "store/services/AlertsService";
@@ -12,6 +12,7 @@ import {
   loadFonts,
 } from "utils";
 import { initAlertData, baseURL, maxSoundDuration } from "consts";
+import { ISelectItem } from "components/SelectInput";
 import { IAlert } from "appTypes";
 
 import bigImg from "assets/big_don.png";
@@ -28,6 +29,7 @@ const DonateAlertContainer = () => {
   });
 
   const [lastNotif, setLastNotif] = useState<INotification | null>(null);
+  const [fonts, setFonts] = useState<ISelectItem[]>([]);
 
   const [alertWidgetData, setAlertWidgetData] = useState<IAlert>(initAlertData);
 
@@ -77,10 +79,24 @@ const DonateAlertContainer = () => {
   }, [lastNotif, alertWidgetData]);
 
   useEffect(() => {
+    const loadWidgetFonts = async (widgetData: IAlertData) => {
+      let loadedFonts: ISelectItem<string>[] = [];
+
+      if (!fonts.length) {
+        loadedFonts = await getFontsList();
+        setFonts(loadedFonts);
+      }
+
+      const { nameFont, messageFont, sumFont } = widgetData;
+      return await loadFonts({
+        fonts: fonts.length ? fonts : loadedFonts,
+        fields: { nameFont, messageFont, sumFont },
+      });
+    };
+
     const initAlertData = async () => {
       if (!alertData) return;
 
-      const fonts = await getFontsList();
       const {
         nameFont,
         messageFont,
@@ -91,10 +107,7 @@ const DonateAlertContainer = () => {
         ...widgetData
       } = alertData;
 
-      const loadedFonts = await loadFonts({
-        fonts,
-        fields: { nameFont, messageFont, sumFont },
-      });
+      const loadedFonts = await loadWidgetFonts(alertData);
 
       setAlertWidgetData((alertWidgetData) => ({
         ...alertWidgetData,

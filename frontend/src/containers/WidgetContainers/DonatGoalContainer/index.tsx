@@ -30,43 +30,42 @@ const DonateGoalContainer = () => {
 
   const getWidgetGoalData = (
     widgetData: IGoalData,
-    fontObj?: Record<string, IFont>
-  ) =>
+    fontObj: Record<string, IFont>
+  ) => {
     // convert IGoalData -> IWidgetGoalData
-    Object.keys(widgetData).reduce((values, key) => {
+    return Object.keys(widgetData).reduce((values, key) => {
       const keyField = key as goalDataKeys;
-      if (fontsFields.includes(keyField))
+      if (fontsFields.includes(keyField)) {
         return {
           ...values,
-          [keyField]: {
-            name: fontObj ? fontObj[keyField] : widgetData[keyField],
-          },
+          [keyField]: fontObj[keyField],
         };
+      }
       return {
         ...values,
         [keyField]: widgetData[keyField],
       };
     }, initWidgetGoalData);
+  };
 
   useEffect(() => {
-    const getGoalWidgetData = async (widgetData: IGoalData) => {
-      let loadedFonts;
+    const loadWidgetFonts = async (widgetData: IGoalData) => {
+      let loadedFonts: ISelectItem<string>[] = [];
 
       if (!fonts.length) {
-        const fontsInfo = await getFontsList();
-
-        const { titleFont, progressFont } = widgetData;
-
-        loadedFonts = await loadFonts({
-          fonts: fontsInfo,
-          fields: {
-            titleFont: titleFont,
-            progressFont: progressFont,
-          },
-        });
-
-        setFonts(fontsInfo);
+        loadedFonts = await getFontsList();
+        setFonts(loadedFonts);
       }
+
+      const { titleFont, progressFont } = widgetData;
+      return await loadFonts({
+        fonts: fonts.length ? fonts : loadedFonts,
+        fields: { titleFont, progressFont },
+      });
+    };
+
+    const getGoalWidgetData = async (widgetData: IGoalData) => {
+      const loadedFonts = await loadWidgetFonts(widgetData);
       const widgetDataInfo = getWidgetGoalData(widgetData, loadedFonts);
       setGoalData((prev) => ({ ...prev, ...widgetDataInfo }));
     };
