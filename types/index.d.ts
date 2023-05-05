@@ -1,205 +1,205 @@
-import { IResetField } from "./src/general";
+import { IResetField } from './src/general'
 import {
-  periodItemsTypes,
-  IFilterPeriodItems,
-  PeriodItemsAll,
-  allPeriodItemsTypes,
-  ICurrentPeriodItemsTypes,
-} from "./src/dates";
+	periodItemsTypes,
+	IFilterPeriodItems,
+	PeriodItemsAll,
+	allPeriodItemsTypes,
+	ICurrentPeriodItemsTypes,
+} from './src/dates'
 import {
-  IStaticFile,
-  alertAssetTypes,
-  donatAssetTypes,
-  fileUploadTypes,
-  defaultAssetsFolders,
-} from "./src/files";
+	IStaticFile,
+	alertAssetTypes,
+	donatAssetTypes,
+	fileUploadTypes,
+	defaultAssetsFolders,
+} from './src/files'
 import {
-  UserRoles,
-  Genders,
-  BannerTypes,
-  UserStatus,
-  userStatus,
-  userRoles,
-  gendersType,
-  bannerTypes,
-  IUserBase,
-  IDonatPageWithoutBanners,
-  IEditUserData,
-  IShortUserData,
-  IDonatPage,
-  ICreatorInfo,
-  IUser,
-  IRegisterUser,
-  ILoginUser,
-  IUserTokenPayload,
-  IEditCreator,
-  userDataKeys,
-  creatorDataKeys,
-} from "./src/user";
+	UserRoles,
+	Genders,
+	BannerTypes,
+	UserStatus,
+	userStatus,
+	userRoles,
+	gendersType,
+	bannerTypes,
+	IUserBase,
+	IDonatPageWithoutBanners,
+	IEditUserData,
+	IShortUserData,
+	IDonatPage,
+	ICreatorInfo,
+	IUser,
+	IRegisterUser,
+	ILoginUser,
+	IUserTokenPayload,
+	IEditCreator,
+	userDataKeys,
+	creatorDataKeys,
+} from './src/user'
 import {
-  ExchangeNames,
-  BlockchainsSymbols,
-  blockchainNames,
-  blockchainNetworks,
-  blockchainsType,
-  blockchainsSymbols,
-} from "./src/wallet";
+	ExchangeNames,
+	BlockchainsSymbols,
+	blockchainNames,
+	blockchainNetworks,
+	blockchainsType,
+	blockchainsSymbols,
+} from './src/wallet'
 import {
-  IDonationShortInfo,
-  IDonation,
-  socketNotificationTypes,
-  ISocketNotification,
-  ISendDonat,
-  IFullSendDonat,
-  IDonationsQueryData,
-  donationsQueryData,
-  sendDonatFieldsKeys,
-} from "./src/donations";
+	IDonationShortInfo,
+	IDonation,
+	socketNotificationTypes,
+	ISocketNotification,
+	ISendDonat,
+	IFullSendDonat,
+	IDonationsQueryData,
+	donationsQueryData,
+	sendDonatFieldsKeys,
+} from './src/donations'
 import {
-  badgeStatus,
-  IBadgeBase,
-  IBadgeInfo,
-  IBadgeCreatingInfo,
-  IBagdeAssignInfo,
-} from "./src/badge";
+	badgeStatus,
+	IBadgeBase,
+	IBadgeInfo,
+	IBadgeCreatingInfo,
+	IBagdeAssignInfo,
+} from './src/badge'
 import {
-  IWidgetQueryData,
-  IGoalDataBase,
-  IGoalWidgetData,
-  IGoalData,
-  IEditGoalData,
-  goalDataKeys,
-  IAlertData,
-  IGenerateSoundQuery,
-  IEditAlertData,
-  TextAlignment,
-  typeAlignment,
-  StatsDataTypes,
-  statsDataTypes,
-  IStatDataBase,
-  IStatWidgetData,
-  IStatData,
-  IEditStatData,
-  statsDataKeys,
-} from "./src/widgets";
+	IWidgetQueryData,
+	IGoalDataBase,
+	IGoalWidgetData,
+	IGoalData,
+	IEditGoalData,
+	goalDataKeys,
+	IAlertData,
+	IGenerateSoundQuery,
+	IEditAlertData,
+	TextAlignment,
+	typeAlignment,
+	StatsDataTypes,
+	statsDataTypes,
+	IStatDataBase,
+	IStatWidgetData,
+	IStatData,
+	IEditStatData,
+	statsDataKeys,
+} from './src/widgets'
 import {
-  NotificationRoles,
-  notificationRoles,
-  ISocketEmitObj,
-  notificationKeys,
-  INotification,
-  INotificationQueries,
-} from "./src/notifications";
-import { FileUploadTypes } from "./src/files";
+	NotificationRoles,
+	notificationRoles,
+	ISocketEmitObj,
+	notificationKeys,
+	INotification,
+	INotificationQueries,
+} from './src/notifications'
+import { FileUploadTypes } from './src/files'
 
 export {
-  // dates
-  PeriodItemsAll,
+	// dates
+	PeriodItemsAll,
 
-  // user
-  UserRoles,
-  Genders,
-  BannerTypes,
-  UserStatus,
+	// user
+	UserRoles,
+	Genders,
+	BannerTypes,
+	UserStatus,
 
-  // notifications
-  NotificationRoles,
+	// notifications
+	NotificationRoles,
 
-  // widgets
-  TextAlignment,
-  StatsDataTypes,
+	// widgets
+	TextAlignment,
+	StatsDataTypes,
 
-  // wallet
-  ExchangeNames,
-  BlockchainsSymbols,
+	// wallet
+	ExchangeNames,
+	BlockchainsSymbols,
 
-  // files
-  FileUploadTypes,
-};
+	// files
+	FileUploadTypes,
+}
 
 export type {
-  //general
-  IResetField,
+	//general
+	IResetField,
 
-  // dates
-  periodItemsTypes,
-  IFilterPeriodItems,
-  allPeriodItemsTypes,
-  ICurrentPeriodItemsTypes,
+	// dates
+	periodItemsTypes,
+	IFilterPeriodItems,
+	allPeriodItemsTypes,
+	ICurrentPeriodItemsTypes,
 
-  // files
-  IStaticFile,
-  alertAssetTypes,
-  donatAssetTypes,
-  fileUploadTypes,
-  defaultAssetsFolders,
+	// files
+	IStaticFile,
+	alertAssetTypes,
+	donatAssetTypes,
+	fileUploadTypes,
+	defaultAssetsFolders,
 
-  // user
-  userRoles,
-  gendersType,
-  bannerTypes,
-  userStatus,
-  IUserBase,
-  IDonatPageWithoutBanners,
-  IEditUserData,
-  IShortUserData,
-  IDonatPage,
-  ICreatorInfo,
-  IUser,
-  IRegisterUser,
-  ILoginUser,
-  IUserTokenPayload,
-  IEditCreator,
-  userDataKeys,
-  creatorDataKeys,
+	// user
+	userRoles,
+	gendersType,
+	bannerTypes,
+	userStatus,
+	IUserBase,
+	IDonatPageWithoutBanners,
+	IEditUserData,
+	IShortUserData,
+	IDonatPage,
+	ICreatorInfo,
+	IUser,
+	IRegisterUser,
+	ILoginUser,
+	IUserTokenPayload,
+	IEditCreator,
+	userDataKeys,
+	creatorDataKeys,
 
-  // wallet
-  blockchainNames,
-  blockchainNetworks,
-  blockchainsType,
-  blockchainsSymbols,
+	// wallet
+	blockchainNames,
+	blockchainNetworks,
+	blockchainsType,
+	blockchainsSymbols,
 
-  // donat
-  IDonationShortInfo,
-  IDonation,
-  socketNotificationTypes,
-  ISocketNotification,
-  ISendDonat,
-  IFullSendDonat,
-  IDonationsQueryData,
-  donationsQueryData,
-  sendDonatFieldsKeys,
+	// donate
+	IDonationShortInfo,
+	IDonation,
+	socketNotificationTypes,
+	ISocketNotification,
+	ISendDonat,
+	IFullSendDonat,
+	IDonationsQueryData,
+	donationsQueryData,
+	sendDonatFieldsKeys,
 
-  // badge
-  badgeStatus,
-  IBadgeBase,
-  IBadgeInfo,
-  IBadgeCreatingInfo,
-  IBagdeAssignInfo,
+	// badge
+	badgeStatus,
+	IBadgeBase,
+	IBadgeInfo,
+	IBadgeCreatingInfo,
+	IBagdeAssignInfo,
 
-  // widgets
-  IWidgetQueryData,
-  IGoalDataBase,
-  IGoalWidgetData,
-  IGoalData,
-  IEditGoalData,
-  goalDataKeys,
-  IAlertData,
-  IGenerateSoundQuery,
-  IEditAlertData,
-  typeAlignment,
-  statsDataTypes,
-  IStatDataBase,
-  IStatWidgetData,
-  IStatData,
-  IEditStatData,
-  statsDataKeys,
+	// widgets
+	IWidgetQueryData,
+	IGoalDataBase,
+	IGoalWidgetData,
+	IGoalData,
+	IEditGoalData,
+	goalDataKeys,
+	IAlertData,
+	IGenerateSoundQuery,
+	IEditAlertData,
+	typeAlignment,
+	statsDataTypes,
+	IStatDataBase,
+	IStatWidgetData,
+	IStatData,
+	IEditStatData,
+	statsDataKeys,
 
-  // notifications
-  notificationRoles,
-  ISocketEmitObj,
-  notificationKeys,
-  INotification,
-  INotificationQueries,
-};
+	// notifications
+	notificationRoles,
+	ISocketEmitObj,
+	notificationKeys,
+	INotification,
+	INotificationQueries,
+}
 // declare module "types" {}
