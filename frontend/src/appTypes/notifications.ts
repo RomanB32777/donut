@@ -1,15 +1,15 @@
-import { INotification, INotificationQueries } from "types";
+import { INotification, INotificationQueries } from 'types'
 
 export interface INotificationsState {
-  list: INotification[];
-  shouldUpdateApp: boolean;
+	list: INotification[]
+	shouldUpdateApp: boolean
 }
 
 export interface INotificationParams extends INotificationQueries {
-  username: string;
-  shouldUpdateApp?: boolean;
+	username: string
+	shouldUpdateApp?: boolean
 }
 
 export interface IVisibleNotification {
-  isVisibleNotification?: boolean;
+	isVisibleNotification?: boolean
 }

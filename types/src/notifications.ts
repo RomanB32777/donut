@@ -1,54 +1,54 @@
-import { IBadgeInfo } from "./badge";
-import { IDonation, socketNotificationTypes } from "./donations";
+import { IBadgeInfo } from './badge'
+import { IDonation, socketNotificationTypes } from './donations'
 
 enum NotificationRoles {
-  sender = "sender",
-  recipient = "recipient",
+	sender = 'sender',
+	recipient = 'recipient',
 }
 
-type notificationRoles = keyof typeof NotificationRoles;
+type notificationRoles = keyof typeof NotificationRoles
 
 interface IUserINotification {
-  roleplay: notificationRoles;
-  read: boolean;
-  visible: boolean;
-  user: {
-    username: string;
-  };
+	roleplay: notificationRoles
+	read: boolean
+	visible: boolean
+	user: {
+		username: string
+	}
 }
 
 interface INotification {
-  id: string;
-  createdAt: string;
-  // TODO - IDonation
-  donation?: IDonation;
-  badge?: IBadgeInfo;
-  users: IUserINotification[];
+	id: string
+	createdAt: string
+	// TODO - IDonation
+	donation?: IDonation
+	badge?: IBadgeInfo
+	users: IUserINotification[]
 }
 
 interface ISocketEmitObj {
-  toSendUsername: string;
-  id: string;
-  type?: socketNotificationTypes;
+	toSendUsername: string
+	id: string
+	type?: socketNotificationTypes
 }
 
-type notificationKeys = keyof INotification;
+type notificationKeys = keyof INotification
 
 interface INotificationQueries {
-  limit?: number;
-  offset?: number;
-  sort?: notificationKeys; // sort field
-  sortDirection?: string;
-  spamFilter?: boolean;
-  roleplay?: notificationRoles;
+	limit?: number
+	offset?: number
+	sort?: notificationKeys // sort field
+	sortDirection?: string
+	spamFilter?: boolean
+	roleplay?: notificationRoles
 }
 
-export { NotificationRoles };
+export { NotificationRoles }
 
 export type {
-  notificationRoles,
-  ISocketEmitObj,
-  notificationKeys,
-  INotification,
-  INotificationQueries,
-};
+	notificationRoles,
+	ISocketEmitObj,
+	notificationKeys,
+	INotification,
+	INotificationQueries,
+}

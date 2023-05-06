@@ -5,7 +5,9 @@
 	"scripts": {
 		"dev": "npx tsc --watch",
 		"build": "rimraf ./build && npm run format && npx tsc",
-		"format": "prettier --write"
+		"format": "prettier --write \"**/*.ts\"",
+		"lint": "eslint \"**/*.ts\" --color",
+		"lint:fix": "npm run lint -- --fix"
 	},
 	"main": "./build/index.js",
 	"types": "index.d.ts",

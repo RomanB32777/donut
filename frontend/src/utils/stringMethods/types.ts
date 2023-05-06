@@ -1,4 +1,4 @@
 export interface IReplaceObj {
-  re: RegExp;
-  to: string;
+	re: RegExp
+	to: string
 }

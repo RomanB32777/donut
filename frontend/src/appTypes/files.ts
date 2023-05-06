@@ -1,4 +1,4 @@
 export interface IFileInfo {
-  preview: string;
-  file: File | null;
+	preview: string
+	file: File | null
 }

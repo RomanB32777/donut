@@ -2,7 +2,7 @@ name: Deploy test
 
 on:
   push:
-    branches: [test]
+    branches: [develop]
   workflow_dispatch:
 
 jobs:
@@ -16,5 +16,5 @@ jobs:
           host: ${{ secrets.SSH_TEST_HOST }}
           username: root
           password: ${{ secrets.SSH_TEST_PASS }}
-          script: bash ~/donut/update.sh
+          script: bash ~/donut/scripts/update.sh
           script_stop: true

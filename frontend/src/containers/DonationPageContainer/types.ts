@@ -1,8 +1,8 @@
-import { defaultAssetsFolders } from "types";
-import { IDefaultImagesModal } from "appTypes";
+import { defaultAssetsFolders } from 'types'
+import { IDefaultImagesModal } from 'appTypes'
 
 interface IBannerModalInfo extends IDefaultImagesModal {
-  folder: defaultAssetsFolders;
+	folder: defaultAssetsFolders
 }
 
-export type { IBannerModalInfo };
+export type { IBannerModalInfo }

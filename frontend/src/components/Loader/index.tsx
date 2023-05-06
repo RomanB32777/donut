@@ -1,21 +1,21 @@
-import { memo } from "react";
-import clsx from "clsx";
-import "./styles.sass";
+import { FC, memo } from 'react'
+import clsx from 'clsx'
+import './styles.sass'
 
-declare type typeSizeLoader = "big" | "middle" | "small";
+declare type typeSizeLoader = 'big' | 'middle' | 'small'
 
 interface ILoader {
-  size: typeSizeLoader;
-  modificator?: string;
+	size: typeSizeLoader
+	modificator?: string
 }
 
-const Loader: React.FC<ILoader> = ({ size, modificator }) => (
-  <div className={clsx("loader", `loader-${size}`, modificator)}>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-);
+const Loader: FC<ILoader> = ({ size, modificator }) => (
+	<div className={clsx('loader', `loader-${size}`, modificator)}>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+	</div>
+)
 
-export default memo(Loader);
+export default memo(Loader)

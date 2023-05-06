@@ -1,182 +1,156 @@
-import { useEffect, useState } from "react";
-import clsx from "clsx";
-import { useParams } from "react-router";
-import { IAlertData, IGenerateSoundQuery, INotification } from "types";
+import { useEffect, useState } from 'react'
+import clsx from 'clsx'
+import { useParams } from 'react-router'
+import { IAlertData, IGenerateSoundQuery, INotification } from 'types'
 
-import { useAppSelector } from "hooks/reduxHooks";
-import { useGetAlertWidgetDataQuery } from "store/services/AlertsService";
-import {
-  formatNumber,
-  getFontColorStyles,
-  getFontsList,
-  loadFonts,
-} from "utils";
-import { initAlertData, baseURL, maxSoundDuration } from "consts";
-import { ISelectItem } from "components/SelectInput";
-import { IAlert } from "appTypes";
+import { useAppSelector } from 'hooks/reduxHooks'
+import { useGetAlertWidgetDataQuery } from 'store/services/AlertsService'
+import { formatNumber, getFontColorStyles, getFontsList, loadFonts } from 'utils'
+import { initAlertData, baseURL, maxSoundDuration } from 'consts'
+import { ISelectItem } from 'components/SelectInput'
+import { IAlert } from 'appTypes'
 
-import bigImg from "assets/big_don.png";
-import "./styles.sass";
+import bigImg from 'assets/big_don.png'
+import './styles.sass'
 
-const alertSound = new Audio();
+const alertSound = new Audio()
 
 const DonateAlertContainer = () => {
-  const { list } = useAppSelector(({ notifications }) => notifications);
-  const { name, id } = useParams();
+	const { list } = useAppSelector(({ notifications }) => notifications)
+	const { name, id } = useParams()
 
-  const { data: alertData, error } = useGetAlertWidgetDataQuery(id as string, {
-    skip: !id || !name,
-  });
+	const { data: alertData, error } = useGetAlertWidgetDataQuery(id as string, {
+		skip: !id || !name,
+	})
 
-  const [lastNotif, setLastNotif] = useState<INotification | null>(null);
-  const [fonts, setFonts] = useState<ISelectItem[]>([]);
+	const [lastNotif, setLastNotif] = useState<INotification | null>(null)
+	const [fonts, setFonts] = useState<ISelectItem[]>([])
 
-  const [alertWidgetData, setAlertWidgetData] = useState<IAlert>(initAlertData);
+	const [alertWidgetData, setAlertWidgetData] = useState<IAlert>(initAlertData)
 
-  const playSound = (soundLink: string) => {
-    if (alertSound) {
-      alertSound.pause();
-      alertSound.src = soundLink;
-      alertSound.play();
-    }
-  };
+	const playSound = (soundLink: string) => {
+		if (alertSound) {
+			alertSound.pause()
+			alertSound.src = soundLink
+			alertSound.play()
+		}
+	}
 
-  useEffect(() => {
-    list.length && setLastNotif(list[0]);
-  }, [list]);
+	useEffect(() => {
+		list.length && setLastNotif(list[0])
+	}, [list])
 
-  useEffect(() => {
-    const { voice, sound, genderVoice } = alertWidgetData;
-    const donation = lastNotif?.donation;
-    if (donation) {
-      const { message } = donation;
-      if (sound) {
-        playSound(sound.path);
-        setTimeout(() => {
-          const { duration } = alertWidgetData;
-          if (voice) {
-            const text = message.replaceAll("*", "");
-            const queryParams: IGenerateSoundQuery = {
-              text,
-              genderVoice,
-            };
+	useEffect(() => {
+		const { voice, sound, genderVoice } = alertWidgetData
+		const donation = lastNotif?.donation
+		if (donation) {
+			const { message } = donation
+			if (sound) {
+				playSound(sound.path)
+				setTimeout(() => {
+					const { duration } = alertWidgetData
+					if (voice) {
+						const text = message.replaceAll('*', '')
+						const queryParams: IGenerateSoundQuery = {
+							text,
+							genderVoice,
+						}
 
-            const queryString = Object.entries(queryParams)
-              .map(([param, value]) => `${param}=${value}`)
-              .join("&");
+						const queryString = Object.entries(queryParams)
+							.map(([param, value]) => `${param}=${value}`)
+							.join('&')
 
-            const tmp = new Audio(
-              `${baseURL}/api/widgets/alerts/generate/sound?${queryString}`
-            );
-            tmp.play();
-          }
-          setTimeout(() => {
-            setLastNotif(null);
-          }, duration * 1000);
-        }, maxSoundDuration * 1000);
-      }
-    }
-  }, [lastNotif, alertWidgetData]);
+						const tmp = new Audio(`${baseURL}/api/widgets/alerts/generate/sound?${queryString}`)
+						tmp.play()
+					}
+					setTimeout(() => {
+						setLastNotif(null)
+					}, duration * 1000)
+				}, maxSoundDuration * 1000)
+			}
+		}
+	}, [lastNotif, alertWidgetData])
 
-  useEffect(() => {
-    const loadWidgetFonts = async (widgetData: IAlertData) => {
-      let loadedFonts: ISelectItem<string>[] = [];
+	useEffect(() => {
+		const loadWidgetFonts = async (widgetData: IAlertData) => {
+			let loadedFonts: ISelectItem<string>[] = []
 
-      if (!fonts.length) {
-        loadedFonts = await getFontsList();
-        setFonts(loadedFonts);
-      }
+			if (!fonts.length) {
+				loadedFonts = await getFontsList()
+				setFonts(loadedFonts)
+			}
 
-      const { nameFont, messageFont, sumFont } = widgetData;
-      return await loadFonts({
-        fonts: fonts.length ? fonts : loadedFonts,
-        fields: { nameFont, messageFont, sumFont },
-      });
-    };
+			const { nameFont, messageFont, sumFont } = widgetData
+			return await loadFonts({
+				fonts: fonts.length ? fonts : loadedFonts,
+				fields: { nameFont, messageFont, sumFont },
+			})
+		}
 
-    const initAlertData = async () => {
-      if (!alertData) return;
+		const initAlertData = async () => {
+			if (!alertData) return
 
-      const {
-        nameFont,
-        messageFont,
-        sumFont,
-        banner,
-        sound,
-        duration,
-        ...widgetData
-      } = alertData;
+			const { nameFont, messageFont, sumFont, banner, sound, duration, ...widgetData } = alertData
 
-      const loadedFonts = await loadWidgetFonts(alertData);
+			const loadedFonts = await loadWidgetFonts(alertData)
 
-      setAlertWidgetData((alertWidgetData) => ({
-        ...alertWidgetData,
-        ...widgetData,
-        ...loadedFonts,
-        banner: {
-          ...alertWidgetData.banner,
-          preview: banner,
-        },
-        sound: {
-          ...alertWidgetData.sound,
-          path: sound,
-        },
-        duration: Number(duration),
-      }));
-    };
+			setAlertWidgetData((alertWidgetData) => ({
+				...alertWidgetData,
+				...widgetData,
+				...loadedFonts,
+				banner: {
+					...alertWidgetData.banner,
+					preview: banner,
+				},
+				sound: {
+					...alertWidgetData.sound,
+					path: sound,
+				},
+				duration: Number(duration),
+			}))
+		}
 
-    initAlertData();
-  }, [alertData]);
+		initAlertData()
+	}, [alertData])
 
-  if (error) {
-    console.log(error);
-    return null;
-  }
+	if (error) {
+		console.log(error)
+		return null
+	}
 
-  const {
-    banner,
-    messageColor,
-    messageFont,
-    nameColor,
-    nameFont,
-    sumColor,
-    sumFont,
-  } = alertWidgetData;
+	const { banner, messageColor, messageFont, nameColor, nameFont, sumColor, sumFont } =
+		alertWidgetData
 
-  if (lastNotif && lastNotif.donation) {
-    const { sum, blockchain, message } = lastNotif.donation;
-    const sender = lastNotif.users.find(
-      ({ roleplay }) => roleplay === "sender"
-    );
-    return (
-      <div className="donat-messsage-container">
-        <img
-          src={banner.preview || bigImg}
-          alt="banner"
-          className={clsx("donat-messsage-container_banner", {
-            rotate: !Boolean(banner.preview),
-          })}
-        />
-        <div className="donat-messsage-container_title">
-          <span style={getFontColorStyles(nameColor, nameFont)}>
-            {sender?.user.username}
-          </span>
-          &nbsp;-&nbsp;
-          <span style={getFontColorStyles(sumColor, sumFont)}>
-            {formatNumber(sum, 3)} {blockchain}
-          </span>
-        </div>
-        <p
-          className="donat-messsage-container_message"
-          style={getFontColorStyles(messageColor, messageFont)}
-        >
-          {message}
-        </p>
-      </div>
-    );
-  }
+	if (lastNotif && lastNotif.donation) {
+		const { sum, blockchain, message } = lastNotif.donation
+		const sender = lastNotif.users.find(({ roleplay }) => roleplay === 'sender')
+		return (
+			<div className="donat-messsage-container">
+				<img
+					src={banner?.preview || bigImg}
+					alt="banner"
+					className={clsx('donat-messsage-container_banner', {
+						rotate: !banner?.preview,
+					})}
+				/>
+				<div className="donat-messsage-container_title">
+					<span style={getFontColorStyles(nameColor, nameFont)}>{sender?.user.username}</span>
+					&nbsp;-&nbsp;
+					<span style={getFontColorStyles(sumColor, sumFont)}>
+						{formatNumber(sum, 3)} {blockchain}
+					</span>
+				</div>
+				<p
+					className="donat-messsage-container_message"
+					style={getFontColorStyles(messageColor, messageFont)}
+				>
+					{message}
+				</p>
+			</div>
+		)
+	}
 
-  return <></>;
-};
+	return <></>
+}
 
-export default DonateAlertContainer;
+export default DonateAlertContainer

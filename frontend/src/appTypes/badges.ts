@@ -1,9 +1,7 @@
-import { IBadgeInfo } from "types";
-import { BlockchainNames } from "utils/wallets/wagmi";
-import { IFileInfo } from "./files";
+import { IBadgeInfo } from 'types'
+import { BlockchainNames } from 'utils/wallets/wagmi'
+import { IFileInfo } from './files'
 
-export interface IBadge
-  extends IBadgeInfo<IFileInfo, string, BlockchainNames> {}
+export type IBadge = IBadgeInfo<IFileInfo, string, BlockchainNames>
 
-export interface IBadgePage
-  extends IBadgeInfo<string, string, BlockchainNames> {}
+export type IBadgePage = IBadgeInfo<string, string, BlockchainNames>

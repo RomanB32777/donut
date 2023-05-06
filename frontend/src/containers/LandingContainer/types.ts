@@ -1,7 +1,7 @@
 interface IFeature {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
+	icon: React.ReactNode
+	title: string
+	description: string
 }
 
-export type { IFeature };
+export type { IFeature }
