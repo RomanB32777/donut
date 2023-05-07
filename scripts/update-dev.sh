@@ -1,8 +1,13 @@
 #!/bin/bash
 echo "update donut app"
 
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+project_dir=$(dirname "$script_dir")
+
 types_dir="types"
-modulesWithTypes=('backendTest')
+modulesWithTypes=('backend' 'frontend')
+
+cd $project_dir
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 echo $branch

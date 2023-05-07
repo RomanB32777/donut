@@ -24,7 +24,7 @@ if [[ $branch = 'testHusky' ]]; then
                 break
                 ;;
             "Quit")
-                echo "Quit" && exit 2
+                echo "Quit" && exit 1
                 break
                 ;;
             *) echo "invalid option $REPLY";;

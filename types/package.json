@@ -3,8 +3,8 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"dev": "npx tsc --watch",
-		"build": "rimraf ./build && npm run format && npx tsc",
+		"dev": "npm run lint:fix && npm run format && npx tsc --watch",
+		"build": "rimraf ./build && npx tsc",
 		"format": "prettier --write \"**/*.ts\"",
 		"lint": "eslint \"**/*.ts\" --color",
 		"lint:fix": "npm run lint -- --fix"

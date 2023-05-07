@@ -1,7 +1,9 @@
 #!/bin/bash
 echo "update donut app"
 
-project_dir=$(dirname "$0")
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+project_dir=$(dirname "$script_dir")
+
 types_dir="types"
 modulesWithTypes=('backend' 'frontend')
 
@@ -21,14 +23,14 @@ cd ..
 
 for i in ${modulesWithTypes[@]}
 do
-   cp -r ./$types_dir ./$i
+   cp -r $project_dir/$types_dir $project_dir/$i
 done
 
 docker-compose up -d --build
 
 for i in ${modulesWithTypes[@]}
 do
-   rm -rf ./$i/$types_dir
+   rm -rf $project_dir/$i/$types_dir
 done
 
 # clear old images
