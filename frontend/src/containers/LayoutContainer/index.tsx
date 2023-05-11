@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useContext } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { useSearchParams } from 'react-router-dom'
 import { skipToken } from '@reduxjs/toolkit/dist/query'
@@ -12,8 +12,10 @@ import AuthModals from './authModals'
 import useAuth from 'hooks/useAuth'
 import { useCheckTokenQuery } from 'store/services/AuthService'
 import { Pages, routersInfo, routers, RoutePaths } from 'routes'
+import { AppContext } from 'contexts/AppContext'
 import { dashboardPath } from 'consts'
 import { setAuthToken } from 'utils'
+import { LOCALES } from 'appTypes'
 import './styles.sass'
 
 const { Content } = Layout
@@ -26,10 +28,12 @@ const LayoutApp = () => {
 	const { pathname } = useLocation()
 	const [searchParams, setSearchParams] = useSearchParams()
 	const { checkAuth, isAuthLoading } = useAuth()
+	const { handleLocale } = useContext(AppContext)
 
 	const tokenId = searchParams.get('token')
 	const confirmStatus = searchParams.get('confirmStatus')
 	const email = searchParams.get('email')
+	const langParam = searchParams.get('lang')
 
 	const { data: tokenData, isError } = useCheckTokenQuery(tokenId ?? skipToken)
 
@@ -68,14 +72,17 @@ const LayoutApp = () => {
 		return ''
 	}, [pathname])
 
+	const deleteParams = (...params: string[]) => {
+		params.forEach((param) => searchParams.delete(param))
+		setSearchParams(searchParams)
+	}
+
 	useEffect(() => {
 		const checkTokenData = async () => {
 			if (tokenData && confirmStatus === 'true') {
 				setAuthToken(tokenData.access_token)
 				await checkAuth()
-				searchParams.delete('token')
-				searchParams.delete('confirmStatus')
-				setSearchParams(searchParams)
+				deleteParams('token', 'confirmStatus')
 				navigate(dashboardPath)
 			}
 		}
@@ -86,6 +93,14 @@ const LayoutApp = () => {
 	useEffect(() => {
 		if (confirmStatus === 'false' && email) navigate(RoutePaths.main)
 	}, [confirmStatus, email])
+
+	useEffect(() => {
+		if (langParam) {
+			const selectedLocale = langParam as LOCALES
+			deleteParams('lang')
+			handleLocale(selectedLocale)
+		}
+	}, [langParam])
 
 	useEffect(() => {
 		if (isError) navigate(RoutePaths.main)

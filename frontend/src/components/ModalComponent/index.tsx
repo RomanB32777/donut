@@ -24,14 +24,14 @@ const ModalComponent: FC<IModalComponent> = ({
 }) => (
 	<Modal
 		{...props}
-		confirmLoading={confirmLoading || false}
+		confirmLoading={confirmLoading}
 		width={width || 520}
 		style={{ top: topModal ? 20 : centered ? 0 : 100 }}
 		footer={null}
 		bodyStyle={{
 			padding: noPadding ? 0 : 24,
 		}}
-		centered={centered || false}
+		centered={centered}
 		className={clsx('app-modal', className)}
 		transitionName=""
 	>
@@ -101,6 +101,7 @@ export const SuccessModalComponent: FC<ISuccessModalComponent> = ({
 			topModal={!isTablet}
 			noPadding
 			centered
+			{...props}
 		>
 			<div className="modal-success" onClick={onClose}>
 				<p className="message">{message}</p>

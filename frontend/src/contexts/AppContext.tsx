@@ -30,6 +30,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 	const [context, setContext] = useState<IAppContext>(initAppContext)
 
 	const handleLocale = (locale: LOCALES, isReload = true) => {
+		if (!Object.values(LOCALES).some((l) => l === locale)) return
+
 		setContext((context) => ({ ...context, locale }))
 		localStorage.setItem(localesStorageKey, locale)
 		if (isReload) window.location.reload()
