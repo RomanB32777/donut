@@ -9,6 +9,7 @@ type userRoles = keyof typeof UserRoles
 enum BannerTypes {
 	headerBanner = 'headerBanner',
 	backgroundBanner = 'backgroundBanner',
+	twitchBanner = 'twitchBanner',
 }
 
 type bannerTypes = keyof typeof BannerTypes
@@ -49,6 +50,7 @@ interface IShortUserData extends IUserBase {
 interface IDonatPage<T = string> extends IDonatPageWithoutBanners {
 	[BannerTypes.headerBanner]: T
 	[BannerTypes.backgroundBanner]: T
+	[BannerTypes.twitchBanner]: T
 }
 
 interface ICreatorInfo<T = string> extends IDonatPage<T> {

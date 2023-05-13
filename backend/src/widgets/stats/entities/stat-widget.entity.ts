@@ -55,7 +55,7 @@ export class StatWidget extends BaseEntity implements Omit<IStatData, 'creator'>
 	@Column({
 		type: 'enum',
 		enum: TextAlignment,
-		name: 'text_alignment',
+		name: 'text_alignment2',
 		default: TextAlignment.Center,
 	})
 	@IsEnum(TextAlignment)

@@ -34,7 +34,7 @@ export class UpdateCreatorDto
 	implements IResetField
 {
 	@Exclude()
-	user: User
+	user?: User
 
 	@IsOptional()
 	@IsBoolean()

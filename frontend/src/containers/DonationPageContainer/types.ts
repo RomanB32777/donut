@@ -1,8 +1,11 @@
-import { defaultAssetsFolders } from 'types'
+import { bannerTypes, donatAssetTypes } from 'types'
 import { IDefaultImagesModal } from 'appTypes'
 
-interface IBannerModalInfo extends IDefaultImagesModal {
-	folder: defaultAssetsFolders
+export interface ModalImagesInfo {
+	colImage: number
+	bannerType: bannerTypes
 }
 
-export type { IBannerModalInfo }
+export interface IBannerModalInfo extends IDefaultImagesModal, ModalImagesInfo {
+	folder: donatAssetTypes
+}

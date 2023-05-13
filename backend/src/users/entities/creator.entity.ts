@@ -36,6 +36,17 @@ export class Creator extends BaseEntity implements ICreatorInfo {
 	@IsOptional()
 	backgroundBanner: string
 
+	@ApiProperty({ description: 'Donation page twitch image - string url' })
+	@Column({
+		type: 'varchar',
+		name: 'twitch_banner',
+		nullable: true,
+		default: '',
+	})
+	@IsString()
+	@IsOptional()
+	twitchBanner: string
+
 	@ApiProperty({
 		description: 'Welcome text for donation page',
 		example: 'Thank you for being my crypto supporter!',

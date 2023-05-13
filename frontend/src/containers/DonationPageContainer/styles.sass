@@ -23,10 +23,10 @@
             .link-wrapper
                 margin-top: 10px
 
-    .qr
+    .downloadBlock
         margin-top: 40px
 
-        &-title
+        .downloadTitle
             display: flex
             align-items: center
             margin-bottom: 15px
@@ -47,7 +47,7 @@
                 svg
                     transform: rotate(180deg)
 
-        &-wrapper
+        .downloadWrapper
             display: flex
             align-items: center
 
@@ -55,13 +55,24 @@
                 flex-direction: column
                 align-items: flex-start
 
-        &-block
+        .imageBlock
             width: fit-content
             margin-right: 50px
 
             @media (max-width: 480px)
                 margin-right: 0
                 margin-bottom: 25px
+
+            .twitch
+                width: 300px
+                height: 150px
+                overflow: hidden
+
+                img
+                    cursor: pointer
+                    height: 100%
+                    width: 100%
+                    object-fit: contain
 
     .designSettings
         margin-top: 40px

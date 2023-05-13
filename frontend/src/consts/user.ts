@@ -20,6 +20,7 @@ export const initUser: IUser = {
 export const initDonatPage: IDonatPageWithFiles = {
 	headerBanner: initFileInfo,
 	backgroundBanner: initFileInfo,
+	twitchBanner: initFileInfo,
 	welcomeText: '',
 	btnText: '',
 	mainColor: '',

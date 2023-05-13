@@ -3,7 +3,7 @@ import { IFileInfo } from './files'
 
 export type IDonatPageWithFiles = IDonatPage<IFileInfo>
 
-export type DonatPageFiellds = keyof IDonatPageWithFiles
+export type DonatePageFields = keyof IDonatPageWithFiles
 
 export type IUserWithFiles = IUser<IFileInfo>
 

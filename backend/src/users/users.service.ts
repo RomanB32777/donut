@@ -54,9 +54,11 @@ export class UsersService {
 
 		const newSavedUser = await this.usersRepository.save(newUser)
 
+		// this is creator
 		if (newSavedUser.alert) {
 			const { id: alertId } = newSavedUser.alert
 			await this.alertsService.setDefaultSound(alertId)
+			await this.setDefaultTwitchBanner(newUser.id)
 		}
 		return newSavedUser
 	}
@@ -198,23 +200,23 @@ export class UsersService {
 	}
 
 	async updateCreator(
-		user: User,
+		userId: string,
 		updatedCreator: UpdateCreatorDto,
 		uploadFiles?: UserFiles,
 	): Promise<User> {
-		const { id } = user
 		const { isReset, ...creatorData } = updatedCreator
 
 		if (isReset) {
 			const columns = getDefaultValues(this.creatorsRepository, ['spamFilter'])
-			await this.creatorsRepository.update({ user: { id } }, { ...columns })
+			await this.creatorsRepository.update({ user: { id: userId } }, { ...columns })
+			await this.setDefaultTwitchBanner(userId)
 		} else {
 			if (uploadFiles) {
 				Object.entries(uploadFiles).forEach(([key, files]) => {
 					if (files) {
 						const folderType = key as donatAssetTypes
 						const [file] = files
-						const { path } = this.fileService.uploadFile(file, id, folderType)
+						const { path } = this.fileService.uploadFile(file, userId, folderType)
 						const updatedField = `${folderType}Banner`
 						creatorData[updatedField] = path
 					}
@@ -222,10 +224,18 @@ export class UsersService {
 			}
 
 			if (Object.keys(creatorData).length) {
-				await this.creatorsRepository.update({ user: { id } }, { ...creatorData })
+				await this.creatorsRepository.update({ user: { id: userId } }, { ...creatorData })
 			}
 		}
+		return await this.getUserById(userId)
+	}
 
-		return await this.getUserById(id)
+	async setDefaultTwitchBanner(id: string) {
+		const [image] = this.fileService.getAssetsFiles('twitch')
+		if (image) {
+			await this.updateCreator(id, {
+				twitchBanner: image.path,
+			})
+		}
 	}
 }

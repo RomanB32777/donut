@@ -77,14 +77,17 @@ const messages = {
 		landing_launch_button: 'Launch app',
 		landing_create_account_button: 'Create account',
 
-		landing_banner_title: "Let's revolutionize the way crypto donations work",
+		landing_banner_title: 'Web3 donation platform  for streamers',
 		landing_banner_subtitle:
 			"It's time to display crypto donations on a stream, mint NFTs for your supporters and have fun!",
 
 		landing_whatIs_subtitle: 'What is Crypto Donutz?',
-		landing_whatIs_title: 'Crypto donation platform for streamers',
+		landing_whatIs_title: 'Start accepting donation in crypto',
 		landing_whatIs_description:
-			'Our product is aimed to increase streamer’s revenue and interaction with crypto supporters. It’s also extremely easy to set up.',
+			'Set up your customizable donation page, display incoming donations on the stream and increase interaction with your crypto audience',
+
+		landing_form_title: 'Want to get $20 in crypto donations from us?',
+		landing_form_button: 'Learn more',
 
 		landing_features_subtitle: "What's so special about us?",
 		landing_features_title: 'Our features',
@@ -116,7 +119,7 @@ const messages = {
 			'Every transaction is processed via smart contract and donation goes directly to your wallet address. We have no control over your money.',
 
 		landing_commission_title: '0% commission',
-		landing_commission_description: 'Right now the service is completely free to use for everyone',
+		landing_commission_description: 'No commissions, no fees. It’s completely free. For now.',
 
 		landing_howWork_subtitle: 'How it all works?',
 		landing_howWork_title: 'Three steps process',
@@ -189,6 +192,7 @@ const messages = {
 		donation_subtitle: 'Via the link below your supporters can send you donations',
 		donation_generate_button: 'Generate QR code',
 		donation_download_button: 'Download PNG',
+		donation_twitch_button: 'Twitch banner',
 		donation_header_banner: 'Header banner:',
 		donation_background_banner: 'Background banner:',
 		donation_welcome_text: 'Welcome text:',

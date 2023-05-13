@@ -10,12 +10,13 @@ enum FileUploadTypes {
 	background = 'background',
 	header = 'header',
 	badges = 'badges',
+	twitch = 'twitch',
 }
 
 type fileUploadTypes = keyof typeof FileUploadTypes
 
 type alertAssetTypes = Extract<fileUploadTypes, 'alert' | 'sound'>
-type donatAssetTypes = Extract<fileUploadTypes, 'background' | 'header'>
+type donatAssetTypes = Extract<fileUploadTypes, 'background' | 'header' | 'twitch'>
 type defaultAssetsFolders = alertAssetTypes | donatAssetTypes
 
 export { FileUploadTypes }

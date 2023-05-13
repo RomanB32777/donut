@@ -155,12 +155,12 @@ export class UsersController {
 		type: User,
 	})
 	async updateCreator(
-		@UserInfo() user: User,
+		@UserInfo('id') id: string,
 		@Body() updateData: UpdateCreatorDto,
 		@UploadedFiles()
 		files: UserFiles,
 	) {
-		return this.usersService.updateCreator(user, updateData, files)
+		return this.usersService.updateCreator(id, updateData, files)
 	}
 
 	@Delete()
