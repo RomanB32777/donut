@@ -25,7 +25,9 @@ const FilterSelect: FC<IFilterSelect> = ({ selectedItem, selectItem }) => {
 				list={Object.values(filterPeriodItems)}
 				renderOption={renderOption}
 				selectItem={selectItem}
-				listWrapperModificator="filter-list"
+				listWrapperModificator="filterList"
+				listModificator="listModificator"
+				listItemModificator="listItemModificator"
 			/>
 		</div>
 	)

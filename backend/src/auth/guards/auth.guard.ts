@@ -26,6 +26,8 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
 			const { request, authorization } = this.getAuthorization(context)
 			const requestUser = request?.user
 
+			console.log('requestUserTest', requestUser)
+
 			if (requestUser) {
 				const userInfo = requestUser as UserTokenPayloadDto
 				return await this.usersService.checkUserExistById(userInfo.id)

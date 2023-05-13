@@ -5,7 +5,7 @@ export class twitch1683992608220 implements MigrationInterface {
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
-			`ALTER TABLE "creators" ADD "twitch_banner" character varying DEFAULT ''`,
+			`ALTER TABLE "creators" ADD "twitch_banner" character varying DEFAULT '/assets/twitch/bannerEn.png'`,
 		)
 	}
 

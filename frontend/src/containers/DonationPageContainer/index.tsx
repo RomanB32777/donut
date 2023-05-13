@@ -13,6 +13,7 @@ import UploadImage, { UploadAfterEl } from 'components/UploadImage'
 import FormInput from 'components/FormInput'
 import ModalComponent from 'components/ModalComponent'
 import FormBtnsBlock from 'components/FormBtnsBlock'
+import VideoBlock from 'components/video-block/video-block'
 import { SmallToggleListArrowIcon } from 'icons'
 
 import { useAppSelector } from 'hooks/reduxHooks'
@@ -38,6 +39,8 @@ const modalImageInfo: Record<donatAssetTypes, ModalImagesInfo> = {
 		bannerType: 'twitchBanner',
 	},
 }
+
+const videoLink = 'https://www.youtube.com/embed/JlWaN-uwXfY'
 
 const DonationPageContainer = () => {
 	const [editCreator, { isLoading: isEditCreatorLoading }] = useEditCreatorMutation()
@@ -82,7 +85,7 @@ const DonationPageContainer = () => {
 
 	const closeBannersPopup = () => setBannerModalInfo((prev) => ({ ...prev, isOpen: false }))
 
-	const selectDefaultBanner = (image: string) => () => {
+	const selectDefaultBanner = (image: string) => async () => {
 		const imageType = modalImageInfo[folder].bannerType
 		setDonationInfoData({
 			...donationInfoData,
@@ -91,6 +94,10 @@ const DonationPageContainer = () => {
 				preview: image,
 			},
 		})
+		if (folder === 'twitch') {
+			const [editArgs]: Parameters<typeof editCreator> = [{ twitchBanner: image }]
+			await editCreator(editArgs)
+		}
 		closeBannersPopup()
 	}
 
@@ -222,6 +229,7 @@ const DonationPageContainer = () => {
 				</p>
 				<LinkCopy link={linkForSupport} isSimple={!isMobile} />
 			</div>
+			<VideoBlock link={videoLink} />
 			<Row>
 				<Col md={12} xs={24}>
 					<div className="downloadBlock">
@@ -412,7 +420,7 @@ const DonationPageContainer = () => {
 						<Col md={modalImageInfo[folder].colImage} key={`banner-${name}-${key}`}>
 							<div
 								className={clsx('default-banner', {
-									long: folder === 'header',
+									long: folder !== 'background',
 								})}
 								onClick={selectDefaultBanner(path)}
 							>

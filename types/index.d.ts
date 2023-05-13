@@ -63,6 +63,7 @@ import {
 	IBagdeAssignInfo,
 } from './src/badge'
 import {
+	WidgetTypes,
 	IWidgetQueryData,
 	IGoalDataBase,
 	IGoalWidgetData,
@@ -178,6 +179,7 @@ export type {
 	IBagdeAssignInfo,
 
 	// widgets
+	WidgetTypes,
 	IWidgetQueryData,
 	IGoalDataBase,
 	IGoalWidgetData,

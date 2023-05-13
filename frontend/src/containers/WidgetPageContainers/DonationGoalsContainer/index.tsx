@@ -7,10 +7,11 @@ import PageTitle from 'components/PageTitle'
 import GoalItem from './components/GoalItem'
 import GoalsModal from './components/GoalsModal'
 import EmptyComponent from 'components/EmptyComponent'
+import VideoBlock from 'components/video-block/video-block'
 
 import { useGetGoalsQuery } from 'store/services/GoalsService'
 import { getFontsList } from 'utils'
-import { initWidgetGoalData } from 'consts'
+import { initWidgetGoalData, widgetVideoLinks } from 'consts'
 import { ISelectItem } from 'components/SelectInput'
 import { IWidgetGoalData } from 'appTypes'
 import './styles.sass'
@@ -59,6 +60,7 @@ const DonationGoalsContainer = () => {
 	return (
 		<div className="goals fadeIn">
 			<PageTitle formatId="page_title_donation_goals" />
+			<VideoBlock link={widgetVideoLinks.goal} modificator="videoModificator" />
 			<div className="headerPage">
 				<p className="subtitle">
 					<FormattedMessage id="goals_subtitle" />

@@ -1,7 +1,13 @@
-import { typeAlignment } from 'types'
+import { WidgetTypes, typeAlignment } from 'types'
 import { IAlert, IWidgetGoalData, IWidgetStatData } from 'appTypes'
 
 export const maxSoundDuration = 5 // s
+
+export const widgetVideoLinks: Record<WidgetTypes, string> = {
+	alert: 'https://www.youtube.com/embed/ZMy6HGL7CWM',
+	goal: 'https://www.youtube.com/embed/w-7IMwq27Wk',
+	stat: 'https://www.youtube.com/embed/teWaDqpa_yY',
+}
 
 export const alignItemsList: { [key in typeAlignment]: string } = {
 	Left: 'start',

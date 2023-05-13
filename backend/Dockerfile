@@ -26,6 +26,4 @@ ENV port=$PORT
 
 EXPOSE $port
 
-RUN echo $(ls -1 ./node_modules/types/)
-
 CMD ["npm", "run", "start:prod"]

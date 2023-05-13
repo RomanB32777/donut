@@ -2,6 +2,8 @@ import { allPeriodItemsTypes } from './dates'
 import { IResetField } from './general'
 import { gendersType } from './user'
 
+type WidgetTypes = 'alert' | 'goal' | 'stat'
+
 interface IWidgetQueryData {
 	username: string
 	id: string
@@ -107,6 +109,7 @@ type statsDataKeys = keyof IStatData
 export { TextAlignment, StatsDataTypes }
 
 export type {
+	WidgetTypes,
 	IWidgetQueryData,
 
 	// goals
