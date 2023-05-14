@@ -7,8 +7,8 @@ const VideoBlock: FC<IVideoBlock> = ({ link, modificator }) => {
 	return (
 		<div className={clsx('video', modificator)}>
 			<iframe
-				width="520"
-				height="310"
+				width="530"
+				height="315"
 				src={link}
 				title="YouTube video player"
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

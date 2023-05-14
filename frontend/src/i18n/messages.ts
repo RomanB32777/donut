@@ -88,6 +88,7 @@ const messages = {
 
 		landing_form_title: 'Want to get $20 in crypto donations from us?',
 		landing_form_button: 'Learn more',
+
 		landing_features_subtitle: "What's so special about us?",
 		landing_features_title: 'Our features',
 
@@ -160,7 +161,7 @@ const messages = {
 		sidebar_widgets_stats: 'In-stream stats',
 		sidebar_widgets_goals: 'Donation goals',
 		sidebar_donations: 'Donations',
-		sidebar_badges: 'Badges',
+		sidebar_badges: 'NFT',
 		sidebar_settings: 'Settings',
 		sidebar_help: 'Help center',
 
@@ -479,6 +480,9 @@ const messages = {
 		landing_whatIs_title: 'Платформа крипто донатов для стримеров',
 		landing_whatIs_description:
 			'С помощью нашего сервиса вы можете получать донаты в криптовалюте от своих зрителей через удобную страницу донатов, показывать их на стриме и улучшить взаимодействие с вашей аудиторией',
+
+		landing_form_title: 'Получите $20 от Crypto Donutz',
+		landing_form_button: 'Узнать больше',
 
 		landing_features_subtitle: 'Почему к нам стоит присмотреться?',
 		landing_features_title: 'Наши особенности',
@@ -873,6 +877,7 @@ const messages = {
 		landing_whatIs_title: 'Comienza a aceptar donaciones en criptomonedas',
 		landing_whatIs_description:
 			'Configura tu página de donaciones personalizable, muestra las donaciones entrantes en la transmisión e incrementa la interacción con tu audiencia de criptomonedas',
+
 		landing_form_title: '¿Quieres recibir $20 en donaciones en criptomonedas de nuestra parte?',
 		landing_form_button: 'Aprender más',
 
@@ -1270,6 +1275,7 @@ const messages = {
 		landing_whatIs_title: 'เริ่มรับบริจาคในรูปแบบคริปโต',
 		landing_whatIs_description:
 			'ตั้งค่าหน้าบริจาคที่สามารถปรับแต่งได้ แสดงการบริจาคที่เข้ามาในสตรีม และเพิ่มการมีส่วนร่วมกับผู้ชมที่ใช้คริปโต',
+
 		landing_form_title: 'ต้องการรับบริจาคคริปโตจากเรา 20 ดอลลาร์หรือไม่?',
 		landing_form_button: 'เรียนรู้เพิ่มเติม',
 
@@ -1663,6 +1669,7 @@ const messages = {
 		landing_whatIs_title: 'Comece a aceitar doações em cripto',
 		landing_whatIs_description:
 			'Configure sua página de doações personalizável, exiba as doações recebidas na transmissão e aumente a interação com seu público de cripto',
+
 		landing_form_title: 'Quer receber $20 em doações em cripto de nós?',
 		landing_form_button: 'Saiba mais',
 
@@ -2058,6 +2065,7 @@ const messages = {
 		landing_whatIs_title: '암호화폐로 기부를 받기 시작하세요',
 		landing_whatIs_description:
 			'맞춤형 기부 페이지를 설정하고, 스트림에서 들어오는 기부를 표시하고, 암호화폐 관련 관객과의 상호작용을 높이세요',
+
 		landing_form_title: '우리로부터 암호화폐로 $20의 기부를 받고 싶으신가요?',
 		landing_form_button: '자세히 알아보기',
 
