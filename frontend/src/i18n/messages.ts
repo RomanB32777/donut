@@ -30,7 +30,7 @@ const messages = {
 
 		// roles
 		roles_title: 'Who are you?',
-		roles_creator: 'Content creator',
+		roles_creator: 'Streamer',
 		roles_supporter: 'Supporter',
 		roles_button: 'Continue',
 
@@ -47,7 +47,7 @@ const messages = {
 		page_title_donations: 'Donations',
 		page_title_donation_page: 'Donation page',
 		page_title_design: 'Design',
-		page_title_badges: 'Badges',
+		page_title_badges: 'NFT',
 		page_title_settings: 'Settings',
 		page_title_alerts: 'Alerts',
 		page_title_stream_stats: 'In-stream statistics',
@@ -88,7 +88,6 @@ const messages = {
 
 		landing_form_title: 'Want to get $20 in crypto donations from us?',
 		landing_form_button: 'Learn more',
-
 		landing_features_subtitle: "What's so special about us?",
 		landing_features_title: 'Our features',
 
@@ -119,7 +118,7 @@ const messages = {
 			'Every transaction is processed via smart contract and donation goes directly to your wallet address. We have no control over your money.',
 
 		landing_commission_title: '0% commission',
-		landing_commission_description: 'No commissions, no fees. It’s completely free. For now.',
+		landing_commission_description: 'Right now the service is completely free to use for everyone',
 
 		landing_howWork_subtitle: 'How it all works?',
 		landing_howWork_title: 'Three steps process',
@@ -265,11 +264,11 @@ const messages = {
 		stats_modal_form_template: 'Template:',
 		stats_widget_card_period: 'Date period: {timePeriodName}',
 		stats_widget_card_type: 'Date type: {typeStatData}',
-		stats_widget_settings_title: 'Goal title color:',
+		stats_widget_settings_title: 'Widget title color:',
 		stats_widget_card_template: 'Template: {template}',
-		stats_widget_settings_bar_color: 'Goal bar color:',
+		stats_widget_settings_bar_color: 'Widget bar color:',
 		stats_widget_settings_сontent_color: 'Content color:',
-		stats_widget_settings_title_font: 'Goal title font:',
+		stats_widget_settings_title_font: 'Widget title font:',
 		stats_widget_settings_сontent_font: 'Content font:',
 		stats_widget_settings_сontent_alignment: 'Content alignment:',
 		stats_widget_settings_сontent_alignment_left: 'Left',
@@ -400,11 +399,10 @@ const messages = {
 		reset_title: 'Восстановить пароль',
 		reset_input_title: 'Введите ваш email. На него мы вышлем ссылку для восстановления пароля',
 		reset_button: 'Отправить',
-		reset_send:
-			'Инструкции по сбросу пароля отправлены на вашу электронную почту. Проверьте свою почту!',
+		reset_send: 'Инструкция по сбросу пароля отправлена на вашу электронную почту.',
 
 		// change
-		change_title: 'Измените свой пароль',
+		change_title: 'Создание нового пароля',
 		change_button: 'Изменить',
 		change_success: 'Успешно!',
 
@@ -426,7 +424,7 @@ const messages = {
 
 		// roles
 		roles_title: 'Кто вы?',
-		roles_creator: 'Создатель контента',
+		roles_creator: 'Стример',
 		roles_supporter: 'Донатер',
 		roles_button: 'Продолжить',
 
@@ -443,7 +441,7 @@ const messages = {
 		page_title_donations: 'Донаты',
 		page_title_donation_page: 'Страница донатов',
 		page_title_design: 'Дизайн',
-		page_title_badges: 'Бейджи',
+		page_title_badges: 'NFT',
 		page_title_settings: 'Настройки',
 		page_title_alerts: 'Оповещения',
 		page_title_stream_stats: 'Внутристримовая статистика',
@@ -467,66 +465,67 @@ const messages = {
 		not_found_button: 'Вернуться на главную страницу',
 
 		// landing
-		landing_main_button: 'Зарегистрироваться',
+		landing_main_button: 'Войти',
 		landing_main_button_logged: 'Перейти в профиль',
-		landing_connect_button: 'Зарегистрироваться',
+		landing_connect_button: 'Войти',
 		landing_launch_button: 'Перейти в профиль',
 		landing_create_account_button: 'Создать аккаунт',
 
-		landing_banner_title: 'Революционное решение для получения крипто донатов.',
+		landing_banner_title: 'Крипто донаты для стримеров',
 		landing_banner_subtitle:
-			'Настало время вывести крипто донаты на стрим, создать NFT для своей аудитории и повеселиться!',
+			'Начните принимать крипто донаты, выводить их на стрим и создавать NFT для своих доноров',
 
 		landing_whatIs_subtitle: 'Что такое Crypto Donutz?',
-		landing_whatIs_title: 'Крипто донат площадка для стримеров',
+		landing_whatIs_title: 'Платформа крипто донатов для стримеров',
 		landing_whatIs_description:
-			'Наш продукт нацелен на увеличение доходов стримера и взаимодействия с крипто аудиторией. Его очень просто настроить.',
+			'С помощью нашего сервиса вы можете получать донаты в криптовалюте от своих зрителей через удобную страницу донатов, показывать их на стриме и улучшить взаимодействие с вашей аудиторией',
 
-		landing_features_subtitle: 'В чем наша уникальность?',
+		landing_features_subtitle: 'Почему к нам стоит присмотреться?',
 		landing_features_title: 'Наши особенности',
 
 		// landing - features blocks
 		landing_features_widgets_title: 'Внутристримовые виджеты',
 		landing_features_widgets_description:
-			'Отображайте каждый крипто донат на стриме, выделяйте самых активных донатеров, создавайте донат цели и дайте возможность вашей аудитории участвовать в них',
+			'Отображайте каждый крипто донат на стриме, выделяйте самых активных доноров, создавайте цели сбора средств и дайте возможность вашей аудитории участвовать в них',
 		landing_features_badges_title: 'NFT бейджи',
 		landing_features_badges_description:
-			'Почему бы не дать самым активным крипто донатерам уникальный бейдж, особенно если он является NFT? Им это понравится!',
+			'Почему бы не дать самым активным крипто донорам уникальный бейдж, особенно если он является NFT? Им это понравится!',
 		landing_features_link_title: 'Простая интеграция',
 		landing_features_link_description:
-			'Все, что надо - это одна ссылка. Просто скопируйте и вставьте ссылку на виджет в OBS или любое другое ПО, которое вы используете. Начните отображать входящие пожертвования прямо на стриме.',
+			'Все, что надо - это одна ссылка. Просто скопируйте и вставьте ссылку виджета в OBS или любое другое ПО, которое вы используете. Начните показывать крипто донаты на стриме.',
 		landing_features_donations_title: 'Страница донатов',
 		landing_features_donations_description:
-			'Скопируйте ссылку на вашу уникальную донат страницу и дайте ее вашей аудитории. Увеличьте конверсии в донаты и ваши доходы',
-		landing_features_customizable_title: 'Кастомизация',
+			'Оставьте ссылку в описании на вашу уникальную страницу донатов и увеличьте ваш доход.',
+		landing_features_customizable_title: 'Персонализация',
 		landing_features_customizable_description:
-			'Используйте свои собственные отличительные цвета, тексты и изображения. Настройте виджеты и страницу донатов. Ваше воображение является единственным ограничением.',
+			'Используйте уникальные цвета, описания и медиа файлы для настройки страницы донатов и виджетов.',
 		landing_features_reports_title: 'Донат отчеты',
 		landing_features_reports_description:
-			'Используйте наши графики и отчеты для анализа ваших донатов. Выгрузите статистику за любой период времени, отсортируйте донаты по пользователям и погрузитесь в мир цифр.',
-		landing_features_fiat_title: 'Совместимость с фиатными сервисами',
+			'Выгружайте статистику за любой период времени, анализируйте донаты и доноров с помощью графиков и отчетов.',
+		landing_features_fiat_title: 'Совместимость с другими сервисами',
 		landing_features_fiat_description:
-			'Crypto Donutz разработан, чтобы наилучшим образом использовать технологию блокчейна. Используйте как фиатные, так и крипто сервисы, чтобы максимизировать свою прибыль.',
-		landing_features_nopending_title: 'Нет доступа к вашим деньгам',
+			'Не ограничивайте себя фиатными донатами. Используйте и фиатные сервисы и Crypto Donutz. Максимизируйте ваш доход.',
+		landing_features_nopending_title: 'Донаты напрямую',
 		landing_features_nopending_description:
-			'Каждая транзакция обрабатывается через смарт-контракт, и донат поступает непосредственно на адрес вашего кошелька. У нас нет контроля над вашими деньгами.',
+			'Донор отправляет донаты вам напрямую. У нас нет доступа к вашим деньгам, донаты поступают напрямую на ваш кошелек.',
 
 		landing_commission_title: '0% комиссии',
-		landing_commission_description: 'Прямо сейчас сервис полностью бесплатен для всех',
+		landing_commission_description:
+			'На данный момент сервис абсолютно бесплатный для всех. Используйте эту возможность!',
 
 		landing_howWork_subtitle: 'Как подключиться к сервису?',
-		landing_howWork_title: '3 простых действия',
+		landing_howWork_title: '3 простых шага',
 
 		// landing - howWork steps
 		landing_howWork_connection_title: 'Создайте аккаунт',
 		landing_howWork_connection_description:
-			'Зарегистрируйтесь с помощью вашей электронной почты, выберите имя пользователя и зарегистрируйте аккаунт.',
-		landing_howWork_widget_title: 'Настройка виджета и донат страницы',
+			'Зарегистрируйтесь с помощью вашей электронной почты, выберите имя пользователя и подключите кошелек.',
+		landing_howWork_widget_title: 'Настройте виджеты и донат страницу',
 		landing_howWork_widget_description:
-			"Перейдите в раздел 'Виджеты', скопируйте ссылку на донат оповещение и вставьте в стриминговое ПО. Также скопируйте ссылку на вашу донат страницу и вставьте ее в описание стрима.",
+			"Перейдите в раздел 'Виджеты', скопируйте ссылку на донат оповещение и вставьте в ваше ПО в секцию браузера. Также скопируйте ссылку на вашу донат страницу и вставьте ее в описание стрима.",
 		landing_howWork_actions_title: 'Начните получать ваши крипто донаты',
 		landing_howWork_actions_description:
-			'Создайте NFT бейджи для ваших самых активных донатеров, выводите донат уведомления на стрим и наслаждайтесь процессом!',
+			'Создавайте NFT бейджи для ваших доноров, выводите сообщения на стрим и наслаждайтесь процессом!',
 
 		landing_blockchains_subtitle: 'Интеграции',
 		landing_blockchains_title: 'Поддерживаемые сети',
@@ -538,9 +537,8 @@ const messages = {
 		landing_help_discord_description:
 			'Создайте тикет в дискорде и задайте любые вопросы нашей команде поддержки',
 
-		landing_help_telegram_title: 'Задайте вопрос в Телеграм',
-		landing_help_telegram_description:
-			'Отправьте запрос нашей команде поддержки и получите помощь сразу же',
+		landing_help_telegram_title: 'Задайте вопрос в Telegram',
+		landing_help_telegram_description: 'Наша поддержка будет рада ответить на все ваши вопросы',
 
 		landing_help_center_title: 'Посетите справочный центр',
 		landing_help_center_description:
@@ -556,7 +554,7 @@ const messages = {
 		sidebar_widgets_stats: 'Внутристримовая статистика',
 		sidebar_widgets_goals: 'Сбор средств',
 		sidebar_donations: 'Донаты',
-		sidebar_badges: 'Бейджи',
+		sidebar_badges: 'NFT',
 		sidebar_settings: 'Настройки',
 		sidebar_help: 'Справочный центр',
 
@@ -573,11 +571,11 @@ const messages = {
 		dashboard_widgets_stats: 'Статистика',
 		dashboard_widgets_stats_label: 'Сумма пожертвований',
 		dashboard_widgets_recent: 'Последние донаты',
-		dashboard_widgets_supporters: 'Топ донатеров',
+		dashboard_widgets_supporters: 'Топ доноры',
 		dashboard_widgets_donations: 'Топ донаты',
 
 		// donations page
-		donations_select_dates: 'Выберите уникальный период времени',
+		donations_select_dates: 'Выберите период времени',
 		donations_group_checkbox: 'Объединить донаты с одинаковым именем пользователя',
 
 		donations_search_placeholder: 'Искать по имени пользователя',
@@ -587,6 +585,7 @@ const messages = {
 		donation_subtitle: 'Через эту ссылку ваша аудитория может отправить вам крипто донаты',
 		donation_generate_button: 'Создать QR код',
 		donation_download_button: 'Скачать PNG',
+		donation_twitch_button: 'Баннер Twitch',
 		donation_header_banner: 'Изображение над формой:',
 		donation_background_banner: 'Изображение фона страницы:',
 		donation_welcome_text: 'Приветственный текст:',
@@ -596,35 +595,35 @@ const messages = {
 		donation_default_banners: 'Баннеры по умолчанию {bannerType}',
 
 		// badges page
-		badges_new_title: 'Минт и управление бейджами для ваших донатеров',
+		badges_new_title: 'Создавайте NFT бейджи для ваших доноров и управляйте ими',
 		badges_create_information_title: 'Информация о бейдже',
 		badges_create_information_description: 'Пожалуйста, заполните необходимую информацию',
 		badges_create_information_blockchain: 'Блокчейн',
 		badges_create_information_input_name: 'Название бейджа',
 		badges_create_information_input_description: 'Описание бейджа',
 		badges_success_modal_title: 'Поздравляем! Вы создали новый бейдж!',
-		badges_success_modal_description: 'Нажмите на него и выдайте его вашему донатеру',
+		badges_success_modal_description: 'Нажмите на него и отправьте его вашему донатеру',
 
 		// badge page
 		badge_image: 'Изображение бейджа',
 		badge_information_title: 'Информация о бейдже',
 		badge_information_name: 'Имя',
 		badge_information_description: 'Описание',
-		badge_information_assigned: 'Назначено',
+		badge_information_assigned: 'Выдано',
 		badge_information_quantity: 'Количество',
 		badge_information_blockchain: 'Блокчейн',
-		badge_assign_label: 'Назначить бейдж',
+		badge_assign_label: 'Выдать бейдж',
 		badge_assign_placeholder: 'Выберите донора',
-		badge_assign_loading: 'Подождите, пока бейдж будет создан на адресе {username}',
-		badge_assign_success: 'Поздравляем! Вы успешно назначили бейдж пользователю {username}',
-		badge_assign_button: 'Назначить',
+		badge_assign_loading: 'Подождите, пока бейдж будет отправлен на адрес {username}',
+		badge_assign_success: 'Поздравляем! Вы успешно выдали бейдж пользователю {username}',
+		badge_assign_button: 'Выдать',
 		badge_holders: 'Держатели бейджей',
 
 		// settings
 		settings_avatar: 'Аватар:',
 		settings_username: 'Имя пользователя:',
 		settings_wallet: 'Кошелек:',
-		settings_spam_filter: 'Фильтр спама:',
+		settings_spam_filter: 'Спам фильтр:',
 		settings_change_button: 'Изменить',
 		settings_copy_button: 'Копировать',
 		settings_delete_account: 'Удалить аккаунт',
@@ -634,13 +633,13 @@ const messages = {
 			'Вставьте эту ссылку в ПО, которое вы используете для стриминга, и отображайте крипто донаты.',
 		alerts_banner: 'Изображение:',
 		alerts_message_color: 'Цвет сообщения:',
-		alerts_name_color: 'Цвет имене донатера:',
+		alerts_name_color: 'Цвет имени донора:',
 		alerts_sum_color: 'Цвет суммы доната:',
 		alerts_message_font: 'Шрифт сообщения:',
-		alerts_supporter_font: 'Шрифт донатера:',
+		alerts_supporter_font: 'Шрифт имени донора:',
 		alerts_donation_font: 'Шрифт суммы доната:',
 		alerts_sound: 'Звук оповещения:',
-		alerts_sounds: 'Звуки пожертвований',
+		alerts_sounds: 'Звуки оповещений',
 		alerts_duration: 'Длительность оповещения:',
 		alerts_duration_value: '{duration} секунд',
 		alerts_voice: 'Голосовые оповещения:',
@@ -659,11 +658,11 @@ const messages = {
 		stats_modal_form_template: 'Шаблон:',
 		stats_widget_card_period: 'Период времени: {timePeriodName}',
 		stats_widget_card_type: 'Тип данных: {typeStatData}',
-		stats_widget_settings_title: 'Цвет заголовка цели:',
+		stats_widget_settings_title: 'Цвет заголовка виджета:',
 		stats_widget_card_template: 'Шаблон: {template}',
-		stats_widget_settings_bar_color: 'Цвет полоски цели',
+		stats_widget_settings_bar_color: 'Цвет полоски виджета:',
 		stats_widget_settings_сontent_color: 'Цвет контента:',
-		stats_widget_settings_title_font: 'Шрифт заголовка цели:',
+		stats_widget_settings_title_font: 'Шрифт заголовка виджета:',
 		stats_widget_settings_сontent_font: 'Шрифт контента:',
 		stats_widget_settings_сontent_alignment: 'Выравнивание контента:',
 		stats_widget_settings_сontent_alignment_left: 'Слева',
@@ -674,7 +673,7 @@ const messages = {
 
 		// goals
 		goals_subtitle: 'Начните сбор средств для конкретной покупки или цели.',
-		goals_modal_title: 'Новая цель сбор средств',
+		goals_modal_title: 'Новая цель сбора средств',
 		goals_modal_form_description: 'Описание цели:',
 		goals_modal_form_amount: 'Сумма к сбору:',
 		goals_widget_card_raised: 'Собрано: {amountRaised}/{amountGoal} USD',
@@ -685,19 +684,18 @@ const messages = {
 		goals_widget_settings_progress_font: 'Шрифт индикатора выполнения:',
 
 		donat_not_connected:
-			'Создатель {personUsername} еще не подключил кошелек. Пожалуйста, вернитесь позже!',
+			'Стример {personUsername} еще не подключил кошелек. Пожалуйста, вернитесь позже!',
 		donat_form_username: 'Ваше имя пользователя',
-		donat_form_switch_label: 'Включите анонимность',
+		donat_form_switch_label: 'Отправить анонимно',
 		donat_form_message: 'Сообщение для {username}',
 		donat_form_amount: 'Сумма пожертвования',
-		donat_form_equal_usd: 'Эквивалент {convertedUsdSum} USD',
-		donat_form_goal_title: 'Цели пожертвований',
-		donat_form_goal_description: 'Помогите {username} достичь его донат целей',
+		donat_form_equal_usd: '{convertedUsdSum} USD',
+		donat_form_goal_title: 'Сбор средств',
+		donat_form_goal_description: 'Помогите {username} достичь его целей',
 		donat_form_goal_dont_participate: 'Не участвовать',
-		donat_loading_message: 'Пожалуйста, не закрывайте это окно до подтверждения пожертвования',
+		donat_loading_message: 'Пожалуйста, не закрывайте это окно до подтверждения транзакции',
 		donat_success_message: 'Вы успешно отправили {sum} {selectedBlockchain} пользователю {name}',
-		donat_success_message_description:
-			'Проверьте историю своих пожертвований в разделе «Пожертвования»',
+		donat_success_message_description: 'Проверьте историю своих донатов в разделе «Донаты»',
 		donat_warning_message_username_description:
 			'К сожалению, это имя пользователя уже занято. Введите другое',
 		donat_warning_message_balance_title: 'Недостаточно средств',
@@ -735,8 +733,8 @@ const messages = {
 		notifications_no: 'Нет уведомлений',
 		notifications_title: 'Уведомления',
 		notifications_clear: 'Очистить все',
-		notifications_donate_title: 'Новое пожертвование',
-		notifications_badge_title: 'Новый значок',
+		notifications_donate_title: 'Новый донат',
+		notifications_badge_title: 'Новый бейдж',
 		notifications_donate_creator: '{user} отправил вам {sum} {blockchain}!',
 		notifications_donate_supporter: 'Вы отправили {sum} {blockchain} {user}!',
 		notifications_add_badge_creator: 'Вы отправили {title} {user}',
@@ -769,9 +767,9 @@ const messages = {
 		filter_yesterday: 'Вчера',
 		filter_all_time: 'Все время',
 		filter_custom: 'Выбрать даты',
-		filter_top_donations: 'Лучшие пожертвования',
-		filter_recent_donations: 'Последние пожертвования',
-		filter_top_supporters: 'Топ спонсоров',
+		filter_top_donations: 'Топ донаты',
+		filter_recent_donations: 'Последние донаты',
+		filter_top_supporters: 'Топ доноров',
 
 		// confirm popup
 		confirm_sure: 'Вы уверены?',
@@ -821,7 +819,7 @@ const messages = {
 
 		// roles
 		roles_title: '¿Quién eres?',
-		roles_creator: 'Creador de contenido',
+		roles_creator: 'Streamer',
 		roles_supporter: 'Patrocinador',
 		roles_button: 'Continuar',
 
@@ -838,7 +836,7 @@ const messages = {
 		page_title_donations: 'Donaciones',
 		page_title_donation_page: 'Página de donación',
 		page_title_design: 'Diseño',
-		page_title_badges: 'Insignias',
+		page_title_badges: 'NFT',
 		page_title_settings: 'Configuración',
 		page_title_alerts: 'Alertas',
 		page_title_stream_stats: 'Estadísticas en transmisión',
@@ -868,15 +866,15 @@ const messages = {
 		landing_launch_button: 'Iniciar aplicación',
 		landing_create_account_button: 'Crear cuenta',
 
-		landing_banner_title:
-			'Revolucionemos la forma en que funcionan las donaciones en criptomonedas',
+		landing_banner_title: 'Plataforma de donaciones Web3 para streamers',
 		landing_banner_subtitle:
-			'Es hora de mostrar las donaciones en criptomonedas en un stream, acuñar NFTs para tus seguidores y divertirte.',
-
+			'¡Es hora de mostrar donaciones en criptomonedas en la transmisión, acuñar NFTs para tus seguidores y divertirte!',
 		landing_whatIs_subtitle: '¿Qué es Crypto Donutz?',
-		landing_whatIs_title: 'Plataforma de donaciones en criptomonedas para streamers',
+		landing_whatIs_title: 'Comienza a aceptar donaciones en criptomonedas',
 		landing_whatIs_description:
-			'Nuestro producto está diseñado para aumentar los ingresos de los streamers y la interacción con los seguidores de criptomonedas. También es extremadamente fácil de configurar.',
+			'Configura tu página de donaciones personalizable, muestra las donaciones entrantes en la transmisión e incrementa la interacción con tu audiencia de criptomonedas',
+		landing_form_title: '¿Quieres recibir $20 en donaciones en criptomonedas de nuestra parte?',
+		landing_form_button: 'Aprender más',
 
 		landing_features_subtitle: '¿Qué nos hace especiales?',
 		landing_features_title: 'Nuestras características',
@@ -985,6 +983,7 @@ const messages = {
 			'A través del enlace a continuación, tus seguidores pueden enviarte donaciones',
 		donation_generate_button: 'Generar código QR',
 		donation_download_button: 'Descargar PNG',
+		donation_twitch_button: 'Banner de Twitch',
 		donation_header_banner: 'Banner del encabezado:',
 		donation_background_banner: 'Banner de fondo:',
 		donation_welcome_text: 'Texto de bienvenida:',
@@ -1057,11 +1056,11 @@ const messages = {
 		stats_modal_form_template: 'Plantilla:',
 		stats_widget_card_period: 'Período de fecha: {timePeriodName}',
 		stats_widget_card_type: 'Tipo de dato: {typeStatData}',
-		stats_widget_settings_title: 'Color del título del objetivo:',
+		stats_widget_settings_title: 'Color del título del widget:',
 		stats_widget_card_template: 'Plantilla: {template}',
-		stats_widget_settings_bar_color: 'Color de la barra del objetivo:',
+		stats_widget_settings_bar_color: 'Color de la barra del widget:',
 		stats_widget_settings_сontent_color: 'Color del contenido:',
-		stats_widget_settings_title_font: 'Fuente del título de la meta:',
+		stats_widget_settings_title_font: 'Fuente del título del widget:',
 		stats_widget_settings_сontent_font: 'Fuente del contenido:',
 		stats_widget_settings_сontent_alignment: 'Alineación del contenido:',
 		stats_widget_settings_сontent_alignment_left: 'Izquierda',
@@ -1218,7 +1217,7 @@ const messages = {
 
 		// roles
 		roles_title: 'คุณคือใคร?',
-		roles_creator: 'ผู้สร้างเนื้อหา',
+		roles_creator: 'Streamer',
 		roles_supporter: 'ผู้สนับสนุน',
 		roles_button: 'ต่อไป',
 
@@ -1235,7 +1234,7 @@ const messages = {
 		page_title_donations: 'การบริจาค',
 		page_title_donation_page: 'หน้าบริจาค',
 		page_title_design: 'ดีไซน์',
-		page_title_badges: 'แบดจ์',
+		page_title_badges: 'NFT',
 		page_title_settings: 'การตั้งค่า',
 		page_title_alerts: 'การแจ้งเตือน',
 		page_title_stream_stats: 'สถิติในสตรีม',
@@ -1264,15 +1263,15 @@ const messages = {
 		landing_connect_button: 'เชื่อมต่อกระเป๋าเงิน',
 		landing_launch_button: 'เปิดแอป',
 		landing_create_account_button: 'สร้างบัญชี',
-
-		landing_banner_title: 'มาปฏิวัติวิธีทำงานของการบริจาคคริปโต',
+		landing_banner_title: 'แพลตฟอร์มรับบริจาค Web3 สำหรับสตรีมเมอร์',
 		landing_banner_subtitle:
-			'ถึงเวลาแสดงการบริจาคคริปโตในสตรีมแล้ว สร้าง NFT สำหรับผู้สนับสนุนของคุณและสนุกกัน!',
-
+			'ได้เวลาแสดงการบริจาคในรูปแบบคริปโตในสตรีม สร้าง NFT ให้กับผู้สนับสนุนของคุณ และสนุกสนาน!',
 		landing_whatIs_subtitle: 'Crypto Donutz คืออะไร?',
-		landing_whatIs_title: 'แพลตฟอร์มการบริจาคคริปโตสำหรับสตรีมเมอร์',
+		landing_whatIs_title: 'เริ่มรับบริจาคในรูปแบบคริปโต',
 		landing_whatIs_description:
-			'ผลิตภัณฑ์ของเรามุ่งเน้นที่จะเพิ่มรายได้ของสตรีมเมอร์และส่งเสริมการโต้ตอบกับผู้สนับสนุนคริปโต นอกจากนี้ยังง่ายในการติดตั้ง',
+			'ตั้งค่าหน้าบริจาคที่สามารถปรับแต่งได้ แสดงการบริจาคที่เข้ามาในสตรีม และเพิ่มการมีส่วนร่วมกับผู้ชมที่ใช้คริปโต',
+		landing_form_title: 'ต้องการรับบริจาคคริปโตจากเรา 20 ดอลลาร์หรือไม่?',
+		landing_form_button: 'เรียนรู้เพิ่มเติม',
 
 		landing_features_subtitle: 'เราพิเศษอย่างไร?',
 		landing_features_title: 'คุณสมบัติของเรา',
@@ -1376,6 +1375,7 @@ const messages = {
 		donation_subtitle: 'ผ่านลิงก์ด้านล่างนี้ ผู้สนับสนุนของคุณสามารถส่งการบริจาคให้คุณ',
 		donation_generate_button: 'สร้างรหัส QR',
 		donation_download_button: 'ดาวน์โหลด PNG',
+		donation_twitch_button: 'แบนเนอร์ Twitch',
 		donation_header_banner: 'แบนเนอร์ส่วนหัว:',
 		donation_background_banner: 'แบนเนอร์พื้นหลัง:',
 		donation_welcome_text: 'ข้อความต้อนรับ:',
@@ -1448,18 +1448,18 @@ const messages = {
 		stats_widget_card_period: 'ระยะเวลา: {timePeriodName}',
 		stats_widget_card_type: 'ประเภทข้อมูล: {typeStatData}',
 
-		stats_widget_settings_title: 'สีชื่อเป้าหมาย:',
+		stats_widget_settings_title: 'สีของชื่อวิดเจ็ต:',
 		stats_widget_card_template: 'เทมเพลต: {template}',
-		stats_widget_settings_bar_color: 'สีแถบเป้าหมาย:',
-		stats_widget_settings_сontent_color: 'สีเนื้อหา:',
-		stats_widget_settings_title_font: 'แบบอักษรชื่อเป้าหมาย:',
-		stats_widget_settings_сontent_font: 'แบบอักษรเนื้อหา:',
-		stats_widget_settings_сontent_alignment: 'การจัดเนื้อหา:',
-		stats_widget_settings_сontent_alignment_left: 'ชิดซ้าย',
-		stats_widget_settings_сontent_alignment_center: 'กึ่งกลาง',
-		stats_widget_settings_сontent_alignment_right: 'ชิดขวา',
-		stats_widget_preview_message: 'สวัสดี! นี่เป็นข้อความทดสอบ',
-		stats_widget_preview_message_2: 'สบายดีไหม?',
+		stats_widget_settings_bar_color: 'สีแถบวิดเจ็ต:',
+		stats_widget_settings_сontent_color: 'สีของเนื้อหา:',
+		stats_widget_settings_title_font: 'แบบอักษรของชื่อวิดเจ็ต:',
+		stats_widget_settings_сontent_font: 'แบบอักษรของเนื้อหา:',
+		stats_widget_settings_сontent_alignment: 'การจัดวางเนื้อหา:',
+		stats_widget_settings_сontent_alignment_left: 'ซ้าย',
+		stats_widget_settings_сontent_alignment_center: 'กลาง',
+		stats_widget_settings_сontent_alignment_right: 'ขวา',
+		stats_widget_preview_message: 'สวัสดี! นี่คือข้อความทดสอบ',
+		stats_widget_preview_message_2: 'คุณสบายดีไหม?',
 
 		// goals
 		goals_subtitle: 'เริ่มระดมทุนสำหรับการซื้อหรือเป้าหมายเฉพาะ',
@@ -1609,7 +1609,7 @@ const messages = {
 
 		// roles
 		roles_title: 'Quem é você?',
-		roles_creator: 'Criador de conteúdo',
+		roles_creator: 'Streamer',
 		roles_supporter: 'Apoiador',
 		roles_button: 'Continuar',
 
@@ -1626,7 +1626,7 @@ const messages = {
 		page_title_donations: 'Doações',
 		page_title_donation_page: 'Página de doação',
 		page_title_design: 'Design',
-		page_title_badges: 'Distintivos',
+		page_title_badges: 'NFT',
 		page_title_settings: 'Configurações',
 		page_title_alerts: 'Alertas',
 		page_title_stream_stats: 'Estatísticas no stream',
@@ -1656,14 +1656,15 @@ const messages = {
 		landing_launch_button: 'Iniciar aplicativo',
 		landing_create_account_button: 'Criar conta',
 
-		landing_banner_title: 'Vamos revolucionar a maneira como as doações de criptomoedas funcionam',
+		landing_banner_title: 'Plataforma de doações Web3 para streamers',
 		landing_banner_subtitle:
-			'É hora de exibir doações em criptomoedas no stream, criar NFTs para seus apoiadores e se divertir!',
-
+			'Chegou a hora de exibir doações em criptomoedas na transmissão, cunhar NFTs para seus apoiadores e se divertir!',
 		landing_whatIs_subtitle: 'O que é Crypto Donutz?',
-		landing_whatIs_title: 'Plataforma de doações em criptomoedas para streamers',
+		landing_whatIs_title: 'Comece a aceitar doações em cripto',
 		landing_whatIs_description:
-			'Nosso produto tem como objetivo aumentar a receita dos streamers e a interação com os apoiadores de criptomoedas. Também é extremamente fácil de configurar.',
+			'Configure sua página de doações personalizável, exiba as doações recebidas na transmissão e aumente a interação com seu público de cripto',
+		landing_form_title: 'Quer receber $20 em doações em cripto de nós?',
+		landing_form_button: 'Saiba mais',
 
 		landing_features_subtitle: 'O que há de tão especial em nós?',
 		landing_features_title: 'Nossos recursos',
@@ -1770,6 +1771,7 @@ const messages = {
 		donation_subtitle: 'Através do link abaixo, seus apoiadores podem enviar doações',
 		donation_generate_button: 'Gerar código QR',
 		donation_download_button: 'Baixar PNG',
+		donation_twitch_button: 'Banner do Twitch',
 		donation_header_banner: 'Banner do cabeçalho:',
 		donation_background_banner: 'Banner de fundo:',
 		donation_welcome_text: 'Texto de boas-vindas:',
@@ -1842,11 +1844,11 @@ const messages = {
 		stats_modal_form_template: 'Modelo:',
 		stats_widget_card_period: 'Período de data: {timePeriodName}',
 		stats_widget_card_type: 'Tipo de data: {typeStatData}',
-		stats_widget_settings_title: 'Cor do título do objetivo:',
+		stats_widget_settings_title: 'Cor do título do widget:',
 		stats_widget_card_template: 'Modelo: {template}',
-		stats_widget_settings_bar_color: 'Cor da barra do objetivo:',
+		stats_widget_settings_bar_color: 'Cor da barra do widget:',
 		stats_widget_settings_сontent_color: 'Cor do conteúdo:',
-		stats_widget_settings_title_font: 'Fonte do título do objetivo:',
+		stats_widget_settings_title_font: 'Fonte do título do widget:',
 		stats_widget_settings_сontent_font: 'Fonte do conteúdo:',
 		stats_widget_settings_сontent_alignment: 'Alinhamento do conteúdo:',
 		stats_widget_settings_сontent_alignment_left: 'Esquerda',
@@ -2002,7 +2004,7 @@ const messages = {
 
 		// roles
 		roles_title: '당신은 누구신가요?',
-		roles_creator: '콘텐츠 크리에이터',
+		roles_creator: 'Streamer',
 		roles_supporter: '서포터',
 		roles_button: '계속하기',
 
@@ -2019,7 +2021,7 @@ const messages = {
 		page_title_donations: '기부',
 		page_title_donation_page: '기부 페이지',
 		page_title_design: '디자인',
-		page_title_badges: '배지',
+		page_title_badges: 'NFT',
 		page_title_settings: '설정',
 		page_title_alerts: '알림',
 		page_title_stream_stats: '스트림 통계',
@@ -2049,14 +2051,16 @@ const messages = {
 		landing_launch_button: '앱 시작',
 		landing_create_account_button: '계정 생성',
 
-		landing_banner_title: '암호화폐 기부 방식을 혁신합시다',
+		landing_banner_title: '스트리머를 위한 Web3 기부 플랫폼',
 		landing_banner_subtitle:
-			'스트림에서 암호화폐 기부를 표시하고, 지지자를 위해 NFT를 발행하고 재미있게 지내보세요!',
-
-		landing_whatIs_subtitle: '크립토 도넛이란 무엇인가요?',
-		landing_whatIs_title: '스트리머를 위한 암호화폐 기부 플랫폼',
+			'스트림에서 암호화폐 기부를 표시하고, 당신의 지지자들을 위한 NFT를 발행하고, 즐기는 시간입니다!',
+		landing_whatIs_subtitle: 'Crypto Donutz란 무엇인가요?',
+		landing_whatIs_title: '암호화폐로 기부를 받기 시작하세요',
 		landing_whatIs_description:
-			'저희 제품은 스트리머의 수익 증대와 암호화폐 지지자와의 상호작용을 높이기 위해 개발되었습니다. 또한 설정이 매우 쉽습니다.',
+			'맞춤형 기부 페이지를 설정하고, 스트림에서 들어오는 기부를 표시하고, 암호화폐 관련 관객과의 상호작용을 높이세요',
+		landing_form_title: '우리로부터 암호화폐로 $20의 기부를 받고 싶으신가요?',
+		landing_form_button: '자세히 알아보기',
+
 		landing_features_subtitle: '우리를 특별하게 만드는 것은 무엇인가요?',
 		landing_features_title: '우리의 특징',
 
@@ -2159,6 +2163,7 @@ const messages = {
 		donation_subtitle: '아래 링크를 통해 지지자들이 기부를 보낼 수 있습니다.',
 		donation_generate_button: 'QR 코드 생성',
 		donation_download_button: 'PNG 다운로드',
+		donation_twitch_button: '트위치 배너',
 		donation_header_banner: '헤더 배너:',
 		donation_background_banner: '배경 배너:',
 		donation_welcome_text: '환영 텍스트:',
@@ -2230,18 +2235,18 @@ const messages = {
 		stats_modal_form_template: '템플릿:',
 		stats_widget_card_period: '날짜 기간: {timePeriodName}',
 		stats_widget_card_type: '날짜 유형: {typeStatData}',
-		stats_widget_settings_title: '목표 제목 색상:',
+		stats_widget_settings_title: '위젯 제목 색상:',
 		stats_widget_card_template: '템플릿: {template}',
-		stats_widget_settings_bar_color: '목표 막대 색상:',
+		stats_widget_settings_bar_color: '위젯 막대 색상:',
 		stats_widget_settings_сontent_color: '콘텐츠 색상:',
-		stats_widget_settings_title_font: '목표 제목 글꼴:',
+		stats_widget_settings_title_font: '위젯 제목 글꼴:',
 		stats_widget_settings_сontent_font: '콘텐츠 글꼴:',
 		stats_widget_settings_сontent_alignment: '콘텐츠 정렬:',
 		stats_widget_settings_сontent_alignment_left: '왼쪽',
 		stats_widget_settings_сontent_alignment_center: '중앙',
 		stats_widget_settings_сontent_alignment_right: '오른쪽',
-		stats_widget_preview_message: '안녕하세요! 이것은 테스트 메시지입니다.',
-		stats_widget_preview_message_2: '어떻게 지내시나요?',
+		stats_widget_preview_message: '안녕하세요! 이것은 테스트 메시지입니다',
+		stats_widget_preview_message_2: '어떻게 지내세요?',
 
 		// 목표
 		goals_subtitle: '특정 구매 또는 목표에 대한 모금을 시작하세요.',

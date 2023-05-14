@@ -58,7 +58,6 @@ export class UsersService {
 		if (newSavedUser.alert) {
 			const { id: alertId } = newSavedUser.alert
 			await this.alertsService.setDefaultSound(alertId)
-			await this.setDefaultTwitchBanner(newUser.id)
 		}
 		return newSavedUser
 	}
@@ -209,7 +208,6 @@ export class UsersService {
 		if (isReset) {
 			const columns = getDefaultValues(this.creatorsRepository, ['spamFilter'])
 			await this.creatorsRepository.update({ user: { id: userId } }, { ...columns })
-			await this.setDefaultTwitchBanner(userId)
 		} else {
 			if (uploadFiles) {
 				Object.entries(uploadFiles).forEach(([key, files]) => {
@@ -230,12 +228,12 @@ export class UsersService {
 		return await this.getUserById(userId)
 	}
 
-	async setDefaultTwitchBanner(id: string) {
-		const [image] = this.fileService.getAssetsFiles('twitch')
-		if (image) {
-			await this.updateCreator(id, {
-				twitchBanner: image.path,
-			})
-		}
-	}
+	// async setDefaultTwitchBanner(id: string) {
+	// 	const [image] = this.fileService.getAssetsFiles('twitch')
+	// 	if (image) {
+	// 		await this.updateCreator(id, {
+	// 			twitchBanner: image.path,
+	// 		})
+	// 	}
+	// }
 }
