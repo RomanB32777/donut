@@ -188,7 +188,7 @@ const SettingsContainer = () => {
 			<div className="videoBlocks">
 				<Row justify="space-between" gutter={[0, 32]}>
 					{videoLinks.map((link, index) => (
-						<Col md={24} xl={12} key={index}>
+						<Col md={24} xl={12} key={index} className="videoCol">
 							<VideoBlock
 								link={link}
 								modificator={clsx('videoModificator', { right: index % 2 })}

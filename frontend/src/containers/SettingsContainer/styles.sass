@@ -6,9 +6,14 @@
 .videoModificator
     margin: 0
 
-    @media (min-width: 1200px)
+@media (min-width: 1200px)
+    .videoModificator
         &.right
             float: right
+
+@media (max-width: 576px)
+    .videoCol
+        width: 100%
 
 .btn-bottom
     display: flex
