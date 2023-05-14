@@ -1,5 +1,8 @@
 @use 'commonStyles/variables'
 
+.interFont
+    font-family: variables.$inter-font !important
+
 .roleModal
     display: flex
     flex-direction: column
@@ -14,7 +17,11 @@
     line-height: 45px
     color: variables.$white-color
     text-align: center
-    margin: 0 0 40px
+    margin: 0 0 30px
+
+    &.interFont
+        font-size: 35px
+        line-height: 35px
 
 .roles
     width: 100%
@@ -48,3 +55,7 @@
         font-size: 25px
         line-height: 28px
         margin-top: 40px
+
+        &.interFont
+            font-size: 20px
+            line-height: 25px

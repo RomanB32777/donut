@@ -548,7 +548,7 @@ const messages = {
 		landing_help_center_description:
 			'Мы собрали ответы на часто задаваемые вопросы в нашем справочном центре',
 
-		landing_footer_title: 'Вы готово получить свои крипто донаты?',
+		landing_footer_title: 'Вы готовы получить свои крипто донаты?',
 
 		// sidebar menu
 		sidebar_dashboard: 'Панель управления',

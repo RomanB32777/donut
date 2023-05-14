@@ -1,11 +1,12 @@
-import { FC, useState } from 'react'
+import { FC, useContext, useState } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { userRoles } from 'types'
 import clsx from 'clsx'
 
 import ModalComponent from 'components/ModalComponent'
 import BaseButton from 'components/BaseButton'
-import { ILandingModal } from 'appTypes'
+import { AppContext } from 'contexts/AppContext'
+import { ILandingModal, LOCALES } from 'appTypes'
 import './styles.sass'
 
 interface IRolesModal extends ILandingModal {
@@ -13,14 +14,18 @@ interface IRolesModal extends ILandingModal {
 }
 
 const RolesModal: FC<IRolesModal> = ({ isOpenModal, closeModal, chooseRole }) => {
+	const { locale } = useContext(AppContext)
 	const [selectedRole, setSelectedRole] = useState<userRoles | null>(null)
+
 	const roleHandler = (role: userRoles) => () => setSelectedRole(role)
 	const btnHandler = () => selectedRole && chooseRole(selectedRole)
+
+	const isNotSupportedVtFont = [LOCALES.RU, LOCALES.TH, LOCALES.KR].includes(locale)
 
 	return (
 		<ModalComponent open={isOpenModal} onCancel={closeModal} width={540}>
 			<div className="roleModal">
-				<h1 className="modalTitle">
+				<h1 className={clsx('modalTitle', { interFont: isNotSupportedVtFont })}>
 					<FormattedMessage id="roles_title" />
 				</h1>
 				<div className="roles">
@@ -41,7 +46,7 @@ const RolesModal: FC<IRolesModal> = ({ isOpenModal, closeModal, chooseRole }) =>
 					<BaseButton
 						formatId="roles_button"
 						onClick={btnHandler}
-						modificator="rolesBtn"
+						modificator={clsx('rolesBtn', { interFont: isNotSupportedVtFont })}
 						disabled={!selectedRole}
 						isMain
 					/>

@@ -5,7 +5,7 @@ fi
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 
-if [[ $branch = 'production' ]]; then
+if [[ $branch = 'main' ]]; then
     PS3='Please bump your version: '
     options=("patch" "minor" "major" "Quit")
     select opt in "${options[@]}"
