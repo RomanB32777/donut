@@ -34,6 +34,7 @@ const LayoutApp = () => {
 	const confirmStatus = searchParams.get('confirmStatus')
 	const email = searchParams.get('email')
 	const langParam = searchParams.get('lang')
+	const registrationStatus = searchParams.get('registration')
 
 	const { data: tokenData, isError } = useCheckTokenQuery(tokenId ?? skipToken)
 
@@ -76,6 +77,10 @@ const LayoutApp = () => {
 		params.forEach((param) => searchParams.delete(param))
 		setSearchParams(searchParams)
 	}
+
+	useEffect(() => {
+		if (registrationStatus) deleteParams('registration')
+	}, [])
 
 	useEffect(() => {
 		const checkTokenData = async () => {

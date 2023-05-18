@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useState } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { useAccount } from 'wagmi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import clsx from 'clsx'
 import { userRoles, IRegisterUser } from 'types'
 
@@ -45,6 +45,7 @@ const RegistrationCreatorModal: FC<IRegistrationModal> = ({ changeTypeModal, rol
 	const navigate = useNavigate()
 	const { address } = useAccount()
 	const { checkWebToken, closeAuthModal } = useAuth()
+	const [searchParams, setSearchParams] = useSearchParams()
 	const [registerUser, { isLoading, isSuccess, error }] = useRegisterUserMutation()
 	const [createUser, { data, isSuccess: isCreateSuccess, error: creatingUser }] =
 		useCreateUserMutation()
@@ -107,9 +108,14 @@ const RegistrationCreatorModal: FC<IRegistrationModal> = ({ changeTypeModal, rol
 	useEffect(() => {
 		if (isSuccess || isCreateSuccess) {
 			closeAuthModal()
+			setForm(initState)
 
-			if (isCreator) setIsVisibleBanner(true)
-			else setForm(initState)
+			if (isCreator) {
+				searchParams.append('registration', 'sent')
+				setSearchParams(searchParams)
+
+				setIsVisibleBanner(true)
+			}
 		}
 	}, [isSuccess, isCreateSuccess, isCreator])
 

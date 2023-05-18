@@ -45,3 +45,4 @@ frontend-next-no-app/
 node_modules
 npm-debug.log
 .env
+test.js
