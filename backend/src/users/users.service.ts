@@ -6,7 +6,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ILike, Repository } from 'typeorm'
+import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 import { donatAssetTypes, userRoles } from 'types'
 
 import { AlertWidget } from 'src/widgets/alerts/entities/alert-widget.entity'
@@ -20,6 +20,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateCreatorDto, UpdateUserDto, UserFiles } from './dto/update-user.dto'
 import { getDefaultValues } from 'src/utils'
 import { QueryUserDto, QueryRole } from './dto/query-user.dto'
+import { getTimePeriod } from 'src/utils/dates'
 
 @Injectable()
 export class UsersService {
@@ -86,8 +87,18 @@ export class UsersService {
 	}
 
 	async getUsers(queryParams?: QueryUserDto) {
+		const { timePeriod, startDate, endDate, ...params } = queryParams
+		const where: FindOptionsWhere<User> = { ...params }
+		if ((startDate && endDate) || (timePeriod && timePeriod !== 'all')) {
+			where.createdAt = getTimePeriod({
+				timePeriod,
+				startDate,
+				endDate,
+			})
+		}
 		const [users, count] = await this.usersRepository.findAndCount({
-			where: { ...queryParams },
+			where,
+			order: { createdAt: 'DESC' },
 			relations: {
 				creatorDonations: true,
 				backerDonations: true,

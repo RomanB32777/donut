@@ -1,18 +1,16 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
+import { IntersectionType } from '@nestjs/mapped-types'
 import { IsString, IsEnum, IsEmail, IsOptional } from 'class-validator'
 import { UserRoles, userRoles, userStatus } from 'types'
 
 import { User } from 'src/users/entities/user.entity'
 import { userValidationMessages } from 'src/common/const'
+import { QueryParamsDto } from 'src/common/dto/query-params.dto'
 
-export class QueryUserDto extends PickType(User, [
-	'id',
-	'walletAddress',
-	'username',
-	'email',
-	'status',
-	'roleplay',
-]) {
+export class QueryUserDto extends IntersectionType(
+	PickType(User, ['id', 'walletAddress', 'username', 'email', 'status', 'roleplay']),
+	PickType(QueryParamsDto, ['endDate', 'startDate', 'timePeriod']),
+) {
 	@IsString()
 	@IsOptional()
 	@ApiProperty({ required: false })
